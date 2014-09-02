@@ -149,8 +149,7 @@ namespace ProductFeedReader
                         default: break;
                 }
             }
-
-            _logger.WriteLine(products[170000].Currency);       
+    
             _logger.WriteLine("\nBAD EAN AMOUNT: " + _badEan + ", AMOUNT OF PRODUCTS: " + products.Count);
             _logger.WriteLine("BAD EAN PERC: " + (_badEan * 100) / products.Count + "%");
             _logger.Close();
