@@ -1,0 +1,9 @@
+c:\users\dion\documents\visual studio 2013\Projects\TradeTrackerReader\TradeTrackerReader\bin\Debug\TradeTrackerReader.exe.config
+c:\users\dion\documents\visual studio 2013\Projects\TradeTrackerReader\TradeTrackerReader\bin\Debug\TradeTrackerReader.exe
+c:\users\dion\documents\visual studio 2013\Projects\TradeTrackerReader\TradeTrackerReader\bin\Debug\TradeTrackerReader.pdb
+c:\users\dion\documents\visual studio 2013\Projects\TradeTrackerReader\TradeTrackerReader\obj\Debug\TradeTrackerReader.csprojResolveAssemblyReference.cache
+c:\users\dion\documents\visual studio 2013\Projects\TradeTrackerReader\TradeTrackerReader\obj\Debug\TradeTrackerReader.exe
+c:\users\dion\documents\visual studio 2013\Projects\TradeTrackerReader\TradeTrackerReader\obj\Debug\TradeTrackerReader.pdb
+C:\Users\Dion\Documents\GitHub\Nutella\TradeTrackerReader\TradeTrackerReader\bin\Debug\TradeTrackerReader.exe.config
+C:\Users\Dion\Documents\GitHub\Nutella\TradeTrackerReader\TradeTrackerReader\obj\Debug\TradeTrackerReader.exe
+C:\Users\Dion\Documents\GitHub\Nutella\TradeTrackerReader\TradeTrackerReader\obj\Debug\TradeTrackerReader.pdb
