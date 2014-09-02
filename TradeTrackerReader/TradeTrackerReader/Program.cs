@@ -32,7 +32,8 @@ namespace TradeTrackerReader
                         Color = (string)e.Element("properties").Elements("property").First(x => x.HasAttributes && x.Attribute("name").Value == "color").Value
 
                     }).ToList();
-                                        
+
+            Console.WriteLine(products[500].toString());
             Console.Read();
         }
 

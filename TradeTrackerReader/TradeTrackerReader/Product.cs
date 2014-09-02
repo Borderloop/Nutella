@@ -22,5 +22,14 @@ namespace TradeTrackerReader
         public string Brand { get; set; }
         public string Color { get; set; }
 
+        /// <summary>
+        /// Debug method for checking product data.
+        /// </summary>
+        /// <returns>A string shortly representing the product data</returns>
+        public string toString()
+        {
+            return "ID: " + ID + ", SKU: " + SKU + ", EAN: " + EAN;
+        }
+
     }
 }
