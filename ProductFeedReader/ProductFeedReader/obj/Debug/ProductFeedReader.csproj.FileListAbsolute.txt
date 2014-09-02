@@ -1,0 +1,2 @@
+c:\users\dion\documents\visual studio 2013\Projects\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.exe.config
+C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.exe.config

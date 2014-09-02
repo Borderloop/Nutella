@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace TradeTrackerReader
 {
+    /// <summary>
+    /// Default product class for storing data.
+    /// </summary>
     public class Product
     {
+        //All the data will be read as a String. Therefore, we store them in String objects.
+
         public string ID { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
@@ -21,14 +27,17 @@ namespace TradeTrackerReader
         public string Stock { get; set; }
         public string Brand { get; set; }
         public string Color { get; set; }
+        public string Language { get; set; }
+        public string Affiliate { get; set; }
+        public string FileName { get; set; }
 
         /// <summary>
         /// Debug method for checking product data.
         /// </summary>
-        /// <returns>A string shortly representing the product data</returns>
+        /// <returns>A string shortly representing some product data</returns>
         public string toString()
         {
-            return "ID: " + ID + ", SKU: " + SKU + ", EAN: " + EAN;
+            return "Name: " + Name + ", EAN: " + EAN;
         }
 
     }
