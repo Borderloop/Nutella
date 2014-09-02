@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace TradeTrackerReader
+namespace ProductFeedReader
 {
     /// <summary>
     /// Default product class for storing data.

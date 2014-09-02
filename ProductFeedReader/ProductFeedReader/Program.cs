@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace TradeTrackerReader
+namespace ProductFeedReader
 {
     class Program
     {

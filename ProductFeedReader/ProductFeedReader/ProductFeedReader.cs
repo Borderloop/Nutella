@@ -8,7 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 
-namespace TradeTrackerReader
+namespace ProductFeedReader
 {
     public class ProductFeedReader
     {
@@ -54,7 +54,8 @@ namespace TradeTrackerReader
                 switch(dir)
                 {
                     case _PRODUCTFEEDPATH+"\\TradeTracker":
-                        
+                        #region TradeTracker
+
                         string[] filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
                        
                             foreach (string file in filePaths)
@@ -93,6 +94,8 @@ namespace TradeTrackerReader
                                 }
                             }                     
                         break;
+
+                        #endregion
 
                     default: break;
                 }
