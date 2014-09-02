@@ -13,14 +13,11 @@ namespace ProductFeedReader
     public class Product
     {
         //All the data will be read as a String. Therefore, we store them in String objects.
-
-        public string ID { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
-        public string SKU { get; set; }
         public string DeliveryCost { get; set; }
         public string DeliveryTime { get; set; }
         public string EAN { get; set; }
@@ -30,6 +27,8 @@ namespace ProductFeedReader
         public string Language { get; set; }
         public string Affiliate { get; set; }
         public string FileName { get; set; }
+        public string Price { get; set; }
+        public string Currency { get; set; }
 
         /// <summary>
         /// Debug method for checking product data.
