@@ -17,27 +17,17 @@ namespace ProductFeedReader
         public string Url { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
-        public string Category { get; set; }
+        public string Category { get; set; } 
+        public string Price { get; set; } 
+        public string Currency { get; set; }
         public string DeliveryCost { get; set; }
         public string DeliveryTime { get; set; }
         public string EAN { get; set; }
         public string Stock { get; set; }
         public string Brand { get; set; }
-        public string Color { get; set; }
-        public string Language { get; set; }
+        public string LastModified { get; set; }
+        public string ValidUntil { get; set; }     
         public string Affiliate { get; set; }
         public string FileName { get; set; }
-        public string Price { get; set; }
-        public string Currency { get; set; }
-
-        /// <summary>
-        /// Debug method for checking product data.
-        /// </summary>
-        /// <returns>A string shortly representing some product data</returns>
-        public string toString()
-        {
-            return "Name: " + Name + ", EAN: " + EAN;
-        }
-
     }
 }
