@@ -1,0 +1,7 @@
+c:\users\dion\documents\visual studio 2013\Projects\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.exe.config
+C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.exe.config
+C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.exe
+C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.pdb
+C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.csprojResolveAssemblyReference.cache
+C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.exe
+C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.pdb
