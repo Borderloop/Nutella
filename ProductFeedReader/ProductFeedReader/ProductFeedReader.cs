@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace ProductFeedReader
 {
@@ -15,7 +16,7 @@ namespace ProductFeedReader
         /// <summary>
         /// Standard path where productfeeds are stored.
         /// </summary>
-        private const string _PRODUCTFEEDPATH = "C:\\Productfeeds";
+        private const string _PRODUCTFEEDPATH = @"C:\\Product Feeds";
 
         /// <summary>
         /// A simple integer holding the count of products which do not have an EAN number. 
@@ -29,12 +30,18 @@ namespace ProductFeedReader
         private StreamWriter _logger;
 
         /// <summary>
+        /// A Stopwatch for measuring the elapsed time (useful fo optimizing).
+        /// </summary>
+        private Stopwatch _sw;
+
+        /// <summary>
         /// Constructor for creating ProductFeedReader object.
         /// </summary>
         public ProductFeedReader()
         {
              _badEan = 0;
-             _logger = new StreamWriter("C:\\Productfeeds\\log.txt");  
+             _logger = new StreamWriter(@"C:\\Product Feeds\\log.txt");
+             _sw = new Stopwatch();
         }
 
         /// <summary>
@@ -42,6 +49,7 @@ namespace ProductFeedReader
         /// </summary>
         public void Start()
         {
+            _sw.Start();
             //Get all the directories in the productfeed folder.
             string[] dirs = Directory.GetDirectories(_PRODUCTFEEDPATH);
 
@@ -66,6 +74,7 @@ namespace ProductFeedReader
                             { 
                                 try
                                 {
+                                    Console.Write("Started reading from: " + file + " ...");
                                     products.AddRange(
                                      (
                                          from e in XDocument.Load(file).Root.Elements("product")
@@ -97,7 +106,9 @@ namespace ProductFeedReader
                                 {
                                     _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                                 }
-                            }                     
+                                Console.WriteLine(" Done");
+                            }
+                        
                         break;
 
                         #endregion
@@ -110,7 +121,8 @@ namespace ProductFeedReader
                         filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
                        
                             foreach (string file in filePaths)
-                            { 
+                            {
+                                Console.Write("Started reading from: " + file + " ...");
                                 try
                                 {
                                     XElement root = XDocument.Load(file).Root;
@@ -147,6 +159,7 @@ namespace ProductFeedReader
                                 {
                                     _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                                 }
+                                Console.WriteLine(" Done");
                             }      
                         break;
 
@@ -160,6 +173,7 @@ namespace ProductFeedReader
 
                         foreach (string file in filePaths)
                         {
+                            Console.Write("Started reading from: " + file + " ...");
                             try
                             {
                                 XElement root = XDocument.Load(file).Root;
@@ -195,6 +209,7 @@ namespace ProductFeedReader
                             {
                                 _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                             }
+                            Console.WriteLine(" Done");
                         }
                         break;
 
@@ -208,6 +223,7 @@ namespace ProductFeedReader
 
                         foreach (string file in filePaths)
                         {
+                            Console.Write("Started reading from: " + file + " ...");
                             try
                             {
                                 XElement root = XDocument.Load(file).Root;
@@ -242,6 +258,7 @@ namespace ProductFeedReader
                             {
                                 _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                             }
+                            Console.WriteLine(" Done");
                         }
                         break;
 
@@ -302,8 +319,11 @@ namespace ProductFeedReader
 
             #endregion         
             */
+            _sw.Stop();
+            Console.WriteLine("Processing time: " + _sw.Elapsed);
 
             _logger.WriteLine("Last scan: " + DateTime.Now.ToString("HH:mm:ss") + ".");
+            _logger.WriteLine("Processing time: " + _sw.Elapsed);
             _logger.WriteLine(products.Count + " products processed.");
             _logger.Close();
         }
