@@ -2,6 +2,7 @@ import suds
 import urllib
 from CrawlerHelpScripts import logger
 import time
+import traceback
 
 class Crawler():
 
@@ -13,9 +14,9 @@ class Crawler():
     log = logger.createLogger("TradeTrackerLogger", "TradeTracker")
     
     #Authentication and feed data
-    id = ''
-    key = ''
     customerId = ''
+    key = ''
+    aid = ''
     
     def main(self):
         start_time = time.time()
@@ -24,7 +25,7 @@ class Crawler():
         
         #Create client and authenticate
         client = suds.client.Client(self.url)
-        client.service.authenticate(self.id, self.key)
+        client.service.authenticate(self.customerId, self.key)
         
         self.gatherData(client)
         self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Finished crawling TradeTracker in: " + str((time.time() - start_time)))
@@ -33,7 +34,7 @@ class Crawler():
     def gatherData(self, client):
         #Return all the feeds available for our account. Save the id's for the assigned 
         #campaigns and get the xml files for them.
-        for feed in client.service.getFeeds(self.customerId):
+        for feed in client.service.getFeeds(self.aid):
             if feed.assignmentStatus == 'accepted' and 'abonnement' not in feed.name.lower() and 'sim only' not in feed.name.lower() and 'simonly' not in feed.name.lower(): #Subscription feeds must be left out too.
                 self.log.info(str(time.asctime( time.localtime(time.time()) ))+": " + feed.campaign.name + " - " + feed.name)
             
@@ -55,9 +56,15 @@ class Crawler():
     #Downloads and saves the xml file under the correct name      
     def save(self, campaignName, feedURL):
         self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
-        xmlFile = urllib.URLopener()
-        xmlFile.retrieve(feedURL, "C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
-        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
+        
+        #If the save failes, something is wrong with the file or directory name. Catch this error
+        try:
+            xmlFile = urllib.URLopener()
+            xmlFile.retrieve(feedURL, "C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
+        except:
+            self.log.error(str(time.asctime( time.localtime(time.time()) ))+ ": " + traceback.format_exc())
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
         
         self.prevName = campaignName
                 

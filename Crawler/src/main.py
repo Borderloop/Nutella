@@ -1,4 +1,5 @@
-from Crawlers import Zanox, TradeTracker
+from Crawlers import TradeTracker
+from Crawlers import FeedCrawler
 
 TradeTracker.Crawler().main()
-Zanox.Crawler().main()
+FeedCrawler.Crawler().main()
