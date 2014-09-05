@@ -62,5 +62,6 @@ namespace ProductFeedReader
         //These properties do not need private values since they are always set.
         public string Affiliate { get; set; }
         public string FileName { get; set; }
+        public string Webshop { get; set; }
     }
 }
