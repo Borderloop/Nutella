@@ -506,6 +506,10 @@ namespace ProductFeedReader
                                                     {
                                                         p.Url = _reader.Value;
                                                     }
+
+                                                    //Read again twice to avoid double products because some genius made the xml file have two Product elements...
+                                                    _reader.Read();
+                                                    _reader.Read();
                                                 }
                                                 break;
 
@@ -555,25 +559,32 @@ namespace ProductFeedReader
                                             case "Properties":
                                                 if (_reader.Read())
                                                 {
-                                                    while(!_reader["Title"].Equals("STOCK"))
-                                                    {
+                                                    while(!(_reader.Name.Equals("Properties") && _reader.NodeType == XmlNodeType.EndElement))
+                                                    {                                                      
+                                                        if(_reader.HasAttributes && _reader["Title"].Equals("STOCK"))
+                                                        {
+                                                            break;
+                                                        }
+
                                                         _reader.Read();
+                                                       
                                                     }
-                                                    p.Stock = _reader["Text"];
+                                                    p.Stock = _reader["Text"] ?? "";
                                                 }
                                                 break;                                                  
 
-                                            case "Product":
-                                                if (p != null)
-                                                {
-                                                    p.DeliveryTime = "";
-                                                    p.Affiliate = "Belboon";
-                                                    p.FileName = file;
-                                                    products.Add(p);
-                                                }
+                                            case "Product":                                               
                                                 p = new Product();
                                                 break;
                                         }
+                                    }
+
+                                    if (_reader.Name.Equals("Product") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        p.DeliveryTime = "";
+                                        p.Affiliate = "Affilinet";
+                                        p.FileName = file;
+                                        products.Add(p);
                                     }
                                 }
                             }
