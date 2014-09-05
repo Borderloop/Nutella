@@ -854,7 +854,6 @@ namespace ProductFeedReader
                                                 break;
 
                                             case "category":
-                                                //Move to first category element
                                                 if (_reader.Read())
                                                 {
                                                     p.Category = _reader.Value;
@@ -934,6 +933,7 @@ namespace ProductFeedReader
             _logger.WriteLine(_amountOfProducts + " products processed.");
             _logger.Close();
         }
+
         #region Utility Methods
 
         public static string[] ConcatArrays(string[] x, string[] y)
@@ -944,78 +944,7 @@ namespace ProductFeedReader
             Array.Resize<string>(ref x, x.Length + y.Length);
             Array.Copy(y, 0, x, oldLen, y.Length);
             return x;
-        }
-
-        public string GetSimilarWords(string x, string y)
-        {
-            string sim = "";          
-
-            //Split both strings over whitespaces
-            string[] xSplit = x.Split(null);
-            string[] ySplit = y.Split(null);
-
-            //Convert all trings to lowercase
-            string[] xLower = xSplit.Select(s => s.ToLower()).ToArray();
-            string[] yLower = ySplit.Select(s => s.ToLower()).ToArray();
-
-            //Create new string array to store similarities
-            string[] simArr = new string[Math.Max(xSplit.Length, ySplit.Length)];
-            int wordCount = 0;
-            for (int i = 0; i < xLower.Length; i++)
-            {
-                for (int j = 0; j < yLower.Length; j++)
-                {
-                    if (xLower[i].Equals(yLower[j]))
-                    {
-                        //Use xSplit so remain capital letters
-                        simArr[wordCount] = xSplit[i]; //Or ySplit[j], they are the same.
-                        wordCount++;
-                        break;
-                    }
-                }
-            }
-
-            //Concatinate all the strings in simArr with whiteSpaces.
-            foreach(string s in simArr)
-            {
-                sim += s + " ";
-            }
-
-            //Trim for sure
-            return sim.Trim(); ;
-        }
-
-       
-        public string SearchTradeTrackerProperty(XElement e, string propname)
-        {
-            XElement element = e.Element("properties").Elements("property").FirstOrDefault(x => x.HasAttributes && x.Attribute("name").Value == propname);
-            if(element != null && propname.Equals("EAN"))
-            {
-                if(!Regex.IsMatch(element.Value, @"^[0-9]{10,13}$"))
-                {
-                    return "";
-                }
-            }
-            return element != null ? element.Value : "";
-        }
-
-        public string SearchZanoxColumn(XElement e, string colname)
-        {
-            XElement element = e.Elements("column").FirstOrDefault(x => x.HasAttributes && x.Attribute("name").Value == colname);
-            if (element == null && colname.Equals("ean"))
-            {
-                _badEan++;
-            }
-            if (element != null && colname.Equals("ean"))
-            {
-                if (!Regex.IsMatch(element.Value, @"^[0-9]{10,13}$"))
-                {
-                    return "";
-                }
-            }
-            return element != null ? element.Value : "";
-        }
-
+        }     
 
         #endregion
     }
