@@ -17,7 +17,7 @@ namespace ProductFeedReader
         static void Main(string[] args)
         {
             ProductFeedReader pfr = new ProductFeedReader();
-            pfr.Start();
+            pfr.StartNew();
         }
 
     }
