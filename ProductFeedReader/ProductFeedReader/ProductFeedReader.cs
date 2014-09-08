@@ -30,6 +30,8 @@ namespace ProductFeedReader
         /// </summary>
         private int _amountOfProducts;
 
+        private SortedSet<string> _eans;
+
         /// <summary>
         /// An XMLReader object for streaming xml data.
         /// </summary>
@@ -60,8 +62,9 @@ namespace ProductFeedReader
         /// </summary>
         public ProductFeedReader()
         {
-             _logger = new StreamWriter(@"C:\\Product Feeds\\log\\log-"+DateTime.Now.ToString("ddMMyy-HH-mm") + ".txt");
+             _logger = new StreamWriter(_PRODUCTFEEDPATH + @"\\log\\log-"+DateTime.Now.ToString("ddMMyy-HH-mm") + ".txt");
              _sw = new Stopwatch();
+             _eans = new SortedSet<string>();
             _tickCount = 0;           
         }
 
@@ -182,6 +185,10 @@ namespace ProductFeedReader
                                                             _reader.Read();
                                                             _reader.Read();
                                                             p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                            if(!p.EAN.Equals(_EANREPLACEMENT))
+                                                            {
+                                                                _eans.Add(p.EAN);
+                                                            }
                                                         }
                                                         break;
 
@@ -336,6 +343,10 @@ namespace ProductFeedReader
                                                         if (_reader.Read())
                                                         {
                                                             p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                            if (!p.EAN.Equals(_EANREPLACEMENT))
+                                                            {
+                                                                _eans.Add(p.EAN);
+                                                            }
                                                         }
                                                         break;
 
@@ -457,7 +468,11 @@ namespace ProductFeedReader
                                             case "EAN":
                                                 if (_reader.Read())
                                                 {
-                                                    p.EAN = _reader.Value;
+                                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                    if (!p.EAN.Equals(_EANREPLACEMENT))
+                                                    {
+                                                        _eans.Add(p.EAN);
+                                                    }
                                                 }
                                                 break;
 
@@ -638,6 +653,10 @@ namespace ProductFeedReader
                                                 if (_reader.Read())
                                                 {
                                                     p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                    if (!p.EAN.Equals(_EANREPLACEMENT))
+                                                    {
+                                                        _eans.Add(p.EAN);
+                                                    }
                                                 }
                                                 break;
 
@@ -794,6 +813,10 @@ namespace ProductFeedReader
                                                 if (_reader.Read())
                                                 {
                                                     p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                    if (!p.EAN.Equals(_EANREPLACEMENT))
+                                                    {
+                                                        _eans.Add(p.EAN);
+                                                    }
                                                 }
                                                 break;
 
@@ -918,7 +941,7 @@ namespace ProductFeedReader
 
                     case _PRODUCTFEEDPATH + "\\Daisycon":
 
-                        #region Webgains
+                        #region Daisycon
 
                         filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
@@ -950,6 +973,10 @@ namespace ProductFeedReader
                                                 if (_reader.Read())
                                                 {
                                                     p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                    if (!p.EAN.Equals(_EANREPLACEMENT))
+                                                    {
+                                                        _eans.Add(p.EAN);
+                                                    }
                                                 }
                                                 break;
 
@@ -1064,7 +1091,7 @@ namespace ProductFeedReader
 
                     case _PRODUCTFEEDPATH + "\\Tradedoubler":
 
-                        #region Webgains
+                        #region Tradedoubler
 
                         filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
@@ -1096,6 +1123,10 @@ namespace ProductFeedReader
                                                 if (_reader.Read())
                                                 {
                                                     p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                    if (!p.EAN.Equals(_EANREPLACEMENT))
+                                                    {
+                                                        _eans.Add(p.EAN);
+                                                    }
                                                 }
                                                 break;
 
@@ -1225,7 +1256,7 @@ namespace ProductFeedReader
 
             _logger.WriteLine("Last scan: " + DateTime.Now.ToString("HH:mm:ss") + ".");
             _logger.WriteLine("Processing time: " + _sw.Elapsed);
-            _logger.WriteLine(_amountOfProducts + " products processed.");
+            _logger.WriteLine(_amountOfProducts + " products processed, of which at least " + _eans.Count + " are unique.");
             _logger.Close();
         }
 
