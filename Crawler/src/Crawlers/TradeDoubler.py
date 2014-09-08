@@ -9,10 +9,11 @@ import time
 import traceback
 import re
 from openpyxl import load_workbook
+from ConfigParser import SafeConfigParser
 
 class Crawler():
     
-    token = "DECB92C2AC1C31C9D9F592AF86F2A6C32D542B57"
+    token = ""
     
     log = logger.createLogger("TradeDoublerLogger", "TradeDoubler")
     
@@ -22,8 +23,12 @@ class Crawler():
     
     def main(self):
         start_time = time.time()
-        
         self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Starting with TradeDoubler")
+        
+        #Get token 
+        parser = SafeConfigParser()
+        parser.read('C:/Crawler/crawler.ini')
+        self.token = parser.get('TradeDoubler', 'token')
         
         #Add token to the url. This url links to a xml file that contains program data
         url = "http://api.tradedoubler.com/1.0/productFeeds.xml?token=%s" % self.token
@@ -70,17 +75,17 @@ class Crawler():
 
     #Downloads and saves the xml file under the correct name      
     def save(self):
-        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:/Product Feeds/TradeDoubler/" + self.name + ".xml")
+        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
         feedURL = "http://api.tradedoubler.com/1.0/productsUnlimited.xml;fid=%s?token=%s" % (self.feedId, self.token)
 
         #If the save failes, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
-            xmlFile.retrieve(feedURL, "C:/Product Feeds/TradeDoubler/" + self.name + ".xml")
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:/Product Feeds/TradeDoubler/" + self.name + ".xml")
+            xmlFile.retrieve(feedURL, "C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
         except:
             self.log.error(str(time.asctime( time.localtime(time.time()) ))+ ": " + traceback.format_exc())
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:/Product Feeds/TradeDoubler/" + self.name + ".xml")
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
         
         self.prevName = self.name    
         

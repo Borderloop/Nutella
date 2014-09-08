@@ -3,6 +3,7 @@ import urllib
 from CrawlerHelpScripts import logger
 import time
 import traceback
+from ConfigParser import SafeConfigParser
 
 class Crawler():
 
@@ -22,6 +23,13 @@ class Crawler():
         start_time = time.time()
         
         self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Starting with TradeTracker")
+        
+        #Get credentials
+        parser = SafeConfigParser()
+        parser.read('C:/Crawler/crawler.ini')
+        self.customerId = parser.get('TradeTracker', 'customerId')
+        self.key = parser.get('TradeTracker', 'key')
+        self.aid = parser.get('TradeTracker', 'aid')
         
         #Create client and authenticate
         client = suds.client.Client(self.url)
@@ -55,16 +63,16 @@ class Crawler():
         
     #Downloads and saves the xml file under the correct name      
     def save(self, campaignName, feedURL):
-        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
+        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:/Crawler/Product Feeds/TradeTracker/" + campaignName + ".xml")
         
         #If the save failes, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
-            xmlFile.retrieve(feedURL, "C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
+            xmlFile.retrieve(feedURL, "C:/Crawler/Product Feeds/TradeTracker/" + campaignName + ".xml")
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:/Crawler/Product Feeds/TradeTracker/" + campaignName + ".xml")
         except:
             self.log.error(str(time.asctime( time.localtime(time.time()) ))+ ": " + traceback.format_exc())
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:/Product Feeds/TradeTracker/" + campaignName + ".xml")
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:/Crawler/Product Feeds/TradeTracker/" + campaignName + ".xml")
         
         self.prevName = campaignName
                 
