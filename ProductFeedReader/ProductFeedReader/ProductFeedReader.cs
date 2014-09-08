@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Threading;
 
 namespace ProductFeedReader
 {
@@ -19,10 +20,20 @@ namespace ProductFeedReader
         private const string _PRODUCTFEEDPATH = @"C:\\Product Feeds";
 
         /// <summary>
-        /// A simple integer holding the count of products which do not have an EAN number. 
+        /// A standard string which contains the replacement value for bad EAN codes.
+        /// </summary>
+        private const string _EANREPLACEMENT = "";
+
+        /// <summary>
+        /// An integer used for storing the total amount of products.
         /// This is only used for logging/statistics.
         /// </summary>
-        private int _badEan;
+        private int _amountOfProducts;
+
+        /// <summary>
+        /// An XMLReader object for streaming xml data.
+        /// </summary>
+        private XmlReader _reader;
 
         /// <summary>
         /// A StreamWrites which writes log text to a .txt file.
@@ -35,13 +46,23 @@ namespace ProductFeedReader
         private Stopwatch _sw;
 
         /// <summary>
+        /// An integer to keep the amount of ticks, for sleeping.
+        /// </summary>
+        private int _tickCount;
+
+        /// <summary>
+        /// This integer represent the amount of ticks neccessary to sleep for 1 ms.
+        /// </summary>
+        private const int _SLEEPCOUNT = 50000;
+
+        /// <summary>
         /// Constructor for creating ProductFeedReader object.
         /// </summary>
         public ProductFeedReader()
         {
-             _badEan = 0;
-             _logger = new StreamWriter(@"C:\\Product Feeds\\log.txt");
+             _logger = new StreamWriter(@"C:\\Product Feeds\\log\\log-"+DateTime.Now.ToString("ddMMyy-HH-mm") + ".txt");
              _sw = new Stopwatch();
+            _tickCount = 0;           
         }
 
         /// <summary>
@@ -58,114 +79,352 @@ namespace ProductFeedReader
             string[] filePaths;
 
             //Loop through each
-            foreach(string dir in dirs)
+            foreach (string dir in dirs)
             {
                 //Process each by their own name.
-                switch(dir)
+                switch (dir)
                 {
-                        
-                        case _PRODUCTFEEDPATH+"\\TradeTracker":
-                        
+
+                    case _PRODUCTFEEDPATH + "\\TradeTracker":
+
                         #region TradeTracker
 
                         filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
-                       
-                            foreach (string file in filePaths)
-                            { 
-                                try
+
+                        foreach (string file in filePaths)
+                        {
+                            Console.Write("Started reading from: " + file + " ...");
+                            try
+                            {
+                                _reader = XmlReader.Create(file);
+                                Product p = null;
+                                while (_reader.Read())
                                 {
-                                    Console.Write("Started reading from: " + file + " ...");
-                                    products.AddRange(
-                                     (
-                                         from e in XDocument.Load(file).Root.Elements("product")
-                                         select new Product
-                                         {
-                                             Name = (string)e.Element("name"),
-                                             Url = (string)e.Element("URL"),
-                                             Image = (string)e.Element("images").Element("image"),
-                                             Description = (string)e.Element("description"),
-                                             Category = (string)e.Element("categories").Element("category"),
-                                             Price = (string)e.Element("price"),
-                                             Currency = (string)e.Element("price").Attribute("currency").Value,
-                                             DeliveryCost = SearchTradeTrackerProperty(e, "deliveryCost"),
-                                             DeliveryTime = SearchTradeTrackerProperty(e, "deliveryTime"),
-                                             EAN = SearchTradeTrackerProperty(e, "EAN"),
-                                             Stock = SearchTradeTrackerProperty(e, "stock"),
-                                             Brand = SearchTradeTrackerProperty(e, "brand"),
-                                             LastModified = "",
-                                             ValidUntil = "",
-                                             Affiliate = "TradeTracker",
-                                             FileName = file
-                                         }).ToList());
+                                    //Increment the tickcount
+                                    _tickCount++;
+
+                                    //Sleep everytime sleepcount is reached
+                                    if (_tickCount % _SLEEPCOUNT == 0)
+                                    {
+                                        Thread.Sleep(1);
+
+                                        //Set tickCount to 0 to save memory
+                                        _tickCount = 0;
+                                    }
+                                   
+                                    if (_reader.IsStartElement())
+                                    {
+                                        switch (_reader.Name)
+                                        {
+                                            case "product":
+                                                p = new Product();
+                                                break;
+
+                                            case "name":
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Name = _reader.Value;
+                                                    }
+                                                    break;
+
+                                            case "price":
+                                                    p.Currency = _reader.GetAttribute("currency");
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Price = _reader.Value;                                                       
+                                                    }
+                                                    break;
+
+                                            case "URL":
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Url = _reader.Value;
+                                                    }
+                                                    break;
+
+                                            case "image":
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Image = _reader.Value;
+                                                    }
+                                                    break;
+
+                                            case "description":
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Description = _reader.Value;
+                                                    }
+                                                    break;
+
+                                            case "category":
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Category = _reader.Value;
+                                                    }
+                                                    break;
+
+                                            case "property":
+                                                if (_reader.HasAttributes) { _reader.MoveToNextAttribute(); }
+                                                switch (_reader.Value)
+                                                {
+                                                    case "currency":
+                                                        if (_reader.Read())
+                                                        {
+                                                            _reader.Read();
+                                                            _reader.Read();
+                                                            p.Currency = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "EAN":
+                                                        if (_reader.Read())
+                                                        {
+                                                            _reader.Read();
+                                                            _reader.Read();
+                                                            p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                        }
+                                                        break;
+
+                                                    case "brand":
+                                                        if (_reader.Read())
+                                                        {
+                                                            _reader.Read();
+                                                            _reader.Read();
+                                                            p.Brand = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "deliveryCosts":
+                                                        if (_reader.Read())
+                                                        {
+                                                            _reader.Read();
+                                                            _reader.Read();
+                                                            p.DeliveryCost = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "stock":
+                                                        if (_reader.Read())
+                                                        {
+                                                            _reader.Read();
+                                                            _reader.Read();
+                                                            p.Stock = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "deliveryTime":
+                                                        if (_reader.Read())
+                                                        {
+                                                            _reader.Read();
+                                                            _reader.Read();
+                                                            p.DeliveryTime = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "SKU":
+                                                        if(_reader.Read())
+                                                        {
+                                                            _reader.Read();
+                                                            _reader.Read();
+                                                            p.SKU = _reader.Value;
+                                                        }
+                                                        break;
+                                                }
+                                                _reader.MoveToElement();
+                                                break;
+                                        }
+                                    }
+
+                                    if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        p.Affiliate = "TradeTracker";
+                                        p.FileName = file;
+                                        p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                        products.Add(p);
+                                    }
                                 }
-                                catch (XmlException xmle)
-                                {
-                                    _logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                                }
-                                catch (Exception e)
-                                {
-                                    _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
-                                }
-                                Console.WriteLine(" Done");
                             }
-                        
+                            catch (XmlException xmle)
+                            {
+                                _logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                            }
+                            Console.WriteLine(" Done");
+
+                            //Clear the productlist to solve RAM issues
+                            //In the next version, writing to the database will be done here.
+                            _amountOfProducts += products.Count;
+                            products.Clear();
+                        }
+
                         break;
 
-                        #endregion
-                        
+                        #endregion                       
 
-                        case _PRODUCTFEEDPATH+"\\Zanox":
+                    case _PRODUCTFEEDPATH + "\\Zanox":
 
                         #region Zanox
 
                         filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
-                       
-                            foreach (string file in filePaths)
+
+                        foreach (string file in filePaths)
+                        {
+                            Console.Write("Started reading from: " + file + " ...");
+                            try
                             {
-                                Console.Write("Started reading from: " + file + " ...");
-                                try
+                                _reader = XmlReader.Create(file);
+                                Product p = null;
+                                string lastUpdated = null;
+                                string currency = null;
+                                while (_reader.Read())
                                 {
-                                    XElement root = XDocument.Load(file).Root;
-                                    string currency = root.Element("dataHeader").Element("streamCurrency").Value;
-                                    string lastModified = root.Element("dataHeader").Element("lastUpdated").Value;
-                                    products.AddRange(
-                                     (
-                                         from e in root.Elements("data").Elements("record")
-                                         select new Product
-                                         {
-                                             Name = SearchZanoxColumn(e, "title"),
-                                             Url = SearchZanoxColumn(e, "url"),
-                                             Image = SearchZanoxColumn(e, "image"),
-                                             Description = SearchZanoxColumn(e, "description"),
-                                             Category = SearchZanoxColumn(e, "category"),
-                                             Price = SearchZanoxColumn(e, "price"),
-                                             Currency = currency,                                           
-                                             DeliveryCost = SearchZanoxColumn(e, "price_shipping"),
-                                             DeliveryTime = SearchZanoxColumn(e, "timetoship"),
-                                             EAN = SearchZanoxColumn(e, "ean"),
-                                             Stock = SearchZanoxColumn(e, "stock"),
-                                             Brand = "",
-                                             LastModified = lastModified,
-                                             ValidUntil = SearchZanoxColumn(e, "time"),
-                                             Affiliate = "Zanox",
-                                             FileName = file
-                                         }).ToList());
+                                    //Increment the tickcount
+                                    _tickCount++;
+
+                                    //Sleep everytime sleepcount is reached
+                                    if (_tickCount % _SLEEPCOUNT == 0)
+                                    {
+                                        Thread.Sleep(1);
+
+                                        //Set tickCount to 0 to save memory
+                                        _tickCount = 0;
+                                    }
+                                    if (_reader.IsStartElement())
+                                    {
+                                        switch (_reader.Name)
+                                        {
+                                            case "streamCurrency":
+                                                if (_reader.Read())
+                                                {
+                                                    currency = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "lastUpdated":
+                                                if (_reader.Read())
+                                                {
+                                                    lastUpdated = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "record":
+                                                p = new Product();
+                                                break;
+
+                                            case "column":
+                                                if (_reader.HasAttributes) { _reader.MoveToNextAttribute(); }
+                                                switch (_reader.Value)
+                                                {
+                                                    case "url":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.Url = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "title":
+                                                        if(_reader.Read())
+                                                        {
+                                                            p.Name = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "ean":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                        }
+                                                        break;
+
+                                                    case "price":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.Price = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "image":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.Image = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "category":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.Category = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "description":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.Description = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "price_shipping":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.DeliveryCost = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "stock":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.Stock = _reader.Value;
+                                                        }
+                                                        break;
+
+                                                    case "timetoship":
+                                                        if (_reader.Read())
+                                                        {
+                                                            p.DeliveryTime = _reader.Value;
+                                                        }
+                                                        break;                                                      
+                                                }
+                                                _reader.MoveToElement();
+                                                break;
+                                        }
+                                    }
+
+                                    if (_reader.Name.Equals("record") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        
+                                        p.Currency = currency;
+                                        p.LastModified = lastUpdated;
+                                        p.Affiliate = "Zanox";
+                                        p.FileName = file;
+                                        p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                        products.Add(p);
+                                    }
                                 }
-                                catch (XmlException xmle)
-                                {
-                                    _logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                                }
-                                catch (Exception e)
-                                {
-                                    _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
-                                }
-                                Console.WriteLine(" Done");
-                            }      
+                            }
+                            catch (XmlException xmle)
+                            {
+                                _logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                            }
+                            Console.WriteLine(" Done");
+
+                            //Clear the productlist to solve RAM issues
+                            //In the next version, writing to the database will be done here.
+                            _amountOfProducts += products.Count;
+                            products.Clear();
+                        }
                         break;
 
                         #endregion
-                        
-                        case _PRODUCTFEEDPATH + "\\Affilinet":
+
+                    case _PRODUCTFEEDPATH + "\\Affilinet":
 
                         #region Affilinet
 
@@ -176,30 +435,155 @@ namespace ProductFeedReader
                             Console.Write("Started reading from: " + file + " ...");
                             try
                             {
-                                XElement root = XDocument.Load(file).Root;
-                                products.AddRange(
-                                 (
-                                     from e in root.Elements("Product")
-                                     select new Product
-                                     {
-                                         Name = (string)e.Element("Details").Element("Title").Value,
-                                         Url = (string)e.Element("Deeplinks").Element("Product").Value,
-                                         Image = (string)e.Element("Images").Elements("Img").First().Value,
-                                         Description = (string)e.Element("Details").Element("Description").Value,
-                                         Category = (string)e.Element("CategoryPath").Element("ProductCategoryPath").Value,
-                                         Price = (string)e.Element("Price").Element("Price").Value,
-                                         Currency = (string)e.Element("Price").Element("CurrencySymbol").Value,                                      
-                                         DeliveryCost = (string)e.Element("Shipping").Element("Shipping").Value,
-                                         DeliveryTime = "",
-                                         EAN = Regex.IsMatch((string)e.Element("Details").Element("EAN").Value, @"^[0-9]{10,13}$") ? (string)e.Element("Details").Element("EAN").Value : "",
-                                         Stock = (string)e.Element("Properties").Elements("Property").FirstOrDefault(x => x.HasAttributes && x.Attribute("Title").Value == "STOCK") != null ? 
-                                                 (string)e.Element("Properties").Elements("Property").FirstOrDefault(x => x.HasAttributes && x.Attribute("Title").Value == "STOCK").Attribute("Text").Value : "",
-                                         Brand = (string)e.Element("Details").Element("Brand").Value,
-                                         LastModified = (string)e.Element("Date").Element("LastUpdate").Value,
-                                         ValidUntil = (string)e.Element("Date").Element("ValidTo").Value,
-                                         Affiliate = "Affilinet",
-                                         FileName = file
-                                     }).ToList());
+                                _reader = XmlReader.Create(file);
+                                Product p = null;
+                                while (_reader.Read())
+                                {
+                                    //Increment the tickcount
+                                    _tickCount++;
+
+                                    //Sleep everytime sleepcount is reached
+                                    if (_tickCount % _SLEEPCOUNT == 0)
+                                    {
+                                        Thread.Sleep(1);
+
+                                        //Set tickCount to 0 to save memory
+                                        _tickCount = 0;
+                                    }
+                                    if (_reader.IsStartElement())
+                                    {
+                                        switch (_reader.Name)
+                                        {
+                                            case "EAN":
+                                                if (_reader.Read())
+                                                {
+                                                    p.EAN = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "Title":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Name = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "Brand":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Brand = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "Price":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Price = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "CurrencySymbol":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Currency = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "ValidTo":
+                                                if (_reader.Read())
+                                                {
+                                                    p.ValidUntil = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "Deeplinks":
+                                                if (_reader.Read())
+                                                {
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Url = _reader.Value;
+                                                    }
+
+                                                    //Read again twice to avoid double products because some genius made the xml file have two Product elements...
+                                                    _reader.Read();
+                                                    _reader.Read();
+                                                }
+                                                break;
+
+                                            case "Images":
+                                                if (_reader.Read())
+                                                {
+                                                    _reader.ReadToFollowing("URL");
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.Image = _reader.Value;
+                                                    }
+                                                }
+                                                break;
+
+                                            case "ProductCategoryPath":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Category = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "Description":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Description = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "LastUpdate":
+                                                if (_reader.Read())
+                                                {
+                                                    p.LastModified = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "Shipping":
+                                                if (_reader.Read())
+                                                {
+                                                    _reader.ReadToFollowing("Shipping");
+                                                    if (_reader.Read())
+                                                    {
+                                                        p.DeliveryCost = _reader.Value;
+                                                    }
+                                                }
+                                                break;
+
+                                            case "Properties":
+                                                if (_reader.Read())
+                                                {
+                                                    while(!(_reader.Name.Equals("Properties") && _reader.NodeType == XmlNodeType.EndElement))
+                                                    {                                                      
+                                                        if(_reader.HasAttributes && _reader["Title"].Equals("STOCK"))
+                                                        {
+                                                            break;
+                                                        }
+
+                                                        _reader.Read();
+                                                       
+                                                    }
+                                                    p.Stock = _reader["Text"] ?? "";
+                                                }
+                                                break;                                                  
+
+                                            case "Product":                                               
+                                                p = new Product();
+                                                break;
+                                        }
+                                    }
+
+                                    if (_reader.Name.Equals("Product") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        p.Affiliate = "Affilinet";
+                                        p.FileName = file;
+                                        p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                        products.Add(p);
+                                    }
+                                }
                             }
                             catch (XmlException xmle)
                             {
@@ -210,12 +594,17 @@ namespace ProductFeedReader
                                 _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                             }
                             Console.WriteLine(" Done");
+
+                            //Clear the productlist to solve RAM issues
+                            //In the next version, writing to the database will be done here.
+                            _amountOfProducts += products.Count;
+                            products.Clear();
                         }
                         break;
 
                         #endregion
-                        
-                        case _PRODUCTFEEDPATH + "\\Belboon":
+
+                    case _PRODUCTFEEDPATH + "\\Belboon":
 
                         #region Belboon
 
@@ -226,29 +615,130 @@ namespace ProductFeedReader
                             Console.Write("Started reading from: " + file + " ...");
                             try
                             {
-                                XElement root = XDocument.Load(file).Root;
-                                products.AddRange(
-                                 (
-                                     from e in root.Elements("product")
-                                     select new Product
-                                     {
-                                         Name = (string)e.Element("productname").Value,
-                                         Url = (string)e.Element("deeplinkurl").Value,
-                                         Image = (string)e.Element("imagesmallurl").Value,
-                                         Description = (string)e.Element("productdescriptionslong").Value,
-                                         Category = (string)e.Element("productcategory").Value,
-                                         Price = (string)e.Element("currentprice").Value,
-                                         Currency = (string)e.Element("currency").Value,                                       
-                                         DeliveryCost = (string)e.Element("shipping").Value,
-                                         DeliveryTime = "",
-                                         EAN = Regex.IsMatch((string)e.Element("ean").Value, @"^[0-9]{10,13}$") ? (string)e.Element("ean").Value : "",
-                                         Stock = (string)e.Element("availability").Value,
-                                         Brand = (string)e.Element("brandname").Value,
-                                         LastModified = (string)e.Element("lastupdate").Value,
-                                         ValidUntil = (string)e.Element("validuntil").Value,
-                                         Affiliate = "Belboon",
-                                         FileName = file
-                                     }).ToList());
+                                _reader = XmlReader.Create(file);
+                                Product p = null;
+                                while (_reader.Read())
+                                {
+                                    //Increment the tickcount
+                                    _tickCount++;
+
+                                    //Sleep everytime sleepcount is reached
+                                    if (_tickCount % _SLEEPCOUNT == 0)
+                                    {
+                                        Thread.Sleep(1);
+
+                                        //Set tickCount to 0 to save memory
+                                        _tickCount = 0;
+                                    }
+                                    if(_reader.IsStartElement())
+                                    {
+                                        switch(_reader.Name)
+                                        {
+                                            case "ean":
+                                                if (_reader.Read())
+                                                {
+                                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                }
+                                                break;
+
+                                            case "productname":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Name = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "brandname":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Brand = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "currentprice":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Price = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "currency":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Currency = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "validuntil":
+                                                if (_reader.Read())
+                                                {
+                                                    p.ValidUntil = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "deeplinkurl":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Url = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "imagesmallurl":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Image = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "productcategory":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Category = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "productdescriptionslong":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Description = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "lastupdate":
+                                                if (_reader.Read())
+                                                {
+                                                    p.LastModified = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "shipping":
+                                                if (_reader.Read())
+                                                {
+                                                    p.DeliveryCost = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "availability":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Stock = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "product":
+                                                p = new Product();
+                                                break;
+                                        }
+                                    }
+
+                                    if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        p.Affiliate = "Belboon";
+                                        p.FileName = file;
+                                        p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                        products.Add(p);
+                                    }
+                                }
                             }
                             catch (XmlException xmle)
                             {
@@ -259,72 +749,483 @@ namespace ProductFeedReader
                                 _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                             }
                             Console.WriteLine(" Done");
+
+                            //Clear the productlist to solve RAM issues
+                            //In the next version, writing to the database will be done here.
+                            _amountOfProducts += products.Count;
+                            products.Clear();
+
                         }
                         break;
 
-                        #endregion
+                        #endregion    
+                  
+                    case _PRODUCTFEEDPATH + "\\Webgains":
 
-                        default: break;
+                        #region Webgains
+
+                        filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
+
+                        foreach (string file in filePaths)
+                        {
+                            Console.Write("Started reading from: " + file + " ...");
+                            try
+                            {
+                                _reader = XmlReader.Create(file);
+                                Product p = null;
+                                while (_reader.Read())
+                                {
+                                    //Increment the tickcount
+                                    _tickCount++;
+
+                                    //Sleep everytime sleepcount is reached
+                                    if (_tickCount % _SLEEPCOUNT == 0)
+                                    {
+                                        Thread.Sleep(1);
+
+                                        //Set tickCount to 0 to save memory
+                                        _tickCount = 0;
+                                    }
+                                    if (_reader.IsStartElement())
+                                    {
+                                        switch (_reader.Name)
+                                        {
+                                            case "european_article_number":
+                                                if (_reader.Read())
+                                                {
+                                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                }
+                                                break;
+
+                                            case "product_name":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Name = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "brand":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Brand = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "price":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Price = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "currency":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Currency = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "validuntil":
+                                                if (_reader.Read())
+                                                {
+                                                    p.ValidUntil = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "deeplink":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Url = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "image_url":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Image = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "category":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Category = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "description":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Description = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "last_updated":
+                                                if (_reader.Read())
+                                                {
+                                                    p.LastModified = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "delivery_cost":
+                                                if (_reader.Read())
+                                                {
+                                                    p.DeliveryCost = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "delivery_period":
+                                                if (_reader.Read())
+                                                {
+                                                    p.DeliveryTime = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "product":
+                                                p = new Product();
+                                                break;
+                                        }
+                                    }
+
+                                    if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        p.Affiliate = "Webgains";
+                                        p.FileName = file;
+                                        p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                        products.Add(p);
+                                    }
+                                }
+                            }
+                            catch (XmlException xmle)
+                            {
+                                _logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                            }
+                            Console.WriteLine(" Done");
+
+                            //Clear the productlist to solve RAM issues
+                            //In the next version, writing to the database will be done here.
+                            _amountOfProducts += products.Count;
+                            products.Clear();
+
+                        }
+                        break;
+
+                        #endregion  
+
+                    case _PRODUCTFEEDPATH + "\\Daisycon":
+
+                        #region Webgains
+
+                        filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
+
+                        foreach (string file in filePaths)
+                        {
+                            Console.Write("Started reading from: " + file + " ...");
+                            try
+                            {
+                                _reader = XmlReader.Create(file);
+                                Product p = null;
+                                while (_reader.Read())
+                                {
+                                    //Increment the tickcount
+                                    _tickCount++;
+
+                                    //Sleep everytime sleepcount is reached
+                                    if (_tickCount % _SLEEPCOUNT == 0)
+                                    {
+                                        Thread.Sleep(1);
+
+                                        //Set tickCount to 0 to save memory
+                                        _tickCount = 0;
+                                    }
+                                    if (_reader.IsStartElement())
+                                    {
+                                        switch (_reader.Name)
+                                        {
+                                            case "ean_code":
+                                                if (_reader.Read())
+                                                {
+                                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                }
+                                                break;
+
+                                            case "title":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Name = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "brand":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Brand = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "minimum_price":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Price = _reader.Value;
+                                                }
+                                                break;                                            
+
+                                            case "link":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Url = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "img_medium":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Image = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "category":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Category = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "description":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Description = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "shipping_cost":
+                                            case "shippingcosts":
+                                                if (_reader.Read())
+                                                {
+                                                    p.DeliveryCost = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "shipping_duration":
+                                                if (_reader.Read())
+                                                {
+                                                    p.DeliveryTime = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "stock":
+                                            case "shipping_duration_descr":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Stock = _reader.Value;
+                                                }
+                                                break;
+
+
+                                            case "item":
+                                                p = new Product();
+                                                break;
+                                        }
+                                    }
+
+                                    if (_reader.Name.Equals("item") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        p.Currency = "EUR";
+                                        p.Affiliate = "Daisycon";
+                                        p.FileName = file;
+                                        p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                        products.Add(p);
+                                    }
+                                }
+                            }
+                            catch (XmlException xmle)
+                            {
+                                _logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                            }
+                            Console.WriteLine(" Done");
+
+                            //Clear the productlist to solve RAM issues
+                            //In the next version, writing to the database will be done here.
+                            _amountOfProducts += products.Count;
+                            products.Clear();
+
+                        }
+                        break;
+
+                        #endregion  
+
+                    case _PRODUCTFEEDPATH + "\\Tradedoubler":
+
+                        #region Webgains
+
+                        filePaths = ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
+
+                        foreach (string file in filePaths)
+                        {
+                            Console.Write("Started reading from: " + file + " ...");
+                            try
+                            {
+                                _reader = XmlReader.Create(file);
+                                Product p = null;
+                                while (_reader.Read())
+                                {
+                                    //Increment the tickcount
+                                    _tickCount++;
+
+                                    //Sleep everytime sleepcount is reached
+                                    if (_tickCount % _SLEEPCOUNT == 0)
+                                    {
+                                        Thread.Sleep(1);
+
+                                        //Set tickCount to 0 to save memory
+                                        _tickCount = 0;
+                                    }
+                                    if (_reader.IsStartElement())
+                                    {
+                                        switch (_reader.Name)
+                                        {
+                                            case "ean":
+                                                if (_reader.Read())
+                                                {
+                                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : _EANREPLACEMENT;
+                                                }
+                                                break;
+
+                                            case "name":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Name = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "brand":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Brand = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "price":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Price = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "currency":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Currency = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "productUrl":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Url = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "imageUrl":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Image = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "TDCategoryName":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Category = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "description":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Description = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "shippingCost":
+                                                if (_reader.Read())
+                                                {
+                                                    p.DeliveryCost = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "deliveryTime":
+                                                if (_reader.Read())
+                                                {
+                                                    p.DeliveryTime = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "inStock":
+                                                if (_reader.Read())
+                                                {
+                                                    p.Stock = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "sku":
+                                                if (_reader.Read())
+                                                {
+                                                    p.SKU = _reader.Value;
+                                                }
+                                                break;
+
+                                            case "product":
+                                                p = new Product();
+                                                break;
+                                        }
+                                    }
+
+                                    if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
+                                    {
+                                        p.Affiliate = "Tradedoubler";
+                                        p.FileName = file;
+                                        p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                        products.Add(p);
+                                    }
+                                }
+                            }
+                            catch (XmlException xmle)
+                            {
+                                _logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                            }
+                            Console.WriteLine(" Done");
+
+                            //Clear the productlist to solve RAM issues
+                            //In the next version, writing to the database will be done here.
+                            _amountOfProducts += products.Count;
+                            products.Clear();
+
+                        }
+                        break;
+
+                        #endregion  
+                    default: break;
                 }
             }
-
-            /*
-            #region EAN Filter
-            ///First version of algortihm for creating null-products
-            ///It will compare all EAN numbers to all other EAN numbers, read their product names, split those in words and see if these words
-            ///match other products too.
-
-            //First, sort the list
-            List<Product> sortedOnEan = products.OrderBy(p => p.EAN).ToList();
-
-            //Create a new list without bad EANs
-            List<Product> EANList = new List<Product>();
-            foreach(Product p in sortedOnEan)
-            {
-                if(!p.EAN.Trim().Equals(""))
-                {
-                    EANList.Add(p);
-                }
-            }
-
-            //Create a new list with only 1 EAN code and a union of the words in the names of the products
-            List<Product> combinedList = new List<Product>();
-            int count = 0;
-            foreach(Product p in EANList)
-            {
-                if(p.Equals(EANList.First()))
-                {
-                    combinedList.Add(p);
-                    count++;
-                }
-
-                if (p.EAN.Equals(combinedList[count-1].EAN))
-                {
-                    string similars = GetSimilarWords(p.Name, combinedList[count - 1].Name);
-                    if (similars.Equals("") || similars.Split(null).Length < 4)
-                    {
-                        combinedList[count - 1].Name = p.Name.Length < combinedList[count - 1].Name.Length ? p.Name : combinedList[count - 1].Name;
-                    }
-                    else
-                    {
-                        combinedList[count - 1].Name = similars;
-                    }
-                }
-                else
-                {
-                    combinedList.Add(p);
-                    count++;
-                }
-            }
-
-            #endregion         
-            */
+       
             _sw.Stop();
-            Console.WriteLine("Processing time: " + _sw.Elapsed);
 
             _logger.WriteLine("Last scan: " + DateTime.Now.ToString("HH:mm:ss") + ".");
             _logger.WriteLine("Processing time: " + _sw.Elapsed);
-            _logger.WriteLine(products.Count + " products processed.");
+            _logger.WriteLine(_amountOfProducts + " products processed.");
             _logger.Close();
         }
 
@@ -338,78 +1239,7 @@ namespace ProductFeedReader
             Array.Resize<string>(ref x, x.Length + y.Length);
             Array.Copy(y, 0, x, oldLen, y.Length);
             return x;
-        }
-
-        public string GetSimilarWords(string x, string y)
-        {
-            string sim = "";          
-
-            //Split both strings over whitespaces
-            string[] xSplit = x.Split(null);
-            string[] ySplit = y.Split(null);
-
-            //Convert all trings to lowercase
-            string[] xLower = xSplit.Select(s => s.ToLower()).ToArray();
-            string[] yLower = ySplit.Select(s => s.ToLower()).ToArray();
-
-            //Create new string array to store similarities
-            string[] simArr = new string[Math.Max(xSplit.Length, ySplit.Length)];
-            int wordCount = 0;
-            for (int i = 0; i < xLower.Length; i++)
-            {
-                for (int j = 0; j < yLower.Length; j++)
-                {
-                    if (xLower[i].Equals(yLower[j]))
-                    {
-                        //Use xSplit so remain capital letters
-                        simArr[wordCount] = xSplit[i]; //Or ySplit[j], they are the same.
-                        wordCount++;
-                        break;
-                    }
-                }
-            }
-
-            //Concatinate all the strings in simArr with whiteSpaces.
-            foreach(string s in simArr)
-            {
-                sim += s + " ";
-            }
-
-            //Trim for sure
-            return sim.Trim(); ;
-        }
-
-       
-        public string SearchTradeTrackerProperty(XElement e, string propname)
-        {
-            XElement element = e.Element("properties").Elements("property").FirstOrDefault(x => x.HasAttributes && x.Attribute("name").Value == propname);
-            if(element != null && propname.Equals("EAN"))
-            {
-                if(!Regex.IsMatch(element.Value, @"^[0-9]{10,13}$"))
-                {
-                    return "";
-                }
-            }
-            return element != null ? element.Value : "";
-        }
-
-        public string SearchZanoxColumn(XElement e, string colname)
-        {
-            XElement element = e.Elements("column").FirstOrDefault(x => x.HasAttributes && x.Attribute("name").Value == colname);
-            if (element == null && colname.Equals("ean"))
-            {
-                _badEan++;
-            }
-            if (element != null && colname.Equals("ean"))
-            {
-                if (!Regex.IsMatch(element.Value, @"^[0-9]{10,13}$"))
-                {
-                    return "";
-                }
-            }
-            return element != null ? element.Value : "";
-        }
-
+        }     
 
         #endregion
     }
