@@ -54,8 +54,8 @@ namespace ProductFeedReader
 
             // If checkCategory() returns true, the record category matches with one of the 
             // Borderloop category tree. Continue with the brand check.
+
             Debug.WriteLine("Category check succes, continuing brand check");
-            Boolean brandCheck = checkBrand();
 
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
@@ -91,7 +91,7 @@ namespace ProductFeedReader
 
             Record.Affiliate = "TradeTracker";
             Record.Brand = "Apple";
-            Record.Category = "Gamen";
+            Record.Category = "Computer";
             Record.DeliveryCost = "3.00";
             Record.DeliveryTime = "1 dat";
             Record.Description = "The new Iphone";
