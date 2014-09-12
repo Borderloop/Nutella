@@ -57,7 +57,8 @@ namespace ProductFeedReader
             _productFeedPath = _settings["productfeedpath"];
             _logPath = _settings["logpath"];
 
-            Util.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");   
+            Util.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+            Util.SleepCount = Int32.Parse(_settings["sleepcount"]);
 
             _db = new Database();
 
