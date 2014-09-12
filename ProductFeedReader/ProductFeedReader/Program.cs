@@ -16,8 +16,11 @@ namespace ProductFeedReader
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            ProductFeedReader pfr = new ProductFeedReader();
-            pfr.Start();
+            //ProductFeedReader pfr = new ProductFeedReader();
+            //pfr.Start();
+            Test test = new Test();
+            test.Start();
+            
         }
 
     }

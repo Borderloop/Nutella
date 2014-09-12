@@ -5,3 +5,9 @@ C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\D
 C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.csprojResolveAssemblyReference.cache
 C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.exe
 C:\Users\Dion\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.pdb
+C:\Users\Marnik\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.exe.config
+C:\Users\Marnik\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.exe
+C:\Users\Marnik\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.pdb
+C:\Users\Marnik\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\obj\Debug\ProductFeedReader.csprojResolveAssemblyReference.cache
+C:\Users\Marnik\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.exe
+C:\Users\Marnik\Documents\GitHub\Nutella\ProductFeedReader\ProductFeedReader\bin\Debug\ProductFeedReader.pdb
