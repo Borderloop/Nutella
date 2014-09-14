@@ -19,13 +19,20 @@ namespace ProductFeedReader
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+
+            //ProductFeedReader pfr = new ProductFeedReader();
+            //pfr.Start();
+            BOB BOB = new BOB();
+            BOB.Process();
+            
+            
             //Create threads
-            t1 = new Thread(new ThreadStart(ProductFeedReader));
-            t2 = new Thread(new ThreadStart(ProductDequeuer));
+            //t1 = new Thread(new ThreadStart(ProductFeedReader));
+            //t2 = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            t1.Start();
-            t2.Start();
+            //t1.Start();
+            //t2.Start();
         }
 
         static void ProductDequeuer()

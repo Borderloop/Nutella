@@ -58,6 +58,21 @@ namespace ProductFeedReader
             _cmd.ExecuteNonQuery();
         }
 
+        public DataTable GetCategories()
+        {
+            string query = "SELECT * FROM category";
+            DataTable dt = Read(query);
+
+            return dt;
+        }
+        public DataTable GetCategorySynonyms()
+        {
+            string query = "SELECT * FROM category_synonyms";
+            DataTable dt = Read(query);
+
+            return dt;
+        }
+
         public void Close()
         {
             _conn.Close();
