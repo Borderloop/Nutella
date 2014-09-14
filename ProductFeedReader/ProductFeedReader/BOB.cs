@@ -8,7 +8,11 @@ namespace ProductFeedReader
 {
     public class BOB
     {
-        public BOB() { }
+        private Database _db;
+        public BOB() 
+        {
+            _db = new Database();
+        }
         public void Process(Product p)
         {}        
     }

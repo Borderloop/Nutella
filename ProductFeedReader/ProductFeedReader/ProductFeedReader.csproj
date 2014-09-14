@@ -62,7 +62,6 @@
     <Compile Include="ProductQueue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reader.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
