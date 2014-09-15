@@ -50,6 +50,7 @@ namespace ProductFeedReader
             //If the first check does not go well, check for the ean.
             if (!p.EAN.Equals("") && !p.SKU.Equals("") && (_matchedArticleID = checkEAN(p.EAN)) != -1)
             {
+                //Check for a partial SKU match
                 if((_matchedArticleID = checkPartialSKU(p.SKU)) != -1)
                 {
                     //We have an EAN and a partial SKU, enough for the database
@@ -178,28 +179,60 @@ namespace ProductFeedReader
             return (categoryMatch || categorySynonymMatch);
         }
 
+        /// <summary>
+        /// This method will add the missing data to the product and then store it in the database
+        /// </summary>
+        /// <param name="p">The product</param>
         public void AddMissingData(Product p)
         {
             //To be implemented.
         }
 
+        /// <summary>
+        /// This method is used to check if the given SKU exists in the database. If so, it will return
+        /// the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="sku">The SKU that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
         private int checkSKU(string sku)
         {
+            //Return the article number, or -1 otherwise
             return Database.Instance.GetArticleNumberOfSKU(sku);
         }
 
+        /// <summary>
+        /// This method is used to check if the given SKU partially exists in the database. If so, it 
+        /// will return the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="sku">The partial SKU that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
         private int checkPartialSKU(string sku)
         {
+            //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumberOfPartialSKU(sku);
         }
 
+        /// <summary>
+        /// This method is used to check if the given eAN exists in the database. If so, it will return
+        /// the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="ean">The EAN that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
         private int checkEAN(string ean)
         {
+            //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumberOfEAN(ean);
         }
 
+        /// <summary>
+        /// This method is used to check if the given title exists in the database. If so, it will return
+        /// the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="title">The title that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
         private int checkTitle(string title)
         {
+            //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumberOfTitle(title);
         }
     }
