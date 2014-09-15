@@ -37,19 +37,20 @@ namespace ProductFeedReader
 
         private void Initialize()
         {
-
-            Util.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");   
+/*
+            Statics.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");   
 
             //Get all the settings from the INI-file
-            //_ini = new INIFile("C:\\Product Feeds\\settings\\pfr.ini");
-            //_settings = _ini.GetAllValues();
+            _ini = new INIFile("C:\\Product Feeds\\settings\\pfr.ini");
+            _settings = _ini.GetAllValues();
 
             //Read settings
-            //_productFeedPath = _settings["productfeedpath"];
-            //_logPath = _settings["logpath"];
+            _productFeedPath = _settings["productfeedpath"];
+            _logPath = _settings["logpath"];
 
-            //Util.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
-            //Util.SleepCount = Int32.Parse(_settings["sleepcount"]);
+            Statics.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+            Statics.SleepCount = Int32.Parse(_settings["sleepcount"]);
+ */
 
             isDone = false;          
         }
@@ -59,7 +60,7 @@ namespace ProductFeedReader
         /// </summary>
         public void Start()
         {
-            Util.Logger.StartStopwatch();
+            Statics.Logger.StartStopwatch();
                   
             //Get all the directories in the productfeed folder.
             string[] dirs = Directory.GetDirectories(_productFeedPath);
@@ -74,7 +75,7 @@ namespace ProductFeedReader
                     AffiliateBase af = (AffiliateBase)type.GetConstructor(Type.EmptyTypes).Invoke(null);
                     foreach (List<Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
                     {
-                        Util.Logger.AddStats(products);
+                        Statics.Logger.AddStats(products);
                         foreach(Product p in products)
                         {
                             ProductQueue.Enqueue(p);
@@ -86,7 +87,7 @@ namespace ProductFeedReader
             Console.WriteLine("Connection closed.");
 
             Console.WriteLine("Writing data to logfile...");
-            Util.Logger.Close();
+            Statics.Logger.Close();
             Console.WriteLine("Done.");
             isDone = true;
         }

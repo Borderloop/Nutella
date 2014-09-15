@@ -37,15 +37,15 @@ namespace ProductFeedReader.Affiliates
                     while (_reader.Read())
                     {
                         //Increment the tickcount
-                        Util.TickCount++;
+                        Statics.TickCount++;
 
                         //Sleep everytime sleepcount is reached
-                        if (Util.TickCount % Util.SleepCount == 0)
+                        if (Statics.TickCount % Statics.SleepCount == 0)
                         {
                             Thread.Sleep(1);
 
                             //Set tickCount to 0 to save memory
-                            Util.TickCount = 0;
+                            Statics.TickCount = 0;
                         }
 
                         if (_reader.IsStartElement())
@@ -163,11 +163,11 @@ namespace ProductFeedReader.Affiliates
                 }
                 catch (XmlException xmle)
                 {
-                    Util.Logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                    Statics.Logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
                 }
                 catch (Exception e)
                 {
-                    Util.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                    Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                 }
                 Console.WriteLine(" Done");
                 yield return products;

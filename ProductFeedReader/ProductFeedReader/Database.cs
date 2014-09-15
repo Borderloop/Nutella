@@ -13,7 +13,21 @@ namespace ProductFeedReader
         private MySqlConnection _conn;
         private MySqlCommand _cmd;
 
-        public Database() { }
+        private static Database _instance;
+
+        private Database() { }
+
+        public static Database Instance
+        {
+            get
+            {
+                if(_instance == null)
+                {
+                    _instance = new Database();
+                }
+                return _instance;
+            }
+        }
 
         public void Connect(string conStr)
         {
