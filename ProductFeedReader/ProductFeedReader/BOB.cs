@@ -37,25 +37,35 @@ namespace ProductFeedReader
 
         public void Process(Product p = null)
         {
+            //First test - EAN/SKU match and perfect title matching.
+
             //If checkSKU() return true, the record matches with a product in the database and its data
             //can be added to the product. It is done then.
-            if ((_matchedArticleID = checkSKU(p.SKU)) != -1)
+            if (!p.SKU.Equals("") && (_matchedArticleID = checkSKU(p.SKU)) != -1)
             {
-                //Add missing data-piece comes here.             
+                //The product has an SKU and it's a match.
+                AddMissingData(p);     
             }
 
             //If the first check does not go well, check for the ean.
-            if (!p.SKU.Equals("") && (_matchedArticleID = checkEAN(p.EAN)) != -1)
+            if (!p.EAN.Equals("") && !p.SKU.Equals("") && (_matchedArticleID = checkEAN(p.EAN)) != -1)
             {
-                //Perform a partial match of the SKU
+                if((_matchedArticleID = checkPartialSKU(p.SKU)) != -1)
+                {
+                    //We have an EAN and a partial SKU, enough for the database
+                    AddMissingData(p);     
+                }
             }
 
             //The product has no valid EAN and no valid SKU, therefore we will match titles.
             if ((_matchedArticleID = checkTitle(p.Name)) != -1)
             {
                 //We found a perfect title match. Awesome!
-                //Add missing data-piece comes here.
+                AddMissingData(p);     
             }
+
+            //Product did not pass the first few tests - category test is up next.
+
 
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
@@ -166,6 +176,11 @@ namespace ProductFeedReader
 
             // If categoryMatch or categorySynonymMatch equals true, a match is found.
             return (categoryMatch || categorySynonymMatch);
+        }
+
+        public void AddMissingData(Product p)
+        {
+            //To be implemented.
         }
 
         private int checkSKU(string sku)
