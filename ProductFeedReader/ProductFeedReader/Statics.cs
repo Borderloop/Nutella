@@ -8,10 +8,12 @@ namespace ProductFeedReader
 {
     public class Statics
     {
-        public static int TickCount = 0;
+        public static int TickCount;
 
-        public static int SleepCount = 500000;
+        public static int TicksUntilSleep;
 
         public static Logger Logger;
+
+        public static Dictionary<string,string> settings;
     }
 }
