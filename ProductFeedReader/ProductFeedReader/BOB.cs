@@ -9,18 +9,7 @@ using System.Data;
 namespace ProductFeedReader
 {
     public class BOB
-    {       
-
-        /// <summary>
-        /// File that contains settings of the ProductFeedReader.
-        /// </summary>
-        private INIFile _ini;
-
-        /// <summary>
-        /// Contains database login credentials.
-        /// </summary>
-        private Dictionary<string, string> _settings;
-
+    {      
         /// <summary>
         /// The Product contains the data from the Record.
         /// </summary>
@@ -45,7 +34,7 @@ namespace ProductFeedReader
         {           
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
-            if (checkCategory() == false)
+            if (checkCategory())
             {
                 Debug.WriteLine("Sending record to residue due to category check fail");
                 return;
@@ -58,7 +47,7 @@ namespace ProductFeedReader
 
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
-            if (checkBrand() == false)
+            if (checkBrand())
             {
                 Debug.WriteLine("Sending record to residue due to missing brand");
                 return;
@@ -76,10 +65,6 @@ namespace ProductFeedReader
         private void Initialize()
         {
             Record = new Product();
-
-            // Get all the settings from the INI-file
-            _ini = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\pfr.ini");
-            _settings = _ini.GetAllValues();
 
             // Open the connection with the database
             OpenDatabaseConnection();
@@ -114,7 +99,7 @@ namespace ProductFeedReader
             try
             {
                 //Open the database connection. The program should stop if this fails.
-                Database.Instance.Connect(_settings["dbsource"], _settings["dbname"], _settings["dbuid"], _settings["dbpw"]);
+                Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
             }
             catch (Exception e)
             {
