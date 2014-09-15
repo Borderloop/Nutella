@@ -9,7 +9,7 @@ using System.Data;
 namespace ProductFeedReader
 {
     public class BOB
-    {
+    {       
         /// <summary>
         /// The Database object containing methods to write articles to, and select data from the database.
         /// </summary>
@@ -39,6 +39,11 @@ namespace ProductFeedReader
         /// Contains all the category synonyms for the Borderloop category tree.
         /// </summary>
         private DataTable CategorySynonyms;
+		
+		public BOB() 
+        {
+            _db = new Database();
+        }
 
         public void Process(Product p = null)
         {
@@ -171,6 +176,5 @@ namespace ProductFeedReader
                 return false;
             }
         }
-        
     }
 }
