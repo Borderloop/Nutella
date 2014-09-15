@@ -11,29 +11,27 @@ namespace ProductFeedReader
 {
     class Program
     {
-        public static Thread t1;
-        public static Thread t2;
+        public static Thread producer;
+        public static Thread consumer;
         /// <summary>
         /// Main method will only start the ProductFeedReader
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            
-
-            //ProductFeedReader pfr = new ProductFeedReader();
-            //pfr.Start();
-            BOB BOB = new BOB();
-            BOB.Process();
-            
-            
+            //Initialize
+            Initialize();
+                       
             //Create threads
-            //t1 = new Thread(new ThreadStart(ProductFeedReader));
-            //t2 = new Thread(new ThreadStart(ProductDequeuer));
+            producer = new Thread(new ThreadStart(ProductFeedReader));
+            consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            //t1.Start();
-            //t2.Start();
+            producer.Start();
+            consumer.Start();
+
+            //Finalize and close the program.
+            FinalizeAndClose();
         }
 
         static void ProductDequeuer()
@@ -65,9 +63,17 @@ namespace ProductFeedReader
             //Initialize all the values for the static variables in the Statics class. These
             //variables are used throughout the whole program.
             Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
-            Statics.Logger = new Logger(Statics.settings["logpath"]);
+            Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
             Statics.TickCount = 0;
             Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);            
+        }
+
+        static void FinalizeAndClose()
+        {
+            Console.WriteLine("Writing data to logfile...");
+            Statics.Logger.Close();
+            Console.WriteLine("Done.");
+            Environment.Exit(1);
         }
 
     }

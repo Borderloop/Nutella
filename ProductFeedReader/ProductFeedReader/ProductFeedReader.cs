@@ -21,10 +21,8 @@ namespace ProductFeedReader
         private string _productFeedPath;
 
         /// <summary>
-        /// PAth where logfiles are to be written.
+        /// This flag is used to singal other threads that this thread is done.
         /// </summary>
-        private string _logPath;
-
         public static bool isDone;
 
         /// <summary>
@@ -35,6 +33,9 @@ namespace ProductFeedReader
             Initialize();
         }
 
+        /// <summary>
+        /// Initialize() will set up all variables that are needed in this class
+        /// </summary>
         private void Initialize()
         {
             //Read settings
@@ -47,6 +48,7 @@ namespace ProductFeedReader
         /// </summary>
         public void Start()
         {
+            //Start the stopwatch for time measuring
             Statics.Logger.StartStopwatch();
                   
             //Get all the directories in the productfeed folder.
@@ -54,15 +56,29 @@ namespace ProductFeedReader
 
             Console.WriteLine("Started reading files...");
 
+            //To read all the data from the affiliates, we simply loop through all the classes which are a
+            //subclass of AffiliateBase. These classes have references to their data file storage and contain
+            //methods which contain the structure of the XML files.
+
+            //Get all types in the assembly
             Type[] types = Assembly.GetExecutingAssembly().GetTypes();
+
+            //Loop through each type
             foreach(Type type in types)
             {
+                //If a type is a subclass of AffiliateBase, select it.
                 if(type.IsSubclassOf(typeof(AffiliateBase)))
                 {
+                    //Create an instance of the subclass by invoking the constructor.
                     AffiliateBase af = (AffiliateBase)type.GetConstructor(Type.EmptyTypes).Invoke(null);
+
+                    //Invoke ReadFromDir() and read all products
                     foreach (List<Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
                     {
+                        //Save some data to the logger for statistics.
                         Statics.Logger.AddStats(products);
+
+                        //Push all the products to the queue so BOB can process them.
                         foreach(Product p in products)
                         {
                             ProductQueue.Enqueue(p);
@@ -70,12 +86,9 @@ namespace ProductFeedReader
                     }
                 }
             }            
-
             Console.WriteLine("Connection closed.");
 
-            Console.WriteLine("Writing data to logfile...");
-            Statics.Logger.Close();
-            Console.WriteLine("Done.");
+            //Flag the boolean to be true when finished.
             isDone = true;
         }
     }
