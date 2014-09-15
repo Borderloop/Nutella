@@ -86,7 +86,7 @@ namespace ProductFeedReader
                     }
                 }
             }            
-            Console.WriteLine("Connection closed.");
+            Console.WriteLine("Done reading productfeeds.");
 
             //Flag the boolean to be true when finished.
             isDone = true;

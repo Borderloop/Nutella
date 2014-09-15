@@ -13,6 +13,7 @@ namespace ProductFeedReader
     {
         public static Thread producer;
         public static Thread consumer;
+
         /// <summary>
         /// Main method will only start the ProductFeedReader
         /// </summary>
@@ -30,6 +31,8 @@ namespace ProductFeedReader
             producer.Start();
             consumer.Start();
 
+            //Let the main thread wait for the other threads to finish
+            while (producer.IsAlive && consumer.IsAlive) { }
             //Finalize and close the program.
             FinalizeAndClose();
         }

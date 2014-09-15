@@ -10,85 +10,221 @@ namespace ProductFeedReader
 {
     public class Database
     {
+        /// <summary>
+        /// The connection which is established when connecting to the database.
+        /// </summary>
         private MySqlConnection _conn;
+
+        /// <summary>
+        /// A command which can be used to execute queries
+        /// </summary>
         private MySqlCommand _cmd;
 
+        /// <summary>
+        /// The private singleton instance of the database
+        /// </summary>
         private static Database _instance;
 
-        private Database() { }
+        /// <summary>
+        /// The result DataTable with output from the queries.
+        /// </summary>
+        private DataTable _resultTable;
 
+        /// <summary>
+        /// The constructor
+        /// </summary>
+        private Database() 
+        {
+            //Initiate the Datatable
+            _resultTable = new DataTable();
+        }
+
+        /// <summary>
+        /// The public singleton instance of the database
+        /// </summary>
         public static Database Instance
         {
             get
             {
                 if(_instance == null)
                 {
-                    _instance = new Database();
+                    //Create a new instance if it is not already done
+                    _instance = new Database();                
                 }
                 return _instance;
             }
         }
 
+        /// <summary>
+        /// This method will let the user connect to the database with a given connection string.
+        /// </summary>
+        /// <param name="conStr">The connection string</param>
         public void Connect(string conStr)
         {
+            //Make the connection
             _conn = new MySqlConnection(conStr);
+
+            //Open the connection
             _conn.Open();
         }
 
+        /// <summary>
+        /// This method will let the user connect to the database given specific values.
+        /// </summary>
+        /// <param name="ip">The IP-address of the database (127.0.0.1 for local)</param>
+        /// <param name="db">The name of the database</param>
+        /// <param name="uid">The user ID</param>
+        /// <param name="pw">The password</param>
         public void Connect(string ip, string db, string uid, string pw)
         {
+            //Make the connection
             _conn = new MySqlConnection(@"Data Source=" + ip + ";Database=" + db + ";Uid=" + uid + ";Pwd=" + pw);
+
+            //Open the connection
             _conn.Open();
         }
 
+        /// <summary>
+        /// This method will execute the given query and will return the result given from the database
+        /// </summary>
+        /// <param name="query">The query</param>
+        /// <returns>The result given from the database</returns>
         public DataTable Read(string query)
         {
+            //Only procede if there is a connection. Return null otherwise.
             if(_conn == null)
             {
                 return null;
             }
           
+            //Create the command with the gien query
             _cmd = new MySqlCommand(query, _conn);
 
-            DataTable res = new DataTable();
-            res.Load(_cmd.ExecuteReader());
-            return res;
+            //Load the datatable in the DataTable object.
+            _resultTable.Load(_cmd.ExecuteReader());
+
+            //Return the result.
+            return _resultTable;
         }
 
-        public void AddProduct(Product p, string table)
-        {
-            string query = 
-                @"INSERT INTO " + table 
-                + " (ean, price, direct_link, sku)"
-                + " VALUES (@EAN, @PRICE, @URL, @SKU)";
-
-            _cmd = new MySqlCommand(query, _conn);
-
-            _cmd.Parameters.AddWithValue("@EAN", p.EAN);
-            _cmd.Parameters.AddWithValue("@PRICE", p.Price);
-            _cmd.Parameters.AddWithValue("@URL", p.Url);
-            _cmd.Parameters.AddWithValue("@SKU", p.SKU);
-            
-            _cmd.ExecuteNonQuery();
-        }
-
+        /// <summary>
+        /// This method will return all categories found in the database.
+        /// </summary>
+        /// <returns>All categories found in the database.</returns>
         public DataTable GetCategories()
         {
-            string query = "SELECT * FROM category";
-            DataTable dt = Read(query);
-
-            return dt;
+            //Invoke Read() with the appropriate query
+            return Read("SELECT * FROM category");           
         }
+
+        /// <summary>
+        /// This method will return all categorie synonyms found in the database.
+        /// </summary>
+        /// <returns>All categorie synonyms found in the database.</returns>
         public DataTable GetCategorySynonyms()
         {
-            string query = "SELECT * FROM category_synonyms";
-            DataTable dt = Read(query);
-
-            return dt;
+            //Invoke Read() with the appropriate query
+            return Read("SELECT * FROM category_synonym");   
         }
 
+        /// <summary>
+        /// This method will return the article number found when searching for an SKU, and -1 otherwise.
+        /// </summary>
+        /// <param name="sku">The SKU that needs to be matched.</param>
+        /// <returns>The found article number, -1 otherwise</returns>
+        public int GetArticleNumberOfSKU(string sku)
+        {
+            //Create the query
+            string query = @"SELECT * FROM sku WHERE sku=@SKU";
+
+            //Create the connection.
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Add the parameters to the command.
+            _cmd.Parameters.AddWithValue("@SKU", sku); 
+          
+            //Load the result in a datatable
+            _resultTable.Load(_cmd.ExecuteReader());
+
+            //Return the article number if found, -1 otherwise.
+            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+        }
+
+        /// <summary>
+        /// This method will return the article number found when searching for an EAN, and -1 otherwise.
+        /// </summary>
+        /// <param name="ean">The EAN that needs to be matched.</param>
+        /// <returns>The found article number, -1 otherwise</returns>
+        public int GetArticleNumberOfEAN(string ean)
+        {
+            //Create the query
+            string query = @"SELECT * FROM ean WHERE ean=@ean";
+            
+            //Create the connection.
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Add the parameters to the command.
+            _cmd.Parameters.AddWithValue("@ean", ean);
+
+            //Load the result in a datatable
+            _resultTable.Load(_cmd.ExecuteReader());
+
+            //Return the article number if found, -1 otherwise.
+            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+        }
+
+        /// <summary>
+        /// This method will return the article number found when searching for a title, and -1 otherwise.
+        /// </summary>
+        /// <param name="title">The title that needs to be matched.</param>
+        /// <returns>The found article number, -1 otherwise</returns>
+        public int GetArticleNumberOfTitle(string title)
+        {
+            //Create the query
+            string query = @"SELECT * FROM title WHERE title LIKE '%@title%'";
+
+            //Create the connection.
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Add the parameters to the command.
+            _cmd.Parameters.AddWithValue("@title", title);
+
+            //Load the result in a datatable
+            _resultTable.Load(_cmd.ExecuteReader());
+
+            //Return the article number if found, -1 otherwise.
+            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+        }
+
+        /// <summary>
+        /// This method will return the article number found when searching for a partial SKU, and -1 otherwise.
+        /// </summary>
+        /// <param name="sku">The SKU that needs to be matched.</param>
+        /// <returns>The found article number, -1 otherwise</returns>
+        public int GetArticleNumberOfPartialSKU(string sku)
+        {
+            //Create the query
+            string query = @"SELECT * FROM sku WHERE sku LIKE '%@sku%'";
+            
+            //Create the connection.
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Add the parameters to the command.
+            _cmd.Parameters.AddWithValue("@SKU", sku);
+
+            //Load the result in a datatable
+            _resultTable.Load(_cmd.ExecuteReader());
+
+            //Return the article number if found, -1 otherwise.
+            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+        }
+
+        /// <summary>
+        /// This method will close the connection with the database.
+        /// </summary>
         public void Close()
         {
+            //Close the connection.
             _conn.Close();
         }
     }

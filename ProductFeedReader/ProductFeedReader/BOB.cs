@@ -9,7 +9,7 @@ using System.Data;
 namespace ProductFeedReader
 {
     public class BOB
-    {      
+    {
         /// <summary>
         /// The Product contains the data from the Record.
         /// </summary>
@@ -24,17 +24,42 @@ namespace ProductFeedReader
         /// Contains all the category synonyms for the Borderloop category tree.
         /// </summary>
         private DataTable CategorySynonyms;
-		
-		public BOB() 
+
+        /// <summary>
+        /// If a match if found, store the ID in this field.
+        /// </summary>
+        private int _matchedArticleID;
+
+        public BOB()
         {
             Initialize();
         }
 
         public void Process(Product p = null)
-        {           
+        {
+            //If checkSKU() return true, the record matches with a product in the database and its data
+            //can be added to the product. It is done then.
+            if ((_matchedArticleID = checkSKU(p.SKU)) != -1)
+            {
+                //Add missing data-piece comes here.             
+            }
+
+            //If the first check does not go well, check for the ean.
+            if (!p.SKU.Equals("") && (_matchedArticleID = checkEAN(p.EAN)) != -1)
+            {
+                //Perform a partial match of the SKU
+            }
+
+            //The product has no valid EAN and no valid SKU, therefore we will match titles.
+            if ((_matchedArticleID = checkTitle(p.Name)) != -1)
+            {
+                //We found a perfect title match. Awesome!
+                //Add missing data-piece comes here.
+            }
+
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
-            if (checkCategory())
+            if (!checkCategory())
             {
                 Debug.WriteLine("Sending record to residue due to category check fail");
                 return;
@@ -47,7 +72,7 @@ namespace ProductFeedReader
 
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
-            if (checkBrand())
+            if (!checkBrand())
             {
                 Debug.WriteLine("Sending record to residue due to missing brand");
                 return;
@@ -111,7 +136,7 @@ namespace ProductFeedReader
                 Environment.Exit(0);
             }
 
-            Console.WriteLine("Connection opened.");  
+            Console.WriteLine("Connection opened.");
         }
 
         /// <summary>
@@ -120,7 +145,7 @@ namespace ProductFeedReader
         private Boolean checkBrand()
         {
             // If the Product's Name attribute is an empty String, no brand was given.
-            return Record.Brand.Equals("");           
+            return Record.Brand.Equals("");
         }
 
         /// <summary>
@@ -142,5 +167,31 @@ namespace ProductFeedReader
             // If categoryMatch or categorySynonymMatch equals true, a match is found.
             return (categoryMatch || categorySynonymMatch);
         }
+
+        private int checkSKU(string sku)
+        {
+            return Database.Instance.GetArticleNumberOfSKU(sku);
+        }
+
+        private int checkPartialSKU(string sku)
+        {
+            if (sku.Equals(""))
+            {
+                return -1;
+            }
+
+            return Int32.Parse(Database.Instance.Read(@"SELECT * FROM sku WHERE sku LIKE '%" + sku + @"%'").Columns["article_id"].ToString());
+        }
+
+        private int checkEAN(string ean)
+        {
+            return Database.Instance.GetArticleNumberOfEAN(ean);
+        }
+
+        private int checkTitle(string title)
+        {
+            return Database.Instance.GetArticleNumberOfTitle(title);
+        }
     }
 }
+
