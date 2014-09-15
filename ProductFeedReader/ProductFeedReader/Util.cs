@@ -7,12 +7,7 @@ using System.Threading.Tasks;
 namespace ProductFeedReader
 {
     public class Util
-    {
-        public static int TickCount = 0;
-
-        public static int SleepCount = 500000;      
-
-        public static Logger Logger;
+    {        
         public static string[] ConcatArrays(string[] x, string[] y)
         {
             if (x == null) throw new ArgumentNullException("First argument is null.");

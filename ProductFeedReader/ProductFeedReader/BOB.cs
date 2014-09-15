@@ -10,10 +10,6 @@ namespace ProductFeedReader
 {
     public class BOB
     {       
-        /// <summary>
-        /// The Database object containing methods to write articles to, and select data from the database.
-        /// </summary>
-        private Database _db;
 
         /// <summary>
         /// File that contains settings of the ProductFeedReader.
@@ -28,7 +24,7 @@ namespace ProductFeedReader
         /// <summary>
         /// The Product contains the data from the Record.
         /// </summary>
-        private Product Record = new Product();
+        private Product Record;
 
         /// <summary>
         /// Contains all the categories from the Borderloop category tree.
@@ -42,13 +38,11 @@ namespace ProductFeedReader
 		
 		public BOB() 
         {
-            _db = new Database();
+            Initialize();
         }
 
         public void Process(Product p = null)
-        {
-            Initialize();
-
+        {           
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
             if (checkCategory() == false)
@@ -73,7 +67,7 @@ namespace ProductFeedReader
             Console.WriteLine("Closing connection with database...");
 
             //Close the database.
-            _db.Close();
+            Database.Instance.Close();
         }
 
         /// <summary>
@@ -81,18 +75,18 @@ namespace ProductFeedReader
         /// </summary>
         private void Initialize()
         {
-            _db = new Database();
+            Record = new Product();
 
             // Get all the settings from the INI-file
-            _ini = new INIFile("C:\\Crawler\\settings\\pfr.ini");
+            _ini = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\pfr.ini");
             _settings = _ini.GetAllValues();
 
             // Open the connection with the database
             OpenDatabaseConnection();
 
             // Load all categories and category synonyms from database
-            Categories = _db.GetCategories();
-            CategorySynonyms = _db.GetCategorySynonyms();
+            Categories = Database.Instance.GetCategories();
+            CategorySynonyms = Database.Instance.GetCategorySynonyms();
 
             Record.Affiliate = "TradeTracker";
             Record.Brand = "Apple";
@@ -120,7 +114,7 @@ namespace ProductFeedReader
             try
             {
                 //Open the database connection. The program should stop if this fails.
-                _db.Connect(_settings["dbsource"], _settings["dbname"], _settings["dbuid"], _settings["dbpw"]);
+                Database.Instance.Connect(_settings["dbsource"], _settings["dbname"], _settings["dbuid"], _settings["dbpw"]);
             }
             catch (Exception e)
             {
@@ -141,14 +135,7 @@ namespace ProductFeedReader
         private Boolean checkBrand()
         {
             // If the Product's Name attribute is an empty String, no brand was given.
-            if (Record.Brand == "")
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return Record.Brand.Equals("");           
         }
 
         /// <summary>
@@ -158,7 +145,7 @@ namespace ProductFeedReader
         private Boolean checkCategory()
         {
             // If the Product's Category attribute is an empty String, no category was given.
-            if (Record.Category == "")
+            if (Record.Category.Equals(""))
             {
                 return false;
             }
@@ -167,14 +154,8 @@ namespace ProductFeedReader
             bool categoryMatch = Categories.AsEnumerable().Any(row => Record.Category == row.Field<String>("description"));
             bool categorySynonymMatch = CategorySynonyms.AsEnumerable().Any(row => Record.Category == row.Field<String>("description"));
 
-            if (categoryMatch == true || categorySynonymMatch == true) // If categoryMatch or categorySynonymMatch equals true, a match is found.
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            // If categoryMatch or categorySynonymMatch equals true, a match is found.
+            return (categoryMatch || categorySynonymMatch);
         }
     }
 }
