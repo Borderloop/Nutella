@@ -40,7 +40,7 @@ namespace ProductFeedReader.Affiliates
                         Statics.TickCount++;
 
                         //Sleep everytime sleepcount is reached
-                        if (Statics.TickCount % Statics.SleepCount == 0)
+                        if (Statics.TickCount % Statics.TicksUntilSleep == 0)
                         {
                             Thread.Sleep(1);
 

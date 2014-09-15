@@ -37,21 +37,8 @@ namespace ProductFeedReader
 
         private void Initialize()
         {
-/*
-            Statics.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");   
-
-            //Get all the settings from the INI-file
-            _ini = new INIFile("C:\\Product Feeds\\settings\\pfr.ini");
-            _settings = _ini.GetAllValues();
-
             //Read settings
-            _productFeedPath = _settings["productfeedpath"];
-            _logPath = _settings["logpath"];
-
-            Statics.Logger = new Logger(_logPath + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
-            Statics.SleepCount = Int32.Parse(_settings["sleepcount"]);
- */
-
+            _productFeedPath = Statics.settings["productfeedpath"];
             isDone = false;          
         }
 

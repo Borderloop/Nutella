@@ -19,6 +19,7 @@ namespace ProductFeedReader
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            
 
             //ProductFeedReader pfr = new ProductFeedReader();
             //pfr.Start();
@@ -57,6 +58,16 @@ namespace ProductFeedReader
             ProductFeedReader pfr = new ProductFeedReader();
             pfr.Start();
             Console.WriteLine("Thread 1 is done.");
+        }
+
+        static void Initialize()
+        {
+            //Initialize all the values for the static variables in the Statics class. These
+            //variables are used throughout the whole program.
+            Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
+            Statics.Logger = new Logger(Statics.settings["logpath"]);
+            Statics.TickCount = 0;
+            Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);            
         }
 
     }
