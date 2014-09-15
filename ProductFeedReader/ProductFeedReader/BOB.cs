@@ -175,12 +175,7 @@ namespace ProductFeedReader
 
         private int checkPartialSKU(string sku)
         {
-            if (sku.Equals(""))
-            {
-                return -1;
-            }
-
-            return Int32.Parse(Database.Instance.Read(@"SELECT * FROM sku WHERE sku LIKE '%" + sku + @"%'").Columns["article_id"].ToString());
+            return Database.Instance.GetArticleNumberOfPartialSKU(sku);
         }
 
         private int checkEAN(string ean)
