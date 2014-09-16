@@ -102,7 +102,7 @@ namespace ProductFeedReader.Affiliates
                                 case "image_url":
                                     if (_reader.Read())
                                     {
-                                        p.Image = _reader.Value;
+                                        p.Image_Loc = _reader.Value;
                                     }
                                     break;
 

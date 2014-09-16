@@ -20,8 +20,8 @@ namespace ProductFeedReader
         private string _Url = "";
         public string Url { get { return _Url; } set { _Url = value; } }
 
-        private string _Image = "";
-        public string Image { get { return _Image; } set { _Image = value; } }
+        private string _Image_Loc = "";
+        public string Image_Loc { get { return _Image_Loc; } set { _Image_Loc = value; } }
 
         private string _Description = "";
         public string Description { get { return _Description; } set { _Description = value; } }

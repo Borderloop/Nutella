@@ -112,7 +112,7 @@ namespace ProductFeedReader.Affiliates
                                         _reader.ReadToFollowing("URL");
                                         if (_reader.Read())
                                         {
-                                            p.Image = _reader.Value;
+                                            p.Image_Loc = _reader.Value;
                                         }
                                     }
                                     break;

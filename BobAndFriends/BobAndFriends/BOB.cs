@@ -26,6 +26,11 @@ namespace ProductFeedReader
         /// </summary>
         private int _matchedArticleID;
 
+        /// <summary>
+        /// If a category match is found, store its id in this field.
+        /// </summary>
+        private int _categoryID;
+
         public BOB()
         {
             Initialize();
@@ -66,22 +71,23 @@ namespace ProductFeedReader
             }
 
             //Product did not pass the first few tests - category test is up next.
-
+            
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
+            // If checkCategory() returns true, the record category matches with one of the 
+            // Borderloop category tree. Continue with the brand check. 
             if (!CheckCategory(Record))
             {
-                sendToResidu(Record);
+                sendToResidue(Record);
                 return;
             }
-
-            // If checkCategory() returns true, the record category matches with one of the 
-            // Borderloop category tree. Continue with the brand check.
+            //Database.Instance.SaveNewArticle(Record, _categoryID);
+            
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
             if (!CheckBrand(Record))
             {
-                sendToResidu(Record);
+                sendToResidue(Record);
                 return;
             }
 
@@ -168,10 +174,15 @@ namespace ProductFeedReader
             }
 
             // Check if the record category matches with a category or category synonym from the Borderloop category tree.
-            bool categoryMatch = Categories.AsEnumerable().Any(row => Record.Category == row.Field<String>("description"));
-            bool categorySynonymMatch = CategorySynonyms.AsEnumerable().Any(row => Record.Category == row.Field<String>("description"));
+            bool categoryMatch = Categories.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
+            bool categorySynonymMatch = CategorySynonyms.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
 
-            // If categoryMatch or categorySynonymMatch equals true, a match is found.
+            // If categoryMatch or categorySynonymMatch equals true, a match is found. Get the category id, used
+            // later on for saving the article.
+            if (categoryMatch || categorySynonymMatch)
+            {
+                _categoryID = Database.Instance.GetCategoryID(Record.Category, categoryMatch, categorySynonymMatch);
+            }
             return (categoryMatch || categorySynonymMatch);
         }
 
@@ -221,7 +232,7 @@ namespace ProductFeedReader
 
                         if (recordValue.ToLower() != matchedValue.ToLower() && splitted[0] != "article") // Different value, insert it.
                         {
-                            Database.Instance.AddForMatch(splitted[0], recordValue, 1);
+                            Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID);
                         }
 
                     }
@@ -231,18 +242,18 @@ namespace ProductFeedReader
             // Finally check if the record category is the same as the article category. If it's not, check if
             // there's a match in the category_synonyms table for the matched article. If that's also not the case,
             // add the category from the record to the category_synonyms.
-            DataTable category = Database.Instance.GetCategoryForArticle(1);
+            DataTable category = Database.Instance.GetCategoryForArticle(_matchedArticleID);
             bool containsCategory = category.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
 
             if (containsCategory == false)
             {
-                DataTable categorySynonyms = Database.Instance.GetCategorySynonymsForArticle(1);
+                DataTable categorySynonyms = Database.Instance.GetCategorySynonymsForArticle(_matchedArticleID);
                 bool containsCategorySynonym = categorySynonyms.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
 
                 if (containsCategorySynonym == false) // If containsCategorySynonym equals false, a category synonym is found: Save it.
                 {
                     Object o = category.Rows[0][0];
-                    string id = o.ToString();
+                    string id = o.ToString(); //category id
 
                     Database.Instance.SaveCategorySynonym(Convert.ToInt32(id), Record.Category);
                 }
@@ -309,13 +320,13 @@ namespace ProductFeedReader
         }
 
         /// <summary>
-        /// This method will send a product to the residu
+        /// This method will send a product to the residue
         /// </summary>
         /// <param name="p"></param>
-        private void sendToResidu(Product p)
+        private void sendToResidue(Product p)
         {
-            //Call SendToResidu() to do so.
-            Database.Instance.SendToResidu(p);
+            //Call SendToResidue() to do so.
+            Database.Instance.SendToResidue(p);
         }
 
         /// <summary>

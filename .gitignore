@@ -1,2 +1,6 @@
 *.pyc
 *.suo
+*.exe
+*.pdb
+*.FileListAbsolute.txt
+*.cache
