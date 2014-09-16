@@ -26,17 +26,10 @@ namespace ProductFeedReader
         private static Database _instance;
 
         /// <summary>
-        /// The result DataTable with output from the queries.
-        /// </summary>
-        private DataTable _resultTable;
-
-        /// <summary>
         /// The constructor
         /// </summary>
         private Database()
         {
-            //Initiate the Datatable
-            _resultTable = new DataTable();
         }
 
         /// <summary>
@@ -91,6 +84,8 @@ namespace ProductFeedReader
         /// <returns>The result given from the database</returns>
         public DataTable Read(string query)
         {
+            DataTable _resultTable = new DataTable();
+
             //Only procede if there is a connection. Return null otherwise.
             if (_conn == null)
             {
@@ -134,6 +129,8 @@ namespace ProductFeedReader
         /// <returns>The found article number, -1 otherwise</returns>
         public int GetArticleNumberOfSKU(string sku)
         {
+            DataTable _resultTable = new DataTable();
+
             //Create the query
             string query = @"SELECT * FROM sku WHERE sku=@SKU";
 
@@ -157,6 +154,8 @@ namespace ProductFeedReader
         /// <returns>The found article number, -1 otherwise</returns>
         public int GetArticleNumberOfEAN(string ean)
         {
+            DataTable _resultTable = new DataTable();
+
             //Create the query
             string query = @"SELECT * FROM ean WHERE ean=@ean";
 
@@ -180,6 +179,8 @@ namespace ProductFeedReader
         /// <returns>The found article number, -1 otherwise</returns>
         public int GetArticleNumberOfTitle(string title)
         {
+            DataTable _resultTable = new DataTable();
+
             //Create the query
             string query = @"SELECT * FROM title WHERE title LIKE '%@title%'";
 
@@ -203,6 +204,8 @@ namespace ProductFeedReader
         /// <returns>The found article number, -1 otherwise</returns>
         public int GetArticleNumberOfPartialSKU(string sku)
         {
+            DataTable _resultTable = new DataTable();
+
             //Create the query
             string query = @"SELECT * FROM sku WHERE sku LIKE '%@sku%'";
 
@@ -227,7 +230,7 @@ namespace ProductFeedReader
         public DataTable GetProduct(int id)
         {
             string query = "SELECT id as 'article-id', brand as 'article-Brand', description as " +
-                            "'article-Description', title.title as 'title-Title', " +
+                            "'article-Description', image_loc as 'article-Image_Loc title.title as 'title-Title', " +
                             "ean.ean as 'ean-EAN', sku.sku as 'sku-SKU' FROM article \n" +
                             "LEFT JOIN ean ON ean.article_id = article.id \n" +
                             "LEFT JOIN title ON title.article_id = article.id \n" +
@@ -323,7 +326,7 @@ namespace ProductFeedReader
         /// This method will send a product to the residu.
         /// </summary>
         /// <param name="p">The product to be send to the residu.</param>
-        public void SendToResidu(Product p)
+        public void SendToResidue(Product p)
         {
             //Create a dictionary containing column names and values
             Dictionary<string, string> col_vals = new Dictionary<string, string>();
@@ -331,7 +334,7 @@ namespace ProductFeedReader
             //Add names/values to the dictionary
             col_vals.Add("title", p.Title);
             col_vals.Add("description", p.Description);
-            col_vals.Add("image", p.Image);
+            col_vals.Add("image_loc", p.Image_Loc);
             col_vals.Add("category", p.Category);
             col_vals.Add("ean", p.EAN);
             col_vals.Add("sku", p.SKU);
@@ -371,7 +374,7 @@ namespace ProductFeedReader
             }
 
             //Build the query
-            string query = @"INSERT INTO residu (" + columns + ") VALUES (" + values + ")";
+            string query = @"INSERT INTO residue (" + columns + ") VALUES (" + values + ")";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
@@ -396,6 +399,99 @@ namespace ProductFeedReader
             //Execute the query
             _cmd.ExecuteNonQuery();
 
+        }
+
+        /// <summary>
+        /// Used to save a new article.
+        /// </summary>
+        /// <param name="Record">The article to be saved</param>
+        public void SaveNewArticle(Product Record, int categoryID)
+        {
+            // First insert data into the article table
+            string query = "INSERT INTO article (description, brand, image_loc) " +
+                           "VALUES (@DESCRIPTION, @BRAND, @IMAGE_LOC)";
+
+            _cmd = new MySqlCommand(query, _conn);
+            _cmd.Parameters.AddWithValue("@DESCRIPTION", Record.Description);
+            _cmd.Parameters.AddWithValue("@BRAND", Record.Brand);
+            _cmd.Parameters.AddWithValue("@IMAGE_LOC", Record.Image_Loc);
+            _cmd.ExecuteNonQuery();
+
+            // Then get the article id for the inserted article.
+            string query2 = "SELECT LAST_INSERT_ID()";
+            MySqlCommand _cmd2 = new MySqlCommand(query2, _conn);
+            MySqlDataReader rdr = _cmd2.ExecuteReader();
+            rdr.Read();
+            int aid = rdr.GetInt32(0);
+            rdr.Close();
+
+            // Insert remaining data now the article id is available, but only
+            // add them if they're not empty to prevent errors.
+            string query3 = "";
+
+            if (Record.EAN != "")
+            {
+                query3 += "INSERT INTO ean VALUES (@EAN, @AID);";
+            }
+            if (Record.SKU != "")
+            {
+                query3 += "INSERT INTO sku VALUES (@SKU, @AID); ";
+            }
+            if (Record.Title != "")
+            {
+                query3 += "INSERT INTO title VALUES (@TITLE, @AID); ";
+            }
+            // Don't execute when none of the records are present, which means
+            // the query is empty.
+            if (query3 != "") 
+            {
+                MySqlCommand _cmd3 = new MySqlCommand(query3, _conn);
+                _cmd3.Parameters.AddWithValue("@AID", aid);
+                _cmd3.Parameters.AddWithValue("@EAN", Record.EAN);
+                _cmd3.Parameters.AddWithValue("@SKU", Record.SKU);
+                _cmd3.Parameters.AddWithValue("@TITLE", Record.Title);
+
+                _cmd3.ExecuteNonQuery();
+            }
+            
+            // Now save the category.
+            string query4 = "INSERT INTO cat_article VALUES(@CATID, @AID)";
+            MySqlCommand _cmd4 = new MySqlCommand(query4, _conn);
+            _cmd4.Parameters.AddWithValue("@CATID", categoryID);
+            _cmd4.Parameters.AddWithValue("@AID", aid);
+
+            _cmd4.ExecuteNonQuery();
+            
+        }
+
+        /// <summary>
+        /// This method returns the category id for a record. 
+        /// </summary>
+        /// <param name="category">The name of the category</param>
+        /// <param name="categoryCheck">If this is true, the category is in the category table</param>
+        /// <param name="categorySynonymCheck">If this is true, the category is in the category_synonym table</param>
+        public int GetCategoryID(string category, bool categoryCheck, bool categorySynonymCheck)
+        {
+            string query = "";
+            if (categoryCheck == true && categorySynonymCheck == false) // Category in category table
+            {
+                query = "SELECT id FROM category WHERE description = @CATEGORY";
+            }
+            else if (categoryCheck == false && categorySynonymCheck == true) // Category in category_synonym table
+            {
+                query = "SELECT id FROM category " +
+                        "INNER JOIN category_synonym as cs ON cs.category_id = category.id " +
+                        "WHERE cs.description = @CATEGORY ";
+            }
+
+            _cmd = new MySqlCommand(query, _conn);
+            _cmd.Parameters.AddWithValue("@CATEGORY", category);
+            MySqlDataReader rdr = _cmd.ExecuteReader();
+            rdr.Read();
+            int id = rdr.GetInt32(0);
+            rdr.Close();
+
+            return id;
         }
 
         /// This method will close the connection with the database.

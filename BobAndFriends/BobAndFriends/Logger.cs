@@ -136,7 +136,7 @@ namespace ProductFeedReader
                 {
                     _data[8]++;
                 }
-                if (!p.Image.Equals(""))
+                if (!p.Image_Loc.Equals(""))
                 {
                     _data[9]++;
                 }
