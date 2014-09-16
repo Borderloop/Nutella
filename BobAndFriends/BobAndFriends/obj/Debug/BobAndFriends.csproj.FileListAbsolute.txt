@@ -8,3 +8,6 @@ C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\Bob
 C:\Users\Marnik\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\bin\Debug\BobAndFriends.exe.config
 C:\Users\Marnik\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.exe
 C:\Users\Marnik\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.pdb
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.Properties.Resources.resources
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.VisualBob.resources
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.csproj.GenerateResource.Cache

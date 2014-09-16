@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
+using System.Windows.Forms;
+using BobAndFriends;
 
 namespace ProductFeedReader
 {
@@ -25,8 +27,10 @@ namespace ProductFeedReader
         /// Main method will only start the ProductFeedReader
         /// </summary>
         /// <param name="args"></param>
+        [STAThread]
         static void Main(string[] args)
         {
+            /*
             //Initialize
             Initialize();
                       
@@ -37,6 +41,9 @@ namespace ProductFeedReader
             //Start threads
             producer.Start();
             consumer.Start();
+             */
+            Application.EnableVisualStyles();
+            Application.Run(new VisualBob());
         }
 
         static void ProductDequeuer()

@@ -204,7 +204,7 @@ namespace ProductFeedReader
         public int GetArticleNumberOfPartialSKU(string sku)
         {
             //Create the query
-            string query = @"SELECT * FROM sku WHERE sku LIKE '%@sku%'";
+            string query = @"SELECT * FROM sku WHERE sku LIKE '%@SKU%'";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
@@ -217,6 +217,24 @@ namespace ProductFeedReader
 
             //Return the article number if found, -1 otherwise.
             return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+        }
+
+        public bool CheckIfBrandExists(string brand)
+        {
+            //Create the query
+            string query = @"SELECT brand FROM article WHERE brand='@BRAND'";
+
+            //Create the connection.
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Add the parameters to the command.
+            _cmd.Parameters.AddWithValue("@BRAND", brand);
+
+            //Load the result in a datatable
+            _resultTable.Load(_cmd.ExecuteReader());
+
+            //Return the article number if found, -1 otherwise.
+            return _resultTable.Rows.Count > 0;
         }
 
         /// <summary>
