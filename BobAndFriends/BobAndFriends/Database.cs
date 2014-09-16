@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Data;
-using System.Text.RegularExpressions;
 
 namespace ProductFeedReader
 {
@@ -34,13 +33,11 @@ namespace ProductFeedReader
         /// <summary>
         /// The constructor
         /// </summary>
-        private Database() 
+        private Database()
         {
             //Initiate the Datatable
             _resultTable = new DataTable();
         }
-
-        int count = 0;
 
         /// <summary>
         /// The public singleton instance of the database
@@ -49,10 +46,10 @@ namespace ProductFeedReader
         {
             get
             {
-                if(_instance == null)
+                if (_instance == null)
                 {
                     //Create a new instance if it is not already done
-                    _instance = new Database();                
+                    _instance = new Database();
                 }
                 return _instance;
             }
@@ -95,11 +92,11 @@ namespace ProductFeedReader
         public DataTable Read(string query)
         {
             //Only procede if there is a connection. Return null otherwise.
-            if(_conn == null)
+            if (_conn == null)
             {
                 return null;
             }
-          
+
             //Create the command with the gien query
             _cmd = new MySqlCommand(query, _conn);
 
@@ -117,7 +114,7 @@ namespace ProductFeedReader
         public DataTable GetCategories()
         {
             //Invoke Read() with the appropriate query
-            return Read("SELECT description FROM category");           
+            return Read("SELECT description FROM category");
         }
 
         /// <summary>
@@ -127,7 +124,7 @@ namespace ProductFeedReader
         public DataTable GetCategorySynonyms()
         {
             //Invoke Read() with the appropriate query
-            return Read("SELECT description FROM category_synonym");   
+            return Read("SELECT description FROM category_synonym");
         }
 
         /// <summary>
@@ -144,8 +141,8 @@ namespace ProductFeedReader
             _cmd = new MySqlCommand(query, _conn);
 
             //Add the parameters to the command.
-            _cmd.Parameters.AddWithValue("@SKU", sku); 
-          
+            _cmd.Parameters.AddWithValue("@SKU", sku);
+
             //Load the result in a datatable
             _resultTable.Load(_cmd.ExecuteReader());
 
@@ -162,7 +159,7 @@ namespace ProductFeedReader
         {
             //Create the query
             string query = @"SELECT * FROM ean WHERE ean=@ean";
-            
+
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
 
@@ -208,7 +205,7 @@ namespace ProductFeedReader
         {
             //Create the query
             string query = @"SELECT * FROM sku WHERE sku LIKE '%@sku%'";
-            
+
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
 
@@ -223,7 +220,6 @@ namespace ProductFeedReader
         }
 
         /// <summary>
-<<<<<<< HEAD:ProductFeedReader/ProductFeedReader/Database.cs
         /// Method used to get a single product from the database, used for saving a match.
         /// </summary>
         /// <param name="id">The article id of the matched product</param>
@@ -287,7 +283,7 @@ namespace ProductFeedReader
             string query = "SELECT category.id, category.description FROM category " +
                            "INNER JOIN cat_article ON category.id = cat_article.category_id " +
                            "INNER JOIN article ON article.id = cat_article.article_id " +
-                           "WHERE article.id = "+ id;
+                           "WHERE article.id = " + id;
 
             return Read(query);
         }
@@ -324,87 +320,6 @@ namespace ProductFeedReader
             _cmd.ExecuteNonQuery();
         }
 
-=======
-        /// This method will send a product to the residu.
-        /// </summary>
-        /// <param name="p">The product to be send to the residu.</param>
-        public void SendToResidu(Product p)
-        {
-            //Create a dictionary containing column names and values
-            Dictionary<string, string> col_vals = new Dictionary<string, string>();
-
-            //Add names/values to the dictionary
-            col_vals.Add("title", p.Name);
-            col_vals.Add("description", p.Description);
-            col_vals.Add("image", p.Image);
-            col_vals.Add("category", p.Category);
-            col_vals.Add("ean", p.EAN);
-            col_vals.Add("sku", p.SKU);
-            col_vals.Add("brand", p.Brand);
-
-            //Declare string for the columns and values
-            string columns = "";
-            string values = "";
-
-            //First entry should be treated special (without a comma), therefore catch it using this bool
-            bool first = true;
-
-            //Loop through each KeyValuePair
-            foreach(KeyValuePair<string, string> pair in col_vals)
-            {
-                //Only add the pair if the value is valid
-                if(!pair.Value.Equals(""))
-                {
-                    //Special treatment for the first entry
-                    if(first)
-                    {
-                        //Add values without comma
-                        columns += pair.Key;
-                        values += "@" + pair.Key.ToUpper();
-
-                        //Set bool to false because the first has passed
-                        first = false;
-
-                        //Skip the rest of the loop
-                        continue;
-                    }
-
-                    //Add values with a comma
-                    columns += ", " + pair.Key;
-                    values += ", @" + pair.Key.ToUpper();
-                }
-            }
-
-            //Build the query
-            string query = @"INSERT INTO residu (" + columns + ") VALUES (" + values + ")";
-
-            //Create the connection.
-            _cmd = new MySqlCommand(query, _conn);
-
-            //Add parameters to the command
-            //Loop through each KeyValuePair
-            foreach (KeyValuePair<string, string> pair in col_vals)
-            {
-                //Only add the pair if the value is valid
-                if (!pair.Value.Equals(""))
-                {
-                    //Make an exception for EAN, which is the only integer
-                    if(pair.Key.Equals("ean"))
-                    {
-                        _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Int64.Parse(pair.Value));
-                        continue;
-                    }
-                    _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Util.ToLiteral(pair.Value));
-                }
-            }
-
-            //Execute the query
-            _cmd.ExecuteNonQuery();
-
-        }
-
-        /// <summary>
->>>>>>> d537a7d2c29859d60986dd6d8377d066433eea93:BobAndFriends/BobAndFriends/Database.cs
         /// This method will close the connection with the database.
         /// </summary>
         public void Close()

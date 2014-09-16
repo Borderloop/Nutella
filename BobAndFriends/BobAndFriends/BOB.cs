@@ -44,17 +44,17 @@ namespace ProductFeedReader
             if (!Record.SKU.Equals("") && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
                 //The product has an SKU and it's a match.
-                SaveMatch(Record, _matchedArticleID);     
+                SaveMatch(Record, _matchedArticleID);
             }
 
             //If the first check does not go well, check for the ean.
             if (!Record.EAN.Equals("") && !Record.SKU.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
                 //Check for a partial SKU match
-                if((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
+                if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
                 {
                     //We have an EAN and a partial SKU, enough for the database
-                    SaveMatch(Record, _matchedArticleID);     
+                    SaveMatch(Record, _matchedArticleID);
                 }
             }
 
@@ -62,7 +62,7 @@ namespace ProductFeedReader
             if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
             {
                 //We found a perfect title match. Awesome!
-                SaveMatch(Record, _matchedArticleID);     
+                SaveMatch(Record, _matchedArticleID);
             }
 
             //Product did not pass the first few tests - category test is up next.
@@ -71,12 +71,12 @@ namespace ProductFeedReader
             {
                 saveMatch();
             }*/
-            
+
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
             if (!CheckCategory(Record))
             {
-                sendToResidu(p);
+                Debug.WriteLine("Sending record to residue due to category check fail");
                 return;
             }
 
@@ -89,17 +89,14 @@ namespace ProductFeedReader
             // to residue and stop execution of method.
             if (!CheckBrand(Record))
             {
-                sendToResidu(p);
+                Debug.WriteLine("Sending record to residue due to missing brand");
                 return;
             }
-<<<<<<< HEAD:ProductFeedReader/ProductFeedReader/BOB.cs
 
             Console.WriteLine("Closing connection with database...");
-            
+
             //Close the database.
             Database.Instance.Close();
-=======
->>>>>>> d537a7d2c29859d60986dd6d8377d066433eea93:BobAndFriends/BobAndFriends/BOB.cs
         }
 
         /// <summary>
@@ -206,7 +203,7 @@ namespace ProductFeedReader
                 }
                 // Else the column has a value, so check if the record value differs from the article value
                 // and if so, save it.
-                else 
+                else
                 {
                     String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
                     if (splitted[1].ToString() != "id")
@@ -218,7 +215,7 @@ namespace ProductFeedReader
                         {
                             Database.Instance.AddForMatch(splitted[0], recordValue, 1);
                         }
-                        
+
                     }
                 }
             }
@@ -228,7 +225,7 @@ namespace ProductFeedReader
             // add the category from the record to the category_synonyms.
             DataTable category = Database.Instance.GetCategoryForArticle(1);
             bool containsCategory = category.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
-            
+
             if (containsCategory == false)
             {
                 DataTable categorySynonyms = Database.Instance.GetCategorySynonymsForArticle(1);
@@ -280,7 +277,7 @@ namespace ProductFeedReader
         }
 
         /// <summary>
-        /// This method is used to check if the given EAN exists in the database. If so, it will return
+        /// This method is used to check if the given eAN exists in the database. If so, it will return
         /// the article number of the found product. It will return -1 otherwise.
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
@@ -303,35 +300,6 @@ namespace ProductFeedReader
             return Database.Instance.GetArticleNumberOfTitle(title);
         }
 
-<<<<<<< HEAD:ProductFeedReader/ProductFeedReader/BOB.cs
-=======
-        /// <summary>
-        /// This method will send a product to the residu
-        /// </summary>
-        /// <param name="p"></param>
-        private void sendToResidu(Product p)
-        {
-            //Call SendToResidu() to do so.
-            Database.Instance.SendToResidu(p);
-        }
-
-        /// <summary>
-        /// BOB will clean up everything and close the app here.
-        /// </summary>
-        public void FinalizeAndClose()
-        {
-            Console.WriteLine("Closing connection with database...");
-
-            //Close the database.
-            Database.Instance.Close();
-
-            //Close everything and shut down.
-            Console.WriteLine("Writing data to logfile...");
-            Statics.Logger.Close();
-            Console.WriteLine("Done.");
-            Environment.Exit(1);
-        }
->>>>>>> d537a7d2c29859d60986dd6d8377d066433eea93:BobAndFriends/BobAndFriends/BOB.cs
     }
 }
 
