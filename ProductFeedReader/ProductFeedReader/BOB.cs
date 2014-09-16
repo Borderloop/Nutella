@@ -10,12 +10,7 @@ using System.Reflection;
 namespace ProductFeedReader
 {
     public class BOB
-    {      
-        /// <summary>
-        /// The Product contains the data from the Record.
-        /// </summary>
-        private Product Record;
-
+    {
         /// <summary>
         /// Contains all the categories from the Borderloop category tree.
         /// </summary>
@@ -25,28 +20,61 @@ namespace ProductFeedReader
         /// Contains all the category synonyms for the Borderloop category tree.
         /// </summary>
         private DataTable CategorySynonyms;
-		
-		public BOB() 
+
+        /// <summary>
+        /// If a match if found, store the ID in this field.
+        /// </summary>
+        private int _matchedArticleID;
+
+        public BOB()
         {
             Initialize();
         }
 
-
         /// <summary>
         /// This is the main method. This is where the algorithm find its chronologically order and
-        /// all methods are called in this order. The parameter 'match' is dummy data and needs to
-        /// be removed when ean/sku/title matching is implemented.
+        /// all methods are called in this order. 
         /// </summary>
-        public void Process(Product p = null, Boolean match = true)
+        public void Process(Product Record = null)
         {
-            if (match == true)
+            //First test - EAN/SKU match and perfect title matching.
+
+            //If checkSKU() return true, the record matches with a product in the database and its data
+            //can be added to the product. It is done then.
+            if (!Record.SKU.Equals("") && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+            {
+                //The product has an SKU and it's a match.
+                SaveMatch(Record, _matchedArticleID);     
+            }
+
+            //If the first check does not go well, check for the ean.
+            if (!Record.EAN.Equals("") && !Record.SKU.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+            {
+                //Check for a partial SKU match
+                if((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
+                {
+                    //We have an EAN and a partial SKU, enough for the database
+                    SaveMatch(Record, _matchedArticleID);     
+                }
+            }
+
+            //The product has no valid EAN and no valid SKU, therefore we will match titles.
+            if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
+            {
+                //We found a perfect title match. Awesome!
+                SaveMatch(Record, _matchedArticleID);     
+            }
+
+            //Product did not pass the first few tests - category test is up next.
+
+            /*if (match == true)
             {
                 saveMatch();
-            }
+            }*/
             
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
-            if (CheckCategory())
+            if (!CheckCategory(Record))
             {
                 Debug.WriteLine("Sending record to residue due to category check fail");
                 return;
@@ -59,7 +87,7 @@ namespace ProductFeedReader
 
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
-            if (CheckBrand())
+            if (!CheckBrand(Record))
             {
                 Debug.WriteLine("Sending record to residue due to missing brand");
                 return;
@@ -76,8 +104,6 @@ namespace ProductFeedReader
         /// </summary>
         private void Initialize()
         {
-            Record = new Product();
-
             // Open the connection with the database
             OpenDatabaseConnection();
 
@@ -109,14 +135,23 @@ namespace ProductFeedReader
                 Environment.Exit(0);
             }
 
-            Console.WriteLine("Connection opened.");  
+            Console.WriteLine("Connection opened.");
+        }
+
+        /// <summary>
+        /// Method to check if a record contains a brand.
+        /// </summary>
+        private Boolean CheckBrand(Product Record)
+        {
+            // If the Product's Brand Property is an empty String, no brand was given.
+            return Record.Brand.Equals("");
         }
 
         /// <summary>
         /// Method to check if a record contains a category. If it does, this method
         /// also checks if the record category matches a category in the Borderloop category tree.
         /// </summary>
-        private Boolean CheckCategory()
+        private Boolean CheckCategory(Product Record)
         {
             // If the Product's Category attribute is an empty String, no category was given.
             if (Record.Category.Equals(""))
@@ -133,21 +168,12 @@ namespace ProductFeedReader
         }
 
         /// <summary>
-        /// Method to check if a record contains a brand.
-        /// </summary>
-        private Boolean CheckBrand()
-        {
-            // If the Product's Name attribute is an empty String, no brand was given.
-            return Record.Brand.Equals("");           
-        }
-
-        /// <summary>
         /// This method is called when a match is found. It saves the found match to the database.
         /// It adds missing data to the found article and adds synonyms.
         /// </summary>
-        private void saveMatch()
+        private void SaveMatch(Product Record, int _matchedArticleID)
         {
-            DataTable MatchedArticle = Database.Instance.GetProduct(1);
+            DataTable MatchedArticle = Database.Instance.GetProduct(_matchedArticleID);
 
             // First, check if there are null  or empty values present in the matched article.
             // If there are, check if the record has values for the missing data and update these values.
@@ -166,11 +192,11 @@ namespace ProductFeedReader
                     {
                         if (splitted[0] != "article")
                         {
-                            Database.Instance.AddForMatch(splitted[0], recordValue, 3);
+                            Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID);
                         }
                         else
                         {
-                            Database.Instance.Update(splitted[0], splitted[1], recordValue, 1);
+                            Database.Instance.Update(splitted[0], splitted[1], recordValue, _matchedArticleID);
                         }
 
                     }
@@ -226,5 +252,54 @@ namespace ProductFeedReader
             return record.GetType().GetProperty(propName).GetValue(record, null);
         }
 
+        /// <summary>
+        /// This method is used to check if the given SKU exists in the database. If so, it will return
+        /// the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="sku">The SKU that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
+        private int checkSKU(string sku)
+        {
+            //Return the article number, or -1 otherwise
+            return Database.Instance.GetArticleNumberOfSKU(sku);
+        }
+
+        /// <summary>
+        /// This method is used to check if the given SKU partially exists in the database. If so, it 
+        /// will return the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="sku">The partial SKU that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
+        private int checkPartialSKU(string sku)
+        {
+            //Return the article number, or -1 otherwise.
+            return Database.Instance.GetArticleNumberOfPartialSKU(sku);
+        }
+
+        /// <summary>
+        /// This method is used to check if the given eAN exists in the database. If so, it will return
+        /// the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="ean">The EAN that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
+        private int checkEAN(string ean)
+        {
+            //Return the article number, or -1 otherwise.
+            return Database.Instance.GetArticleNumberOfEAN(ean);
+        }
+
+        /// <summary>
+        /// This method is used to check if the given title exists in the database. If so, it will return
+        /// the article number of the found product. It will return -1 otherwise.
+        /// </summary>
+        /// <param name="title">The title that has to be checked.</param>
+        /// <returns>The article number if found, -1 otherwise.</returns>
+        private int checkTitle(string title)
+        {
+            //Return the article number, or -1 otherwise.
+            return Database.Instance.GetArticleNumberOfTitle(title);
+        }
+
     }
 }
+

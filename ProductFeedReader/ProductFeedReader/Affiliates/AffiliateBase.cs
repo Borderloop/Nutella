@@ -13,6 +13,12 @@ namespace ProductFeedReader
         /// The name of the affiliate
         /// </summary>
         public abstract string Name { get; }
+
+        /// <summary>
+        /// This methoed will read all products from all datafiles in the given directory.
+        /// </summary>
+        /// <param name="dir">The directory</param>
+        /// <returns>An enumerable list of lists of products.</returns>
         public abstract System.Collections.Generic.IEnumerable<List<Product>> ReadFromDir(string dir);
     }
 }

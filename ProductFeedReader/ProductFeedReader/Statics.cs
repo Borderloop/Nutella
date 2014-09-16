@@ -8,12 +8,25 @@ namespace ProductFeedReader
 {
     public class Statics
     {
+        /// <summary>
+        /// The amount of ticks the productfeedreader has made.
+        /// </summary>
         public static int TickCount;
 
+        /// <summary>
+        /// When this value is reached, the productfeedreader will sleep for 1ms.
+        /// Lower this variable to prevent CPU overusage.
+        /// </summary>
         public static int TicksUntilSleep;
 
+        /// <summary>
+        /// The logger used in the program.
+        /// </summary>
         public static Logger Logger;
 
+        /// <summary>
+        /// The settings used in the program.
+        /// </summary>
         public static Dictionary<string,string> settings;
     }
 }
