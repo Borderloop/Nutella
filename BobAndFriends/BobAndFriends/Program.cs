@@ -29,26 +29,14 @@ namespace ProductFeedReader
         {
             //Initialize
             Initialize();
-            BOB bob = new BOB();
-            bob.Process();
                       
             //Create threads
-            //producer = new Thread(new ThreadStart(ProductFeedReader));
-            //consumer = new Thread(new ThreadStart(ProductDequeuer));
+            producer = new Thread(new ThreadStart(ProductFeedReader));
+            consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-<<<<<<< HEAD:ProductFeedReader/ProductFeedReader/Program.cs
-            //producer.Start();
-            //consumer.Start();
-
-            //Let the main thread wait for the other threads to finish
-            while (producer.IsAlive && consumer.IsAlive) { }
-            //Finalize and close the program.
-            //FinalizeAndClose();
-=======
             producer.Start();
             consumer.Start();
->>>>>>> d537a7d2c29859d60986dd6d8377d066433eea93:BobAndFriends/BobAndFriends/Program.cs
         }
 
         static void ProductDequeuer()
