@@ -60,7 +60,7 @@ namespace ProductFeedReader.Affiliates
                                 case "Title":
                                     if (_reader.Read())
                                     {
-                                        p.Name = _reader.Value;
+                                        p.Title = _reader.Value;
                                     }
                                     break;
 

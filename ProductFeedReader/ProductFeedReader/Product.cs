@@ -14,8 +14,8 @@ namespace ProductFeedReader
     {
         
         //All the data will be read as a String. Therefore, we store them in String objects.
-        private string _Name = "";
-        public string Name { get { return _Name; } set { _Name = value; } }
+        private string _Title = "";
+        public string Title { get { return _Title; } set { _Title = value; } }
 
         private string _Url = "";
         public string Url { get { return _Url; } set { _Url = value; } }

@@ -21,17 +21,19 @@ namespace ProductFeedReader
         {
             //Initialize
             Initialize();
-                       
+            BOB bob = new BOB();
+            bob.Process();
+                      
             //Create threads
-            producer = new Thread(new ThreadStart(ProductFeedReader));
-            consumer = new Thread(new ThreadStart(ProductDequeuer));
+            //producer = new Thread(new ThreadStart(ProductFeedReader));
+            //consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            producer.Start();
-            consumer.Start();
+            //producer.Start();
+            //consumer.Start();
 
             //Finalize and close the program.
-            FinalizeAndClose();
+            //FinalizeAndClose();
         }
 
         static void ProductDequeuer()

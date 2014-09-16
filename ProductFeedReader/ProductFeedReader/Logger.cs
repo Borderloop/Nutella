@@ -107,7 +107,7 @@ namespace ProductFeedReader
                     _data[1]++;
                     _skus.Add(p.SKU);
                 }
-                if (!p.Name.Equals(""))
+                if (!p.Title.Equals(""))
                 {
                     _data[2]++;
                 }
