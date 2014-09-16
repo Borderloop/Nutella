@@ -72,7 +72,7 @@ namespace ProductFeedReader
             // from the Borderloop category tree. Send record to residue and stop execution of method.
             if (!checkCategory())
             {
-                Debug.WriteLine("Sending record to residue due to category check fail");
+                sendToResidu(p);
                 return;
             }
 
@@ -85,14 +85,9 @@ namespace ProductFeedReader
             // to residue and stop execution of method.
             if (!checkBrand())
             {
-                Debug.WriteLine("Sending record to residue due to missing brand");
+                sendToResidu(p);
                 return;
             }
-
-            Console.WriteLine("Closing connection with database...");
-
-            //Close the database.
-            Database.Instance.Close();
         }
 
         /// <summary>
@@ -234,6 +229,33 @@ namespace ProductFeedReader
         {
             //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumberOfTitle(title);
+        }
+
+        /// <summary>
+        /// This method will send a product to the residu
+        /// </summary>
+        /// <param name="p"></param>
+        private void sendToResidu(Product p)
+        {
+            //Call SendToResidu() to do so.
+            Database.Instance.SendToResidu(p);
+        }
+
+        /// <summary>
+        /// BOB will clean up everything and close the app here.
+        /// </summary>
+        public void FinalizeAndClose()
+        {
+            Console.WriteLine("Closing connection with database...");
+
+            //Close the database.
+            Database.Instance.Close();
+
+            //Close everything and shut down.
+            Console.WriteLine("Writing data to logfile...");
+            Statics.Logger.Close();
+            Console.WriteLine("Done.");
+            Environment.Exit(1);
         }
     }
 }

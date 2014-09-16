@@ -37,18 +37,13 @@ namespace ProductFeedReader
             //Start threads
             producer.Start();
             consumer.Start();
-
-            //Let the main thread wait for the other threads to finish
-            while (producer.IsAlive && consumer.IsAlive) { }
-            //Finalize and close the program.
-            FinalizeAndClose();
         }
 
         static void ProductDequeuer()
         {
             //Create BOB and start dequeueing items.
             BOB bob = new BOB();
-
+            
             //Remain alive while thread one isnt done
             while (true)
             {
@@ -65,6 +60,7 @@ namespace ProductFeedReader
                 //Process the product otherwise.
                 bob.Process(p);
             }
+            bob.FinalizeAndClose();
             Console.WriteLine("Thread 2 is done.");
         }
 
@@ -88,14 +84,6 @@ namespace ProductFeedReader
             Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);            
         }
 
-        static void FinalizeAndClose()
-        {
-            //Close everything and shut down.
-            Console.WriteLine("Writing data to logfile...");
-            Statics.Logger.Close();
-            Console.WriteLine("Done.");
-            Environment.Exit(1);
-        }
 
     }
 }
