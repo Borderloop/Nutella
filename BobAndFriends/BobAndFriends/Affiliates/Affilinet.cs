@@ -13,7 +13,7 @@ namespace ProductFeedReader.Affiliates
 {
     public class Affilinet : AffiliateBase
     {
-        public override string Name { get { return "Belboon"; } }
+        public override string Name { get { return "Affilinet"; } }
 
         public override System.Collections.Generic.IEnumerable<List<Product>> ReadFromDir(string dir)
         {

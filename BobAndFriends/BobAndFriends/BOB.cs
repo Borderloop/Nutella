@@ -213,7 +213,7 @@ namespace ProductFeedReader
         }
 
         /// <summary>
-        /// This method is used to check if the given eAN exists in the database. If so, it will return
+        /// This method is used to check if the given EAN exists in the database. If so, it will return
         /// the article number of the found product. It will return -1 otherwise.
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
