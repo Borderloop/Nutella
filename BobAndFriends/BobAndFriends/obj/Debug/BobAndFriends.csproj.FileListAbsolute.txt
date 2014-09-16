@@ -1,0 +1,7 @@
+c:\users\dion\documents\visual studio 2013\Projects\BobAndFriends\BobAndFriends\bin\Debug\BobAndFriends.exe.config
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\bin\Debug\BobAndFriends.exe.config
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\bin\Debug\BobAndFriends.exe
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\bin\Debug\BobAndFriends.pdb
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.csprojResolveAssemblyReference.cache
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.exe
+C:\Users\Dion\Documents\GitHub\Nutella\BobAndFriends\BobAndFriends\obj\Debug\BobAndFriends.pdb

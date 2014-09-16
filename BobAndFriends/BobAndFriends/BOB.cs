@@ -76,7 +76,7 @@ namespace ProductFeedReader
             // from the Borderloop category tree. Send record to residue and stop execution of method.
             if (!CheckCategory(Record))
             {
-                Debug.WriteLine("Sending record to residue due to category check fail");
+                sendToResidu(p);
                 return;
             }
 
@@ -89,14 +89,17 @@ namespace ProductFeedReader
             // to residue and stop execution of method.
             if (!CheckBrand(Record))
             {
-                Debug.WriteLine("Sending record to residue due to missing brand");
+                sendToResidu(p);
                 return;
             }
+<<<<<<< HEAD:ProductFeedReader/ProductFeedReader/BOB.cs
 
             Console.WriteLine("Closing connection with database...");
             
             //Close the database.
             Database.Instance.Close();
+=======
+>>>>>>> d537a7d2c29859d60986dd6d8377d066433eea93:BobAndFriends/BobAndFriends/BOB.cs
         }
 
         /// <summary>
@@ -277,7 +280,7 @@ namespace ProductFeedReader
         }
 
         /// <summary>
-        /// This method is used to check if the given eAN exists in the database. If so, it will return
+        /// This method is used to check if the given EAN exists in the database. If so, it will return
         /// the article number of the found product. It will return -1 otherwise.
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
@@ -300,6 +303,35 @@ namespace ProductFeedReader
             return Database.Instance.GetArticleNumberOfTitle(title);
         }
 
+<<<<<<< HEAD:ProductFeedReader/ProductFeedReader/BOB.cs
+=======
+        /// <summary>
+        /// This method will send a product to the residu
+        /// </summary>
+        /// <param name="p"></param>
+        private void sendToResidu(Product p)
+        {
+            //Call SendToResidu() to do so.
+            Database.Instance.SendToResidu(p);
+        }
+
+        /// <summary>
+        /// BOB will clean up everything and close the app here.
+        /// </summary>
+        public void FinalizeAndClose()
+        {
+            Console.WriteLine("Closing connection with database...");
+
+            //Close the database.
+            Database.Instance.Close();
+
+            //Close everything and shut down.
+            Console.WriteLine("Writing data to logfile...");
+            Statics.Logger.Close();
+            Console.WriteLine("Done.");
+            Environment.Exit(1);
+        }
+>>>>>>> d537a7d2c29859d60986dd6d8377d066433eea93:BobAndFriends/BobAndFriends/BOB.cs
     }
 }
 
