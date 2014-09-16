@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 
-namespace ProductFeedReader
+namespace BobAndFriends
 {
     public class Logger : StreamWriter
     {

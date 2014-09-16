@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Data;
 
-namespace ProductFeedReader
+namespace BobAndFriends
 {
     public class Database
     {

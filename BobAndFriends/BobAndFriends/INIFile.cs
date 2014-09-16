@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace ProductFeedReader
+namespace BobAndFriends
 {
     public class INIFile
     {

@@ -7,9 +7,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using BobAndFriends;
 
-namespace ProductFeedReader
+namespace BobAndFriends
 {
     class Program
     {

@@ -7,7 +7,7 @@ using System.Collections;
 using System.Threading;
 
 
-namespace ProductFeedReader
+namespace BobAndFriends
 {
     public sealed class ProductQueue
     {

@@ -11,7 +11,7 @@ using System.Threading;
 using System.Data;
 using System.Reflection;
 
-namespace ProductFeedReader
+namespace BobAndFriends
 {
     public class ProductFeedReader
     {
