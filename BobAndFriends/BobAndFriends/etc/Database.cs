@@ -250,7 +250,7 @@ namespace BobAndFriends
         public DataTable GetProduct(int id)
         {
             string query = "SELECT id as 'article-id', brand as 'article-Brand', description as " +
-                            "'article-Description', image_loc as 'article-Image_Loc title.title as 'title-Title', " +
+                            "'article-Description', image_loc as 'article-Image_Loc', title.title as 'title-Title', " +
                             "ean.ean as 'ean-EAN', sku.sku as 'sku-SKU' FROM article \n" +
                             "LEFT JOIN ean ON ean.article_id = article.id \n" +
                             "LEFT JOIN title ON title.article_id = article.id \n" +
