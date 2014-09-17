@@ -54,8 +54,6 @@ namespace BobAndFriends
             selectedProduct = Database.Instance.GetNextVBobProduct();
             suggestedProducts = Database.Instance.GetSuggestedProducts((int)selectedProduct.Rows[0]["id"]);
 
-            Console.WriteLine((int)suggestedProducts.Rows[0]["Suggested article IDs"]);
-            Console.WriteLine((int)suggestedProducts.Rows[1]["Suggested article IDs"]);
             selProdBind.DataSource = selectedProduct;
             selectedProductDataGrid.DataSource = selProdBind;
             selectedProductDataGrid.DataSource = selectedProduct;

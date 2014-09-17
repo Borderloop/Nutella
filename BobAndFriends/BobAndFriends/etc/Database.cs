@@ -349,7 +349,7 @@ namespace BobAndFriends
         /// This method will send a product to the residu.
         /// </summary>
         /// <param name="p">The product to be send to the residu.</param>
-        public void SendToResidue(Product p)
+        public void SendTo(Product p, string tableName)
         {
             //Create a dictionary containing column names and values
             Dictionary<string, string> col_vals = new Dictionary<string, string>();
@@ -397,7 +397,7 @@ namespace BobAndFriends
             }
 
             //Build the query
-            string query = @"INSERT INTO residue (" + columns + ") VALUES (" + values + ")";
+            string query = @"INSERT INTO " + tableName + " (" + columns + ") VALUES (" + values + ")";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
@@ -532,7 +532,7 @@ namespace BobAndFriends
         public DataTable GetNextVBobProduct()
         {
             //Create the query
-            string query = "SELECT MIN(id) AS id, title, ean, sku, brand, category, description, rerun FROM vbobdata";
+            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description FROM vbobdata";
 
             //Execute it and return the datatable.
             return Read(query);
@@ -544,9 +544,7 @@ namespace BobAndFriends
             string id = "" + productID;
 
             //Create the query
-            string query = " SELECT vbobdata.id as 'VBob ID', "
-                + "vbob_suggested.suggested_id as 'Suggested article IDs',"
-                + "article.id as 'Article ID',"
+            string query = " SELECT article.id as 'Article ID',"
                 + "article.brand as 'Brand', "
                 + "article.description as 'Description' ,"
                 + "title.title as 'Title',"

@@ -338,7 +338,7 @@ namespace BobAndFriends
         private void sendToResidue(Product p)
         {
             //Call SendToResidue() to do so.
-            Database.Instance.SendToResidue(p);
+            Database.Instance.SendTo(p, "residue");
         }
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace BobAndFriends
         /// <param name="Record">The record to be matched</param>
         private void MatchByRelevance(Product Record)
         {
-            //To be implemented
+            Database.Instance.SendTo(Record, "vbobdata");
         }
 
         /// <summary>
