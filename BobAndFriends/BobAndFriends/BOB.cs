@@ -24,7 +24,7 @@ namespace ProductFeedReader
         /// <summary>
         /// If a match if found, store the ID in this field.
         /// </summary>
-        private int _matchedArticleID;
+        private int _matchedArticleID = 1;
 
         /// <summary>
         /// If a category match is found, store its id in this field.
@@ -49,7 +49,7 @@ namespace ProductFeedReader
             if (!Record.SKU.Equals("") && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
                 //The product has an SKU and it's a match.
-                SaveMatch(Record, _matchedArticleID);
+                SaveMatch(Record);
             }
 
             //If the first check does not go well, check for the ean.
@@ -59,7 +59,7 @@ namespace ProductFeedReader
                 if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
                 {
                     //We have an EAN and a partial SKU, enough for the database
-                    SaveMatch(Record, _matchedArticleID);
+                    SaveMatch(Record);
                 }
             }
 
@@ -67,9 +67,9 @@ namespace ProductFeedReader
             if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
             {
                 //We found a perfect title match. Awesome!
-                SaveMatch(Record, _matchedArticleID);
+                SaveMatch(Record);
             }
-
+            
             //Product did not pass the first few tests - category test is up next.
             
             // If checkCategory() returns false, the record category doesn't match any of the categories 
@@ -81,7 +81,8 @@ namespace ProductFeedReader
                 sendToResidue(Record);
                 return;
             }
-            //Database.Instance.SaveNewArticle(Record, _categoryID);
+            Console.WriteLine("Found a valid match!! Saving to database");
+            Database.Instance.SaveNewArticle(Record, _categoryID);
             
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
@@ -169,7 +170,7 @@ namespace ProductFeedReader
         /// This method is called when a match is found. It saves the found match to the database.
         /// It adds missing data to the found article and adds synonyms.
         /// </summary>
-        private void SaveMatch(Product Record, int _matchedArticleID)
+        private void SaveMatch(Product Record)
         {
             DataTable MatchedArticle = Database.Instance.GetProduct(_matchedArticleID);
 
@@ -204,12 +205,23 @@ namespace ProductFeedReader
                 else
                 {
                     String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
-                    if (splitted[1].ToString() != "id")
+                    if (splitted[0].ToString() != "article") // We only want to add (double) data for ean, sku and titles.
                     {
                         String recordValue = GetPropValue(Record, splitted[1]).ToString();
                         String matchedValue = o.ToString();
+                        bool hasMatch = false;
+                        try
+                        {
+                            hasMatch = MatchedArticle.AsEnumerable().Any(row => recordValue.ToLower() == row.Field<String>(column).ToLower());
+                        }
+                        catch(InvalidCastException) // An ean is returned, which is int64 instead of string. Convert values for this.
+                        {
+                            Debug.WriteLine("Invalid cast");
+                            hasMatch = MatchedArticle.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == Convert.ToInt64(row.Field<Int64>(column)));
+                        }
 
-                        if (recordValue.ToLower() != matchedValue.ToLower() && splitted[0] != "article") // Different value, insert it.
+                        // If hasMatch is false, a different value is found. Insert this into the database, but only if the record value is not empty.
+                        if (hasMatch == false && recordValue != null && recordValue != "") 
                         {
                             Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID);
                         }
@@ -232,7 +244,7 @@ namespace ProductFeedReader
                 if (containsCategorySynonym == false) // If containsCategorySynonym equals false, a category synonym is found: Save it.
                 {
                     Object o = category.Rows[0][0];
-                    string id = o.ToString(); //category id
+                    string id = o.ToString(); // category id
 
                     Database.Instance.SaveCategorySynonym(Convert.ToInt32(id), Record.Category);
                 }
