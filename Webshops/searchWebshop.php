@@ -100,7 +100,7 @@ while($row = $stmt->fetch()){
 	$result.="<td width='3%'>".$row['id']."</td>";
 	$result.="<td width='2%'><input type='checkbox' name='resultRows[]' value='$rowId'></td>";
 	$result.="<td width='2%'>".$row['approved']."</td>";
-	$result.="<td width='15%'>".$row['name']."</td>";
+	$result.="<td width='15%'>"."<a href='/webshop.php?WebshopID=$rowId'>".$row['name']."</a></td>";
 	$result.="<td width='15%'>".$row['url']."</td>";
 	$result.="<td width='20%'>".$row['combinedaffiliates']."</td>";
 	$result.="<td width='15%'>".$row['combinedlanguages']."</td>";
