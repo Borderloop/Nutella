@@ -9,7 +9,7 @@ using System.Threading;
 using System.Text.RegularExpressions;
 
 
-namespace ProductFeedReader.Affiliates
+namespace BobAndFriends.Affiliates
 {
     public class Affilinet : AffiliateBase
     {
