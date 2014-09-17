@@ -40,12 +40,34 @@ LEFT JOIN (SELECT LG.webshop_id,
              FROM language LG
          GROUP BY LG.webshop_id) JL ON JL.webshop_id = ws.id ";
 
-$where = "WHERE ws.name LIKE :wsSearch";
+$where = "WHERE(ws.name LIKE :wsSearch)";
 
 $searchTerm = $_POST['search_term'];
-if(isset($_POST['filter_box']) && !empty($_POST['filter_box'])){
-$filterBox = $_POST['filter_box'];
-$where .= " AND JL.combinedlanguages LIKE '%$filterBox%'";
+$languageFilter = false;
+$approvedFilter = false;
+
+if(isset($_POST['filter_language']) && !empty($_POST['filter_language'])){
+foreach($_POST['filter_language'] as $filterlanguage){
+  $modifier = " AND(";
+    if($languageFilter){
+      $modifier = " OR ";
+    }
+  $where .= $modifier."JL.combinedlanguages LIKE '%$filterlanguage%'";
+  $languageFilter = true;
+  }
+  $where .= ")";
+}
+
+if(isset($_POST['filter_approved']) && !empty($_POST['filter_approved'])){
+foreach($_POST['filter_approved'] as $filterapproved){
+  $modifier = " AND(";
+    if($approvedFilter){
+      $modifier = " OR ";
+    }
+  $where .= $modifier."JA.approved LIKE '%$filterapproved%'";
+  $approvedFilter = true;
+  }
+  $where .= ")";
 }
 
 $stmt = $conn->prepare($query.$where);
@@ -75,14 +97,14 @@ while($row = $stmt->fetch()){
 		$rowStyle = "uneven";
 	}
 	$result.="<tr class ='$rowStyle'>";
-	$result.="<td>".$row['id']."</td>";
-	$result.="<td><input type='checkbox' name='resultRows[]' value='$rowId'></td>";
-	$result.="<td>".$row['approved']."</td>";
-	$result.="<td>".$row['name']."</td>";
-	$result.="<td>".$row['url']."</td>";
-	$result.="<td>".$row['combinedaffiliates']."</td>";
-	$result.="<td>".$row['combinedlanguages']."</td>";
-	$result.="<td>".$row['combinedsendingcountries']."</td>";
+	$result.="<td width='3%'>".$row['id']."</td>";
+	$result.="<td width='2%'><input type='checkbox' name='resultRows[]' value='$rowId'></td>";
+	$result.="<td width='2%'>".$row['approved']."</td>";
+	$result.="<td width='15%'>".$row['name']."</td>";
+	$result.="<td width='15%'>".$row['url']."</td>";
+	$result.="<td width='20%'>".$row['combinedaffiliates']."</td>";
+	$result.="<td width='15%'>".$row['combinedlanguages']."</td>";
+	$result.="<td width='15%'>".$row['combinedsendingcountries']."</td>";
 	$result.="</tr>";
 	$rowCounter++;
 }

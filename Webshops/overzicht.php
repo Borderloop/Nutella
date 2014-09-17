@@ -146,9 +146,9 @@ $conn = null;
 		<input class="languageCheckbox" type="checkbox" name="languageSelection[]" value="ie">IE</input>
 		<input class="languageCheckbox" type="checkbox" name="languageSelection[]" value="fi">FI</input>
 		||
-		<input type="checkbox" name="approvedSelection[]" value="1">Approved</input>
-		<input type="checkbox" name="approvedSelection[]" value="2">Denied</input>
-		<input type="checkbox" name="approvedSelection[]" value="3">Pending</input>
+		<input class="approvedCheckbox" type="checkbox" name="approvedSelection[]" value="1">Approved</input>
+		<input class="approvedCheckbox" type="checkbox" name="approvedSelection[]" value="2">Denied</input>
+		<input class="approvedCheckbox" type="checkbox" name="approvedSelection[]" value="3">Pending</input>
 		<input class="contact-button" name="submit" type="submit" value="Filter">
 	</form>
 	<div id="start_results"><?php //echo $data; ?></div>
@@ -171,31 +171,29 @@ $conn = null;
 			ajax_search();
 		});
 		$(":checkbox").change(function(e){
-			$("#search_results").show();
-			var checkedValue = $('.languageCheckbox:checked').val();
-			var searchValue = $("#search_term").val();
-			$.post("/searchWebshop.php", {filter_box : checkedValue, search_term : searchValue}, function(data){
-			if(data.length>0){
-				$("#start_results").slideUp();
-				$("#search_results").html(data);
-
-			}
-		})
-		})
-
+			ajax_search();
+		});
 	});
 
 	function ajax_search(){
 		$("#search_results").show();
-		var checkedValue = $('.languageCheckbox:checked').val();
 		var searchValue = $("#search_term").val();
-		$.post("/searchWebshop.php", {filter_box : checkedValue, search_term : searchValue}, function(data){
+		var languageArr=[];
+		var approvedArr=[];
+		$('.languageCheckbox:checked').each(function(){
+			languageArr.push( $(this).val());
+		})
+		$('.approvedCheckbox:checked').each(function(){
+			approvedArr.push( $(this).val());
+		})
+
+		$.post("/searchWebshop.php", {search_term : searchValue, filter_language : languageArr, filter_approved : approvedArr}, function(data){
 			if(data.length>0){
 				$("#start_results").slideUp();
 				$("#search_results").html(data);
-
 			}
 		})
 	}
+
 	</script>
 </body>
