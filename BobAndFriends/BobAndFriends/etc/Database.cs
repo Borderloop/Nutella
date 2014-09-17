@@ -95,8 +95,11 @@ namespace BobAndFriends
             //Create the command with the gien query
             _cmd = new MySqlCommand(query, _conn);
 
-            //Load the datatable in the DataTable object.
-            _resultTable.Load(_cmd.ExecuteReader());
+            //We need MySqlDataAdapter to store all rows in the datatable
+            using (MySqlDataAdapter adapter = new MySqlDataAdapter(_cmd))
+            {
+                adapter.Fill(_resultTable);
+            }
 
             //Return the result.
             return _resultTable;
@@ -250,7 +253,7 @@ namespace BobAndFriends
         public DataTable GetProduct(int id)
         {
             string query = "SELECT id as 'article-id', brand as 'article-Brand', description as " +
-                            "'article-Description', image_loc as 'article-Image_Loc title.title as 'title-Title', " +
+                            "'article-Description', image_loc as 'article-Image_Loc`, title.title as 'title-Title', " +
                             "ean.ean as 'ean-EAN', sku.sku as 'sku-SKU' FROM article \n" +
                             "LEFT JOIN ean ON ean.article_id = article.id \n" +
                             "LEFT JOIN title ON title.article_id = article.id \n" +
@@ -520,6 +523,44 @@ namespace BobAndFriends
         {
             //Close the connection.
             _conn.Close();
+        }
+
+        /// <summary>
+        /// This method will get the first-next product from the VBobData table.
+        /// </summary>
+        /// <returns></returns>
+        public DataTable GetNextVBobProduct()
+        {
+            //Create the query
+            string query = "SELECT MIN(id) AS id, title, ean, sku, brand, category, description, rerun FROM vbobdata";
+
+            //Execute it and return the datatable.
+            return Read(query);
+        }
+
+        public DataTable GetSuggestedProducts(int productID)
+        {
+            //parse productID to a string
+            string id = "" + productID;
+
+            //Create the query
+            string query = " SELECT vbobdata.id as 'VBob ID', "
+                + "vbob_suggested.suggested_id as 'Suggested article IDs',"
+                + "article.id as 'Article ID',"
+                + "article.brand as 'Brand', "
+                + "article.description as 'Description' ,"
+                + "title.title as 'Title',"
+                + "(SELECT GROUP_CONCAT(ean.ean) FROM ean WHERE ean.article_id = article.id) as 'EANs', "
+                + "(SELECT GROUP_CONCAT(sku.sku) FROM sku WHERE sku.article_id = article.id) as 'SKUs'"
+                + " FROM vbobdata, vbob_suggested"
+                + " INNER JOIN article ON  article.id = vbob_suggested.suggested_id"
+                + " LEFT JOIN ean ON ean.article_id = article.id"
+                + " LEFT JOIN title ON title.article_id = article.id"
+                + " LEFT JOIN sku ON sku.article_id = article.id"
+                + " WHERE vbobdata.id = " + id + " GROUP BY vbob_suggested.suggested_id";
+
+            //Execute it and return the datatable.
+            return Read(query);
         }
     }
 }
