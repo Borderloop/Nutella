@@ -31,19 +31,19 @@ namespace BobAndFriends
         {
             
             //Initialize
-            Initialize();
+            //Initialize();
                    
             //Create threads
-            producer = new Thread(new ThreadStart(ProductFeedReader));
+            //producer = new Thread(new ThreadStart(ProductFeedReader));
             //consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            producer.Start();
+            //producer.Start();
             //consumer.Start();
              
 
-            //Application.EnableVisualStyles();
-            //Application.Run(new VisualBob());
+            Application.EnableVisualStyles();
+            Application.Run(new VisualBob());
         }
 
         static void ProductDequeuer()

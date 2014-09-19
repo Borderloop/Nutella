@@ -374,25 +374,28 @@ namespace BobAndFriends
             foreach (KeyValuePair<string, object> pair in col_vals)
             {
                 //Only add the pair if the value is valid
-                if (!pair.Value.Equals(""))
+                if (!(pair.Value == null))
                 {
-                    //Special treatment for the first entry
-                    if (first)
+                    if (!pair.Value.Equals(""))
                     {
-                        //Add values without comma
-                        columns += pair.Key;
-                        values += "@" + pair.Key.ToUpper();
+                        //Special treatment for the first entry
+                        if (first)
+                        {
+                            //Add values without comma
+                            columns += pair.Key;
+                            values += "@" + pair.Key.ToUpper();
 
-                        //Set bool to false because the first has passed
-                        first = false;
+                            //Set bool to false because the first has passed
+                            first = false;
 
-                        //Skip the rest of the loop
-                        continue;
+                            //Skip the rest of the loop
+                            continue;
+                        }
+
+                        //Add values with a comma
+                        columns += ", " + pair.Key;
+                        values += ", @" + pair.Key.ToUpper();
                     }
-
-                    //Add values with a comma
-                    columns += ", " + pair.Key;
-                    values += ", @" + pair.Key.ToUpper();
                 }
             }
 
@@ -407,15 +410,18 @@ namespace BobAndFriends
             foreach (KeyValuePair<string, object> pair in col_vals)
             {
                 //Only add the pair if the value is valid
-                if (!pair.Value.Equals(""))
+                if (!(pair.Value == null))
                 {
-                    //Make an exception for EAN, which is the only integer
-                    if (pair.Key.Equals("ean"))
+                    if (!pair.Value.Equals(""))
                     {
-                        _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
-                        continue;
+                        //Make an exception for EAN, which is the only integer
+                        if (pair.Key.Equals("ean"))
+                        {
+                            _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
+                            continue;
+                        }
+                        _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Util.ToLiteral((string)pair.Value));
                     }
-                    _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Util.ToLiteral((string)pair.Value));
                 }
             }
 
@@ -564,6 +570,14 @@ namespace BobAndFriends
 
             //Execute it and return the datatable.
             return Read(query);
+        }
+
+        public void DeleteFromVbobData(int id)
+        {
+            String query = "DELETE FROM vbob_suggested WHERE vbob_suggested.vbob_id = " + id + ";";
+            query += "DELETE FROM vbobdata WHERE vbobdata.id = " + id + ";";
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.ExecuteNonQuery();
         }
     }
 }

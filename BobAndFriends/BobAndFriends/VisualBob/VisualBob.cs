@@ -99,7 +99,8 @@ namespace BobAndFriends
 
         private void residuButton_Click(object sender, EventArgs e)
         {
-            //Do work
+            Database.Instance.SendTo(ToProduct(selectedProduct), "residue");
+            Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
             ShowNext();
         }
 
