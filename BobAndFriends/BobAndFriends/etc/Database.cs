@@ -525,6 +525,11 @@ namespace BobAndFriends
             _conn.Close();
         }
 
+        public DataTable GetRerunnables()
+        {
+            return Read("SELECT * FROM vbobdata WHERE rerun=1");
+        }
+
         /// <summary>
         /// This method will get the first-next product from the VBobData table.
         /// </summary>

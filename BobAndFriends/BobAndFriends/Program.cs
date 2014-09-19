@@ -32,7 +32,7 @@ namespace BobAndFriends
             /*
             //Initialize
             Initialize();
-                      
+                   
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
@@ -41,6 +41,7 @@ namespace BobAndFriends
             producer.Start();
             consumer.Start();
              */
+
             Application.EnableVisualStyles();
             Application.Run(new VisualBob());
         }

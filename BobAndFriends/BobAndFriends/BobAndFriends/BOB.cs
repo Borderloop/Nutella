@@ -22,6 +22,11 @@ namespace BobAndFriends
         private DataTable CategorySynonyms;
 
         /// <summary>
+        /// Contains all data of the products which have been fixed and are to be rerunned again.
+        /// </summary>
+        private DataTable Rerunnables;
+
+        /// <summary>
         /// If a match if found, store the ID in this field.
         /// </summary>
         private int _matchedArticleID = 1;
@@ -34,6 +39,7 @@ namespace BobAndFriends
         public BOB()
         {
             Initialize();
+            ProcessRerunnables();
         }
 
         /// <summary>
@@ -145,12 +151,30 @@ namespace BobAndFriends
                 Console.WriteLine("Connection failed.");
                 Console.WriteLine("Error: " + e.Message);
                 Console.WriteLine("From: " + e.Source);
-                Console.WriteLine("Press any key to exit.");
+                Console.WriteLine("Press enter to exit.");
                 Console.Read();
                 Environment.Exit(0);
             }
 
             Console.WriteLine("Connection opened.");
+        }
+
+        public void ProcessRerunnables()
+        {
+            Rerunnables = Database.Instance.GetRerunnables();
+            Product p = new Product();
+            foreach(DataRow row in Rerunnables.Rows)
+            {
+                p.Title = row.Field<String>("title") ?? "";
+                p.EAN = row.Field<String>("ean") ?? "";
+                p.SKU = row.Field<String>("sku") ?? "";
+                p.Brand = row.Field<String>("brand") ?? "";
+                p.Category = row.Field<String>("category") ?? "";
+                p.Description = row.Field<String>("description") ?? "";
+                p.Image_Loc = row.Field<String>("image_loc") ?? "";
+
+                Process(p);
+            }
         }
 
         /// <summary>
