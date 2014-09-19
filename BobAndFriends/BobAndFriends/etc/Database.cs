@@ -349,7 +349,7 @@ namespace BobAndFriends
         /// This method will send a product to the residu.
         /// </summary>
         /// <param name="p">The product to be send to the residu.</param>
-        public void SendTo(Product p, string tableName)
+        public void SendTo(Product p, string tableName, bool rerun = false)
         {
             //Create a dictionary containing column names and values
             Dictionary<string, object> col_vals = new Dictionary<string, object>();
@@ -362,6 +362,11 @@ namespace BobAndFriends
             col_vals.Add("ean", p.EAN);
             col_vals.Add("sku", p.SKU);
             col_vals.Add("brand", p.Brand);
+
+            if(tableName.Equals("vbobdata"))
+            {
+                col_vals.Add("rerun", rerun);
+            }
 
             //Declare string for the columns and values
             string columns = "";
@@ -416,6 +421,11 @@ namespace BobAndFriends
                     {
                         //Make an exception for EAN, which is the only integer
                         if (pair.Key.Equals("ean"))
+                        {
+                            _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
+                            continue;
+                        }
+                        if(pair.Key.Equals("rerun"))
                         {
                             _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
                             continue;
@@ -543,7 +553,7 @@ namespace BobAndFriends
         public DataTable GetNextVBobProduct()
         {
             //Create the query
-            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description, image_loc as ImageLocation FROM vbobdata";
+            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description, image_loc as ImageLocation FROM vbobdata WHERE NOT rerun = 1";
 
             //Execute it and return the datatable.
             return Read(query);

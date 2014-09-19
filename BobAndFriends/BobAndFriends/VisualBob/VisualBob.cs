@@ -44,6 +44,8 @@ namespace BobAndFriends
 
             selProdBind = new BindingSource();
             sugProdBind = new BindingSource();
+
+            ShowNext();
         }
 
         /// <summary>
@@ -81,13 +83,15 @@ namespace BobAndFriends
             }
 
             SaveMatch(ToProduct(selectedProduct), (int)suggestedProductsDataGrid.SelectedRows[0].Cells["Article ID"].Value);
+            Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
 
             ShowNext();
         }
 
         private void rerunButton_Click(object sender, EventArgs e)
         {
-            //Do work
+            Database.Instance.SendTo(ToProduct(selectedProduct), "vbobdata", true);
+            Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
             ShowNext();
         }
 

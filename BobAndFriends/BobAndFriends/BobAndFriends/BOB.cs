@@ -48,6 +48,20 @@ namespace BobAndFriends
         /// </summary>
         public void Process(Product Record = null)
         {
+            //Precondition: Record has to be clean; the title should not include
+            //the brand name or the sku value. Therefore, we filter them out.
+            if(Record.Title.Contains(Record.SKU))
+            {
+                string[] s = Record.Title.Split(new string[] {Record.SKU}, StringSplitOptions.RemoveEmptyEntries);
+                Record.Title = String.Concat(s);
+            }
+
+            if (Record.Title.Contains(Record.Brand))
+            {
+                string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
+                Record.Title = String.Concat(s);
+            }
+
             //First test - EAN/SKU match and perfect title matching.
 
             //If checkSKU() return true, the record matches with a product in the database and its data
