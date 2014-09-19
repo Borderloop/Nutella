@@ -18,7 +18,7 @@ namespace BobAndFriends
         /// <summary>
         /// A set containing all unique EAN numbers.
         /// </summary>
-        private SortedSet<string> _eans;
+        private SortedSet<object> _eans;
 
         /// <summary>
         /// A set containing all unique SKU numbers.
@@ -42,7 +42,7 @@ namespace BobAndFriends
             _sw = new Stopwatch();
 
             _data = new int[18];
-            _eans = new SortedSet<string>();
+            _eans = new SortedSet<object>();
             _skus = new SortedSet<string>();
             _cats = new SortedSet<string>();
         }

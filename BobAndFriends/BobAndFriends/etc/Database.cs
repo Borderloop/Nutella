@@ -155,7 +155,7 @@ namespace BobAndFriends
         /// </summary>
         /// <param name="ean">The EAN that needs to be matched.</param>
         /// <returns>The found article number, -1 otherwise</returns>
-        public int GetArticleNumberOfEAN(string ean)
+        public int GetArticleNumberOfEAN(Int64? ean)
         {
             DataTable _resultTable = new DataTable();
 
@@ -253,7 +253,7 @@ namespace BobAndFriends
         public DataTable GetProduct(int id)
         {
             string query = "SELECT id as 'article-id', brand as 'article-Brand', description as " +
-                            "'article-Description', image_loc as 'article-Image_Loc`, title.title as 'title-Title', " +
+                            "'article-Description', title.title as 'title-Title', " +
                             "ean.ean as 'ean-EAN', sku.sku as 'sku-SKU' FROM article \n" +
                             "LEFT JOIN ean ON ean.article_id = article.id \n" +
                             "LEFT JOIN title ON title.article_id = article.id \n" +
@@ -352,7 +352,7 @@ namespace BobAndFriends
         public void SendTo(Product p, string tableName)
         {
             //Create a dictionary containing column names and values
-            Dictionary<string, string> col_vals = new Dictionary<string, string>();
+            Dictionary<string, object> col_vals = new Dictionary<string, object>();
 
             //Add names/values to the dictionary
             col_vals.Add("title", p.Title);
@@ -371,7 +371,7 @@ namespace BobAndFriends
             bool first = true;
 
             //Loop through each KeyValuePair
-            foreach (KeyValuePair<string, string> pair in col_vals)
+            foreach (KeyValuePair<string, object> pair in col_vals)
             {
                 //Only add the pair if the value is valid
                 if (!pair.Value.Equals(""))
@@ -404,7 +404,7 @@ namespace BobAndFriends
 
             //Add parameters to the command
             //Loop through each KeyValuePair
-            foreach (KeyValuePair<string, string> pair in col_vals)
+            foreach (KeyValuePair<string, object> pair in col_vals)
             {
                 //Only add the pair if the value is valid
                 if (!pair.Value.Equals(""))
@@ -412,10 +412,10 @@ namespace BobAndFriends
                     //Make an exception for EAN, which is the only integer
                     if (pair.Key.Equals("ean"))
                     {
-                        _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Int64.Parse(pair.Value));
+                        _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
                         continue;
                     }
-                    _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Util.ToLiteral(pair.Value));
+                    _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Util.ToLiteral((string)pair.Value));
                 }
             }
 
@@ -452,7 +452,7 @@ namespace BobAndFriends
             // add them if they're not empty to prevent errors.
             string query3 = "";
 
-            if (Record.EAN != "")
+            if (Record.EAN != null)
             {
                 query3 += "INSERT INTO ean VALUES (@EAN, @AID);";
             }
@@ -537,7 +537,7 @@ namespace BobAndFriends
         public DataTable GetNextVBobProduct()
         {
             //Create the query
-            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description FROM vbobdata";
+            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description, image_loc as ImageLocation FROM vbobdata";
 
             //Execute it and return the datatable.
             return Read(query);

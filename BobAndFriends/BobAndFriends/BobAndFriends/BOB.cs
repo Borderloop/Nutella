@@ -166,7 +166,7 @@ namespace BobAndFriends
             foreach(DataRow row in Rerunnables.Rows)
             {
                 p.Title = row.Field<String>("title") ?? "";
-                p.EAN = row.Field<String>("ean") ?? "";
+                p.EAN = row.Field<Int64?>("ean") ?? null;
                 p.SKU = row.Field<String>("sku") ?? "";
                 p.Brand = row.Field<String>("brand") ?? "";
                 p.Category = row.Field<String>("category") ?? "";
@@ -337,7 +337,7 @@ namespace BobAndFriends
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
         /// <returns>The article number if found, -1 otherwise.</returns>
-        private int checkEAN(string ean)
+        private int checkEAN(Int64? ean)
         {
             //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumberOfEAN(ean);

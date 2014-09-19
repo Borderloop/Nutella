@@ -29,21 +29,21 @@ namespace BobAndFriends
         [STAThread]
         static void Main(string[] args)
         {
-            /*
+            
             //Initialize
             Initialize();
                    
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
-            consumer = new Thread(new ThreadStart(ProductDequeuer));
+            //consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
             producer.Start();
-            consumer.Start();
-             */
+            //consumer.Start();
+             
 
-            Application.EnableVisualStyles();
-            Application.Run(new VisualBob());
+            //Application.EnableVisualStyles();
+            //Application.Run(new VisualBob());
         }
 
         static void ProductDequeuer()
