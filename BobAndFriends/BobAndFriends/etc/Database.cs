@@ -125,6 +125,24 @@ namespace BobAndFriends
             return Read("SELECT description FROM category_synonym");
         }
 
+        public int CountRows(string tableName)
+        {
+            //Create the query
+            string query = "SELECT COUNT(*) FROM " + tableName;
+
+            //Create an integer to return
+            int count;
+
+            //Create the command
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Execute the command and store the value in an object
+            object obj = _cmd.ExecuteScalar();
+
+            //Return the value of the object if it's not null, -1 otherwise.
+            return (count = ((obj != null || obj != DBNull.Value) ? count = Convert.ToInt32(obj) : -1));
+        }
+
         /// <summary>
         /// This method will return the article number found when searching for an SKU, and -1 otherwise.
         /// </summary>
@@ -210,7 +228,7 @@ namespace BobAndFriends
             DataTable _resultTable = new DataTable();
 
             //Create the query
-            string query = @"SELECT * FROM sku WHERE sku LIKE '%@SKU%'";
+            string query = @"SELECT * FROM title WHERE title LIKE '%@SKU%'";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
@@ -447,7 +465,7 @@ namespace BobAndFriends
         public void SaveNewArticle(Product Record, int categoryID)
         {
             // First insert data into the article table
-            string query = "INSERT INTO article (description, brand, image_loc) " +
+            string query = "INSERT INTO article (description, brand, picture_loc_small) " +
                            "VALUES (@DESCRIPTION, @BRAND, @IMAGE_LOC)";
 
             _cmd = new MySqlCommand(query, _conn);
@@ -525,11 +543,12 @@ namespace BobAndFriends
 
             _cmd = new MySqlCommand(query, _conn);
             _cmd.Parameters.AddWithValue("@CATEGORY", category);
-            MySqlDataReader rdr = _cmd.ExecuteReader();
-            rdr.Read();
-            int id = rdr.GetInt32(0);
-            rdr.Close();
-
+            int id = 0;
+            object obj = _cmd.ExecuteScalar();
+            if(obj != null && obj != DBNull.Value)
+            {
+                id = Convert.ToInt32(obj);
+            }
             return id;
         }
 
@@ -541,9 +560,22 @@ namespace BobAndFriends
             _conn.Close();
         }
 
+        /// <summary>
+        /// Gets all records from VBobData which have to be rerunned.
+        /// </summary>
+        /// <returns>All products that have to be rerunned</returns>
         public DataTable GetRerunnables()
         {
             return Read("SELECT * FROM vbobdata WHERE rerun=1");
+        }
+
+        /// <summary>
+        /// Returns all products from the residue
+        /// </summary>
+        /// <returns>All products from the residue</returns>
+        public DataTable GetAllProductsFromResidue()
+        {
+            return Read("Select * FROM residue");
         }
 
         /// <summary>
@@ -553,7 +585,7 @@ namespace BobAndFriends
         public DataTable GetNextVBobProduct()
         {
             //Create the query
-            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description, image_loc as ImageLocation FROM vbobdata WHERE NOT rerun = 1";
+            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description, image_loc as ImageLocation FROM vbobdata WHERE NOT rerun = 1 OR rerun IS NULL";
 
             //Execute it and return the datatable.
             return Read(query);

@@ -38,7 +38,7 @@ namespace BobAndFriends
         /// </summary>
         private void InitializeProducts()
         {
-            Database.Instance.Connect("***", "***", "**", "***");
+            Database.Instance.Connect("","","","");
             selectedProductDataGrid.AutoGenerateColumns = true;
             suggestedProductsDataGrid.AutoGenerateColumns = true;
 
@@ -54,7 +54,7 @@ namespace BobAndFriends
         private void ShowNext()
         {
             selectedProduct = Database.Instance.GetNextVBobProduct();
-            suggestedProducts = Database.Instance.GetSuggestedProducts((int)selectedProduct.Rows[0]["id"]);
+            suggestedProducts = Database.Instance.GetSuggestedProducts((int)selectedProduct.Rows[0]["ID"]);
 
             selProdBind.DataSource = selectedProduct;
             selectedProductDataGrid.DataSource = selProdBind;
@@ -97,7 +97,9 @@ namespace BobAndFriends
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            //Do work
+            int catID = Database.Instance.GetCategoryID((string)selectedProduct.Rows[0]["Category"], true, false);
+            Database.Instance.SaveNewArticle(ToProduct(selectedProduct), catID);
+            Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
             ShowNext();
         }
 

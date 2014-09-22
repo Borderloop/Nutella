@@ -36,9 +36,18 @@ namespace BobAndFriends
         /// </summary>
         private int _categoryID;
 
+        /// <summary>
+        /// A flag to keep track of when we're rerunning through the residue.
+        /// </summary>
+        private bool rerunningResidue = false;
+
         public BOB()
         {
+            //Initialize BOB
             Initialize();
+
+            //First process the products which are flagged for a rerun by the GUI.
+            //These products contain the best data since they are manually configured.
             ProcessRerunnables();
         }
 
@@ -52,12 +61,16 @@ namespace BobAndFriends
             //the brand name or the sku value. Therefore, we filter them out.
             if(Record.Title.Contains(Record.SKU))
             {
+                //Split the title with the SKU, leaving at least two strings
+                //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
                 string[] s = Record.Title.Split(new string[] {Record.SKU}, StringSplitOptions.RemoveEmptyEntries);
                 Record.Title = String.Concat(s);
             }
 
             if (Record.Title.Contains(Record.Brand))
             {
+                //Split the title with the Brand, leaving at least two strings
+                //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
                 string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
                 Record.Title = String.Concat(s);
             }
@@ -66,14 +79,14 @@ namespace BobAndFriends
 
             //If checkSKU() return true, the record matches with a product in the database and its data
             //can be added to the product. It is done then.
-            if (!Record.SKU.Equals("") && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+            if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
                 //The product has an SKU and it's a match.
                 SaveMatch(Record);
             }
 
             //If the first check does not go well, check for the ean.
-            if (!Record.EAN.Equals("") && !Record.SKU.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+            if (!Record.EAN.Equals("") && (Record.SKU.Length >= 3) && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
                 //Check for a partial SKU match
                 if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
@@ -192,6 +205,52 @@ namespace BobAndFriends
         }
 
         /// <summary>
+        /// This method will rerun all the products in the residue through BOB.
+        /// This process will be terminated if no products are added during the walkthrough,
+        /// meaning it will stop when countBefore == countAfter.
+        /// </summary>
+        public void RerunResidue()
+        {
+            //Set flag to true
+            rerunningResidue = true;
+
+            //Count rows before starting
+            int rowsBefore = Database.Instance.CountRows("residue");
+
+            //Get the whole residue
+            DataTable residue = Database.Instance.GetAllProductsFromResidue();
+
+            //Create a product
+            Product p = new Product();
+
+            //Loop through each row
+            foreach (DataRow row in residue.Rows)
+            {
+                p.Title = row.Field<String>("title") ?? "";
+                p.EAN = row.Field<Int64?>("ean") ?? null;
+                p.SKU = row.Field<String>("sku") ?? "";
+                p.Brand = row.Field<String>("brand") ?? "";
+                p.Category = row.Field<String>("category") ?? "";
+                p.Description = row.Field<String>("description") ?? "";
+                p.Image_Loc = row.Field<String>("image") ?? "";
+
+                Process(p);
+            }
+
+            //count rows afterwards
+            int rowsAfter = Database.Instance.CountRows("residue");
+
+            //Check if amounts match. If not, run again.
+            if(rowsAfter != rowsBefore)
+            {
+                RerunResidue();
+            }
+
+            //Done. Set flag to false.
+            rerunningResidue = false;
+        }
+
+        /// <summary>
         /// Method to check if a record contains a brand.
         /// </summary>
         private Boolean CheckBrand(Product Record)
@@ -230,7 +289,7 @@ namespace BobAndFriends
         /// It adds missing data to the found article and adds synonyms.
         /// </summary>
         private void SaveMatch(Product Record)
-        {
+        {           
             DataTable MatchedArticle = Database.Instance.GetProduct(_matchedArticleID);
 
             // First, check if there are null  or empty values present in the matched article.
@@ -308,6 +367,14 @@ namespace BobAndFriends
                     Database.Instance.SaveCategorySynonym(Convert.ToInt32(id), Record.Category);
                 }
             }
+
+            //We've found a match while we were running through the residue, therefore we need to delete the record from there.
+            //Doing that at the end of the method makes sure the data will remain stored in the residue in case
+            //something in this method goes wrong.
+            if (rerunningResidue)
+            {
+                Database.Instance.DeleteFromResidue(Record);
+            }
         }
 
         /// <summary>
@@ -346,7 +413,7 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// This method is used to check if the given eAN exists in the database. If so, it will return
+        /// This method is used to check if the given EAN exists in the database. If so, it will return
         /// the article number of the found product. It will return -1 otherwise.
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
@@ -375,6 +442,13 @@ namespace BobAndFriends
         /// <param name="p"></param>
         private void sendToResidue(Product p)
         {
+            //If we are rerunning through the residue, this product already exists there.
+            //No need to add it again.
+            if(rerunningResidue)
+            {
+                return;
+            }
+
             //Call SendToResidue() to do so.
             Database.Instance.SendTo(p, "residue");
         }
