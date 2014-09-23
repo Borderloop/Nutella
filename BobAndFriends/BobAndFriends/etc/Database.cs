@@ -165,7 +165,7 @@ namespace BobAndFriends
             _resultTable.Load(_cmd.ExecuteReader());
 
             //Return the article number if found, -1 otherwise.
-            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+            return (_resultTable.Rows.Count > 0 ? (int)_resultTable.Rows[0]["article_id"] : -1);
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace BobAndFriends
             _resultTable.Load(_cmd.ExecuteReader());
 
             //Return the article number if found, -1 otherwise.
-            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+            return (_resultTable.Rows.Count > 0 ? (int)_resultTable.Rows[0]["article_id"] : -1);
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace BobAndFriends
         /// <returns></returns>
         public DataTable GetCategorySynonymsForArticle(int id)
         {
-            string query = "SELECT cs.description FROM category_synonyms as cs " +
+            string query = "SELECT cs.description FROM category_synonym as cs " +
                            "INNER JOIN category as c ON c.id = cs.category_id " +
                            "INNER JOIN cat_article as ca ON ca.category_id = c.id " +
                            "INNER JOIN article as a ON a.id = ca.article_id " +
@@ -355,7 +355,7 @@ namespace BobAndFriends
         /// <param name="description">The description of the category, which is the synonym</param>
         public void SaveCategorySynonym(int id, string description)
         {
-            string query = "INSERT into category_synonyms VALUES (@ID, @DESCRIPTION)";
+            string query = "INSERT into category_synonym VALUES (@ID, @DESCRIPTION)";
 
             _cmd = new MySqlCommand(query, _conn);
             _cmd.Parameters.AddWithValue("@ID", id);
@@ -375,7 +375,6 @@ namespace BobAndFriends
             //Add names/values to the dictionary
             col_vals.Add("title", p.Title);
             col_vals.Add("description", p.Description);
-            col_vals.Add("image_loc", p.Image_Loc);
             col_vals.Add("category", p.Category);
             col_vals.Add("ean", p.EAN);
             col_vals.Add("sku", p.SKU);
@@ -384,6 +383,10 @@ namespace BobAndFriends
             if(tableName.Equals("vbobdata"))
             {
                 col_vals.Add("rerun", rerun);
+                col_vals.Add("image_loc", p.Image_Loc);
+            } else
+            {
+                col_vals.Add("image", p.Image_Loc);
             }
 
             //Declare string for the columns and values
@@ -465,7 +468,7 @@ namespace BobAndFriends
         public void SaveNewArticle(Product Record, int categoryID)
         {
             // First insert data into the article table
-            string query = "INSERT INTO article (description, brand, picture_loc_small) " +
+            string query = "INSERT INTO article (description, brand, image_loc) " +
                            "VALUES (@DESCRIPTION, @BRAND, @IMAGE_LOC)";
 
             _cmd = new MySqlCommand(query, _conn);
@@ -496,7 +499,7 @@ namespace BobAndFriends
             }
             if (Record.Title != "")
             {
-                query3 += "INSERT INTO title VALUES (@TITLE, @AID); ";
+                query3 += "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, 1, @AID); ";
             }
             // Don't execute when none of the records are present, which means
             // the query is empty.
@@ -504,20 +507,20 @@ namespace BobAndFriends
             {
                 MySqlCommand _cmd3 = new MySqlCommand(query3, _conn);
                 _cmd3.Parameters.AddWithValue("@AID", aid);
-                _cmd3.Parameters.AddWithValue("@EAN", Record.EAN);
-                _cmd3.Parameters.AddWithValue("@SKU", Record.SKU);
-                _cmd3.Parameters.AddWithValue("@TITLE", Record.Title);
+                if (Record.EAN != null) { _cmd3.Parameters.AddWithValue("@EAN", Record.EAN); }
+                if(Record.SKU != "") {_cmd3.Parameters.AddWithValue("@SKU", Record.SKU);}
+                if(Record.Title != "") {_cmd3.Parameters.AddWithValue("@TITLE", Record.Title);}
 
                 _cmd3.ExecuteNonQuery();
             }
             
             // Now save the category.
-            string query4 = "INSERT INTO cat_article VALUES(@CATID, @AID)";
-            MySqlCommand _cmd4 = new MySqlCommand(query4, _conn);
-            _cmd4.Parameters.AddWithValue("@CATID", categoryID);
-            _cmd4.Parameters.AddWithValue("@AID", aid);
+            //string query4 = "INSERT INTO cat_article VALUES(@CATID, @AID)";
+            //MySqlCommand _cmd4 = new MySqlCommand(query4, _conn);
+            //_cmd4.Parameters.AddWithValue("@CATID", categoryID);
+            //_cmd4.Parameters.AddWithValue("@AID", aid);
 
-            _cmd4.ExecuteNonQuery();
+            //_cmd4.ExecuteNonQuery();
             
         }
 
@@ -618,6 +621,18 @@ namespace BobAndFriends
         {
             String query = "DELETE FROM vbob_suggested WHERE vbob_suggested.vbob_id = " + id + ";";
             query += "DELETE FROM vbobdata WHERE vbobdata.id = " + id + ";";
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.ExecuteNonQuery();
+        }
+
+        public void DeleteFromResidue(Product p)
+        {
+            string query = "DELETE FROM residue WHERE residue.title = " + p.Title
+                + " AND residue.description = " + p.Description
+                + " AND residue.category = " + p.Category
+                + " AND residue.brand = " + p.Brand
+                + " AND residue.ean = " + p.EAN
+                + " AND residue.sku = " + p.SKU;
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
             _cmd.ExecuteNonQuery();
         }

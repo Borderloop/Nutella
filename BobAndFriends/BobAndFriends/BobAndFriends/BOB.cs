@@ -59,7 +59,7 @@ namespace BobAndFriends
         {
             //Precondition: Record has to be clean; the title should not include
             //the brand name or the sku value. Therefore, we filter them out.
-            if(Record.Title.Contains(Record.SKU))
+            if(Record.Title.Contains(Record.SKU) && Record.SKU != "")
             {
                 //Split the title with the SKU, leaving at least two strings
                 //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
@@ -67,7 +67,7 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
 
-            if (Record.Title.Contains(Record.Brand))
+            if (Record.Title.Contains(Record.Brand) && Record.Brand != "")
             {
                 //Split the title with the Brand, leaving at least two strings
                 //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
@@ -89,11 +89,11 @@ namespace BobAndFriends
             if (!Record.EAN.Equals("") && (Record.SKU.Length >= 3) && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
                 //Check for a partial SKU match
-                if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
-                {
+                //if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
+                //{
                     //We have an EAN and a partial SKU, enough for the database
                     SaveMatch(Record);
-                }
+                //}
             }
 
             //The product has no valid EAN and no valid SKU, therefore we will match titles.
@@ -109,13 +109,12 @@ namespace BobAndFriends
             // from the Borderloop category tree. Send record to residue and stop execution of method.
             // If checkCategory() returns true, the record category matches with one of the 
             // Borderloop category tree. Continue with the brand check. 
-            if (!CheckCategory(Record))
-            {
-                sendToResidue(Record);
-                return;
-            }
-            Console.WriteLine("Found a valid match!! Saving to database");
-            Database.Instance.SaveNewArticle(Record, _categoryID);
+            //if (!CheckCategory(Record))
+            //{
+            //    sendToResidue(Record);
+            //    return;
+            //}
+            
             
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
@@ -133,18 +132,18 @@ namespace BobAndFriends
             }
             else
             {
-                //The product will has a brand name which doesnt exist in the database and a valid category
-                CreateNewProduct(Record);
+                if (Record.Title != "" && Record.EAN != null)
+                {
+                    //The product will has a brand name which doesnt exist in the database and a valid category
+                    Database.Instance.SaveNewArticle(Record, _categoryID);
+                }
+                else
+                {
+                    sendToResidue(Record);
+                }
             }
-        }
-
-        /// <summary>
-        /// This method wil create a new product and put it in the database.
-        /// </summary>
-        /// <param name="Record">The product to be put in the database</param>
-        private void CreateNewProduct(Product Record)
-        {
-            //To be implemented.
+            
+            
         }
 
         /// <summary>
@@ -335,7 +334,7 @@ namespace BobAndFriends
                         catch(InvalidCastException) // An ean is returned, which is int64 instead of string. Convert values for this.
                         {
                             Debug.WriteLine("Invalid cast");
-                            hasMatch = MatchedArticle.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == Convert.ToInt64(row.Field<Int64>(column)));
+                            hasMatch = MatchedArticle.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == Convert.ToInt64(row.Field<Int64?>(column)));
                         }
 
                         // If hasMatch is false, a different value is found. Insert this into the database, but only if the record value is not empty.
@@ -359,7 +358,7 @@ namespace BobAndFriends
                 DataTable categorySynonyms = Database.Instance.GetCategorySynonymsForArticle(_matchedArticleID);
                 bool containsCategorySynonym = categorySynonyms.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
 
-                if (containsCategorySynonym == false) // If containsCategorySynonym equals false, a category synonym is found: Save it.
+                if (containsCategorySynonym == true) // If containsCategorySynonym equals false, a category synonym is found: Save it.
                 {
                     Object o = category.Rows[0][0];
                     string id = o.ToString(); // category id
