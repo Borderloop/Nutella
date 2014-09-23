@@ -28,7 +28,7 @@ namespace BobAndFriends
         /// <summary>
         /// A set containing all unique categories.
         /// </summary>
-        private SortedSet<string> _cats;
+        public SortedSet<string> _cats;
 
         /// <summary>
         /// A Stopwatch for measuring the elapsed time (useful fo optimizing).

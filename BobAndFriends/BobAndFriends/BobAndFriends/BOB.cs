@@ -101,17 +101,8 @@ namespace BobAndFriends
             else
             {
                 //The product will has a brand name which doesnt exist in the database and a valid category
-                CreateNewProduct(Record);
+                SaveNewArticle(Record);
             }
-        }
-
-        /// <summary>
-        /// This method wil create a new product and put it in the database.
-        /// </summary>
-        /// <param name="Record">The product to be put in the database</param>
-        private void CreateNewProduct(Product Record)
-        {
-            //To be implemented.
         }
 
         /// <summary>
@@ -273,7 +264,7 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// Gets the value of a 
+        /// Gets the value of a Record for a given property
         /// </summary>
         /// <param name="src"></param>
         /// <param name="propName"></param>
@@ -353,12 +344,22 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// This method will match the product by references and then show it in the GUI
+        /// This method will match the product by relevance and then show it in the GUI
         /// </summary>
         /// <param name="Record">The record to be matched</param>
         private void MatchByRelevance(Product Record)
         {
-            //To be implemented
+            
+        }
+
+        /// <summary>
+        /// This method wil create a new product and put it in the database.
+        /// </summary>
+        /// <param name="Record">The product to be put in the database</param>
+        private void SaveNewArticle(Product Record)
+        {
+            //Invoke SaveNewArticle() from the database object.
+            Database.Instance.SaveNewArticle(Record, _categoryID);
         }
 
         /// <summary>

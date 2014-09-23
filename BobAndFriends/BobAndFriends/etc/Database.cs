@@ -312,7 +312,7 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// Gets tje category synonyms for an article
+        /// Gets the category synonyms for an article
         /// </summary>
         /// <param name="id">The article id</param>
         /// <returns></returns>

@@ -29,7 +29,7 @@ namespace BobAndFriends
         [STAThread]
         static void Main(string[] args)
         {
-            /*
+            
             //Initialize
             Initialize();
                       
@@ -40,21 +40,27 @@ namespace BobAndFriends
             //Start threads
             producer.Start();
             consumer.Start();
-             */
+            
+            /*
             Application.EnableVisualStyles();
-            Application.Run(new VisualBob());
+            Application.Run(new VisualBob());*/
         }
 
         static void ProductDequeuer()
         {
             //Create BOB and start dequeueing items.
             BOB bob = new BOB();
-            
+            Product p = new Product();
+
+            p.Title = "Iphone 5";
+            p.Brand = "Apple";
+
+            bob.Process(p);/*
             //Remain alive while thread one isnt done
             while (true)
             {
                 //Take product from queue
-                Product p = ProductQueue.Dequeue(); 
+                Product p = ProductQueue.Dequeue();
 
                 //Break out of while loop when the queue gives null. This only happens when 
                 //productfeedreader is flagged as done.
@@ -67,7 +73,10 @@ namespace BobAndFriends
                 bob.Process(p);
             }
             bob.FinalizeAndClose();
-            Console.WriteLine("Thread 2 is done.");
+            foreach (string category in Statics.Logger._cats){
+                Statics.Logger.WriteLine(category);
+            }
+            Console.WriteLine("Thread 2 is done.");*/
         }
 
         static void ProductFeedReader()
