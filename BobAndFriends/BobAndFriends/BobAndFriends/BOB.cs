@@ -41,6 +41,8 @@ namespace BobAndFriends
         /// </summary>
         private bool rerunningResidue = false;
 
+        private int count;
+
         public BOB()
         {
             //Initialize BOB
@@ -48,7 +50,7 @@ namespace BobAndFriends
 
             //First process the products which are flagged for a rerun by the GUI.
             //These products contain the best data since they are manually configured.
-            ProcessRerunnables();
+            //ProcessRerunnables();
         }
 
         /// <summary>
@@ -57,6 +59,7 @@ namespace BobAndFriends
         /// </summary>
         public void Process(Product Record = null)
         {
+            /*
             //Precondition: Record has to be clean; the title should not include
             //the brand name or the sku value. Therefore, we filter them out.
             if(Record.Title.Contains(Record.SKU) && Record.SKU != "")
@@ -74,51 +77,55 @@ namespace BobAndFriends
                 string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
                 Record.Title = String.Concat(s);
             }
+            */
 
-            //First test - EAN/SKU match and perfect title matching.
-
-            //If checkSKU() return true, the record matches with a product in the database and its data
-            //can be added to the product. It is done then.
-            if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+            if (Database.Instance.HasArticles())
             {
-                //The product has an SKU and it's a match.
-                SaveMatch(Record);
-            }
+                //First test - EAN/SKU match and perfect title matching.
 
-            //If the first check does not go well, check for the ean.
-            if (!Record.EAN.Equals("") && (Record.SKU.Length >= 3) && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
-            {
-                //Check for a partial SKU match
-                //if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
-                //{
+                //If checkSKU() return true, the record matches with a product in the database and its data
+                //can be added to the product. It is done then.
+                if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+                {
+                    //The product has an SKU and it's a match.
+                    SaveMatch(Record);
+                }
+
+                //If the first check does not go well, check for the ean.
+                if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+                {
+                    //Check for a partial SKU match
+                    //if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
+                    //{
                     //We have an EAN and a partial SKU, enough for the database
                     SaveMatch(Record);
+                    //}
+                }
+
+                //The product has no valid EAN and no valid SKU, therefore we will match titles.
+                /*if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
+                {
+                    //We found a perfect title match. Awesome!
+                    SaveMatch(Record);
+                }
+                */
+                //Product did not pass the first few tests - category test is up next.
+
+                // If checkCategory() returns false, the record category doesn't match any of the categories 
+                // from the Borderloop category tree. Send record to residue and stop execution of method.
+                // If checkCategory() returns true, the record category matches with one of the 
+                // Borderloop category tree. Continue with the brand check. 
+                //if (!CheckCategory(Record))
+                //{
+                //    sendToResidue(Record);
+                //    return;
                 //}
+
             }
 
-            //The product has no valid EAN and no valid SKU, therefore we will match titles.
-            if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
-            {
-                //We found a perfect title match. Awesome!
-                SaveMatch(Record);
-            }
-            
-            //Product did not pass the first few tests - category test is up next.
-            
-            // If checkCategory() returns false, the record category doesn't match any of the categories 
-            // from the Borderloop category tree. Send record to residue and stop execution of method.
-            // If checkCategory() returns true, the record category matches with one of the 
-            // Borderloop category tree. Continue with the brand check. 
-            //if (!CheckCategory(Record))
-            //{
-            //    sendToResidue(Record);
-            //    return;
-            //}
-            
-            
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
-            if (!CheckBrand(Record))
+            if (CheckBrand(Record))
             {
                 sendToResidue(Record);
                 return;
@@ -142,8 +149,13 @@ namespace BobAndFriends
                     sendToResidue(Record);
                 }
             }
-            
-            
+
+            count++;
+
+            if(count%1000==0)
+            {
+                Console.WriteLine("\n\t\t\t\t\tProcessed products: " + count);
+            }
         }
 
         /// <summary>
@@ -158,6 +170,8 @@ namespace BobAndFriends
             Categories = Database.Instance.GetCategories();
             CategorySynonyms = Database.Instance.GetCategorySynonyms();
 
+            count = 0;
+
         }
 
         /// <summary>
@@ -165,7 +179,7 @@ namespace BobAndFriends
         /// </summary>
         private void OpenDatabaseConnection()
         {
-            Console.WriteLine("Opening connection with database...");
+            Console.WriteLine("\n\t\t\t\t\tOpening connection with database...\n");
 
             try
             {
@@ -174,15 +188,15 @@ namespace BobAndFriends
             }
             catch (Exception e)
             {
-                Console.WriteLine("Connection failed.");
-                Console.WriteLine("Error: " + e.Message);
-                Console.WriteLine("From: " + e.Source);
-                Console.WriteLine("Press enter to exit.");
+                Console.WriteLine("\n\t\t\t\t\tConnection failed.\n");
+                Console.WriteLine("\t\t\t\t\tError: " + e.Message);
+                Console.WriteLine("\t\t\t\t\tFrom: " + e.Source);
+                Console.WriteLine("\t\t\t\t\tPress enter to exit.\n");
                 Console.Read();
                 Environment.Exit(0);
             }
 
-            Console.WriteLine("Connection opened.");
+            Console.WriteLine("\n\t\t\t\t\tConnection opened.\n");
         }
 
         public void ProcessRerunnables()
@@ -210,6 +224,7 @@ namespace BobAndFriends
         /// </summary>
         public void RerunResidue()
         {
+            Console.WriteLine("Started rerunning the residue.");
             //Set flag to true
             rerunningResidue = true;
 
@@ -242,9 +257,11 @@ namespace BobAndFriends
             //Check if amounts match. If not, run again.
             if(rowsAfter != rowsBefore)
             {
+                Console.WriteLine("Going through again.");
                 RerunResidue();
             }
 
+            Console.WriteLine("Done.");
             //Done. Set flag to false.
             rerunningResidue = false;
         }
@@ -477,15 +494,15 @@ namespace BobAndFriends
         /// </summary>
         public void FinalizeAndClose()
         {
-            Console.WriteLine("Closing connection with database...");
+            Console.WriteLine("\n\t\t\t\t\tClosing connection with database...");
 
             //Close the database.
             Database.Instance.Close();
 
             //Close everything and shut down.
-            Console.WriteLine("Writing data to logfile...");
+            Console.WriteLine("\t\t\t\t\tWriting data to logfile...");
             Statics.Logger.Close();
-            Console.WriteLine("Done.");
+            Console.WriteLine("\t\t\t\t\tDone.");
             Environment.Exit(1);
         }
     }

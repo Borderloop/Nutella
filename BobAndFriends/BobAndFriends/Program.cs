@@ -23,8 +23,6 @@ namespace BobAndFriends
         /// </summary>
         public static Thread consumer;
 
-        public static Stopwatch sw;
-
         /// <summary>
         /// Main method will only start the ProductFeedReader
         /// </summary>
@@ -43,19 +41,27 @@ namespace BobAndFriends
             //Start threads
             producer.Start();
             consumer.Start();
-
-            sw = new Stopwatch();
              
-
             //Application.EnableVisualStyles();
-            //Application.Run(new VisualBob());
+            /*try
+            {
+                Application.Run(new VisualBob());
+            } 
+            catch(Exception e)
+            {
+                //don't do anything as it is not that important
+            }
+            finally
+            {
+                Application.Exit();
+            }*/
         }
 
         static void ProductDequeuer()
         {
             //Create BOB and start dequeueing items.
             BOB bob = new BOB();
-            
+            /*
             //Remain alive while thread one isnt done
             while (true)
             {
@@ -68,24 +74,9 @@ namespace BobAndFriends
                 {
                     break;
                 }
-
-                if(ProductQueue.queue.Count % 1000 == 0)
-                {
-                    if(sw.IsRunning)
-                    {
-                        sw.Stop();
-                        TimeSpan duration = sw.Elapsed;
-                        duration = TimeSpan.FromTicks(duration.Ticks * (ProductQueue.queue.Count / 1000));
-                        Console.WriteLine("Estimated processing time remaining: " + duration);
-                        sw.Reset();
-                    }
-                    sw.Start();
-                    Console.WriteLine("Queue size: " + ProductQueue.queue.Count);
-                }
-
                 //Process the product otherwise.
                 bob.Process(p);
-            }
+            }*/
 
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
             bob.RerunResidue();
@@ -113,7 +104,8 @@ namespace BobAndFriends
             Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
             Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
             Statics.TickCount = 0;
-            Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);            
+            Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);
+            Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
         }
 
 

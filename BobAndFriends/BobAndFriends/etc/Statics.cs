@@ -28,5 +28,7 @@ namespace BobAndFriends
         /// The settings used in the program.
         /// </summary>
         public static Dictionary<string,string> settings;
+
+        public static int maxQueueSize;
     }
 }
