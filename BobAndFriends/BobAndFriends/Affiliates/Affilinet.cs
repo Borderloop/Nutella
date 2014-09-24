@@ -53,7 +53,7 @@ namespace BobAndFriends.Affiliates
                                 case "EAN":
                                     if (_reader.Read())
                                     {
-                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
+                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? (Int64?)Convert.ToInt64(_reader.Value) : null;
                                     }
                                     break;
 

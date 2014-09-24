@@ -22,18 +22,33 @@ namespace BobAndFriends
         private DataTable CategorySynonyms;
 
         /// <summary>
+        /// Contains all data of the products which have been fixed and are to be rerunned again.
+        /// </summary>
+        private DataTable Rerunnables;
+
+        /// <summary>
         /// If a match if found, store the ID in this field.
         /// </summary>
-        private int _matchedArticleID = 1;
+        private int _matchedArticleID;
 
         /// <summary>
         /// If a category match is found, store its id in this field.
         /// </summary>
         private int _categoryID;
 
+        /// <summary>
+        /// A flag to keep track of when we're rerunning through the residue.
+        /// </summary>
+        private bool rerunningResidue = false;
+
         public BOB()
         {
+            //Initialize BOB
             Initialize();
+
+            //First process the products which are flagged for a rerun by the GUI.
+            //These products contain the best data since they are manually configured.
+            ProcessRerunnables();
         }
 
         /// <summary>
@@ -42,25 +57,43 @@ namespace BobAndFriends
         /// </summary>
         public void Process(Product Record = null)
         {
+            //Precondition: Record has to be clean; the title should not include
+            //the brand name or the sku value. Therefore, we filter them out.
+            if (Record.Title.Contains(Record.SKU) && Record.SKU != "")
+            {
+                //Split the title with the SKU, leaving at least two strings
+                //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
+                string[] s = Record.Title.Split(new string[] { Record.SKU }, StringSplitOptions.RemoveEmptyEntries);
+                Record.Title = String.Concat(s);
+            }
+
+            if (Record.Title.Contains(Record.Brand) && Record.Brand != "")
+            {
+                //Split the title with the Brand, leaving at least two strings
+                //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
+                string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
+                Record.Title = String.Concat(s);
+            }
+
             //First test - EAN/SKU match and perfect title matching.
 
             //If checkSKU() return true, the record matches with a product in the database and its data
             //can be added to the product. It is done then.
-            if (!Record.SKU.Equals("") && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+            if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
                 //The product has an SKU and it's a match.
                 SaveMatch(Record);
             }
 
             //If the first check does not go well, check for the ean.
-            if (!Record.EAN.Equals("") && !Record.SKU.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+            if (!Record.EAN.Equals("") && (Record.SKU.Length >= 3) && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
                 //Check for a partial SKU match
-                if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
-                {
-                    //We have an EAN and a partial SKU, enough for the database
-                    SaveMatch(Record);
-                }
+                //if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
+                //{
+                //We have an EAN and a partial SKU, enough for the database
+                SaveMatch(Record);
+                //}
             }
 
             //The product has no valid EAN and no valid SKU, therefore we will match titles.
@@ -69,21 +102,20 @@ namespace BobAndFriends
                 //We found a perfect title match. Awesome!
                 SaveMatch(Record);
             }
-            
+
             //Product did not pass the first few tests - category test is up next.
-            
+
             // If checkCategory() returns false, the record category doesn't match any of the categories 
             // from the Borderloop category tree. Send record to residue and stop execution of method.
             // If checkCategory() returns true, the record category matches with one of the 
             // Borderloop category tree. Continue with the brand check. 
-            if (!CheckCategory(Record))
-            {
-                sendToResidue(Record);
-                return;
-            }
-            Console.WriteLine("Found a valid match!! Saving to database");
-            Database.Instance.SaveNewArticle(Record, _categoryID);
-            
+            //if (!CheckCategory(Record))
+            //{
+            //    sendToResidue(Record);
+            //    return;
+            //}
+
+
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
             if (!CheckBrand(Record))
@@ -94,7 +126,7 @@ namespace BobAndFriends
 
             //Run a brand check. If it exists, we can go on to match the product by relevance.
             //If it doesn't. however, we have to create a new product.
-            if(CheckBrandInDatabase(Record))
+            if (CheckBrandInDatabase(Record))
             {
                 MatchByRelevance(Record);
             }
@@ -103,6 +135,17 @@ namespace BobAndFriends
                 //The product will has a brand name which doesnt exist in the database and a valid category
                 SaveNewArticle(Record);
             }
+
+            if (Record.Title != "" && Record.EAN != null)
+            {
+                //The product will has a brand name which doesnt exist in the database and a valid category
+                Database.Instance.SaveNewArticle(Record, _categoryID);
+            }
+            else
+            {
+                sendToResidue(Record);
+            }
+          
         }
 
         /// <summary>
@@ -136,12 +179,76 @@ namespace BobAndFriends
                 Console.WriteLine("Connection failed.");
                 Console.WriteLine("Error: " + e.Message);
                 Console.WriteLine("From: " + e.Source);
-                Console.WriteLine("Press any key to exit.");
+                Console.WriteLine("Press enter to exit.");
                 Console.Read();
                 Environment.Exit(0);
             }
 
             Console.WriteLine("Connection opened.");
+        }
+
+        public void ProcessRerunnables()
+        {
+            Rerunnables = Database.Instance.GetRerunnables();
+            Product p = new Product();
+            foreach (DataRow row in Rerunnables.Rows)
+            {
+                p.Title = row.Field<String>("title") ?? "";
+                p.EAN = row.Field<Int64?>("ean") ?? null;
+                p.SKU = row.Field<String>("sku") ?? "";
+                p.Brand = row.Field<String>("brand") ?? "";
+                p.Category = row.Field<String>("category") ?? "";
+                p.Description = row.Field<String>("description") ?? "";
+                p.Image_Loc = row.Field<String>("image_loc") ?? "";
+
+                Process(p);
+            }
+        }
+
+        /// <summary>
+        /// This method will rerun all the products in the residue through BOB.
+        /// This process will be terminated if no products are added during the walkthrough,
+        /// meaning it will stop when countBefore == countAfter.
+        /// </summary>
+        public void RerunResidue()
+        {
+            //Set flag to true
+            rerunningResidue = true;
+
+            //Count rows before starting
+            int rowsBefore = Database.Instance.CountRows("residue");
+
+            //Get the whole residue
+            DataTable residue = Database.Instance.GetAllProductsFromResidue();
+
+            //Create a product
+            Product p = new Product();
+
+            //Loop through each row
+            foreach (DataRow row in residue.Rows)
+            {
+                p.Title = row.Field<String>("title") ?? "";
+                p.EAN = row.Field<Int64?>("ean") ?? null;
+                p.SKU = row.Field<String>("sku") ?? "";
+                p.Brand = row.Field<String>("brand") ?? "";
+                p.Category = row.Field<String>("category") ?? "";
+                p.Description = row.Field<String>("description") ?? "";
+                p.Image_Loc = row.Field<String>("image") ?? "";
+
+                Process(p);
+            }
+
+            //count rows afterwards
+            int rowsAfter = Database.Instance.CountRows("residue");
+
+            //Check if amounts match. If not, run again.
+            if (rowsAfter != rowsBefore)
+            {
+                RerunResidue();
+            }
+
+            //Done. Set flag to false.
+            rerunningResidue = false;
         }
 
         /// <summary>
@@ -150,7 +257,7 @@ namespace BobAndFriends
         private Boolean CheckBrand(Product Record)
         {
             // If the Product's Brand Property is an empty String, no brand was given.
-            return Record.Brand.Equals("");
+            return !Record.Brand.Equals("");
         }
 
         /// <summary>
@@ -182,84 +289,158 @@ namespace BobAndFriends
         /// This method is called when a match is found. It saves the found match to the database.
         /// It adds missing data to the found article and adds synonyms.
         /// </summary>
-        private void SaveMatch(Product Record)
+        private void  SaveMatch(Product Record)
         {
-            DataTable MatchedArticle = Database.Instance.GetProduct(_matchedArticleID);
+            //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
+            DataTable articleTable = Database.Instance.GetArticleTableForArticle(_matchedArticleID);
+            DataTable eanTable = Database.Instance.GetEANTableForArticle(_matchedArticleID);
+            DataTable skuTable = Database.Instance.GetSKUTableForArticle(_matchedArticleID);
+            DataTable titleSynonymTable = Database.Instance.GetTitleSynonymTableForArticle(_matchedArticleID);
 
-            // First, check if there are null  or empty values present in the matched article.
-            // If there are, check if the record has values for the missing data and update these values.
-            foreach (DataColumn column in MatchedArticle.Columns)
+            // Put these DataTables in an array for looping.
+            DataTable[] dtArray = new DataTable[3];
+            dtArray[0] = articleTable;
+            dtArray[1] = eanTable;
+            dtArray[2] = skuTable;
+
+            //Loop over each DataTable and its columns
+            foreach (DataTable dt in dtArray)
             {
-                Object o = MatchedArticle.Rows[0][column];
-                if (MatchedArticle.Rows.OfType<DataRow>().Any(r => r.IsNull(column) || o.ToString() == "")) // If matched article has no value for this column...
+                foreach (DataColumn column in dt.Columns)
                 {
-                    String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
-                    String recordValue = GetPropValue(Record, splitted[1]).ToString();
-
-                    // If the TABLE name doesn't equal 'article', it's either the ean, sku or titles table. Also meaning that 
-                    // there is no record in this table at all for the matched article. Because of this, an update won't work:
-                    // Insert instead.
-                    if (recordValue != "")
+                    Object o;
+                    try
                     {
-                        if (splitted[0] != "article")
-                        {
-                            Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID);
-                        }
-                        else
-                        {
-                            Database.Instance.Update(splitted[0], splitted[1], recordValue, _matchedArticleID);
-                        }
-
+                        o = dt.Rows[0][column];
                     }
-                }
-                // Else the column has a value, so check if the record value differs from the article value
-                // and if so, save it.
-                else
-                {
-                    String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
-                    if (splitted[0].ToString() != "article") // We only want to add (double) data for ean, sku and titles.
+                    // No records in given table for this article. This always is the ean or sku table. Insert right away and break.
+                    catch (IndexOutOfRangeException)  
                     {
-                        String recordValue = GetPropValue(Record, splitted[1]).ToString();
-                        String matchedValue = o.ToString();
-                        bool hasMatch = false;
-                        try
-                        {
-                            hasMatch = MatchedArticle.AsEnumerable().Any(row => recordValue.ToLower() == row.Field<String>(column).ToLower());
-                        }
-                        catch(InvalidCastException) // An ean is returned, which is int64 instead of string. Convert values for this.
-                        {
-                            Debug.WriteLine("Invalid cast");
-                            hasMatch = MatchedArticle.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == Convert.ToInt64(row.Field<Int64>(column)));
-                        }
+                        UpdateEmptyColumn(column, Record);
+                        break;
+                    }
+                    if (dt.Rows.OfType<DataRow>().Any(r => r.IsNull(column) || o.ToString().Equals(""))) // If matched article has no value for this column...
+                    {
+                        UpdateEmptyColumn(column, Record); //Update the empty column
+                    }
 
-                        // If hasMatch is false, a different value is found. Insert this into the database, but only if the record value is not empty.
-                        if (hasMatch == false && recordValue != null && recordValue != "") 
-                        {
-                            Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID);
-                        }
-
+                    // Else, the column has a value so check if the article value differs from the record value and if so, add this to the article.
+                    // This is only for the ean and sku tables, not for the article table. This table can't and shouldn't contain double data.
+                    else if(dt != dtArray[0])
+                    {
+                        AddDoubleColumnData(dt, column, Record);
                     }
                 }
             }
 
-            // Finally check if the record category is the same as the article category. If it's not, check if
-            // there's a match in the category_synonyms table for the matched article. If that's also not the case,
-            // add the category from the record to the category_synonyms.
-            DataTable category = Database.Instance.GetCategoryForArticle(_matchedArticleID);
-            bool containsCategory = category.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
+            // Next up is the title_synonym table. Since it has two tables and needs extra processing, this is done seperately from the other tables.
+            CheckTitles(titleSynonymTable, Record);
 
-            if (containsCategory == false)
+            //We've found a match while we were running through the residue, therefore we need to delete the record from there.
+            //Doing that at the end of the method makes sure the data will remain stored in the residue in case
+            //something in this method goes wrong.
+            if (rerunningResidue)
             {
-                DataTable categorySynonyms = Database.Instance.GetCategorySynonymsForArticle(_matchedArticleID);
-                bool containsCategorySynonym = categorySynonyms.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
+                Database.Instance.DeleteFromResidue(Record);
+            }
 
-                if (containsCategorySynonym == false) // If containsCategorySynonym equals false, a category synonym is found: Save it.
+        }
+
+        /// <summary>
+        /// This method updates an empty column for an article, or inserts an entry if
+        /// the title or sku table is empty
+        /// </summary>
+        /// <param name="column">The column to be updated</param>
+        /// <param name="Record">The record that contains the to be inserted data</param>
+        private void UpdateEmptyColumn(DataColumn column, Product Record)
+        {
+            String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
+            String recordValue = GetPropValue(Record, splitted[1]).ToString();
+
+            //If the record value is empty, an update or insert won't be neccesary at all.
+            if (recordValue != "")
+            {
+                // If the TABLE name doesn't equal 'article', it's either the ean, sku or titles table. Also meaning that 
+                // there is no record in this table at all for the matched article. Because of this, an update won't work:
+                // Insert instead.
+                if (splitted[0] != "article")
                 {
-                    Object o = category.Rows[0][0];
-                    string id = o.ToString(); // category id
-
-                    Database.Instance.SaveCategorySynonym(Convert.ToInt32(id), Record.Category);
+                    Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID);
                 }
+                else
+                {
+                    Database.Instance.Update(splitted[0], splitted[1], recordValue, _matchedArticleID);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds an ean or sku to an article if it is not yet present in the database. 
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="column"></param>
+        /// <param name="Record"></param>
+        private void AddDoubleColumnData(DataTable dt, DataColumn column, Product Record)
+        {
+            String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
+            String recordValue = GetPropValue(Record, splitted[1]).ToString();
+
+            bool hasMatch;
+
+            try
+            {
+                hasMatch = dt.AsEnumerable().Any(row => recordValue.ToLower() == row.Field<String>(column).ToLower());
+            }
+            catch (InvalidCastException) // An ean is returned, which is int64 instead of string. Convert values for this.
+            {
+                hasMatch = dt.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == row.Field<Int64>(column));
+            }
+
+            // If hasMatch is false, a different value is found. Insert this into the database, but only if the record value is not empty.
+            if (hasMatch == false && recordValue != null && recordValue != "")
+            {
+                Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID);
+            }
+        }
+
+        /// <summary>
+        /// This method checks if there are article titles similar to the record titles. If so, the match occurrence is
+        /// updated. The occurrence is used to check which title to use for the main title, which is also done in this method.
+        /// If there's no match, add a new match.
+        /// </summary>
+        /// <param name="titleSynonymTable"></param>
+        /// <param name="Record"></param>
+        private void CheckTitles(DataTable titleSynonymTable, Product Record)
+        {
+            DataRow[] foundRow = titleSynonymTable.Select("Title = '" + Record.Title + "'");
+
+            // If the returned rows are bigger then 0, they're always one and found a match. We need to update the occurance column
+            if (foundRow.Count() > 0)
+            {
+                // Always one row, which is the match, get the title, occurences and title_id for it.
+                string matchedTitle = foundRow[0]["title"].ToString();
+                int matchedOccurrences = Convert.ToInt32(foundRow[0]["occurrences"]);
+                int matchedTitleId = Convert.ToInt16(foundRow[0]["title_id"]);
+
+                // Add one for the occurance and update this in the database
+                matchedOccurrences++;
+                Database.Instance.UpdateTitleSynonymOccurrences(matchedTitleId, matchedOccurrences, matchedTitle);
+
+                // Now it needs to check if the updated title has a higher occurrences value than the one in the title table.
+                // If this is the case, the title in the title table must be replaced with this title.
+                int titleOccurrences = Database.Instance.GetOccurrencesForTitle(matchedTitleId);
+                if (matchedOccurrences > titleOccurrences)
+                {
+                    Database.Instance.UpdateTitle(matchedTitleId, matchedTitle);
+                }
+
+
+            }
+            else // Else no match is found, so insert a new record 
+            {
+                // First get the title id, then insert a new record with that title id;
+                int titleId = Database.Instance.GetTitleId(_matchedArticleID, 1);
+                Database.Instance.InsertNewTitle(titleId, Record.Title);
             }
         }
 
@@ -299,12 +480,12 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// This method is used to check if the given eAN exists in the database. If so, it will return
+        /// This method is used to check if the given EAN exists in the database. If so, it will return
         /// the article number of the found product. It will return -1 otherwise.
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
         /// <returns>The article number if found, -1 otherwise.</returns>
-        private int checkEAN(string ean)
+        private int checkEAN(Int64? ean)
         {
             //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumberOfEAN(ean);
@@ -328,8 +509,15 @@ namespace BobAndFriends
         /// <param name="p"></param>
         private void sendToResidue(Product p)
         {
+            //If we are rerunning through the residue, this product already exists there.
+            //No need to add it again.
+            if (rerunningResidue)
+            {
+                return;
+            }
+
             //Call SendToResidue() to do so.
-            Database.Instance.SendToResidue(p);
+            Database.Instance.SendTo(p, "residue");
         }
 
         /// <summary>
@@ -347,9 +535,16 @@ namespace BobAndFriends
         /// This method will match the product by relevance and then show it in the GUI
         /// </summary>
         /// <param name="Record">The record to be matched</param>
-        private void MatchByRelevance(Product Record)
+        public void MatchByRelevance(Product Record)
         {
-            
+            Database.Instance.SendTo(Record, "vbobdata");
+            bool match = Database.Instance.GetRelevantMatches(Record);
+
+            // If no matches are found for vbob, save the record as a new article.
+            if (match == false)
+            {
+                SaveNewArticle(Record);
+            }
         }
 
         /// <summary>
@@ -380,4 +575,3 @@ namespace BobAndFriends
         }
     }
 }
-

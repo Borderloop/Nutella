@@ -30,6 +30,7 @@ namespace BobAndFriends.Affiliates
                 Console.Write("Started reading from: " + file + " ...");
                 try
                 {
+                    
                     XmlReader _reader = XmlReader.Create(file);
                     Product p = null;
                     while (_reader.Read())
@@ -53,7 +54,7 @@ namespace BobAndFriends.Affiliates
                                 case "ean":
                                     if (_reader.Read())
                                     {
-                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
+                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? (Int64?)Convert.ToInt64(_reader.Value) : null;
                                     }
                                     break;
 
@@ -149,7 +150,7 @@ namespace BobAndFriends.Affiliates
 
                         if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
                         {
-                            p.Affiliate = "Tradedoubler";
+                            p.Affiliate = "TradeDoubler";
                             p.FileName = file;
                             p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
                             products.Add(p);

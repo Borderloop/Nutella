@@ -41,8 +41,8 @@ namespace BobAndFriends
         private string _DeliveryTime = "";
         public string DeliveryTime { get { return _DeliveryTime; } set { _DeliveryTime = value; } }
 
-        private string _EAN = "";
-        public string EAN { get { return _EAN; } set { _EAN = value; } }
+        private Int64? _EAN;
+        public Int64? EAN { get { return _EAN; } set { _EAN = value; } }
 
         private string _Stock = "";
         public string Stock { get { return _Stock; } set { _Stock = value; } }

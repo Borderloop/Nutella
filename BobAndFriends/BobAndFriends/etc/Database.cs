@@ -71,7 +71,7 @@ namespace BobAndFriends
         public void Connect(string ip, string db, string uid, string pw)
         {
             //Make the connection
-            _conn = new MySqlConnection(@"Data Source=" + ip + ";Database=" + db + ";Uid=" + uid + ";Pwd=" + pw);
+            _conn = new MySqlConnection(@"Data Source=" + ip + ";Database=" + db + ";Uid=" + uid + ";Pwd=" + pw + ";Allow User Variables=True");
 
             //Open the connection
             _conn.Open();
@@ -95,8 +95,11 @@ namespace BobAndFriends
             //Create the command with the gien query
             _cmd = new MySqlCommand(query, _conn);
 
-            //Load the datatable in the DataTable object.
-            _resultTable.Load(_cmd.ExecuteReader());
+            //We need MySqlDataAdapter to store all rows in the datatable
+            using (MySqlDataAdapter adapter = new MySqlDataAdapter(_cmd))
+            {
+                adapter.Fill(_resultTable);
+            }
 
             //Return the result.
             return _resultTable;
@@ -122,6 +125,24 @@ namespace BobAndFriends
             return Read("SELECT description FROM category_synonym");
         }
 
+        public int CountRows(string tableName)
+        {
+            //Create the query
+            string query = "SELECT COUNT(*) FROM " + tableName;
+
+            //Create an integer to return
+            int count;
+
+            //Create the command
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Execute the command and store the value in an object
+            object obj = _cmd.ExecuteScalar();
+
+            //Return the value of the object if it's not null, -1 otherwise.
+            return (count = ((obj != null || obj != DBNull.Value) ? count = Convert.ToInt32(obj) : -1));
+        }
+
         /// <summary>
         /// This method will return the article number found when searching for an SKU, and -1 otherwise.
         /// </summary>
@@ -144,7 +165,7 @@ namespace BobAndFriends
             _resultTable.Load(_cmd.ExecuteReader());
 
             //Return the article number if found, -1 otherwise.
-            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+            return (_resultTable.Rows.Count > 0 ? (int)_resultTable.Rows[0]["article_id"] : -1);
         }
 
         /// <summary>
@@ -152,7 +173,7 @@ namespace BobAndFriends
         /// </summary>
         /// <param name="ean">The EAN that needs to be matched.</param>
         /// <returns>The found article number, -1 otherwise</returns>
-        public int GetArticleNumberOfEAN(string ean)
+        public int GetArticleNumberOfEAN(Int64? ean)
         {
             DataTable _resultTable = new DataTable();
 
@@ -169,7 +190,7 @@ namespace BobAndFriends
             _resultTable.Load(_cmd.ExecuteReader());
 
             //Return the article number if found, -1 otherwise.
-            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+            return (_resultTable.Rows.Count > 0 ? (int)_resultTable.Rows[0]["article_id"] : -1);
         }
 
         /// <summary>
@@ -207,7 +228,7 @@ namespace BobAndFriends
             DataTable _resultTable = new DataTable();
 
             //Create the query
-            string query = @"SELECT * FROM sku WHERE sku LIKE '%@SKU%'";
+            string query = @"SELECT * FROM title WHERE title LIKE '%@SKU%'";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
@@ -243,22 +264,149 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// Method used to get a single product from the database, used for saving a match.
+        /// Gets the data from the article table for the given article.
         /// </summary>
-        /// <param name="id">The article id of the matched product</param>
+        /// <param name="aid">The article id to get the data from</param>
         /// <returns></returns>
-        public DataTable GetProduct(int id)
+        public DataTable GetArticleTableForArticle(int aid)
         {
-            string query = "SELECT id as 'article-id', brand as 'article-Brand', description as " +
-                            "'article-Description', image_loc as 'article-Image_Loc', title.title as 'title-Title', " +
-                            "ean.ean as 'ean-EAN', sku.sku as 'sku-SKU' FROM article \n" +
-                            "LEFT JOIN ean ON ean.article_id = article.id \n" +
-                            "LEFT JOIN title ON title.article_id = article.id \n" +
-                            "LEFT JOIN sku ON sku.article_id = article.id \n" +
-                            "WHERE id = '" + id + "'";
+            string query = "SELECT brand AS 'article-Brand', description AS 'article-Description', " +
+                           "image_loc AS 'article-Image_Loc' FROM article WHERE id = " + aid;
 
             DataTable dt = Read(query);
             return dt;
+        }
+
+        /// <summary>
+        /// Gets the data from the ean table for the given article.
+        /// </summary>
+        /// <param name="aid">The article id to get the data from</param>
+        /// <returns></returns>
+        public DataTable GetEANTableForArticle(int aid)
+        {
+            string query = "SELECT ean AS 'ean-EAN' FROM ean WHERE article_id = " + aid;
+
+            DataTable dt = Read(query);
+            return dt;
+        }
+
+        /// <summary>
+        /// Gets the data from the sku table for the given article.
+        /// </summary>
+        /// <param name="aid">The article id to get the data from</param>
+        /// <returns></returns>
+        public DataTable GetSKUTableForArticle(int aid)
+        {
+            string query = "SELECT sku AS 'sku-SKU' FROM sku WHERE article_id = " + aid;
+
+            DataTable dt = Read(query);
+            return dt;
+        }
+
+        /// <summary>
+        /// Gets the data from the title_synonym table for the given article.
+        /// </summary>
+        /// <param name="aid">The article id to get the data from</param>
+        /// <returns></returns>
+        public DataTable GetTitleSynonymTableForArticle(int aid)
+        {
+            string query = "SELECT title_synonym.title, occurrences, title_id FROM title_synonym " +
+                           "INNER JOIN title ON title.id = title_synonym.title_id " +
+                           "WHERE title.article_id = " + aid;
+
+            DataTable dt = Read(query);
+            return dt;
+        }
+
+        /// <summary>
+        /// This method updates the occurrences column for a given title
+        /// </summary>
+        /// <param name="titleId">Id of the title belonging to the title synonym</param>
+        /// <param name="occurrences">Amount of occurences, this will get updated</param>
+        /// <param name="title">The title to be updated</param>
+        public void UpdateTitleSynonymOccurrences(int titleId, int occurrences, string title)
+        {
+            string query = "UPDATE title_synonym SET occurrences = @OCCURRENCES WHERE title_id = @TITLEID AND title = @TITLE";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.Parameters.AddWithValue("@TITLEID", titleId);
+            _cmd.Parameters.AddWithValue("@TITLE", title);
+            _cmd.Parameters.AddWithValue("@OCCURRENCES", occurrences);
+
+            _cmd.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Gets the occurrences for a given title
+        /// </summary>
+        /// <param name="titleId">The is of the title to get the occurrences from</param>
+        /// <returns></returns>
+        public int GetOccurrencesForTitle(int titleId)
+        {
+            string query = "SELECT occurrences FROM title_synonym AS ts " +
+                           "INNER JOIN title ON title.id = ts.title_id " +
+                           "WHERE title.id = @TITLEID AND ts.title = title.title";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.Parameters.AddWithValue("@TITLEID", titleId);
+            MySqlDataReader rdr = _cmd.ExecuteReader();
+            rdr.Read();
+            int occurrences = rdr.GetInt32(0);
+            rdr.Close();
+
+            return occurrences;
+        }
+
+        /// <summary>
+        /// Updates the title in the title table. This is done if another title has a higher occurrence then the one in the title table.
+        /// </summary>
+        /// <param name="titleId">The id of the title to be updated</param>
+        /// <param name="title">The new title</param>
+        public void UpdateTitle(int titleId, string title)
+        {
+            string query = "UPDATE title SET title = @TITLE " +
+                           "WHERE id = @TITLEID";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.Parameters.AddWithValue("@TITLE", title);
+            _cmd.Parameters.AddWithValue("@TITLEID", titleId);
+
+            _cmd.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Gets the title id for an article
+        /// </summary>
+        /// <param name="aId">The article id</param>
+        /// <param name="countryId">The country id for the title, this is needed because every title is </param>
+        /// <returns></returns>
+        public int GetTitleId(int aId, int countryId)
+        {
+            string query = "SELECT id FROM title WHERE article_id = " + aId + " AND country_id = " + countryId;
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            MySqlDataReader rdr = _cmd.ExecuteReader();
+            rdr.Read();
+            int aid = rdr.GetInt32(0);
+            rdr.Close();
+
+            return aid;
+        }
+
+        /// <summary>
+        /// Inserts a new title in the title_synonym table if a new title is found.
+        /// </summary>
+        /// <param name="titleId">The title id which the synonym belongs to</param>
+        /// <param name="title">The title to be inserted</param>
+        public void InsertNewTitle(int titleId, string title)
+        {
+            string query = "INSERT INTO title_synonym (title, title_id) VALUES (@TITLE, @TITLEID)";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.Parameters.AddWithValue("@TITLE", title);
+            _cmd.Parameters.AddWithValue("@TITLEID", titleId);
+
+            _cmd.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -281,7 +429,7 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// This method adds a record for a found match. This is always for the title, ean or sku
+        /// This method adds a record for a found match. This is always for the ean or sku
         /// table. This is because when this code is reached, no record is found for in one of those
         /// tables for an article.
         /// </summary>
@@ -318,7 +466,7 @@ namespace BobAndFriends
         /// <returns></returns>
         public DataTable GetCategorySynonymsForArticle(int id)
         {
-            string query = "SELECT cs.description FROM category_synonyms as cs " +
+            string query = "SELECT cs.description FROM category_synonym as cs " +
                            "INNER JOIN category as c ON c.id = cs.category_id " +
                            "INNER JOIN cat_article as ca ON ca.category_id = c.id " +
                            "INNER JOIN article as a ON a.id = ca.article_id " +
@@ -334,7 +482,7 @@ namespace BobAndFriends
         /// <param name="description">The description of the category, which is the synonym</param>
         public void SaveCategorySynonym(int id, string description)
         {
-            string query = "INSERT into category_synonyms VALUES (@ID, @DESCRIPTION)";
+            string query = "INSERT into category_synonym VALUES (@ID, @DESCRIPTION)";
 
             _cmd = new MySqlCommand(query, _conn);
             _cmd.Parameters.AddWithValue("@ID", id);
@@ -346,19 +494,27 @@ namespace BobAndFriends
         /// This method will send a product to the residu.
         /// </summary>
         /// <param name="p">The product to be send to the residu.</param>
-        public void SendToResidue(Product p)
+        public void SendTo(Product p, string tableName, bool rerun = false)
         {
             //Create a dictionary containing column names and values
-            Dictionary<string, string> col_vals = new Dictionary<string, string>();
+            Dictionary<string, object> col_vals = new Dictionary<string, object>();
 
             //Add names/values to the dictionary
             col_vals.Add("title", p.Title);
             col_vals.Add("description", p.Description);
-            col_vals.Add("image_loc", p.Image_Loc);
             col_vals.Add("category", p.Category);
             col_vals.Add("ean", p.EAN);
             col_vals.Add("sku", p.SKU);
             col_vals.Add("brand", p.Brand);
+
+            if(tableName.Equals("vbobdata"))
+            {
+                col_vals.Add("rerun", rerun);
+                col_vals.Add("image_loc", p.Image_Loc);
+            } else
+            {
+                col_vals.Add("image", p.Image_Loc);
+            }
 
             //Declare string for the columns and values
             string columns = "";
@@ -368,57 +524,67 @@ namespace BobAndFriends
             bool first = true;
 
             //Loop through each KeyValuePair
-            foreach (KeyValuePair<string, string> pair in col_vals)
+            foreach (KeyValuePair<string, object> pair in col_vals)
             {
                 //Only add the pair if the value is valid
-                if (!pair.Value.Equals(""))
+                if (!(pair.Value == null))
                 {
-                    //Special treatment for the first entry
-                    if (first)
+                    if (!pair.Value.Equals(""))
                     {
-                        //Add values without comma
-                        columns += pair.Key;
-                        values += "@" + pair.Key.ToUpper();
+                        //Special treatment for the first entry
+                        if (first)
+                        {
+                            //Add values without comma
+                            columns += pair.Key;
+                            values += "@" + pair.Key.ToUpper();
 
-                        //Set bool to false because the first has passed
-                        first = false;
+                            //Set bool to false because the first has passed
+                            first = false;
 
-                        //Skip the rest of the loop
-                        continue;
+                            //Skip the rest of the loop
+                            continue;
+                        }
+
+                        //Add values with a comma
+                        columns += ", " + pair.Key;
+                        values += ", @" + pair.Key.ToUpper();
                     }
-
-                    //Add values with a comma
-                    columns += ", " + pair.Key;
-                    values += ", @" + pair.Key.ToUpper();
                 }
             }
 
             //Build the query
-            string query = @"INSERT INTO residue (" + columns + ") VALUES (" + values + ")";
+            string query = @"INSERT INTO " + tableName + " (" + columns + ") VALUES (" + values + ")";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
 
             //Add parameters to the command
             //Loop through each KeyValuePair
-            foreach (KeyValuePair<string, string> pair in col_vals)
+            foreach (KeyValuePair<string, object> pair in col_vals)
             {
                 //Only add the pair if the value is valid
-                if (!pair.Value.Equals(""))
+                if (!(pair.Value == null))
                 {
-                    //Make an exception for EAN, which is the only integer
-                    if (pair.Key.Equals("ean"))
+                    if (!pair.Value.Equals(""))
                     {
-                        _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Int64.Parse(pair.Value));
-                        continue;
+                        //Make an exception for EAN, which is the only integer
+                        if (pair.Key.Equals("ean"))
+                        {
+                            _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
+                            continue;
+                        }
+                        if(pair.Key.Equals("rerun"))
+                        {
+                            _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
+                            continue;
+                        }
+                        _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Util.ToLiteral((string)pair.Value));
                     }
-                    _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), Util.ToLiteral(pair.Value));
                 }
             }
 
             //Execute the query
             _cmd.ExecuteNonQuery();
-
         }
 
         /// <summary>
@@ -449,7 +615,7 @@ namespace BobAndFriends
             // add them if they're not empty to prevent errors.
             string query3 = "";
 
-            if (Record.EAN != "")
+            if (Record.EAN != null)
             {
                 query3 += "INSERT INTO ean VALUES (@EAN, @AID);";
             }
@@ -459,7 +625,9 @@ namespace BobAndFriends
             }
             if (Record.Title != "")
             {
-                query3 += "INSERT INTO title VALUES (@TITLE, @AID); ";
+                query3 += "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, 1, @AID); " +
+                          "SELECT LAST_INSERT_ID() INTO @titleId; " +
+                          "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);";
             }
             // Don't execute when none of the records are present, which means
             // the query is empty.
@@ -467,20 +635,22 @@ namespace BobAndFriends
             {
                 MySqlCommand _cmd3 = new MySqlCommand(query3, _conn);
                 _cmd3.Parameters.AddWithValue("@AID", aid);
-                _cmd3.Parameters.AddWithValue("@EAN", Record.EAN);
-                _cmd3.Parameters.AddWithValue("@SKU", Record.SKU);
-                _cmd3.Parameters.AddWithValue("@TITLE", Record.Title);
+                if (Record.EAN != null) { _cmd3.Parameters.AddWithValue("@EAN", Record.EAN); }
+                if(Record.SKU != "") {_cmd3.Parameters.AddWithValue("@SKU", Record.SKU);}
+                if(Record.Title != "") {_cmd3.Parameters.AddWithValue("@TITLE", Record.Title);}
 
                 _cmd3.ExecuteNonQuery();
             }
+
+            
             
             // Now save the category.
-            string query4 = "INSERT INTO cat_article VALUES(@CATID, @AID)";
-            MySqlCommand _cmd4 = new MySqlCommand(query4, _conn);
-            _cmd4.Parameters.AddWithValue("@CATID", categoryID);
-            _cmd4.Parameters.AddWithValue("@AID", aid);
+            //string query4 = "INSERT INTO cat_article VALUES(@CATID, @AID)";
+            //MySqlCommand _cmd4 = new MySqlCommand(query4, _conn);
+            //_cmd4.Parameters.AddWithValue("@CATID", categoryID);
+            //_cmd4.Parameters.AddWithValue("@AID", aid);
 
-            _cmd4.ExecuteNonQuery();
+            //_cmd4.ExecuteNonQuery();
             
         }
 
@@ -506,11 +676,12 @@ namespace BobAndFriends
 
             _cmd = new MySqlCommand(query, _conn);
             _cmd.Parameters.AddWithValue("@CATEGORY", category);
-            MySqlDataReader rdr = _cmd.ExecuteReader();
-            rdr.Read();
-            int id = rdr.GetInt32(0);
-            rdr.Close();
-
+            int id = 0;
+            object obj = _cmd.ExecuteScalar();
+            if(obj != null && obj != DBNull.Value)
+            {
+                id = Convert.ToInt32(obj);
+            }
             return id;
         }
 
@@ -520,6 +691,159 @@ namespace BobAndFriends
         {
             //Close the connection.
             _conn.Close();
+        }
+
+        /// <summary>
+        /// Gets all records from VBobData which have to be rerunned.
+        /// </summary>
+        /// <returns>All products that have to be rerunned</returns>
+        public DataTable GetRerunnables()
+        {
+            return Read("SELECT * FROM vbobdata WHERE rerun=1");
+        }
+
+        /// <summary>
+        /// Returns all products from the residue
+        /// </summary>
+        /// <returns>All products from the residue</returns>
+        public DataTable GetAllProductsFromResidue()
+        {
+            return Read("Select * FROM residue");
+        }
+
+        /// <summary>
+        /// This method will get the first-next product from the VBobData table.
+        /// </summary>
+        /// <returns></returns>
+        public DataTable GetNextVBobProduct()
+        {
+            //Create the query
+            string query = "SELECT MIN(id) AS ID, title as Title, ean AS EAN, sku as SKU, brand AS Brand, category AS Category, description as Description, image_loc as ImageLocation FROM vbobdata WHERE NOT rerun = 1 OR rerun IS NULL";
+
+            //Execute it and return the datatable.
+            return Read(query);
+        }
+
+        public DataTable GetSuggestedProducts(int productID)
+        {
+            //parse productID to a string
+            string id = "" + productID;
+
+            //Create the query
+            string query = " SELECT article.id as 'Article ID',"
+                + "article.brand as 'Brand', "
+                + "article.description as 'Description' ,"
+                + "title.title as 'Title',"
+                + "(SELECT GROUP_CONCAT(ean.ean) FROM ean WHERE ean.article_id = article.id) as 'EANs', "
+                + "(SELECT GROUP_CONCAT(sku.sku) FROM sku WHERE sku.article_id = article.id) as 'SKUs'"
+                + " FROM vbobdata, vbob_suggested"
+                + " INNER JOIN article ON  article.id = vbob_suggested.suggested_id"
+                + " LEFT JOIN ean ON ean.article_id = article.id"
+                + " LEFT JOIN title ON title.article_id = article.id"
+                + " LEFT JOIN sku ON sku.article_id = article.id"
+                + " WHERE vbobdata.id = " + id + " GROUP BY vbob_suggested.suggested_id";
+
+            //Execute it and return the datatable.
+            return Read(query);
+        }
+
+        public void DeleteFromVbobData(int id)
+        {
+            String query = "DELETE FROM vbob_suggested WHERE vbob_suggested.vbob_id = " + id + ";";
+            query += "DELETE FROM vbobdata WHERE vbobdata.id = " + id + ";";
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.ExecuteNonQuery();
+        }
+
+        public void DeleteFromResidue(Product p)
+        {
+            string query = "DELETE FROM residue WHERE residue.title = " + p.Title
+                + " AND residue.description = " + p.Description
+                + " AND residue.category = " + p.Category
+                + " AND residue.brand = " + p.Brand
+                + " AND residue.ean = " + p.EAN
+                + " AND residue.sku = " + p.SKU;
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Gets the most relevant matches for a title from a brand, used for visual bob.
+        /// The returned boolean is used to check if a record should be saved as new article.
+        /// </summary>
+        /// <param name="Record">The record to find relevant matches for</param>
+        public bool GetRelevantMatches(Product Record)
+        {
+            //First get the last inserted id, which is the id from the record in the vbobdata table.
+            string query = "SELECT LAST_INSERT_ID()";
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            MySqlDataReader rdr = _cmd.ExecuteReader();
+            rdr.Read();
+            int vBobId = rdr.GetInt32(0);
+            rdr.Close();
+
+            //Get the most relevant matches for the given product and return their article id's.
+            string query2 = "SELECT article.id FROM article " +
+                           "INNER JOIN title ON title.article_id = article.id " +
+                           "WHERE title.id IN (SELECT title_id FROM title_synonym as ts " +
+                                              "INNER JOIN title ON title.id = ts.title_id " +
+                                              "WHERE MATCH(ts.title) AGAINST ('" + Record.Title + "') " +
+                                              "GROUP BY title.title " +
+                                              "ORDER BY MATCH(ts.title) AGAINST ('" + Record.Title + "'))" +
+                           "AND article.brand = '" + Record.Brand + "' " +
+                           "LIMIT 10";
+            
+            List<int> articleIds = new List<int>();
+
+            MySqlCommand _cmd2 = new MySqlCommand(query2, _conn);
+            MySqlDataReader rdr2 = _cmd2.ExecuteReader();
+
+            while(rdr2.Read()){
+                articleIds.Add(rdr2.GetInt32(0));
+            }
+
+            rdr2.Close();
+
+             
+            bool match;
+
+            //Invoke method to save suggested matches to database if matches are found
+            if (articleIds.Count() > 0)
+            {
+                InsertInVBobSuggested(vBobId, articleIds);
+                match = true;
+            }
+            else // Else, no matches are found. Save this record to the database.
+            {
+                match = false;
+            }
+
+            return match;
+        }
+
+        /// <summary>
+        /// Inserts the found matches for the product in the vbob_suggested table
+        /// </summary>
+        /// <param name="vBobId">The id of the record as stored in the vbobdata table</param>
+        /// <param name="articleIds">List of article_ids that match the record. First id has the most relevance, last is the least.</param>
+        private void InsertInVBobSuggested(int vBobId, List<int> articleIds)
+        {
+            string query = "INSERT INTO vbob_suggested (article_id, vbob_id) VALUES ";
+            int lastId = articleIds[articleIds.Count - 1];
+            foreach (int articleId in articleIds)
+            {
+                if (articleId != lastId)
+                {
+                    query += "(" + articleId + ", " + vBobId + "), ";
+                }
+                else
+                {
+                    query += "(" + articleId + ", " + vBobId + ")";
+                }
+            }
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.ExecuteNonQuery();
         }
     }
 }

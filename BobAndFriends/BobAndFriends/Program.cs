@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace BobAndFriends
 {
@@ -22,6 +23,8 @@ namespace BobAndFriends
         /// </summary>
         public static Thread consumer;
 
+        public static Stopwatch sw;
+
         /// <summary>
         /// Main method will only start the ProductFeedReader
         /// </summary>
@@ -32,7 +35,7 @@ namespace BobAndFriends
             
             //Initialize
             Initialize();
-                      
+                   
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
@@ -44,18 +47,19 @@ namespace BobAndFriends
             /*
             Application.EnableVisualStyles();
             Application.Run(new VisualBob());*/
+
+            sw = new Stopwatch();
+             
+
+            //Application.EnableVisualStyles();
+            //Application.Run(new VisualBob());
         }
 
         static void ProductDequeuer()
         {
             //Create BOB and start dequeueing items.
             BOB bob = new BOB();
-            Product p = new Product();
 
-            p.Title = "Iphone 5";
-            p.Brand = "Apple";
-
-            bob.Process(p);/*
             //Remain alive while thread one isnt done
             while (true)
             {
@@ -69,14 +73,33 @@ namespace BobAndFriends
                     break;
                 }
 
+                if(ProductQueue.queue.Count % 1000 == 0)
+                {
+                    if(sw.IsRunning)
+                    {
+                        sw.Stop();
+                        TimeSpan duration = sw.Elapsed;
+                        duration = TimeSpan.FromTicks(duration.Ticks * (ProductQueue.queue.Count / 1000));
+                        Console.WriteLine("Estimated processing time remaining: " + duration);
+                        sw.Reset();
+                    }
+                    sw.Start();
+                    Console.WriteLine("Queue size: " + ProductQueue.queue.Count);
+                }
+
                 //Process the product otherwise.
                 bob.Process(p);
             }
+
+            //Rerun all the products in the residue. We do not need ProductFeedReader for this.
+            bob.RerunResidue();
+
+            //Tidy up and close
             bob.FinalizeAndClose();
             foreach (string category in Statics.Logger._cats){
                 Statics.Logger.WriteLine(category);
             }
-            Console.WriteLine("Thread 2 is done.");*/
+            Console.WriteLine("Thread 2 is done.");
         }
 
         static void ProductFeedReader()
@@ -87,6 +110,7 @@ namespace BobAndFriends
             //Start it
             pfr.Start();
             Console.WriteLine("Thread 1 is done.");
+            Console.WriteLine("Queue size: " + ProductQueue.queue.Count);
         }
 
         static void Initialize()

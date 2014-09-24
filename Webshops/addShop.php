@@ -40,7 +40,7 @@
           <div class="option_1" ><input type="checkbox" input name="languages[]" value="nl">Nederlands</input></div>
           <div class="option_1" ><input type="checkbox" input name="languages[]" value="be">Belgisch</input></div>
           <div class="option_1" ><input type="checkbox" input name="languages[]" value="de">Duits</input></div>
-          <div class="option_1" ><input type="checkbox" input name="languages[]" value="uk">Engels</input></div>
+          <div class="option_1" ><input type="checkbox" input name="languages[]" value="en">Engels</input></div>
 
           <div class="option_1" ><input type="checkbox" input name="languages[]" value="fr">Frans</input></div>
           <div class="option_1" ><input type="checkbox" input name="languages[]" value="it">Italiaans</input></div>
@@ -165,8 +165,12 @@
             <div class="option_1"><input type="radio" input name="affApproved" value="3">Denied</input></div>
           </div>
         </div>
-      <br/><br/><br/><br/>
-      <input class="contact-button" name="submit" type="submit" value="INSERT">
+      <div class="col_1">
+        <input class="contact-button" name="submit" type="submit" value="INSERT">
+      </div>
+      <div class="col_1">
+        <a class="contact-button" href="/overzicht.php">Overzicht</a>
+      </div>
     </form>
 </div>
 
@@ -211,7 +215,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   $stmt->execute(array(
     "wsName" => $wsName,
     "wsUrl" => $wsUrl,
-    ":wsLogoLarge"=> $wsLogoLarge,
+    "wsLogoLarge"=> $wsLogoLarge,
     "wsShippingCost" => $wsShippingCost
   ));
   $wsID = $conn->lastInsertId(); // We save the id of the last inputted webshop to use it with the other inserts.
