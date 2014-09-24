@@ -38,7 +38,7 @@ namespace BobAndFriends
         /// </summary>
         private void InitializeProducts()
         {
-            Database.Instance.Connect("","","","");
+            Database.Instance.Connect("127.0.0.1", "test2", "root", "***");
             selectedProductDataGrid.AutoGenerateColumns = true;
             suggestedProductsDataGrid.AutoGenerateColumns = true;
 
@@ -53,7 +53,17 @@ namespace BobAndFriends
         /// </summary>
         private void ShowNext()
         {
+            if(!this.Visible)
+            {
+                this.Visible = true;
+            }
             selectedProduct = Database.Instance.GetNextVBobProduct();
+            if (selectedProduct.Rows[0]["ID"] == null || selectedProduct.Rows[0]["ID"] == DBNull.Value)
+            {
+                MessageBox.Show("There are no more products in the database. Closing VisualBob.");
+                Application.Exit();
+                return;
+            }
             suggestedProducts = Database.Instance.GetSuggestedProducts((int)selectedProduct.Rows[0]["ID"]);
 
             selProdBind.DataSource = selectedProduct;
@@ -84,14 +94,34 @@ namespace BobAndFriends
 
             //SaveMatch(ToProduct(selectedProduct), (int)suggestedProductsDataGrid.SelectedRows[0].Cells["Article ID"].Value);
             Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
-
             ShowNext();
         }
 
         private void rerunButton_Click(object sender, EventArgs e)
         {
-            Database.Instance.SendTo(ToProduct(selectedProduct), "vbobdata", true);
-            Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
+            foreach(DataColumn column in selectedProduct.Columns)
+            {
+                if(selectedProduct.Rows[0][column.ColumnName] == DBNull.Value || selectedProduct.Rows[0][column.ColumnName] == null)
+                {
+                    if (column.ColumnName.Equals("EAN"))
+                    {
+                        selectedProduct.Rows[0][column.ColumnName] = -1;
+                    }
+                    else
+                    {
+                        selectedProduct.Rows[0][column.ColumnName] = " ";
+                    }
+                }
+            }
+            Database.Instance.RerunVbobEntry((int)selectedProduct.Rows[0]["id"], new string[] 
+                                                            { 
+                                                                (string)selectedProduct.Rows[0]["title"],
+                                                                (string)selectedProduct.Rows[0]["sku"],
+                                                                (string)selectedProduct.Rows[0]["brand"],
+                                                                (string)selectedProduct.Rows[0]["category"],
+                                                                (string)selectedProduct.Rows[0]["description"],
+                                                                (string)selectedProduct.Rows[0]["imagelocation"]
+                                                            }, (Int64?)selectedProduct.Rows[0]["ean"]);
             ShowNext();
         }
 
@@ -107,6 +137,7 @@ namespace BobAndFriends
         {
             Database.Instance.SendTo(ToProduct(selectedProduct), "residue");
             Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
+            
             ShowNext();
         }
 
@@ -185,7 +216,7 @@ namespace BobAndFriends
                 DataTable categorySynonyms = Database.Instance.GetCategorySynonymsForArticle(matchedArticleID);
                 bool containsCategorySynonym = categorySynonyms.AsEnumerable().Any(row => Record.Category.ToLower() == row.Field<String>("description").ToLower());
 
-                if (containsCategorySynonym == false) // If containsCategorySynonym equals false, a category synonym is found: Save it.
+                if (containsCategorySynonym == true) // If containsCategorySynonym equals false, a category synonym is found: Save it.
                 {
                     Object o = category.Rows[0][0];
                     string id = o.ToString(); // category id

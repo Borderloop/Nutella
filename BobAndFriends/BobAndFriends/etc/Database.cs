@@ -248,7 +248,7 @@ namespace BobAndFriends
             DataTable _resultTable = new DataTable();
 
             //Create the query
-            string query = @"SELECT brand FROM article WHERE brand='@BRAND'";
+            string query = "SELECT brand FROM article WHERE brand=@BRAND";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
@@ -257,7 +257,11 @@ namespace BobAndFriends
             _cmd.Parameters.AddWithValue("@BRAND", brand);
 
             //Load the result in a datatable
-            _resultTable.Load(_cmd.ExecuteReader());
+            //We need MySqlDataAdapter to store all rows in the datatable
+            using (MySqlDataAdapter adapter = new MySqlDataAdapter(_cmd))
+            {
+                adapter.Fill(_resultTable);
+            }
 
             //Return the article number if found, -1 otherwise.
             return _resultTable.Rows.Count > 0;
@@ -435,13 +439,26 @@ namespace BobAndFriends
         /// </summary>
         public void AddForMatch(String table, String value, int id)
         {
-            String query = "INSERT INTO " + table + " VALUES (@VALUE, @id)";
+            if (table.Equals("title"))
+            {
+                String query = "INSERT INTO " + table + " (title, country_id, article_id) VALUES (@VALUE, 1, @ID)";
 
-            MySqlCommand _cmd = new MySqlCommand(query, _conn);
-            _cmd.Parameters.AddWithValue("@VALUE", value);
-            _cmd.Parameters.AddWithValue("@ID", id);
+                MySqlCommand _cmd = new MySqlCommand(query, _conn);
+                _cmd.Parameters.AddWithValue("@VALUE", value);
+                _cmd.Parameters.AddWithValue("@ID", id);
 
-            _cmd.ExecuteNonQuery();
+                _cmd.ExecuteNonQuery();
+            }
+            else
+            {
+                String query = "INSERT INTO " + table + " VALUES (@VALUE, @ID)";
+
+                MySqlCommand _cmd = new MySqlCommand(query, _conn);
+                _cmd.Parameters.AddWithValue("@VALUE", value);
+                _cmd.Parameters.AddWithValue("@ID", id);
+
+                _cmd.ExecuteNonQuery();
+            }
         }
 
         /// <summary>
@@ -734,14 +751,15 @@ namespace BobAndFriends
                 + "article.brand as 'Brand', "
                 + "article.description as 'Description' ,"
                 + "title.title as 'Title',"
+                + "vbob_suggested.id as `vBobSug ID`, "
                 + "(SELECT GROUP_CONCAT(ean.ean) FROM ean WHERE ean.article_id = article.id) as 'EANs', "
                 + "(SELECT GROUP_CONCAT(sku.sku) FROM sku WHERE sku.article_id = article.id) as 'SKUs'"
                 + " FROM vbobdata, vbob_suggested"
-                + " INNER JOIN article ON  article.id = vbob_suggested.suggested_id"
+                + " INNER JOIN article ON  article.id = vbob_suggested.article_id"
                 + " LEFT JOIN ean ON ean.article_id = article.id"
                 + " LEFT JOIN title ON title.article_id = article.id"
                 + " LEFT JOIN sku ON sku.article_id = article.id"
-                + " WHERE vbobdata.id = " + id + " GROUP BY vbob_suggested.suggested_id";
+                + " WHERE vbob_suggested.vbob_id = " + id + " GROUP BY vbob_suggested.article_id";
 
             //Execute it and return the datatable.
             return Read(query);
@@ -749,9 +767,33 @@ namespace BobAndFriends
 
         public void DeleteFromVbobData(int id)
         {
-            String query = "DELETE FROM vbob_suggested WHERE vbob_suggested.vbob_id = " + id + ";";
+            string query = "DELETE FROM vbob_suggested WHERE vbob_suggested.vbob_id = " + id + ";";
             query += "DELETE FROM vbobdata WHERE vbobdata.id = " + id + ";";
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.ExecuteNonQuery();
+        }
+
+        public void RerunVbobEntry(int id, string[] updates, Int64? ean)
+        {
+            string query = "UPDATE vbobdata SET rerun = 1, title = @TITLE" 
+                + ", ean = @EAN" 
+                + ", sku = @SKU"
+                + ", brand = @BRAND"
+                + ", category = @CATEGORY"
+                + ", description = @DESCRIPTION" 
+                + ", image_loc = @IMAGELOC"
+                + " WHERE id = " + id;
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+
+            _cmd.Parameters.AddWithValue("@TITLE", updates[0]);
+            _cmd.Parameters.AddWithValue("@EAN", ean == -1 ? null : ean);
+            _cmd.Parameters.AddWithValue("@SKU", updates[1] == " " ? null : updates[1]);
+            _cmd.Parameters.AddWithValue("@BRAND", updates[2]);
+            _cmd.Parameters.AddWithValue("@CATEGORY", updates[3]);
+            _cmd.Parameters.AddWithValue("@DESCRIPTION", updates[4]);
+            _cmd.Parameters.AddWithValue("@IMAGELOC", updates[5]);
+
             _cmd.ExecuteNonQuery();
         }
 
@@ -844,6 +886,23 @@ namespace BobAndFriends
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
             _cmd.ExecuteNonQuery();
+
+        }
+
+        public bool HasArticles()
+        {
+            //Create the query
+            string query = "SELECT COUNT(*) FROM article";
+
+            //Create the command
+            _cmd = new MySqlCommand(query, _conn);
+
+            //Execute the command and store the value in an object
+            object obj = _cmd.ExecuteScalar();
+
+            //Return the value of the object if it's not null, -1 otherwise.
+            return (((obj != null || obj != DBNull.Value) ? Convert.ToInt32(obj) > 0 : false));
+
         }
     }
 }

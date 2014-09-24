@@ -22,12 +22,13 @@ namespace BobAndFriends.Affiliates
                 yield break;
             }
 
+            Console.WriteLine("Started reading from: " + dir);
+
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
             foreach (string file in filePaths)
             {
-                Console.Write("Started reading from: " + file + " ...");
                 try
                 {
                     XmlReader _reader = XmlReader.Create(file);
@@ -154,7 +155,6 @@ namespace BobAndFriends.Affiliates
                 {
                     Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                 }
-                Console.WriteLine(" Done");
                 yield return products;
                 products.Clear();                
             }
