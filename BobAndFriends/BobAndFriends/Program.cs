@@ -35,11 +35,11 @@ namespace BobAndFriends
             Initialize();
                    
             //Create threads
-            producer = new Thread(new ThreadStart(ProductFeedReader));
+            //producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            producer.Start();
+            //producer.Start();
             consumer.Start();
             
             /*
@@ -68,6 +68,7 @@ namespace BobAndFriends
             //Create BOB and start dequeueing items.
             BOB bob = new BOB();
 
+            
             //Remain alive while thread one isnt done
             while (true)
             {
@@ -114,7 +115,7 @@ namespace BobAndFriends
             Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
             Statics.TickCount = 0;
             Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);
-            Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
+          //  Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
         }
 
 

@@ -29,7 +29,7 @@ namespace BobAndFriends
         /// <summary>
         /// If a match if found, store the ID in this field.
         /// </summary>
-        private int _matchedArticleID;
+        private int _matchedArticleID = 1;
 
         /// <summary>
         /// If a category match is found, store its id in this field.
@@ -78,7 +78,7 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             */
-
+            
             if (Database.Instance.HasArticles())
             {
                 //First test - EAN/SKU match and perfect title matching.
@@ -112,12 +112,12 @@ namespace BobAndFriends
                     }
 
                     //The product has no valid EAN and no valid SKU, therefore we will match titles.
-                    /*if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
+                    if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
                     {
                         //We found a perfect title match. Awesome!
                         SaveMatch(Record);
                     }
-                    */
+                    
                     //Product did not pass the first few tests - category test is up next.
 
                     // If checkCategory() returns false, the record category doesn't match any of the categories 
@@ -148,7 +148,7 @@ namespace BobAndFriends
                 }
                 else if (Record.Title != "" && Record.EAN != null)
                 {
-                    //The product has a brand name which doesnt exist in the database and a valid category
+                    //The product has a brand name which doesnt exist in the and has a title, so save it to the database
                     SaveNewArticle(Record);
                 }
 
@@ -354,6 +354,9 @@ namespace BobAndFriends
             // Next up is the title_synonym table. Since it has two tables and needs extra processing, this is done seperately from the other tables.
             CheckTitles(titleSynonymTable, Record);
 
+            // Finally compare the product data
+            CompareProductData(Record);
+
             //We've found a match while we were running through the residue, therefore we need to delete the record from there.
             //Doing that at the end of the method makes sure the data will remain stored in the residue in case
             //something in this method goes wrong.
@@ -553,7 +556,7 @@ namespace BobAndFriends
         /// This method will match the product by relevance and then show it in the GUI
         /// </summary>
         /// <param name="Record">The record to be matched</param>
-        public void MatchByRelevance(Product Record)
+        private void MatchByRelevance(Product Record)
         {
             Database.Instance.SendTo(Record, "vbobdata");
             bool match = Database.Instance.GetRelevantMatches(Record);
@@ -571,8 +574,76 @@ namespace BobAndFriends
         /// <param name="Record">The product to be put in the database</param>
         private void SaveNewArticle(Product Record)
         {
-            //Invoke SaveNewArticle() from the database object.
+            // Invoke SaveNewArticle() from the database object.
             Database.Instance.SaveNewArticle(Record, _categoryID);
+
+            // Save product data to database.
+            SaveProductData(Record);
+        }
+
+        /// <summary>
+        /// This method saves the product data to the database when there's not any product data for
+        /// this record.
+        /// </summary>
+        /// <param name="Record">The product with its product data to be saves</param>
+        private void SaveProductData(Product Record)
+        {
+            Database.Instance.SaveProductData(Record, _matchedArticleID);
+        }
+
+        private void CompareProductData(Product Record)
+        {
+            //First select the product data from the product table for the given record
+            DataTable productData = Database.Instance.GetProductData(Record, _matchedArticleID);
+
+            // If there are no rows returned, there is not yet any deliveryinfo for this record. Save it.
+            if (productData.Rows.Count == 0)
+            {
+                SaveProductData(Record);
+            }
+            else// Else there already is product data for this record: Compare the product data with the record data for each column.
+            {
+                string query = "UPDATE product SET";
+                string columnName = "";
+                foreach (DataColumn column in productData.Columns)
+                {
+                    String recordValue = GetPropValue(Record, column.ToString()).ToString();
+                    Object o = productData.Rows[0][column].ToString();
+
+                    // If the record value and article value don't match for this column, the data has changed.
+                    if (recordValue != o.ToString())
+                    {
+                        // First rename aliasses to the right column names.
+                        if (column.ToString().Equals("DeliveryTime"))
+                        {
+                            columnName = "ship_time";
+                        }
+                        else if (column.ToString().Equals("DeliveryCost"))
+                        {
+                            columnName = "ship_cost";
+                        }
+                        else if (column.ToString().Equals("Url"))
+                        {
+                            columnName = "direct_link";
+                        }
+                        else
+                        {
+                            columnName = column.ToString();
+                        }
+                        query += " " + columnName + " = '" + recordValue + "',";
+                    }
+                }
+
+                // If the query is not its default value, different data is found but there is a comma on the last character spot. 
+                // Delete the last comma, add WHERE clause and call update method for Database.
+                if (!query.Equals("UPDATE product SET"))
+                {
+                    query = query.Remove(query.Length - 1, 1);
+                    query += " WHERE article_id = " + _matchedArticleID + " AND webshop_url = '" + Record.Webshop + "'";
+
+                    Database.Instance.UpdateProductData(query);
+                }
+            }
         }
 
         /// <summary>
@@ -591,5 +662,6 @@ namespace BobAndFriends
             Console.WriteLine("\t\t\t\t\tDone.");
             Environment.Exit(1);
         }
+
     }
 }

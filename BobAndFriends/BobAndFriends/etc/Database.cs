@@ -904,5 +904,35 @@ namespace BobAndFriends
             return (((obj != null || obj != DBNull.Value) ? Convert.ToInt32(obj) > 0 : false));
 
         }
+
+        public void SaveProductData(Product Record, int aId)
+        {
+            string query = "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@AID, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK)";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+
+            _cmd.Parameters.AddWithValue("@AID", aId);
+            _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
+            _cmd.Parameters.AddWithValue("@SHIPCOST", Record.DeliveryCost);
+            _cmd.Parameters.AddWithValue("@PRICE", Record.Price);
+            _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
+            _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
+
+            _cmd.ExecuteNonQuery();
+        }
+
+        public DataTable GetProductData(Product Record, int aId)
+        {
+            string query = "SELECT ship_time AS DeliveryTime, ship_cost AS DeliveryCost, price AS Price, direct_link AS Url FROM product WHERE article_id = " + aId + " AND webshop_url = '" + Record.Webshop + "'";
+
+            DataTable dt = Read(query);
+            return dt;
+        }
+
+        public void UpdateProductData(string query)
+        {
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.ExecuteNonQuery();
+        }
     }
 }
