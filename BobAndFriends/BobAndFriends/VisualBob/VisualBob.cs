@@ -120,8 +120,8 @@ namespace BobAndFriends
                                                                 (string)selectedProduct.Rows[0]["brand"],
                                                                 (string)selectedProduct.Rows[0]["category"],
                                                                 (string)selectedProduct.Rows[0]["description"],
-                                                                (string)selectedProduct.Rows[0]["imagelocation"]
-                                                            }, (Int64?)selectedProduct.Rows[0]["ean"]);
+                                                                (string)selectedProduct.Rows[0]["imagelocation"], (string)selectedProduct.Rows[0]["ean"]
+                                                            });
             ShowNext();
         }
 
@@ -244,7 +244,7 @@ namespace BobAndFriends
             }
             //Put data in the Product object
             p.Title = productTable.Rows[rowNumber].Field<String>("Title") ?? "";
-            p.EAN = productTable.Rows[rowNumber].Field<Int64?>("EAN") ?? null;
+            p.EAN = productTable.Rows[rowNumber].Field<String>("EAN") ?? "";
             p.SKU = productTable.Rows[rowNumber].Field<String>("SKU") ?? "";
             p.Brand = productTable.Rows[rowNumber].Field<String>("Brand") ?? "";
             p.Category = productTable.Rows[rowNumber].Field<String>("Category") ?? "";

@@ -78,19 +78,19 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             */
-            
-            if (Database.Instance.HasArticles())
+
+            if (false)//Database.Instance.HasArticles())
             {
                 //First test - EAN/SKU match and perfect title matching.
 
                 //If the first check does not go well, check for the ean.
-                if (!Record.EAN.Equals("") && (Record.SKU.Length >= 3) && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+                if (!Record.EAN.Equals(""))
                 {
                     //Check for a partial SKU match
                     //if ((_matchedArticleID = checkPartialSKU(Record.SKU)) != -1)
                     //{
                     //We have an EAN and a partial SKU, enough for the database
-                    SaveMatch(Record);
+                    //SaveMatch(Record);
 
                     //If checkSKU() return true, the record matches with a product in the database and its data
                     //can be added to the product. It is done then.
@@ -117,7 +117,7 @@ namespace BobAndFriends
                         //We found a perfect title match. Awesome!
                         SaveMatch(Record);
                     }
-                    
+
                     //Product did not pass the first few tests - category test is up next.
 
                     // If checkCategory() returns false, the record category doesn't match any of the categories 
@@ -132,32 +132,33 @@ namespace BobAndFriends
 
                 }
 
-                // If checkBrand() returns false, the record doesn't contain a brand. Send record
-                // to residue and stop execution of method.
-                if (CheckBrand(Record))
-                {
-                    sendToResidue(Record);
-                    return;
-                }
+            }
 
-                //Run a brand check. If it exists, we can go on to match the product by relevance.
-                //If it doesn't. however, we have to create a new product.
-                if (CheckBrandInDatabase(Record))
-                {
-                    MatchByRelevance(Record);
-                }
-                else if (Record.Title != "" && Record.EAN != null)
-                {
-                    //The product has a brand name which doesnt exist in the and has a title, so save it to the database
-                    SaveNewArticle(Record);
-                }
+            // If checkBrand() returns false, the record doesn't contain a brand. Send record
+            // to residue and stop execution of method.
+            if (CheckBrand(Record))
+            {
+                sendToResidue(Record);
+                return;
+            }
 
-                count++;
+            //Run a brand check. If it exists, we can go on to match the product by relevance.
+            //If it doesn't. however, we have to create a new product.
+            //if (CheckBrandInDatabase(Record))
+            //{
+            //    MatchByRelevance(Record);
+            //}
+            if (Record.Title != "" && Record.EAN != "")
+            {
+                //The product has a brand name which doesnt exist in the and has a title, so save it to the database
+                SaveNewArticle(Record);
+            }
 
-                if (count % 1000 == 0)
-                {
-                    Console.WriteLine("\n\t\t\t\t\tProcessed products: " + count);
-                }
+            count++;
+
+            if (count % 1000 == 0)
+            {
+                Console.WriteLine("\n\t\t\t\t\tProcessed products: " + count);
             }
         }
 
@@ -209,7 +210,7 @@ namespace BobAndFriends
             foreach (DataRow row in Rerunnables.Rows)
             {
                 p.Title = row.Field<String>("title") ?? "";
-                p.EAN = row.Field<Int64?>("ean") ?? null;
+                p.EAN = row.Field<String>("ean") ?? "";
                 p.SKU = row.Field<String>("sku") ?? "";
                 p.Brand = row.Field<String>("brand") ?? "";
                 p.Category = row.Field<String>("category") ?? "";
@@ -244,7 +245,7 @@ namespace BobAndFriends
             foreach (DataRow row in residue.Rows)
             {
                 p.Title = row.Field<String>("title") ?? "";
-                p.EAN = row.Field<Int64?>("ean") ?? null;
+                p.EAN = row.Field<String>("ean") ?? "";
                 p.SKU = row.Field<String>("sku") ?? "";
                 p.Brand = row.Field<String>("brand") ?? "";
                 p.Category = row.Field<String>("category") ?? "";
@@ -275,7 +276,7 @@ namespace BobAndFriends
         private Boolean CheckBrand(Product Record)
         {
             // If the Product's Brand Property is an empty String, no brand was given.
-            return !Record.Brand.Equals("");
+            return Record.Brand.Equals("");
         }
 
         /// <summary>
@@ -414,6 +415,7 @@ namespace BobAndFriends
             }
             catch (InvalidCastException) // An ean is returned, which is int64 instead of string. Convert values for this.
             {
+                //This should not be thrown anymore since we changed EAN to be a string.
                 hasMatch = dt.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == row.Field<Int64>(column));
             }
 
@@ -506,7 +508,7 @@ namespace BobAndFriends
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
         /// <returns>The article number if found, -1 otherwise.</returns>
-        private int checkEAN(Int64? ean)
+        private int checkEAN(string ean)
         {
             //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumberOfEAN(ean);
@@ -578,7 +580,7 @@ namespace BobAndFriends
             Database.Instance.SaveNewArticle(Record, _categoryID);
 
             // Save product data to database.
-            SaveProductData(Record);
+            //SaveProductData(Record);
         }
 
         /// <summary>

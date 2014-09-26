@@ -52,6 +52,7 @@
     <Compile Include="Affiliates\Belboon.cs" />
     <Compile Include="BobAndFriends\BOB.cs" />
     <Compile Include="Affiliates\Daisycon.cs" />
+    <Compile Include="BobAndFriends\DatabaseJanitor.cs" />
     <Compile Include="etc\Database.cs" />
     <Compile Include="etc\INIFile.cs" />
     <Compile Include="etc\Logger.cs" />

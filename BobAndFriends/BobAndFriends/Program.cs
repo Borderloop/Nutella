@@ -33,13 +33,16 @@ namespace BobAndFriends
             
             //Initialize
             Initialize();
-                   
+             
+            //DatabaseJanitor crapper = new DatabaseJanitor();
+            //crapper.Cleanup();    
+  
             //Create threads
-            //producer = new Thread(new ThreadStart(ProductFeedReader));
+            producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            //producer.Start();
+            producer.Start();
             consumer.Start();
             
             /*
@@ -115,7 +118,7 @@ namespace BobAndFriends
             Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
             Statics.TickCount = 0;
             Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);
-          //  Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
+            Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
         }
 
 
