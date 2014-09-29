@@ -41,8 +41,6 @@ namespace BobAndFriends
         /// </summary>
         private bool rerunningResidue = false;
 
-        private int count;
-
         public BOB()
         {
             //Initialize BOB
@@ -154,12 +152,6 @@ namespace BobAndFriends
                 SaveNewArticle(Record);
             }
 
-            count++;
-
-            if (count % 1000 == 0)
-            {
-                Console.WriteLine("\n\t\t\t\t\tProcessed products: " + count);
-            }
         }
 
         /// <summary>
@@ -173,9 +165,6 @@ namespace BobAndFriends
             // Load all categories and category synonyms from database
             Categories = Database.Instance.GetCategories();
             CategorySynonyms = Database.Instance.GetCategorySynonyms();
-
-            count = 0;
-
         }
 
         /// <summary>

@@ -27,127 +27,56 @@ namespace BobAndFriends.Affiliates
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
+            //Initialize XmlValueReader and its keys
+            XmlValueReader xvr = new XmlValueReader();
+            xvr.ProductEnd = "product";
+            xvr.AddKeys("ean", XmlNodeType.Element);
+            xvr.AddKeys("productname", XmlNodeType.Element);
+            xvr.AddKeys("brandname", XmlNodeType.Element);
+            xvr.AddKeys("currentprice", XmlNodeType.Element);
+            xvr.AddKeys("currency", XmlNodeType.Element);
+            xvr.AddKeys("validuntil", XmlNodeType.Element);
+            xvr.AddKeys("deeplinkurl", XmlNodeType.Element);
+            xvr.AddKeys("imagesmallurl", XmlNodeType.Element);
+            xvr.AddKeys("productcategory", XmlNodeType.Element);
+            xvr.AddKeys("productdescriptionslong", XmlNodeType.Element);
+            xvr.AddKeys("lastupdate", XmlNodeType.Element);
+            xvr.AddKeys("shipping", XmlNodeType.Element);
+            xvr.AddKeys("availabilty", XmlNodeType.Element);
+            xvr.AddKeys("belboonproductnumber", XmlNodeType.Element);
+
+            Product p = new Product();
+
+
             foreach (string file in filePaths)
             {
-                try
+                xvr.CreateReader(file);
+                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    XmlReader _reader = XmlReader.Create(file);
-                    Product p = null;
-                    while (_reader.Read())
-                    {
-                        //Increment the tickcount
-                        Statics.TickCount++;
-
-                        //Sleep everytime sleepcount is reached
-                        if (Statics.TickCount % Statics.TicksUntilSleep == 0)
-                        {
-                            Thread.Sleep(1);
-
-                            //Set tickCount to 0 to save memory
-                            Statics.TickCount = 0;
-                        }
-
-                        if (_reader.IsStartElement())
-                        {
-                            switch (_reader.Name)
-                            {
-                                case "ean":
-                                    _reader.Read();
-                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
-                                    break;
-
-                                case "productname":
-                                    _reader.Read();
-                                    p.Title = _reader.Value;
-                                    break;
-
-                                case "brandname":
-                                    _reader.Read();
-                                    p.Brand = _reader.Value;
-                                    break;
-
-                                case "currentprice":
-                                    _reader.Read();
-                                    p.Price = _reader.Value;
-                                    break;
-
-                                case "currency":
-                                    _reader.Read();
-                                    p.Currency = _reader.Value;
-                                    break;
-
-                                case "validuntil":
-                                    _reader.Read();
-                                    p.ValidUntil = _reader.Value;
-                                    break;
-
-                                case "deeplinkurl":
-                                    _reader.Read();
-                                    p.Url = _reader.Value;
-                                    break;
-
-                                case "imagesmallurl":
-                                    _reader.Read();
-                                    p.Image_Loc = _reader.Value;
-                                    break;
-
-                                case "productcategory":
-                                    _reader.Read();
-                                    p.Category = _reader.Value;
-                                    break;
-
-                                case "productdescriptionslong":
-                                    _reader.Read();
-                                    p.Description = _reader.Value;
-                                    break;
-
-                                case "lastupdate":
-                                    _reader.Read();
-                                    p.LastModified = _reader.Value;
-                                    break;
-
-                                case "shipping":
-                                    _reader.Read();
-                                    p.DeliveryCost = _reader.Value;
-                                    break;
-
-                                case "availability":
-                                    _reader.Read();
-                                    p.Stock = _reader.Value;
-                                    break;
-
-                                case "belboonproductnumber":
-                                    _reader.Read();
-                                    p.AfiiliateProdID = _reader.Value;
-                                    break;
-
-                                case "product":
-                                    p = new Product();
-                                    break;
-                            }
-                        }
-
-                        if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
-                        {
-                            p.Affiliate = "Belboon";
-                            p.FileName = file;
-                            p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                            products.Add(p);
-                        }
-                    }
+                    p.EAN = dkd["ean"][XmlNodeType.Element];
+                    p.Title = dkd["productname"][XmlNodeType.Element];
+                    p.Brand = dkd["brandname"][XmlNodeType.Element];
+                    p.Price = dkd["currentprice"][XmlNodeType.Element];
+                    p.Currency = dkd["currency"][XmlNodeType.Element];
+                    p.ValidUntil = dkd["validuntil"][XmlNodeType.Element];
+                    p.Url = dkd["deeplinkurl"][XmlNodeType.Element];
+                    p.Image_Loc = dkd["imagesmallurl"][XmlNodeType.Element];
+                    p.Category = dkd["productcategory"][XmlNodeType.Element];
+                    p.Description = dkd["productdescriptionslong"][XmlNodeType.Element];
+                    p.LastModified = dkd["lastupdate"][XmlNodeType.Element];
+                    p.DeliveryCost = dkd["shipping"][XmlNodeType.Element];
+                    p.Stock = dkd["availabilty"][XmlNodeType.Element];
+                    p.AfiiliateProdID = dkd["belboonproductnumber"][XmlNodeType.Element];
+                    p.Affiliate = "Belboon";
+                    p.FileName = file;
+                    p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                    products.Add(p);
+                    p = new Product();
                 }
-                catch (XmlException xmle)
-                {
-                    Statics.Logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                }
-                catch (Exception e)
-                {
-                    Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
-                }
-                yield return products;
-                products.Clear();
             }
+            yield return products;
+            products.Clear();
         }
-        
     }
 }
+
