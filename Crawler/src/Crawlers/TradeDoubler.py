@@ -27,7 +27,7 @@ class Crawler():
         
         #Get token 
         parser = SafeConfigParser()
-        parser.read('C:/Crawler/crawler.ini')
+        parser.read('C:/BorderSoftware/Boris/settings/boris.ini')
         self.token = parser.get('TradeDoubler', 'token')
         
         #Add token to the url. This url links to a xml file that contains program data
@@ -75,17 +75,17 @@ class Crawler():
 
     #Downloads and saves the xml file under the correct name      
     def save(self):
-        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
+        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
         feedURL = "http://api.tradedoubler.com/1.0/productsUnlimited.xml;fid=%s?token=%s" % (self.feedId, self.token)
 
         #If the save failes, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
-            xmlFile.retrieve(feedURL, "C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
+            xmlFile.retrieve(feedURL, "C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
         except:
             self.log.error(str(time.asctime( time.localtime(time.time()) ))+ ": " + traceback.format_exc())
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:/Crawler/Product Feeds/TradeDoubler/" + self.name + ".xml")
+            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
         
         self.prevName = self.name    
         
@@ -94,7 +94,7 @@ class Crawler():
         self.found = False
         
         #Import the excel file with names and associated urls
-        wb=load_workbook(r'C:\nameurls.xlsx', use_iterators = True)
+        wb=load_workbook(r'C:\BorderSoftware\Boris\nameurls.xlsx', use_iterators = True)
         ws=wb.get_sheet_by_name('Sheet1')
         
         #Iterate trough all rows

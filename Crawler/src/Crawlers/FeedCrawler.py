@@ -11,7 +11,7 @@ class Crawler():
     log = logger.createLogger("FeedCrawlerLogger", "FeedCrawler")
     
     #Import the excel file with websites
-    wb=load_workbook(r'C:\Crawler\feed_urls.xlsx', use_iterators = True)
+    wb=load_workbook(r'C:\BorderSoftware\Boris\feed_urls.xlsx', use_iterators = True)
     ws=wb.get_sheet_by_name('Sheet1')
     
     prevName = "" #Used to check if the previous campaign is from the same company.
@@ -57,7 +57,7 @@ class Crawler():
         #If the save failes, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
-            xmlFile.retrieve(url, "C:/Crawler/Product Feeds/" + affiliate + "/" + website + ".xml")
+            xmlFile.retrieve(url, "C:/BorderSoftware/Boris/ProductFeeds/" + affiliate + "/" + website + ".xml")
             self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Done saving xml file for: " + affiliate + " - " + website)
             
         except:

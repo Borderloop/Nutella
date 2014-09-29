@@ -47,11 +47,10 @@ namespace BobAndFriends.Affiliates
 
             Product p = new Product();
 
-
             foreach (string file in filePaths)
             {
                 xvr.CreateReader(file);
-                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
+                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())                               
                 {
                     p.EAN = dkd["ean"][XmlNodeType.Element];
                     p.Title = dkd["productname"][XmlNodeType.Element];

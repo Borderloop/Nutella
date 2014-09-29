@@ -25,6 +25,8 @@ namespace BobAndFriends
         /// </summary>
         private static Database _instance;
 
+        private int _articleID;
+
         /// <summary>
         /// The constructor
         /// </summary>
@@ -110,25 +112,6 @@ namespace BobAndFriends
             return _resultTable;
         }
 
-        /// <summary>
-        /// This method will return all categories found in the database.
-        /// </summary>
-        /// <returns>All categories found in the database.</returns>
-        public DataTable GetCategories()
-        {
-            //Invoke Read() with the appropriate query
-            return Read("SELECT description FROM category");
-        }
-
-        /// <summary>
-        /// This method will return all categorie synonyms found in the database.
-        /// </summary>
-        /// <returns>All categorie synonyms found in the database.</returns>
-        public DataTable GetCategorySynonyms()
-        {
-            //Invoke Read() with the appropriate query
-            return Read("SELECT description FROM category_synonym");
-        }
 
         public int CountRows(string tableName)
         {
@@ -149,103 +132,31 @@ namespace BobAndFriends
         }
 
         /// <summary>
-        /// This method will return the article number found when searching for an SKU, and -1 otherwise.
+        /// Gets the article id for a given table and record.
         /// </summary>
-        /// <param name="sku">The SKU that needs to be matched.</param>
-        /// <returns>The found article number, -1 otherwise</returns>
-        public int GetArticleNumberOfSKU(string sku)
+        /// <param name="table">The table to search the article id in.</param>
+        /// <param name="column">The column that is searched for a value.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <returns></returns>
+        public int GetArticleNumber(string table, string column, string value)
         {
-            DataTable _resultTable = new DataTable();
-
-            //Create the query
-            string query = @"SELECT * FROM sku WHERE sku=@SKU";
+            string query = "SELECT * FROM  " + table + " WHERE " + column + " = " + value;
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
 
-            //Add the parameters to the command.
-            _cmd.Parameters.AddWithValue("@SKU", sku);
-
-            //Load the result in a datatable
-            _resultTable.Load(_cmd.ExecuteReader());
-
-            //Return the article number if found, -1 otherwise.
-            return (_resultTable.Rows.Count > 0 ? (int)_resultTable.Rows[0]["article_id"] : -1);
-        }
-
-        /// <summary>
-        /// This method will return the article number found when searching for an EAN, and -1 otherwise.
-        /// </summary>
-        /// <param name="ean">The EAN that needs to be matched.</param>
-        /// <returns>The found article number, -1 otherwise</returns>
-        public int GetArticleNumberOfEAN(string ean)
-        {
             DataTable _resultTable = new DataTable();
-
-            //Create the query
-            string query = @"SELECT * FROM ean WHERE ean=@ean";
-
-            //Create the connection.
-            _cmd = new MySqlCommand(query, _conn);
-
-            //Add the parameters to the command.
-            _cmd.Parameters.AddWithValue("@ean", ean);
-
-            //Load the result in a datatable
             _resultTable.Load(_cmd.ExecuteReader());
 
             //Return the article number if found, -1 otherwise.
-            return (_resultTable.Rows.Count > 0 ? (int)_resultTable.Rows[0]["article_id"] : -1);
-        }
-
-        /// <summary>
-        /// This method will return the article number found when searching for a title, and -1 otherwise.
-        /// </summary>
-        /// <param name="title">The title that needs to be matched.</param>
-        /// <returns>The found article number, -1 otherwise</returns>
-        public int GetArticleNumberOfTitle(string title)
-        {
-            DataTable _resultTable = new DataTable();
-
-            //Create the query
-            string query = @"SELECT * FROM title WHERE title LIKE '%@title%'";
-
-            //Create the connection.
-            _cmd = new MySqlCommand(query, _conn);
-
-            //Add the parameters to the command.
-            _cmd.Parameters.AddWithValue("@title", title);
-
-            //Load the result in a datatable
-            _resultTable.Load(_cmd.ExecuteReader());
-
-            //Return the article number if found, -1 otherwise.
-            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
-        }
-
-        /// <summary>
-        /// This method will return the article number found when searching for a partial SKU, and -1 otherwise.
-        /// </summary>
-        /// <param name="sku">The SKU that needs to be matched.</param>
-        /// <returns>The found article number, -1 otherwise</returns>
-        public int GetArticleNumberOfPartialSKU(string sku)
-        {
-            DataTable _resultTable = new DataTable();
-
-            //Create the query
-            string query = @"SELECT * FROM title WHERE title LIKE '%@SKU%'";
-
-            //Create the connection.
-            _cmd = new MySqlCommand(query, _conn);
-
-            //Add the parameters to the command.
-            _cmd.Parameters.AddWithValue("@SKU", sku);
-
-            //Load the result in a datatable
-            _resultTable.Load(_cmd.ExecuteReader());
-
-            //Return the article number if found, -1 otherwise.
-            return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+            try
+            {
+                return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+            }
+            catch
+            {
+                return -1;
+            }
         }
 
         public bool CheckIfBrandExists(string brand)
@@ -272,44 +183,51 @@ namespace BobAndFriends
             return _resultTable.Rows.Count > 0;
         }
 
-        /// <summary>
-        /// Gets the data from the article table for the given article.
-        /// </summary>
-        /// <param name="aid">The article id to get the data from</param>
-        /// <returns></returns>
-        public DataTable GetArticleTableForArticle(int aid)
-        {
-            string query = "SELECT brand AS 'article-Brand', description AS 'article-Description', " +
-                           "image_loc AS 'article-Image_Loc' FROM article WHERE id = " + aid;
 
-            DataTable dt = Read(query);
-            return dt;
+        /// <summary>
+        /// Gets table data for a given table and article id.
+        /// </summary>
+        /// <param name="aid">The article id to search for.</param>
+        /// <param name="columns">The columns to select</param>
+        /// <param name="table">The table to get the results from</param>
+        /// <returns></returns>
+        public DataTable GetTableForArticle(int aid, List<string> columns, string table)
+        {
+            string query = GenerateSelectQuery(columns, table, "article_id", aid.ToString());
+
+            DataTable _resultTable = Read(query);
+            return _resultTable;
         }
 
         /// <summary>
-        /// Gets the data from the ean table for the given article.
+        /// Generates a select query.
         /// </summary>
-        /// <param name="aid">The article id to get the data from</param>
+        /// <param name="columns">The columns to select.</param>
+        /// <param name="table">The table to select from.</param>
+        /// <param name="whereClause">The where clause that is used.</param>
+        /// <param name="value">The value for the where clause.</param>
         /// <returns></returns>
-        public DataTable GetEANTableForArticle(int aid)
+        private string GenerateSelectQuery(List<string> columns, string table, string whereClause = null, string value = null)
         {
-            string query = "SELECT ean AS 'ean-EAN' FROM ean WHERE article_id = " + aid;
+            // Base of query
+            string query = "SELECT ";
 
-            DataTable dt = Read(query);
-            return dt;
-        }
+            // Add columns to the query
+            foreach (string column in columns)
+            {
+                query += column + ", ";
+            }
 
-        /// <summary>
-        /// Gets the data from the sku table for the given article.
-        /// </summary>
-        /// <param name="aid">The article id to get the data from</param>
-        /// <returns></returns>
-        public DataTable GetSKUTableForArticle(int aid)
-        {
-            string query = "SELECT sku AS 'sku-SKU' FROM sku WHERE article_id = " + aid;
+            // Remove the last comma and build query further.
+            query = query.Remove(query.Length - 2, 2) + " FROM " + table;
 
-            DataTable dt = Read(query);
-            return dt;
+            // If the where clause is not empty, a where clause is present so add this also.
+            if (whereClause != null)
+            {
+                query += " WHERE " + whereClause + " = " + value;
+            }
+
+            return query;
         }
 
         /// <summary>
@@ -442,15 +360,16 @@ namespace BobAndFriends
         /// table. This is because when this code is reached, no record is found for in one of those
         /// tables for an article.
         /// </summary>
-        public void AddForMatch(String table, String value, int id)
+        public void AddForMatch(String table, String value, int id, int countryId)
         {
             if (table.Equals("title"))
             {
-                String query = "INSERT INTO " + table + " (title, country_id, article_id) VALUES (@VALUE, 1, @ID)";
+                String query = "INSERT INTO " + table + " (title, country_id, article_id) VALUES (@VALUE, @COUNTRYID, @ID)";
 
                 MySqlCommand _cmd = new MySqlCommand(query, _conn);
                 _cmd.Parameters.AddWithValue("@VALUE", value);
                 _cmd.Parameters.AddWithValue("@ID", id);
+                _cmd.Parameters.AddWithValue("@COUNTRYID", countryId);
 
                 _cmd.ExecuteNonQuery();
             }
@@ -464,53 +383,6 @@ namespace BobAndFriends
 
                 _cmd.ExecuteNonQuery();
             }
-        }
-
-        /// <summary>
-        /// Gets the category (from the Borderloop category tree) for an article.
-        /// </summary>
-        /// <param name="id">The article id</param>
-        /// <returns></returns>
-        public DataTable GetCategoryForArticle(int id)
-        {
-            string query = "SELECT category.id, category.description FROM category " +
-                           "INNER JOIN cat_article ON category.id = cat_article.category_id " +
-                           "INNER JOIN article ON article.id = cat_article.article_id " +
-                           "WHERE article.id = " + id;
-
-            return Read(query);
-        }
-
-        /// <summary>
-        /// Gets the category synonyms for an article
-        /// </summary>
-        /// <param name="id">The article id</param>
-        /// <returns></returns>
-        public DataTable GetCategorySynonymsForArticle(int id)
-        {
-            string query = "SELECT cs.description FROM category_synonym as cs " +
-                           "INNER JOIN category as c ON c.id = cs.category_id " +
-                           "INNER JOIN cat_article as ca ON ca.category_id = c.id " +
-                           "INNER JOIN article as a ON a.id = ca.article_id " +
-                           "WHERE a.id = " + id;
-
-            return Read(query);
-        }
-
-        /// <summary>
-        /// Method to save a found category synonym to the database.
-        /// </summary>
-        /// <param name="id">The category id, which was retrieved at GetCategoryForArticle()</param>
-        /// <param name="description">The description of the category, which is the synonym</param>
-        public void SaveCategorySynonym(int id, string description)
-        {
-            string query = "INSERT into category_synonym VALUES (@ID, @DESCRIPTION)";
-
-            _cmd = new MySqlCommand(query, _conn);
-            _cmd.Parameters.AddWithValue("@ID", id);
-            _cmd.Parameters.AddWithValue("@DESCRIPTION", description);
-
-            _cmd.ExecuteNonQuery();
         }
 
         /// This method will send a product to the residu.
@@ -608,7 +480,7 @@ namespace BobAndFriends
         /// Used to save a new article.
         /// </summary>
         /// <param name="Record">The article to be saved</param>
-        public void SaveNewArticle(Product Record, int categoryID)
+        public void SaveNewArticle(Product Record, int categoryID, int countryId)
         {
             // First insert data into the article table
             string query = "INSERT INTO article (description, brand, image_loc) " +
@@ -625,7 +497,7 @@ namespace BobAndFriends
             MySqlCommand _cmd2 = new MySqlCommand(query2, _conn);
             MySqlDataReader rdr = _cmd2.ExecuteReader();
             rdr.Read();
-            int aid = rdr.GetInt32(0);
+            _articleID = rdr.GetInt32(0);
             rdr.Close();
 
             // Insert remaining data now the article id is available, but only
@@ -642,7 +514,7 @@ namespace BobAndFriends
             }
             if (Record.Title != "")
             {
-                query3 += "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, 1, @AID); " +
+                query3 += "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, @COUNTRYID, @AID); " +
                           "SELECT LAST_INSERT_ID() INTO @titleId; " +
                           "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);";
             }
@@ -651,55 +523,17 @@ namespace BobAndFriends
             if (query3 != "")
             {
                 MySqlCommand _cmd3 = new MySqlCommand(query3, _conn);
-                _cmd3.Parameters.AddWithValue("@AID", aid);
+                _cmd3.Parameters.AddWithValue("@AID", _articleID);
                 if (Record.EAN != null) { _cmd3.Parameters.AddWithValue("@EAN", Record.EAN); }
-                if (Record.SKU != "") { _cmd3.Parameters.AddWithValue("@SKU", Record.SKU); }
-                if (Record.Title != "") { _cmd3.Parameters.AddWithValue("@TITLE", Record.Title); }
+                if(Record.SKU != "") {_cmd3.Parameters.AddWithValue("@SKU", Record.SKU);}
+                if(Record.Title != "") 
+                {
+                    _cmd3.Parameters.AddWithValue("@TITLE", Record.Title);
+                    _cmd3.Parameters.AddWithValue("@COUNTRYID", countryId);
+                }
 
                 _cmd3.ExecuteNonQuery();
             }
-
-
-
-            // Now save the category.
-            //string query4 = "INSERT INTO cat_article VALUES(@CATID, @AID)";
-            //MySqlCommand _cmd4 = new MySqlCommand(query4, _conn);
-            //_cmd4.Parameters.AddWithValue("@CATID", categoryID);
-            //_cmd4.Parameters.AddWithValue("@AID", aid);
-
-            //_cmd4.ExecuteNonQuery();
-
-        }
-
-        /// <summary>
-        /// This method returns the category id for a record. 
-        /// </summary>
-        /// <param name="category">The name of the category</param>
-        /// <param name="categoryCheck">If this is true, the category is in the category table</param>
-        /// <param name="categorySynonymCheck">If this is true, the category is in the category_synonym table</param>
-        public int GetCategoryID(string category, bool categoryCheck, bool categorySynonymCheck)
-        {
-            string query = "";
-            if (categoryCheck == true && categorySynonymCheck == false) // Category in category table
-            {
-                query = "SELECT id FROM category WHERE description = @CATEGORY";
-            }
-            else if (categoryCheck == false && categorySynonymCheck == true) // Category in category_synonym table
-            {
-                query = "SELECT id FROM category " +
-                        "INNER JOIN category_synonym as cs ON cs.category_id = category.id " +
-                        "WHERE cs.description = @CATEGORY ";
-            }
-
-            _cmd = new MySqlCommand(query, _conn);
-            _cmd.Parameters.AddWithValue("@CATEGORY", category);
-            int id = 0;
-            object obj = _cmd.ExecuteScalar();
-            if (obj != null && obj != DBNull.Value)
-            {
-                id = Convert.ToInt32(obj);
-            }
-            return id;
         }
 
         /// This method will close the connection with the database.
@@ -708,24 +542,6 @@ namespace BobAndFriends
         {
             //Close the connection.
             _conn.Close();
-        }
-
-        /// <summary>
-        /// Gets all records from VBobData which have to be rerunned.
-        /// </summary>
-        /// <returns>All products that have to be rerunned</returns>
-        public DataTable GetRerunnables()
-        {
-            return Read("SELECT * FROM vbobdata WHERE rerun=1");
-        }
-
-        /// <summary>
-        /// Returns all products from the residue
-        /// </summary>
-        /// <returns>All products from the residue</returns>
-        public DataTable GetAllProductsFromResidue()
-        {
-            return Read("Select * FROM residue");
         }
 
         /// <summary>
@@ -740,11 +556,25 @@ namespace BobAndFriends
             //Execute it and return the datatable.
             return Read(query);
         }
+ 
+
+        /// <summary>
+        /// Used for simple select statements.
+        /// </summary>
+        /// <param name="columns">The columns to select</param>
+        /// <returns></returns>
+        public DataTable Select(List<string> columns, string table, string whereClause = null, string value = null) 
+        {
+            string query = GenerateSelectQuery(columns, table, whereClause, value);
+
+            DataTable _resultTable = Read(query);
+            return _resultTable;
+        }
 
         public DataTable GetSuggestedProducts(int productID)
         {
             //parse productID to a string
-            string id = "" + productID;
+            string id = productID.ToString();
 
             //Create the query
             string query = " SELECT article.id as 'Article ID',"
@@ -875,15 +705,10 @@ namespace BobAndFriends
             int lastId = articleIds[articleIds.Count - 1];
             foreach (int articleId in articleIds)
             {
-                if (articleId != lastId)
-                {
                     query += "(" + articleId + ", " + vBobId + "), ";
-                }
-                else
-                {
-                    query += "(" + articleId + ", " + vBobId + ")";
-                }
             }
+            // Remove last comma;
+            query = query.Remove(query.Length - 2, 2);
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
             _cmd.ExecuteNonQuery();
@@ -906,14 +731,32 @@ namespace BobAndFriends
 
         }
 
-        public void SaveProductData(Product Record, int aId)
+        /// <summary>
+        /// Saves product data for a given record.
+        /// </summary>
+        /// <param name="Record">The record of which the product data will be saved.</param>
+        /// <param name="aId">The article id the record belongs to.</param>
+        public void SaveProductData(Product Record)
         {
             string query = "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@AID, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK)";
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
 
-            _cmd.Parameters.AddWithValue("@AID", aId);
+            decimal? deliverycost;
+
+            try
+            {
+                deliverycost = decimal.Parse(Record.DeliveryCost);
+            }
+            catch
+            {
+                deliverycost = null;
+            }
+
+            _cmd.Parameters.AddWithValue("@AID", _articleID);
             _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
+            _cmd.Parameters.AddWithValue("@SHIPCOST", deliverycost);
+            _cmd.Parameters.AddWithValue("@PRICE", Record.Price);
             _cmd.Parameters.AddWithValue("@SHIPCOST", Record.DeliveryCost == "" ? -1 : Convert.ToDouble(Record.DeliveryCost));
             _cmd.Parameters.AddWithValue("@PRICE", Record.Price == "" ? -1 : Convert.ToDouble(Record.Price));
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
@@ -922,6 +765,12 @@ namespace BobAndFriends
             _cmd.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Gets the product data for a given record, used for comparison.
+        /// </summary>
+        /// <param name="Record">The record to get product data for.</param>
+        /// <param name="aId">The article id the record belongs to.</param>
+        /// <returns></returns>
         public DataTable GetProductData(Product Record, int aId)
         {
             string query = "SELECT ship_time AS DeliveryTime, ship_cost AS DeliveryCost, price AS Price, direct_link AS Url FROM product WHERE article_id = " + aId + " AND webshop_url = '" + Record.Webshop + "'";
@@ -930,10 +779,27 @@ namespace BobAndFriends
             return dt;
         }
 
+        /// <summary>
+        /// Updates product data if changes are found.
+        /// </summary>
+        /// <param name="query">The query to be executed to the database</param>
         public void UpdateProductData(string query)
         {
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
             _cmd.ExecuteNonQuery();
+        }
+
+        public int GetCountryId(string webshop)
+        {
+            string query = "SELECT country_id FROM webshop WHERE url = '" + webshop + "'";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            MySqlDataReader rdr = _cmd.ExecuteReader();
+            rdr.Read();
+            int countryId = rdr.GetInt32(0);
+            rdr.Close();
+
+            return countryId;
         }
 
         public DataTable GetDuplicateEANs()
@@ -1013,9 +879,6 @@ namespace BobAndFriends
             _cmd.ExecuteNonQuery();
         }
 
-        public void Cleanup()
-        {
-            //string query 
-        }
+        
     }
 }

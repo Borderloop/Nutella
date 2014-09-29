@@ -152,7 +152,7 @@ namespace BobAndFriends.Affiliates
                         {
                             p.Affiliate = "Affilinet";
                             p.FileName = file;
-                            p.Webshop = "www." + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                            p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
                             products.Add(p);
                         }
                     }

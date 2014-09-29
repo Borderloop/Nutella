@@ -6,7 +6,7 @@ This class constructs the logger for every module requesting it. It takes 2 para
 logName assigns the name to the logger, fileName assigns the name used by the log files.
 '''        
 def createLogger(logName, fileName):
-    os.chdir('C:\\Crawler\logfiles')
+    os.chdir('C:\BorderSoftware\Boris\log')
     log = logging.getLogger(logName)
     log.setLevel(logging.DEBUG)
     formatter = logging.Formatter('[%(levelname)s] %(message)s')
