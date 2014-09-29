@@ -52,94 +52,73 @@ namespace BobAndFriends.Affiliates
                             switch (_reader.Name)
                             {
                                 case "ean":
-                                    if (_reader.Read())
-                                    {
-                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
-                                    }
+                                    _reader.Read();
+                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
                                     break;
 
                                 case "productname":
-                                    if (_reader.Read())
-                                    {
-                                        p.Title = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Title = _reader.Value;
                                     break;
 
                                 case "brandname":
-                                    if (_reader.Read())
-                                    {
-                                        p.Brand = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Brand = _reader.Value;
                                     break;
 
                                 case "currentprice":
-                                    if (_reader.Read())
-                                    {
-                                        p.Price = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Price = _reader.Value;
                                     break;
 
                                 case "currency":
-                                    if (_reader.Read())
-                                    {
-                                        p.Currency = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Currency = _reader.Value;
                                     break;
 
                                 case "validuntil":
-                                    if (_reader.Read())
-                                    {
-                                        p.ValidUntil = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.ValidUntil = _reader.Value;
                                     break;
 
                                 case "deeplinkurl":
-                                    if (_reader.Read())
-                                    {
-                                        p.Url = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Url = _reader.Value;
                                     break;
 
                                 case "imagesmallurl":
-                                    if (_reader.Read())
-                                    {
-                                        p.Image_Loc = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Image_Loc = _reader.Value;
                                     break;
 
                                 case "productcategory":
-                                    if (_reader.Read())
-                                    {
-                                        p.Category = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Category = _reader.Value;
                                     break;
 
                                 case "productdescriptionslong":
-                                    if (_reader.Read())
-                                    {
-                                        p.Description = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Description = _reader.Value;
                                     break;
 
                                 case "lastupdate":
-                                    if (_reader.Read())
-                                    {
-                                        p.LastModified = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.LastModified = _reader.Value;
                                     break;
 
                                 case "shipping":
-                                    if (_reader.Read())
-                                    {
-                                        p.DeliveryCost = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.DeliveryCost = _reader.Value;
                                     break;
 
                                 case "availability":
-                                    if (_reader.Read())
-                                    {
-                                        p.Stock = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Stock = _reader.Value;
+                                    break;
+
+                                case "belboonproductnumber":
+                                    _reader.Read();
+                                    p.AfiiliateProdID = _reader.Value;
                                     break;
 
                                 case "product":

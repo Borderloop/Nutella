@@ -28,6 +28,22 @@ namespace BobAndFriends.Affiliates
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
+            XmlValueReader xvr;
+            Product p = new Product();
+
+            foreach(string file in filePaths)
+            {
+                xvr = new XmlValueReader(file);
+                xvr.AddKeys("ProductID", XmlNodeType.Element);
+                xvr.ProductEnd = "Product";
+                foreach(DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
+                {
+                    p.AfiiliateProdID = dkd["ProductID"][XmlNodeType.Element];
+                }
+            }
+
+            #region old
+            /*
             foreach (string file in filePaths)
             {
                 try
@@ -53,119 +69,93 @@ namespace BobAndFriends.Affiliates
                             switch (_reader.Name)
                             {
                                 case "EAN":
-                                    if (_reader.Read())
-                                    {
-                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
-                                    }
+                                    _reader.Read();
+                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
                                     break;
 
                                 case "Title":
-                                    if (_reader.Read())
-                                    {
-                                        p.Title = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Title = _reader.Value;
                                     break;
 
                                 case "Brand":
-                                    if (_reader.Read())
-                                    {
-                                        p.Brand = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Brand = _reader.Value;
                                     break;
 
                                 case "Price":
-                                    if (_reader.Read())
-                                    {
-                                        p.Price = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Price = _reader.Value;
                                     break;
 
                                 case "CurrencySymbol":
-                                    if (_reader.Read())
-                                    {
-                                        p.Currency = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Currency = _reader.Value;
                                     break;
 
                                 case "ValidTo":
-                                    if (_reader.Read())
-                                    {
-                                        p.ValidUntil = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.ValidUntil = _reader.Value;
                                     break;
 
                                 case "Deeplinks":
-                                    if (_reader.Read())
-                                    {
-                                        if (_reader.Read())
-                                        {
-                                            p.Url = _reader.Value;
-                                        }
+                                    _reader.Read();
+                                    _reader.Read();
 
-                                        //Read again twice to avoid double products because some genius made the xml file have two Product elements...
-                                        _reader.Read();
-                                        _reader.Read();
-                                    }
+                                    p.Url = _reader.Value;
+
+                                    //Read again twice to avoid double products because some genius made the xml file have two Product elements...
+                                    _reader.Read();
+                                    _reader.Read();
                                     break;
 
                                 case "Images":
-                                    if (_reader.Read())
-                                    {
-                                        _reader.ReadToFollowing("URL");
-                                        if (_reader.Read())
-                                        {
-                                            p.Image_Loc = _reader.Value;
-                                        }
-                                    }
+                                    _reader.Read();
+                                    _reader.ReadToFollowing("URL");
+                                    _reader.Read();
+                                    p.Image_Loc = _reader.Value;
                                     break;
 
                                 case "ProductCategoryPath":
-                                    if (_reader.Read())
-                                    {
-                                        p.Category = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Category = _reader.Value;
                                     break;
 
                                 case "Description":
-                                    if (_reader.Read())
-                                    {
-                                        p.Description = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Description = _reader.Value;
                                     break;
 
                                 case "LastUpdate":
-                                    if (_reader.Read())
-                                    {
-                                        p.LastModified = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.LastModified = _reader.Value;
                                     break;
 
                                 case "Shipping":
-                                    if (_reader.Read())
-                                    {
-                                        _reader.ReadToFollowing("Shipping");
-                                        if (_reader.Read())
-                                        {
-                                            p.DeliveryCost = _reader.Value;
-                                        }
-                                    }
+                                    _reader.Read();
+                                    _reader.ReadToFollowing("Shipping");
+                                    _reader.Read();
+                                    p.DeliveryCost = _reader.Value;
                                     break;
 
                                 case "Properties":
-                                    if (_reader.Read())
+                                    _reader.Read();
+                                    while (!(_reader.Name.Equals("Properties") && _reader.NodeType == XmlNodeType.EndElement))
                                     {
-                                        while (!(_reader.Name.Equals("Properties") && _reader.NodeType == XmlNodeType.EndElement))
+                                        if (_reader.HasAttributes && _reader["Title"].Equals("STOCK"))
                                         {
-                                            if (_reader.HasAttributes && _reader["Title"].Equals("STOCK"))
-                                            {
-                                                break;
-                                            }
-
-                                            _reader.Read();
-
+                                            break;
                                         }
-                                        p.Stock = _reader["Text"] ?? "";
+
+                                        _reader.Read();
+
                                     }
+                                    p.Stock = _reader["Text"] ?? "";
+                                    break;
+
+                                case "ProductID":
+                                    _reader.Read();
+                                    p.AfiiliateProdID = _reader.Value;
                                     break;
 
                                 case "Product":
@@ -191,9 +181,11 @@ namespace BobAndFriends.Affiliates
                 {
                     Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                 }
-                yield return products;
-                products.Clear();
+             */
+            #endregion
+            yield return products;
+            products.Clear();
             }
         }
     }
-}
+

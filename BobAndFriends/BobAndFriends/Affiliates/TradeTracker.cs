@@ -53,49 +53,38 @@ namespace BobAndFriends.Affiliates
                             {
                                 case "product":
                                     p = new Product();
+                                    p.AfiiliateProdID = _reader.GetAttribute("ID");
                                     break;
 
                                 case "name":
-                                    if (_reader.Read())
-                                    {
-                                        p.Title = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Title = _reader.Value;
                                     break;
 
                                 case "price":
                                     p.Currency = _reader.GetAttribute("currency");
-                                    if (_reader.Read())
-                                    {
-                                        p.Price = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Price = _reader.Value;
                                     break;
 
                                 case "URL":
-                                    if (_reader.Read())
-                                    {
-                                        p.Url = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Url = _reader.Value;
                                     break;
 
                                 case "image":
-                                    if (_reader.Read())
-                                    {
-                                        p.Image_Loc = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Image_Loc = _reader.Value;
                                     break;
 
                                 case "description":
-                                    if (_reader.Read())
-                                    {
-                                        p.Description = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Description = _reader.Value;
                                     break;
 
                                 case "category":
-                                    if (_reader.Read())
-                                    {
-                                        p.Category = _reader.Value;
-                                    }
+                                    _reader.Read();                                  
+                                    p.Category = _reader.Value;                                    
                                     break;
 
                                 case "property":
@@ -103,66 +92,52 @@ namespace BobAndFriends.Affiliates
                                     switch (_reader.Value)
                                     {
                                         case "currency":
-                                            if (_reader.Read())
-                                            {
-                                                _reader.Read();
-                                                _reader.Read();
-                                                p.Currency = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.Currency = _reader.Value;
                                             break;
 
                                         case "EAN":
-                                            if (_reader.Read())
-                                            {
-                                                _reader.Read();
-                                                _reader.Read();
-                                                p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
-                                            }
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
                                             break;
 
                                         case "brand":
-                                            if (_reader.Read())
-                                            {
-                                                _reader.Read();
-                                                _reader.Read();
-                                                p.Brand = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.Brand = _reader.Value;
                                             break;
 
                                         case "deliveryCosts":
-                                            if (_reader.Read())
-                                            {
-                                                _reader.Read();
-                                                _reader.Read();
-                                                p.DeliveryCost = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.DeliveryCost = _reader.Value;
                                             break;
 
                                         case "stock":
-                                            if (_reader.Read())
-                                            {
-                                                _reader.Read();
-                                                _reader.Read();
-                                                p.Stock = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.Stock = _reader.Value;
                                             break;
 
                                         case "deliveryTime":
-                                            if (_reader.Read())
-                                            {
-                                                _reader.Read();
-                                                _reader.Read();
-                                                p.DeliveryTime = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.DeliveryTime = _reader.Value;
                                             break;
 
                                         case "SKU":
-                                            if (_reader.Read())
-                                            {
-                                                _reader.Read();
-                                                _reader.Read();
-                                                p.SKU = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.SKU = _reader.Value;
                                             break;
                                     }
                                     _reader.MoveToElement();

@@ -38,7 +38,7 @@ namespace BobAndFriends
         /// </summary>
         private void InitializeProducts()
         {
-            Database.Instance.Connect("127.0.0.1", "test2", "root", "***");
+            Database.Instance.Connect("127.0.0.1", "test2", "root", "Hoppa123");
             selectedProductDataGrid.AutoGenerateColumns = true;
             suggestedProductsDataGrid.AutoGenerateColumns = true;
 
