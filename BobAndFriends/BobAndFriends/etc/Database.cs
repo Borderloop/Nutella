@@ -50,6 +50,11 @@ namespace BobAndFriends
             }
         }
 
+        public bool isConnected
+        {
+            get { return _conn.State == ConnectionState.Open; }
+        }
+
         /// <summary>
         /// This method will let the user connect to the database with a given connection string.
         /// </summary>
@@ -396,11 +401,12 @@ namespace BobAndFriends
             col_vals.Add("sku", p.SKU);
             col_vals.Add("brand", p.Brand);
 
-            if(tableName.Equals("vbobdata"))
+            if (tableName.Equals("vbobdata"))
             {
                 col_vals.Add("rerun", rerun);
                 col_vals.Add("image_loc", p.Image_Loc);
-            } else
+            }
+            else
             {
                 col_vals.Add("image", p.Image_Loc);
             }
@@ -456,13 +462,7 @@ namespace BobAndFriends
                 {
                     if (!pair.Value.Equals(""))
                     {
-                        //Make an exception for EAN, which is the only integer
-                        if (pair.Key.Equals("ean"))
-                        {
-                            _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
-                            continue;
-                        }
-                        if(pair.Key.Equals("rerun"))
+                        if (pair.Key.Equals("rerun"))
                         {
                             _cmd.Parameters.AddWithValue("@" + pair.Key.ToUpper(), pair.Value);
                             continue;
@@ -520,7 +520,7 @@ namespace BobAndFriends
             }
             // Don't execute when none of the records are present, which means
             // the query is empty.
-            if (query3 != "") 
+            if (query3 != "")
             {
                 MySqlCommand _cmd3 = new MySqlCommand(query3, _conn);
                 _cmd3.Parameters.AddWithValue("@AID", _articleID);
@@ -603,26 +603,26 @@ namespace BobAndFriends
             _cmd.ExecuteNonQuery();
         }
 
-        public void RerunVbobEntry(int id, string[] updates, Int64? ean)
+        public void RerunVbobEntry(int id, string[] updates)
         {
-            string query = "UPDATE vbobdata SET rerun = 1, title = @TITLE" 
-                + ", ean = @EAN" 
+            string query = "UPDATE vbobdata SET rerun = 1, title = @TITLE"
+                + ", ean = @EAN"
                 + ", sku = @SKU"
                 + ", brand = @BRAND"
                 + ", category = @CATEGORY"
-                + ", description = @DESCRIPTION" 
+                + ", description = @DESCRIPTION"
                 + ", image_loc = @IMAGELOC"
                 + " WHERE id = " + id;
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
 
-            _cmd.Parameters.AddWithValue("@TITLE", updates[0]);
-            _cmd.Parameters.AddWithValue("@EAN", ean == -1 ? null : ean);
+            _cmd.Parameters.AddWithValue("@TITLE", updates[0]);        
             _cmd.Parameters.AddWithValue("@SKU", updates[1] == " " ? null : updates[1]);
             _cmd.Parameters.AddWithValue("@BRAND", updates[2]);
             _cmd.Parameters.AddWithValue("@CATEGORY", updates[3]);
             _cmd.Parameters.AddWithValue("@DESCRIPTION", updates[4]);
             _cmd.Parameters.AddWithValue("@IMAGELOC", updates[5]);
+            _cmd.Parameters.AddWithValue("@EAN", updates[6]);
 
             _cmd.ExecuteNonQuery();
         }
@@ -664,19 +664,20 @@ namespace BobAndFriends
                                               "ORDER BY MATCH(ts.title) AGAINST ('" + Record.Title + "'))" +
                            "AND article.brand = '" + Record.Brand + "' " +
                            "LIMIT 10";
-            
+
             List<int> articleIds = new List<int>();
 
             MySqlCommand _cmd2 = new MySqlCommand(query2, _conn);
             MySqlDataReader rdr2 = _cmd2.ExecuteReader();
 
-            while(rdr2.Read()){
+            while (rdr2.Read())
+            {
                 articleIds.Add(rdr2.GetInt32(0));
             }
 
             rdr2.Close();
 
-             
+
             bool match;
 
             //Invoke method to save suggested matches to database if matches are found
@@ -756,9 +757,10 @@ namespace BobAndFriends
             _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
             _cmd.Parameters.AddWithValue("@SHIPCOST", deliverycost);
             _cmd.Parameters.AddWithValue("@PRICE", Record.Price);
+            _cmd.Parameters.AddWithValue("@SHIPCOST", Record.DeliveryCost == "" ? -1 : Convert.ToDouble(Record.DeliveryCost));
+            _cmd.Parameters.AddWithValue("@PRICE", Record.Price == "" ? -1 : Convert.ToDouble(Record.Price));
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
-
 
             _cmd.ExecuteNonQuery();
         }
@@ -799,5 +801,84 @@ namespace BobAndFriends
 
             return countryId;
         }
+
+        public DataTable GetDuplicateEANs()
+        {
+            return Read("SELECT ean.ean, ean.article_id, COUNT(*) FROM ean GROUP BY ean.ean HAVING COUNT(*) > 1");
+        }
+
+        public DataTable GetDuplicateSKUs()
+        {
+            return Read("SELECT sku.sku, sku.article_id, COUNT(*) FROM sku GROUP BY sku.sku HAVING COUNT(*) > 1");
+        }
+
+        public DataTable GetAIDsFromEAN(string ean, int correctAID)
+        {
+            return Read("Select ean.article_id from ean where ean.article_id != " + correctAID + " AND ean.ean = " + ean);
+        }
+
+        public DataTable GetAIDsFromSKU(string ean, int correctAID)
+        {
+            return Read("Select sku.article_id from sku where sku.article_id != " + correctAID + " AND sku.sku = " + ean);
+        }
+
+        public void UpdateProductAID(int wrongAID, int correctAID)
+        {
+            string query = "UPDATE product SET article_id = @CORRECTID WHERE article_id = @WRONGID";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+
+            _cmd.Parameters.AddWithValue("@CORRECTID", correctAID);
+            _cmd.Parameters.AddWithValue("@WRONGID", wrongAID);
+
+            _cmd.ExecuteNonQuery();
+        } 
+
+      
+        public void AddTitleSynonym(int wrongaid, int correctaid)
+        {
+            string titleName = Read("SELECT title.title FROM title WHERE title.article_id = " + wrongaid).Rows[0].Field<String>("title");
+            int titleID = Read("SELECT title.id FROM title WHERE title.article_id = " + correctaid).Rows[0].Field<Int32>("id");
+
+            //First check if the title already exists in the database
+            DataTable dt = Read("SELECT title_synonym.occurrences FROM title_synonym WHERE title_synonym.title_id = " + titleID + " AND title_synonym.title = \"" + titleName + "\"");
+            if(dt.Rows.Count > 0)
+            {
+                //Clearly we found a match, so we can now update the occurences which are stored in the datatable
+                UpdateTitleSynonymOccurrences(titleID, (int)dt.Rows[0].Field<Int32>("occurrences") + 1, titleName);
+
+                //We're done.
+                return;
+            }
+
+            //We didn't find a match, therefore we insert a new title synonym.
+            string query = "INSERT INTO title_synonym (title, title_id, occurrences) VALUES (@TITLENAME, @TITLEID, 1)";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+
+            _cmd.Parameters.AddWithValue("@TITLENAME", titleName);
+            _cmd.Parameters.AddWithValue("@TITLEID", titleID);
+
+            _cmd.ExecuteNonQuery();        
+        
+        }
+
+        public void DeleteArticle(int articleID)
+        {
+            //Delete all entries from the given article ID
+            string query = "DELETE FROM ean WHERE ean.article_id = " + articleID + "; ";
+            query += "DELETE FROM sku WHERE sku.article_id = " + articleID + "; ";
+            
+            //Nasty way of getting title_id very quick.
+            query += "DELETE FROM title_synonym WHERE title_synonym.title_id = " + Read("SELECT title.id FROM title WHERE title.article_id = " + articleID).Rows[0]["id"] + "; ";
+            query += "DELETE FROM title WHERE title.article_id = " + articleID + "; ";
+            query += "DELETE FROM article WHERE article.id = " + articleID + "; ";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+
+            _cmd.ExecuteNonQuery();
+        }
+
+        
     }
 }

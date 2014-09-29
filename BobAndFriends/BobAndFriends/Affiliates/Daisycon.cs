@@ -52,84 +52,66 @@ namespace BobAndFriends.Affiliates
                             switch (_reader.Name)
                             {
                                 case "ean_code":
-                                    if (_reader.Read())
-                                    {
-                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? (Int64?)Convert.ToInt64(_reader.Value) : null;
-                                    }
+                                    _reader.Read();
+                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
                                     break;
 
                                 case "title":
-                                    if (_reader.Read())
-                                    {
-                                        p.Title = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Title = _reader.Value;
                                     break;
 
                                 case "brand":
-                                    if (_reader.Read())
-                                    {
-                                        p.Brand = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Brand = _reader.Value;
                                     break;
 
                                 case "minimum_price":
-                                    if (_reader.Read())
-                                    {
-                                        p.Price = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Price = _reader.Value;
                                     break;                                            
 
                                 case "link":
-                                    if (_reader.Read())
-                                    {
-                                        p.Url = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Url = _reader.Value;
                                     break;
 
                                 case "img_medium":
-                                    if (_reader.Read())
-                                    {
-                                        p.Image_Loc = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Image_Loc = _reader.Value;
                                     break;
 
                                 case "category":
-                                    if (_reader.Read())
-                                    {
-                                        p.Category = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Category = _reader.Value;
                                     break;
 
                                 case "description":
-                                    if (_reader.Read())
-                                    {
-                                        p.Description = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Description = _reader.Value;
                                     break;
 
                                 case "shipping_cost":
                                 case "shippingcosts":
-                                    if (_reader.Read())
-                                    {
-                                        p.DeliveryCost = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.DeliveryCost = _reader.Value;
                                     break;
 
                                 case "shipping_duration":
-                                    if (_reader.Read())
-                                    {
-                                        p.DeliveryTime = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.DeliveryTime = _reader.Value;
                                     break;
 
                                 case "stock":
                                 case "shipping_duration_descr":
-                                    if (_reader.Read())
-                                    {
-                                        p.Stock = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    p.Stock = _reader.Value;
                                     break;
 
+                                case "daisycon_unique_id":
+                                    _reader.Read();
+                                    p.AfiiliateProdID = _reader.Value;
+                                    break;
 
                                 case "item":
                                     p = new Product();

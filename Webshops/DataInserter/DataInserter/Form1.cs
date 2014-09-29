@@ -51,7 +51,7 @@ namespace DataInserter
         {
 
 
-            StreamReader reader = File.OpenText(@"D:/School/Jaar 3/Stage Borderloop/Webshops3.txt");
+            StreamReader reader = File.OpenText(@"Webshops3.txt");
             String[] headers = { "Website", "Land", "Verzender", "Verzendprijs", "Keurmerk(en)", "Taal", "Betaalmogelijkheid", " ", "Approved", "Affiliate" };
             int dataCounter = 0;
             int rowCounter = 0;

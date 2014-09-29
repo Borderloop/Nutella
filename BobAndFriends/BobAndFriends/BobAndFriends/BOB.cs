@@ -78,11 +78,11 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             
-
             //Don't run if the webshop is not in the database
             List<string> columns = new List<string>();
             columns.Add ("*");
             DataTable dt = Database.Instance.Select(columns, "webshop", "url", Record.Webshop);
+
             if (dt.Rows.Count > 0)
             {
                 if (Record.SKU.Length > 15)
@@ -121,7 +121,6 @@ namespace BobAndFriends
                         return;
                     }
                 }
-
                 // If checkBrand() returns false, the record doesn't contain a brand. Send record
                 // to residue and stop execution of method.
                 if (CheckBrand(Record))
@@ -143,12 +142,11 @@ namespace BobAndFriends
                     SaveNewArticle(Record);
                     return;
                 }
-                
             }
-            else // Log the database that was not present
+            else // Log the website that was not present
             {
                 Statics.Logger.WriteLine("Webshop not found in database: " + Record.Webshop);
-            }
+            }   
         }
 
         /// <summary>
@@ -195,7 +193,7 @@ namespace BobAndFriends
             foreach (DataRow row in Rerunnables.Rows)
             {
                 p.Title = row.Field<String>("title") ?? "";
-                p.EAN = row.Field<Int64?>("ean") ?? null;
+                p.EAN = row.Field<String>("ean") ?? "";
                 p.SKU = row.Field<String>("sku") ?? "";
                 p.Brand = row.Field<String>("brand") ?? "";
                 p.Category = row.Field<String>("category") ?? "";
@@ -232,7 +230,7 @@ namespace BobAndFriends
             foreach (DataRow row in residue.Rows)
             {
                 p.Title = row.Field<String>("title") ?? "";
-                p.EAN = row.Field<Int64?>("ean") ?? null;
+                p.EAN = row.Field<String>("ean") ?? "";
                 p.SKU = row.Field<String>("sku") ?? "";
                 p.Brand = row.Field<String>("brand") ?? "";
                 p.Category = row.Field<String>("category") ?? "";
@@ -390,6 +388,7 @@ namespace BobAndFriends
             }
             catch (InvalidCastException) // An ean is returned, which is int64 instead of string. Convert values for this.
             {
+                //This should not be thrown anymore since we changed EAN to be a string.
                 hasMatch = dt.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == row.Field<Int64>(column));
             }
 
@@ -470,7 +469,7 @@ namespace BobAndFriends
         /// </summary>
         /// <param name="ean">The EAN that has to be checked.</param>
         /// <returns>The article number if found, -1 otherwise.</returns>
-        private int checkEAN(Int64? ean)
+        private int checkEAN(string ean)
         {
             //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumber("ean", "ean", ean.ToString());
@@ -549,7 +548,7 @@ namespace BobAndFriends
             Database.Instance.SaveNewArticle(Record, _categoryID, _countryID);
 
             // Save product data to database.
-            SaveProductData(Record);
+            //SaveProductData(Record);
         }
 
         /// <summary>

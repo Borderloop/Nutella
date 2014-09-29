@@ -54,17 +54,13 @@ namespace BobAndFriends.Affiliates
                             switch (_reader.Name)
                             {
                                 case "streamCurrency":
-                                    if (_reader.Read())
-                                    {
-                                        currency = _reader.Value;
-                                    }
+                                    _reader.Read();                                    
+                                    currency = _reader.Value;                                   
                                     break;
 
                                 case "lastUpdated":
-                                    if (_reader.Read())
-                                    {
-                                        lastUpdated = _reader.Value;
-                                    }
+                                    _reader.Read();
+                                    lastUpdated = _reader.Value;
                                     break;
 
                                 case "record":
@@ -76,74 +72,59 @@ namespace BobAndFriends.Affiliates
                                     switch (_reader.Value)
                                     {
                                         case "url":
-                                            if (_reader.Read())
-                                            {
-                                                p.Url = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.Url = _reader.Value;
                                             break;
 
                                         case "title":
-                                            if(_reader.Read())
-                                            {
-                                                p.Title = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.Title = _reader.Value;
                                             break;
 
                                         case "ean":
-                                            if (_reader.Read())
-                                            {
-                                                p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? (Int64?)Convert.ToInt64(_reader.Value) : null;
-                                            }
+                                            _reader.Read();
+                                            p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
                                             break;
 
                                         case "price":
-                                            if (_reader.Read())
-                                            {
-                                                p.Price = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.Price = _reader.Value;
                                             break;
 
                                         case "image":
-                                            if (_reader.Read())
-                                            {
-                                                p.Image_Loc = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.Image_Loc = _reader.Value;
                                             break;
 
                                         case "category":
-                                            if (_reader.Read())
-                                            {
-                                                p.Category = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.Category = _reader.Value;
                                             break;
 
                                         case "description":
-                                            if (_reader.Read())
-                                            {
-                                                p.Description = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.Description = _reader.Value;
                                             break;
 
                                         case "price_shipping":
-                                            if (_reader.Read())
-                                            {
-                                                p.DeliveryCost = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.DeliveryCost = _reader.Value;
                                             break;
 
                                         case "stock":
-                                            if (_reader.Read())
-                                            {
-                                                p.Stock = _reader.Value;
-                                            }
+                                            _reader.Read();
+                                            p.Stock = _reader.Value;
                                             break;
 
                                         case "timetoship":
-                                            if (_reader.Read())
-                                            {
-                                                p.DeliveryTime = _reader.Value;
-                                            }
-                                            break;                                                      
+                                            _reader.Read();
+                                            p.DeliveryTime = _reader.Value;
+                                            break;    
+                                         
+                                        case "zupid":
+                                            _reader.Read();
+                                            p.AfiiliateProdID = _reader.Value;
+                                            break;
                                     }
                                     _reader.MoveToElement();
                                     break;
@@ -151,8 +132,7 @@ namespace BobAndFriends.Affiliates
                         }
 
                         if (_reader.Name.Equals("record") && _reader.NodeType == XmlNodeType.EndElement)
-                        {
-                                        
+                        {                                  
                             p.Currency = currency;
                             p.LastModified = lastUpdated;
                             p.Affiliate = "Zanox";
