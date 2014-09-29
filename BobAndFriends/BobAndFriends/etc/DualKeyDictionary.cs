@@ -37,5 +37,16 @@ namespace BobAndFriends
         {
             return base.ContainsKey(key1) && this[key1].ContainsKey(key2);
         }
+
+        public void ClearValues()
+        {
+            foreach(K1 key1 in this.Keys.ToList())
+            {
+                foreach(K2 key2 in this[key1].Keys.ToList())
+                {                    
+                    this[key1][key2] = default(T);
+                }
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BobAndFriends
 {
-    public class Util
+    public static class Util
     {        
         /// <summary>
         /// This method will concatinate two string arrays.
@@ -70,5 +70,7 @@ namespace BobAndFriends
             literal.Append("\"");
             return literal.ToString();
         }
+
+        public static string EmptyNull(this string str) { return str ?? ""; }
     }
 }

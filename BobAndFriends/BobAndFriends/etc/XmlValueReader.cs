@@ -47,6 +47,7 @@ namespace BobAndFriends
                 if (_reader.Name == ProductEnd && _reader.NodeType == XmlNodeType.EndElement)
                 {
                     yield return dkd;
+                    dkd.ClearValues();
                 }
             }
         }
