@@ -17,7 +17,7 @@ namespace BobAndFriends.Affiliates
 
         public override System.Collections.Generic.IEnumerable<List<Product>> ReadFromDir(string dir)
         {
-            if(!Directory.Exists(dir))
+            if (!Directory.Exists(dir))
             {
                 Console.WriteLine("Directory not found: " + dir);
                 yield break;
@@ -28,22 +28,6 @@ namespace BobAndFriends.Affiliates
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
-            XmlValueReader xvr;
-            Product p = new Product();
-
-            foreach(string file in filePaths)
-            {
-                xvr = new XmlValueReader(file);
-                xvr.AddKeys("ProductID", XmlNodeType.Element);
-                xvr.ProductEnd = "Product";
-                foreach(DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
-                {
-                    p.AfiiliateProdID = dkd["ProductID"][XmlNodeType.Element];
-                }
-            }
-
-            #region old
-            /*
             foreach (string file in filePaths)
             {
                 try
@@ -181,11 +165,11 @@ namespace BobAndFriends.Affiliates
                 {
                     Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                 }
-             */
-            #endregion
-            yield return products;
-            products.Clear();
+
+                yield return products;
+                products.Clear();
             }
         }
     }
+}
 
