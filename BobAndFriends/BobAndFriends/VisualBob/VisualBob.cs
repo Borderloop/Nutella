@@ -127,8 +127,7 @@ namespace BobAndFriends
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            int catID = Database.Instance.GetCategoryID((string)selectedProduct.Rows[0]["Category"], true, false);
-            Database.Instance.SaveNewArticle(ToProduct(selectedProduct), catID);
+            //Database.Instance.SaveNewArticle(ToProduct(selectedProduct), catID);
             Database.Instance.DeleteFromVbobData((int)selectedProduct.Rows[0]["id"]);
             ShowNext();
         }

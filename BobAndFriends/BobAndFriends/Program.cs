@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Data;
 
 namespace BobAndFriends
 {
@@ -33,13 +34,15 @@ namespace BobAndFriends
             
             //Initialize
             Initialize();
-                   
+
+            Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
+
             //Create threads
-            //producer = new Thread(new ThreadStart(ProductFeedReader));
+            producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            //producer.Start();
+            producer.Start();
             consumer.Start();
             
             /*
@@ -67,7 +70,6 @@ namespace BobAndFriends
         {
             //Create BOB and start dequeueing items.
             BOB bob = new BOB();
-
             
             //Remain alive while thread one isnt done
             while (true)
@@ -86,13 +88,11 @@ namespace BobAndFriends
             }
 
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
-            bob.RerunResidue();
+            //bob.RerunResidue();
 
             //Tidy up and close
             bob.FinalizeAndClose();
-            foreach (string category in Statics.Logger._cats){
-                Statics.Logger.WriteLine(category);
-            }
+
             Console.WriteLine("Thread 2 is done.");
         }
 
@@ -103,6 +103,7 @@ namespace BobAndFriends
 
             //Start it
             pfr.Start();
+
             Console.WriteLine("Thread 1 is done.");
             Console.WriteLine("Queue size: " + ProductQueue.queue.Count);
         }
@@ -115,7 +116,7 @@ namespace BobAndFriends
             Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
             Statics.TickCount = 0;
             Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);
-          //  Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
+            Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
         }
 
 
