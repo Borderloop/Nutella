@@ -11,6 +11,11 @@ using System.Text.RegularExpressions;
 
 namespace BobAndFriends.Affiliates
 {
+    /// <summary>
+    /// This class represents the reading from the .xml files delivered by Zanox.
+    /// This reading cannot be automated with the XmlValueReader because the xml
+    /// is delivered too complicated.
+    /// </summary>
     public class Affilinet : AffiliateBase
     {
         public override string Name { get { return "Affilinet"; } }

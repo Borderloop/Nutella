@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Threading;
 
 namespace BobAndFriends
 {
@@ -35,14 +36,39 @@ namespace BobAndFriends
                 throw new NullReferenceException("Reader is null. Call CreateReader() first.");
 
             while(_reader.Read())
-            {                
+            {
+                //Increment the tickcount
+                Statics.TickCount++;
+
+                //Sleep everytime sleepcount is reached
+                if (Statics.TickCount % Statics.TicksUntilSleep == 0)
+                {
+                    Thread.Sleep(1);
+
+                    //Set tickCount to 0 to save memory
+                    Statics.TickCount = 0;
+                }
+
                 if(dkd.ContainsKey(_reader.Name, _reader.NodeType))
                 {
                     string key1 = _reader.Name;
                     XmlNodeType key2 = _reader.NodeType;
-                    if(_reader.NodeType == XmlNodeType.Element)
+                    if (_reader.NodeType == XmlNodeType.Element)
+                    {
+                        _reader.Read(); //Point reader 1 step forward to get the actual data
+                    }
+                    if (_reader.NodeType == XmlNodeType.Attribute)
+                    {
+                        //Manually put reader three stepts forward to get the actual data.
+                        _reader.Read(); 
+                        _reader.Read(); 
                         _reader.Read();
-                    dkd.Add(key1, key2, _reader.Value);
+                    }
+                    if (_reader.NodeType == XmlNodeType.Text || _reader.NodeType == XmlNodeType.CDATA)
+                    {
+                        //Only read text or CDATA sections.
+                        dkd.Add(key1, key2, _reader.Value);
+                    }
                 }
                 if (_reader.Name == ProductEnd && _reader.NodeType == XmlNodeType.EndElement)
                 {
