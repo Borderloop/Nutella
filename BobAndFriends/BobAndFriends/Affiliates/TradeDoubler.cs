@@ -10,6 +10,10 @@ using System.Text.RegularExpressions;
 
 namespace BobAndFriends.Affiliates
 {
+    /// <summary>
+    /// This class represents the reading from the .xml files delivered by Webgains.
+    /// The reading is automated by using the XmlValueReader.
+    /// </summary>
     public class TradeDoubler : AffiliateBase
     {
         public override string Name { get { return "TradeDoubler"; } }

@@ -10,6 +10,10 @@ using System.Text.RegularExpressions;
 
 namespace BobAndFriends.Affiliates
 {
+    /// <summary>
+    /// This class represents the reading from the .xml files delivered by Webgains.
+    /// The reading is automated by using the XmlValueReader.
+    /// </summary>
     public class Webgains : AffiliateBase
     {
         public override string Name { get { return "Webgains"; } }
@@ -27,134 +31,56 @@ namespace BobAndFriends.Affiliates
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
+            //Initialize XmlValueReader and its keys
+            XmlValueReader xvr = new XmlValueReader();
+            xvr.ProductEnd = "product";
+            xvr.AddKeys("european_article_number", XmlNodeType.Element);
+            xvr.AddKeys("product_name", XmlNodeType.Element);
+            xvr.AddKeys("brand", XmlNodeType.Element);
+            xvr.AddKeys("price", XmlNodeType.Element);
+            xvr.AddKeys("currency", XmlNodeType.Element);
+            xvr.AddKeys("deeplink", XmlNodeType.Element);
+            xvr.AddKeys("image_url", XmlNodeType.Element);
+            xvr.AddKeys("category", XmlNodeType.Element);
+            xvr.AddKeys("description", XmlNodeType.Element);
+            xvr.AddKeys("delivery_cost", XmlNodeType.Element);
+            xvr.AddKeys("product_id", XmlNodeType.Element);
+            xvr.AddKeys("delivery_period", XmlNodeType.Element);
+            xvr.AddKeys("program_id", XmlNodeType.Element);
+            xvr.AddKeys("validuntil", XmlNodeType.Element);
+            xvr.AddKeys("last_updated", XmlNodeType.Element);
+
+            Product p = new Product();
+
             foreach (string file in filePaths)
             {
-                try
+                xvr.CreateReader(file);
+                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    XmlReader _reader = XmlReader.Create(file);
-                    Product p = null;
-                    while (_reader.Read())
-                    {
-                        //Increment the tickcount
-                        Statics.TickCount++;
-
-                        //Sleep everytime sleepcount is reached
-                        if (Statics.TickCount % Statics.TicksUntilSleep == 0)
-                        {
-                            Thread.Sleep(1);
-
-                            //Set tickCount to 0 to save memory
-                            Statics.TickCount = 0;
-                        }
-
-                        if (_reader.IsStartElement())
-                        {
-                            switch (_reader.Name)
-                            {
-                                case "european_article_number":
-                                    _reader.Read();
-                                    p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
-                                    break;
-
-                                case "product_name":
-                                    _reader.Read();
-                                    p.Title = _reader.Value;
-                                    break;
-
-                                case "brand":
-                                    _reader.Read();
-                                    p.Brand = _reader.Value;
-                                    break;
-
-                                case "price":
-                                    _reader.Read();
-                                    p.Price = _reader.Value;
-                                    break;
-
-                                case "currency":
-                                    _reader.Read();
-                                    p.Currency = _reader.Value;
-                                    break;
-
-                                case "validuntil":
-                                    _reader.Read();
-                                    p.ValidUntil = _reader.Value;
-                                    break;
-
-                                case "deeplink":
-                                    _reader.Read();
-                                    p.Url = _reader.Value;
-                                    break;
-
-                                case "image_url":
-                                    _reader.Read();
-                                    p.Image_Loc = _reader.Value;
-                                    break;
-
-                                case "category":
-                                    _reader.Read();
-                                    p.Category = _reader.Value;
-                                    break;
-
-                                case "description":
-                                    _reader.Read();
-                                    p.Description = _reader.Value;
-                                    break;
-
-                                case "last_updated":
-                                    _reader.Read();
-                                    p.LastModified = _reader.Value;
-                                    break;
-
-                                case "delivery_cost":
-                                    _reader.Read();
-                                    p.DeliveryCost = _reader.Value;
-                                    break;
-
-                                case "delivery_period":
-                                    _reader.Read();
-                                    p.DeliveryTime = _reader.Value;
-                                    break;
-
-                                case "program_id":
-                                    _reader.Read();
-                                    p.AfiiliateProdID = _reader.Value;
-                                    break;
-
-                                case "product_id":
-                                    _reader.Read();
-
-                                    //Concatinate the program id and the product id to make sure the id is unique.
-                                    //Webgains doesnt provide a unique id, but this is solid enough.
-                                    p.AfiiliateProdID += _reader.Value;
-                                    break;
-
-                                case "product":
-                                    p = new Product();
-                                    break;
-                            }
-                        }
-
-                        if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
-                        {
-                            p.Affiliate = "Webgains";
-                            p.FileName = file;
-                            p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                            products.Add(p);
-                        }
-                    }
+                    //Fill the product with fields
+                    p.EAN = Regex.IsMatch(dkd["european_article_number"][XmlNodeType.Element].EmptyNull(), @"^[0-9]{10,13}$") ? dkd["european_article_number"][XmlNodeType.Element] : "";
+                    p.Title = dkd["product_name"][XmlNodeType.Element];
+                    p.Brand = dkd["brand"][XmlNodeType.Element];
+                    p.Price = dkd["price"][XmlNodeType.Element];
+                    p.Url = dkd["deeplink"][XmlNodeType.Element];
+                    p.Image_Loc = dkd["image_url"][XmlNodeType.Element];
+                    p.Category = dkd["category"][XmlNodeType.Element];
+                    p.Description = dkd["description"][XmlNodeType.Element];
+                    p.DeliveryCost = dkd["delivery_cost"][XmlNodeType.Element];
+                    p.DeliveryTime = dkd["delivery_period"][XmlNodeType.Element];
+                    p.AfiiliateProdID = dkd["product_id"][XmlNodeType.Element] + dkd["program_id"][XmlNodeType.Element];
+                    p.Currency = dkd["currency"][XmlNodeType.Element];
+                    p.Affiliate = "Webgains";
+                    p.FileName = file;
+                    p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                    products.Add(p);
+                    p = new Product();
                 }
-                catch (XmlException xmle)
-                {
-                    Statics.Logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                }
-                catch (Exception e)
-                {
-                    Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
-                }
-                yield return products;
-                products.Clear();                
+
             }
-        }
+            yield return products;
+            products.Clear();
         }
     }
+}
+    
