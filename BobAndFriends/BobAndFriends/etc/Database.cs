@@ -738,7 +738,7 @@ namespace BobAndFriends
         /// <param name="aId">The article id the record belongs to.</param>
         public void SaveProductData(Product Record)
         {
-            string query = "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@AID, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK)";
+            string query = "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link, affiliate_name, affiliate_unique_id) VALUES (@AID, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK, @AFNAME, @AFID)";
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
 
@@ -761,6 +761,8 @@ namespace BobAndFriends
             _cmd.Parameters.AddWithValue("@PRICE", Record.Price == "" ? -1 : Convert.ToDouble(Record.Price));
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
+            _cmd.Parameters.AddWithValue("@AFNAME", Record.Affiliate);
+            _cmd.Parameters.AddWithValue("@AFID", Record.AfiiliateProdID);
 
             _cmd.ExecuteNonQuery();
         }
