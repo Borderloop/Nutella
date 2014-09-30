@@ -57,7 +57,7 @@ namespace BobAndFriends.Affiliates
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
                     //Fill the product with fields
-                    p.EAN = Regex.IsMatch(dkd["ean"][XmlNodeType.Element].EmptyNull(), @"^[0-9]{10,13}$") ? dkd["ean"][XmlNodeType.Element] : ""; 
+                    p.EAN = dkd["ean"][XmlNodeType.Element]; 
                     p.SKU = dkd["sku"][XmlNodeType.Element];
                     p.Title = dkd["name"][XmlNodeType.Element];
                     p.Brand = dkd["brand"][XmlNodeType.Element];

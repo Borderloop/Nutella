@@ -107,7 +107,7 @@ namespace BobAndFriends.Affiliates
                                             _reader.Read();
                                             _reader.Read();
                                             _reader.Read();
-                                            p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
+                                            p.EAN = _reader.Value;
                                             break;
 
                                         case "brand":

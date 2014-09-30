@@ -164,7 +164,7 @@ namespace BobAndFriends
             DataTable _resultTable = new DataTable();
 
             //Create the query
-            string query = "SELECT brand FROM article WHERE brand=@BRAND";
+            string query = "SELECT brand FROM article WHERE brand=@BRAND LIMIT 1";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
