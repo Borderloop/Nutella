@@ -62,7 +62,8 @@ namespace BobAndFriends
             //Stop the stopwatch, work is done.
             _sw.Stop();
 
-            //Write all data to logfile.            
+            //Write all data to logfile.       
+            /*
             base.WriteLine("Last scan: " + DateTime.Now.ToString("HH:mm:ss") + ".");
             base.WriteLine("Processing time: " + _sw.Elapsed);
             base.WriteLine(_data[17] + " products processed.");
@@ -86,7 +87,7 @@ namespace BobAndFriends
             base.WriteLine(_eans.Count + " products have a unique EAN, which is " + Math.Round((double)((double)_eans.Count / (double)_data[0]) * 100, 2) + @"% of all products with an EAN.");
             base.WriteLine(_skus.Count + " products have a unique SKU, which is " + Math.Round((double)((double)_skus.Count / (double)_data[1]) * 100, 2) + @"% of all products with an SKU.");
             base.WriteLine(_cats.Count + " products have a unique category, which is " + Math.Round((double)((double)_cats.Count / (double)_data[4]) * 100, 2) + @"% of all prodcts with a category.");         
-            
+            */
             //Close the streamwriter.
             base.Close();
 

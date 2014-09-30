@@ -39,7 +39,7 @@ namespace BobAndFriends
                 //Get all the other aid's, which are wrongly implemented. Delete them.
                 DataTable wrongAIDs = Database.Instance.GetAIDsFromEAN(ean, correctAID);
                 foreach(DataRow row2 in wrongAIDs.Rows)
-                {
+                {                   
                     int wrongAID = row2.Field<int>("article_id");
                     //Update product to point to the right article
                     Database.Instance.UpdateProductAID(wrongAID, correctAID);
@@ -49,6 +49,8 @@ namespace BobAndFriends
 
                     //Delete all other entries of the article
                     Database.Instance.DeleteArticle(wrongAID);
+
+                    Statics.Logger.WriteLine("Redirected EAN " + ean + " with article id " + wrongAID + " to article id " + correctAID + ".");
                 }
             }
 
@@ -60,11 +62,11 @@ namespace BobAndFriends
             foreach (DataRow row in dirtyEANS.Rows)
             {
                 //First, get the article number 
-                string ean = row.Field<string>("sku");
+                string sku = row.Field<string>("sku");
                 int correctAID = row.Field<int>("article_id");
 
                 //Get all the other aid's, which are wrongly implemented. Delete them.
-                DataTable wrongAIDs = Database.Instance.GetAIDsFromSKU(ean, correctAID);
+                DataTable wrongAIDs = Database.Instance.GetAIDsFromSKU(sku, correctAID);
                 foreach (DataRow row2 in wrongAIDs.Rows)
                 {
                     int wrongAID = row2.Field<int>("article_id");
@@ -76,12 +78,34 @@ namespace BobAndFriends
 
                     //Delete all other entries of the article
                     Database.Instance.DeleteArticle(wrongAID);
+
+                    Statics.Logger.WriteLine("Redirected SKU " + sku + " with article id " + wrongAID + " to article id " + correctAID + ".");
                 }
             }
 
             //Cleanup title
             //If there are perfect title matches, save them as matches with the first.
+            DataTable dirtyTitles = Database.Instance.GetDuplicateTitles();
+            foreach(DataRow row in dirtyTitles.Rows)
+            {
+                string title = row.Field<string>("title");
+                int correctAID = Database.Instance.GetCorrectAIDFromTitle(title);
 
+                //Get all the other aid's, which are wrongly implemented. Delete them.
+                DataTable wrongAIDs = Database.Instance.GetAIDsFromTitle(title, correctAID);
+                foreach (DataRow row2 in wrongAIDs.Rows)
+                {
+                    int wrongAID = row2.Field<int>("article_id");
+                    //Update product to point to the right article
+                    Database.Instance.UpdateProductAID(wrongAID, correctAID);
+
+                    //Delete all other entries of the article
+                    Database.Instance.DeleteArticle(wrongAID);
+
+                    Statics.Logger.WriteLine("Redirected Title \"" + title + "\" with article id " + wrongAID + " to article id " + correctAID + ".");
+                }
+
+            }
 
         }
     }

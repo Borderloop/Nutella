@@ -35,15 +35,16 @@ namespace BobAndFriends
             //Initialize
             Initialize();
              
-            //DatabaseJanitor crapper = new DatabaseJanitor();
-            //crapper.Cleanup();    
-  
+            DatabaseJanitor crapper = new DatabaseJanitor();
+            crapper.Cleanup();
+
+            Statics.Logger.Close();
             //Create threads
-            producer = new Thread(new ThreadStart(ProductFeedReader));
+            //producer = new Thread(new ThreadStart(ProductFeedReader));
             //consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
-            producer.Start();
+            //producer.Start();
             //consumer.Start();      
             
             //Application.EnableVisualStyles();

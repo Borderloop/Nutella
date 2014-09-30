@@ -814,14 +814,29 @@ namespace BobAndFriends
             return Read("SELECT sku.sku, sku.article_id, COUNT(*) FROM sku GROUP BY sku.sku HAVING COUNT(*) > 1");
         }
 
+        public DataTable GetDuplicateTitles()
+        {
+            return Read("SELECT title_synonym.title, title_synonym.title_id, COUNT(*) FROM title_synonym GROUP BY title_synonym.title HAVING COUNT(*) > 1");
+        }
+
+        public int GetCorrectAIDFromTitle(string title)
+        {
+            return Read("SELECT title.article_id from title where title.title = '" + title + "'").Rows[0].Field<int>("article_id");
+        }
+
         public DataTable GetAIDsFromEAN(string ean, int correctAID)
         {
             return Read("Select ean.article_id from ean where ean.article_id != " + correctAID + " AND ean.ean = " + ean);
         }
 
-        public DataTable GetAIDsFromSKU(string ean, int correctAID)
+        public DataTable GetAIDsFromSKU(string sku, int correctAID)
         {
-            return Read("Select sku.article_id from sku where sku.article_id != " + correctAID + " AND sku.sku = " + ean);
+            return Read("Select sku.article_id from sku where sku.article_id != " + correctAID + " AND sku.sku = " + sku);
+        }
+
+        public DataTable GetAIDsFromTitle(string title, int correctAID)
+        {
+            return Read("Select title.article_id from title where title.article_id != " + correctAID + " AND title.title = '" + title + "'");
         }
 
         public void UpdateProductAID(int wrongAID, int correctAID)
