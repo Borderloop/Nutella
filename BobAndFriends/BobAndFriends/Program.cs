@@ -42,11 +42,11 @@ namespace BobAndFriends
 
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
-            //consumer = new Thread(new ThreadStart(ProductDequeuer));
+            consumer = new Thread(new ThreadStart(ProductDequeuer));
             
             //Start threads
             producer.Start();
-            //consumer.Start();
+            consumer.Start();
 
             
             //Application.EnableVisualStyles();
