@@ -513,8 +513,7 @@ namespace BobAndFriends
                            "INSERT INTO ean VALUES (@EAN, @articleId);\n" +
                            "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, @COUNTRYID, @articleId);\n" +
                            "SELECT LAST_INSERT_ID() INTO @titleId;\n" +
-                           "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);\n" +
-                           "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link, affiliate_name, affiliate_unique_id) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK, @AFNAME, @AFID);\n";     
+                           "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);\n";
 
             // We need to know if there is an SKU and if so, add it to the query.
             if (Record.SKU != "")
@@ -523,7 +522,7 @@ namespace BobAndFriends
             }
             // After that, save the product data right away. Since it's a new article, it won't have any product data yet. 
             // We also need to return the article ID for saving product data later on.
-            query += "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK);\n" + 
+            query += "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link, affiliate_name, affiliate_unique_id) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK, @AFNAME, @AFID);\n" + 
                      "SELECT @articleId";
 
             if (Record.DeliveryCost == "")

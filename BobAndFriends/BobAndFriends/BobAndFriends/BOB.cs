@@ -73,12 +73,12 @@ namespace BobAndFriends
             sw.Restart();
 
             //Check if product already exists in database by affiliate and unique affiliate number.
-            /*if ((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
+            if ((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
             {
                 //There is a match with a unique article, meaning the record is one. Just update it where necessary.
                 CompareProductData(Record);
                 return;
-            }*/
+            }
             Console.WriteLine("Finished unsuccesful id in: {0}", sw.Elapsed);
             sw.Restart();
 
