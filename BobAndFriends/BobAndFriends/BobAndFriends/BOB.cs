@@ -47,7 +47,7 @@ namespace BobAndFriends
             /*
             //Precondition: Record has to be clean; the title should not include
             //the brand name or the sku value. Therefore, we filter them out.
-            if (Record.Title.Contains(Record.SKU) && Record.SKU != "")
+            if (Record.Title.Contains(Record.SKU, StringComparison.OrdinalIgnoreCase) && Record.SKU != "")
             {
                 //Split the title with the SKU, leaving at least two strings
                 //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
@@ -56,88 +56,82 @@ namespace BobAndFriends
             }
             */
             Console.WriteLine("Busy with: " + Record.Title);
-            if (Record.Brand != "")
+
+            if (Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase) && Record.Brand != "")
             {
-                if (Record.Title.Contains(Record.Brand) && Record.Brand != "")
-                {
-                    //Split the title with the Brand, leaving at least two strings
-                    //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
-                    string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
-                    Record.Title = String.Concat(s);
-                }
-                Stopwatch sw = new Stopwatch();
-
-                if (Record.SKU.Length > 15)
-                {
-                    Record.SKU = "";
-                }
-                sw.Restart();
-                //Get country id
-                _countryID = GetCountryId(Record.Webshop);
-                Console.WriteLine("Finished getting country id in: {0}", sw.Elapsed);
-
-                //First test - EAN/SKU match and perfect title matching.
-                sw.Restart();
-                //If checkSKU() return true, the record matches with a product in the database and its data
-                //can be added to the product. It is done then.
-                if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
-                {
-                    //The product has an SKU and it's a match.
-                    SaveMatch(Record);
-                    return;
-                }
-                Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
-                sw.Restart();
-                //If the first check does not go well, check for the ean.
-                if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
-                {
-                    SaveMatch(Record);
-                    return;
-                }
-                Console.WriteLine("Finished unsuccesfull ean check: {0}", sw.Elapsed);
-                sw.Restart();
-                /*//The product has no valid EAN and no valid SKU, therefore we will match titles.
-                if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
-                {
-                    //We found a perfect title match. Awesome!
-                    SaveMatch(Record);
-                    return;
-                }
-                Console.WriteLine("Finished unsuccesfull title check in: {0}", sw.Elapsed);
-                sw.Restart();*/
-                // If checkBrand() returns false, the record doesn't contain a brand. Send record
-                // to residue and stop execution of method.
-                if (CheckBrand(Record))
-                {
-                    sendToResidue(Record);
-                    return;
-                }
-                Console.WriteLine("Finished brand check: {0}", sw.Elapsed);
-                sw.Restart();
-                //Run a brand check. If it exists, we can go on to match the product by relevance.
-                //If it doesn't. however, we have to create a new product.
-                if (CheckBrandInDatabase(Record))
-                {
-                    Console.WriteLine("Brand is in database");
-                    //MatchByRelevance(Record);
-                    SaveNewArticle(Record);
-                    return;
-                }
-                Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
-                if (Record.Title != "" && Record.EAN != null)
-                {
-                    //The product has a brand name which doesnt exist in the and has a title, so save it to the database
-                    SaveNewArticle(Record);
-                    return;
-                }
-
-                else // Log the website that was not present
-                {
-                    Console.WriteLine("Webshop not found in database: " + Record.Webshop);
-                }
+                //Split the title with the Brand, leaving at least two strings
+                //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
+                string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
+                Record.Title = String.Concat(s);
             }
-        }
-        
+            Stopwatch sw = new Stopwatch();
+
+            if (Record.SKU.Length > 15)
+            {
+                Record.SKU = "";
+            }
+            sw.Restart();
+            //Get country id
+            _countryID = GetCountryId(Record.Webshop);
+            Console.WriteLine("Finished getting country id in: {0}", sw.Elapsed);
+
+            //First test - EAN/SKU match and perfect title matching.
+            sw.Restart();
+            //If checkSKU() return true, the record matches with a product in the database and its data
+            //can be added to the product. It is done then.
+            if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+            {
+                //The product has an SKU and it's a match.
+                SaveMatch(Record);
+                return;
+            }
+            Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
+            sw.Restart();
+            //If the first check does not go well, check for the ean.
+            if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+            {
+                SaveMatch(Record);
+                return;
+            }
+            Console.WriteLine("Finished unsuccesfull ean check: {0}", sw.Elapsed);
+            sw.Restart();
+            /*//The product has no valid EAN and no valid SKU, therefore we will match titles.
+            if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
+            {
+                //We found a perfect title match. Awesome!
+                SaveMatch(Record);
+                return;
+            }
+            Console.WriteLine("Finished unsuccesfull title check in: {0}", sw.Elapsed);
+            sw.Restart();*/
+
+            // If checkBrand() returns false, the record doesn't contain a brand. Send record
+            // to residue and stop execution of method.
+            if (CheckBrand(Record))
+            {
+                sendToResidue(Record);
+                return;
+            }
+            Console.WriteLine("Finished brand check: {0}", sw.Elapsed);
+            sw.Restart();
+
+            //Run a brand check. If it exists, we can go on to match the product by relevance.
+            //If it doesn't. however, we have to create a new product.
+            if (CheckBrandInDatabase(Record))
+            {
+                Console.WriteLine("Brand is in database");
+                //MatchByRelevance(Record);
+                SaveNewArticle(Record);
+                return;
+            }
+            Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
+            if (Record.Title != "" && Record.EAN != null)
+            {
+                //The product has a brand name which doesn't exist in the database and has a title, so save it to the database
+                SaveNewArticle(Record);
+                return;
+            }
+        }       
 
         /// <summary>
         /// Also initializes dummy data. For test purposes only
@@ -331,7 +325,7 @@ namespace BobAndFriends
                 Database.Instance.DeleteFromResidue(Record);
             }
 
-            Statics.Logger.WriteLine("Finished saving match in: {0}", sw.Elapsed);
+            Console.WriteLine("Finished saving match in: {0}", sw.Elapsed);
             sw.Stop();
         }
 

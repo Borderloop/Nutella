@@ -86,7 +86,6 @@ namespace BobAndFriends
                                 Console.WriteLine("ProductFeedReader sleeping...");
                                 Thread.Sleep(10000);
                             }
-
                             p.CleanupFields();
 
                             ProductQueue.Enqueue(p);

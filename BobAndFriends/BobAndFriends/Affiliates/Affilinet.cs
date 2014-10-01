@@ -56,7 +56,7 @@ namespace BobAndFriends.Affiliates
                 // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
                 if (websitePresent == false)
                 {
-                    Statics.Logger.WriteLine("Webshop not found in database: " + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/'));
+                    Statics.Logger.WriteLine("Webshop not found in database: " + _fileUrl);
                 }
                 else
                 {
@@ -195,7 +195,6 @@ namespace BobAndFriends.Affiliates
                     {
                         Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                     }
-
                     yield return products;
                     products.Clear();
                 }

@@ -82,10 +82,16 @@ namespace BobAndFriends
                         prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? prop.GetValue(this) : "");
 
                     //Configure the price or deliveryCost to not contain a ',' but a '.' instead, and then match it to the regular expression
-                    if (prop.Name == "Price" || prop.Name == "DeliveryCost")
+                    if (prop.Name == "Price")
                     {
                         prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
-                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(,\d{1,2})?$") ? prop.GetValue(this) : "");
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
+                    }
+
+                    if(prop.Name == "DeliveryCost")
+                    {
+                        prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : null);
                     }
                 }
             }
