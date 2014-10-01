@@ -78,6 +78,8 @@ namespace BobAndFriends
                 CompareProductData(Record);
                 return;
             }
+            Console.WriteLine("Finished unsuccesful id in: {0}", sw.Elapsed);
+            sw.Restart();
 
             //Get country id
             _countryID = GetCountryId(Record.Webshop);

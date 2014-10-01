@@ -153,7 +153,7 @@ namespace BobAndFriends.Affiliates
 
                                             case "zupid":
                                                 _reader.Read();
-                                                p.AfiiliateProdID = _reader.Value;
+                                                p.AffiliateProdID = _reader.Value;
                                                 break;
                                         }
                                         _reader.MoveToElement();

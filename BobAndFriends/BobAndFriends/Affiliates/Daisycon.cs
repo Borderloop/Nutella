@@ -92,7 +92,7 @@ namespace BobAndFriends
                         p.DeliveryCost = dkd["shipping_cost"][XmlNodeType.Element] == default(string) ? dkd["shippingcost"][XmlNodeType.Element] : dkd["shipping_duration"][XmlNodeType.Element];
                         p.DeliveryTime = dkd["shipping_duration"][XmlNodeType.Element];
                         p.Stock = dkd["stock"][XmlNodeType.Element] == default(string) ? dkd["shipping_duration_descr"][XmlNodeType.Element] : dkd["stock"][XmlNodeType.Element];
-                        p.AfiiliateProdID = dkd["daisycon_unique_id"][XmlNodeType.Element];
+                        p.AffiliateProdID = dkd["daisycon_unique_id"][XmlNodeType.Element];
                         p.Currency = "EUR";
                         p.Affiliate = "Daisycon";
                         p.FileName = file;

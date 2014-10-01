@@ -84,7 +84,7 @@ namespace BobAndFriends.Affiliates
                                 {
                                     case "product":
                                         p = new Product();
-                                        p.AfiiliateProdID = _reader.GetAttribute("ID");
+                                        p.AffiliateProdID = _reader.GetAttribute("ID");
                                         break;
 
                                     case "name":

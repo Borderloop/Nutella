@@ -194,7 +194,7 @@ namespace BobAndFriends
         {
             DataTable resultTable = new DataTable();
 
-            string query = "SELECT article_id FROM product WHERE affiliate_name=" + record.Affiliate + " AND affiliate_unique_id=" + record.AfiiliateProdID;
+            string query = "SELECT article_id FROM product WHERE affiliate_name=" + record.Affiliate + " AND affiliate_unique_id=" + record.AffiliateProdID;
 
             _cmd = new MySqlCommand(query, _conn);
 
@@ -515,7 +515,7 @@ namespace BobAndFriends
                            "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, @COUNTRYID, @articleId);\n" +
                            "SELECT LAST_INSERT_ID() INTO @titleId;\n" +
                            "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);\n" +
-                           "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK);\n";
+                           "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link, affiliate_name, affiliate_unique_id) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK, @AFNAME, @AFID);\n";
                            
 
             // We need to know if there is an SKU and if so, add it to the query.
@@ -539,6 +539,8 @@ namespace BobAndFriends
             _cmd.Parameters.AddWithValue("@PRICE", Record.Price);
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
+            _cmd.Parameters.AddWithValue("@AFNAME", Record.Affiliate);
+            _cmd.Parameters.AddWithValue("@AFID", Record.AffiliateProdID);
             if (Record.SKU != "") { _cmd.Parameters.AddWithValue("@SKU", Record.SKU); }
 
             try
@@ -787,7 +789,7 @@ namespace BobAndFriends
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
             _cmd.Parameters.AddWithValue("@AFNAME", Record.Affiliate);
-            _cmd.Parameters.AddWithValue("@AFID", Record.AfiiliateProdID);
+            _cmd.Parameters.AddWithValue("@AFID", Record.AffiliateProdID);
 
             try
             {

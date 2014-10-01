@@ -92,7 +92,7 @@ namespace BobAndFriends.Affiliates
                         p.Webshop = _fileUrl;
 
                         //Hash the title and the webshop into a unique ID, because CommissionJunction didn't provide any
-                        p.AfiiliateProdID = (p.Title + p.Webshop).ToSHA256();
+                        p.AffiliateProdID = (p.Title + p.Webshop).ToSHA256();
 
                         products.Add(p);
                         p = new Product();
