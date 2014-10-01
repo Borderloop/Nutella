@@ -75,7 +75,6 @@ namespace BobAndFriends.Affiliates
 
                             if (_reader.IsStartElement())
                             {
-<<<<<<< HEAD
                                 switch (_reader.Name)
                                 {
                                     case "product":
@@ -129,7 +128,7 @@ namespace BobAndFriends.Affiliates
                                                 _reader.Read();
                                                 _reader.Read();
                                                 _reader.Read();
-                                                p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
+                                                p.EAN = _reader.Value;
                                                 break;
 
                                             case "brand":
@@ -170,107 +169,14 @@ namespace BobAndFriends.Affiliates
                                         _reader.MoveToElement();
                                         break;
                                 }
-=======
-                                case "product":
-                                    p = new Product();
-                                    p.AfiiliateProdID = _reader.GetAttribute("ID");
-                                    break;
 
-                                case "name":
-                                    _reader.Read();
-                                    p.Title = _reader.Value;
-                                    break;
-
-                                case "price":
-                                    p.Currency = _reader.GetAttribute("currency");
-                                    _reader.Read();
-                                    p.Price = _reader.Value;
-                                    break;
-
-                                case "URL":
-                                    _reader.Read();
-                                    p.Url = _reader.Value;
-                                    break;
-
-                                case "image":
-                                    _reader.Read();
-                                    p.Image_Loc = _reader.Value;
-                                    break;
-
-                                case "description":
-                                    _reader.Read();
-                                    p.Description = _reader.Value;
-                                    break;
-
-                                case "category":
-                                    _reader.Read();
-                                    p.Category = _reader.Value;
-                                    break;
-
-                                case "property":
-                                    if (_reader.HasAttributes) { _reader.MoveToNextAttribute(); }
-                                    switch (_reader.Value)
-                                    {
-                                        case "currency":
-                                            _reader.Read();
-                                            _reader.Read();
-                                            _reader.Read();
-                                            p.Currency = _reader.Value;
-                                            break;
-
-                                        case "EAN":
-                                            _reader.Read();
-                                            _reader.Read();
-                                            _reader.Read();
-                                            p.EAN = _reader.Value;
-                                            break;
-
-                                        case "brand":
-                                            _reader.Read();
-                                            _reader.Read();
-                                            _reader.Read();
-                                            p.Brand = _reader.Value;
-                                            break;
-
-                                        case "deliveryCosts":
-                                            _reader.Read();
-                                            _reader.Read();
-                                            _reader.Read();
-                                            p.DeliveryCost = _reader.Value;
-                                            break;
-
-                                        case "stock":
-                                            _reader.Read();
-                                            _reader.Read();
-                                            _reader.Read();
-                                            p.Stock = _reader.Value;
-                                            break;
-
-                                        case "deliveryTime":
-                                            _reader.Read();
-                                            _reader.Read();
-                                            _reader.Read();
-                                            p.DeliveryTime = _reader.Value;
-                                            break;
-
-                                        case "SKU":
-                                            _reader.Read();
-                                            _reader.Read();
-                                            _reader.Read();
-                                            p.SKU = _reader.Value;
-                                            break;
-                                    }
-                                    _reader.MoveToElement();
-                                    break;
->>>>>>> 9fa828420c9ef33f5cde6400d5dc76e5613c4aee
-                            }
-
-                            if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
-                            {
-                                p.Affiliate = "TradeTracker";
-                                p.FileName = file;
-                                p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                                products.Add(p);
+                                if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
+                                {
+                                    p.Affiliate = "TradeTracker";
+                                    p.FileName = file;
+                                    p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                    products.Add(p);
+                                }
                             }
                         }
                     }
@@ -284,21 +190,10 @@ namespace BobAndFriends.Affiliates
                     }
                     yield return products;
                     products.Clear();
-                }
-<<<<<<< HEAD
-=======
-                catch (XmlException xmle)
-                {
-                    Statics.Logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                }
-                catch (Exception e)
-                {
-                    Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
-                }
-                yield return products;
-                products.Clear();
->>>>>>> 9fa828420c9ef33f5cde6400d5dc76e5613c4aee
-            }
+                }            
+            }       
         }
     }
 }
+            
+       
