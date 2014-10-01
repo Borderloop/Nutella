@@ -85,13 +85,13 @@ namespace BobAndFriends
                     if (prop.Name == "Price")
                     {
                         prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
-                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(,\d{1,2})?$") ? prop.GetValue(this) : "");
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
                     }
 
                     if(prop.Name == "DeliveryCost")
                     {
                         prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
-                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(,\d{1,2})?$") ? prop.GetValue(this) : null);
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : null);
                     }
                 }
             }

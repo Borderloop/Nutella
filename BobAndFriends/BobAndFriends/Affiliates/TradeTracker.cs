@@ -52,6 +52,7 @@ namespace BobAndFriends.Affiliates
                         break;
                     }
                 }
+                websitePresent = true;
                 // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
                 if (websitePresent == false)
                 {
