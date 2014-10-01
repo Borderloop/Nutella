@@ -195,5 +195,3 @@ namespace BobAndFriends.Affiliates
         }
     }
 }
-            
-       
