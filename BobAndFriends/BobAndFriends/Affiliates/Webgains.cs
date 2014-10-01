@@ -16,6 +16,9 @@ namespace BobAndFriends.Affiliates
     /// </summary>
     public class Webgains : AffiliateBase
     {
+        // Stores the name of the website that is being processed.
+        private string _fileUrl;
+
         public override string Name { get { return "Webgains"; } }
 
         public override System.Collections.Generic.IEnumerable<List<Product>> ReadFromDir(string dir)
@@ -54,29 +57,51 @@ namespace BobAndFriends.Affiliates
 
             foreach (string file in filePaths)
             {
-                xvr.CreateReader(file);
-                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
-                {
-                    //Fill the product with fields
-                    p.EAN = dkd["european_article_number"][XmlNodeType.Element];
-                    p.Title = dkd["product_name"][XmlNodeType.Element];
-                    p.Brand = dkd["brand"][XmlNodeType.Element];
-                    p.Price = dkd["price"][XmlNodeType.Element];
-                    p.Url = dkd["deeplink"][XmlNodeType.Element];
-                    p.Image_Loc = dkd["image_url"][XmlNodeType.Element];
-                    p.Category = dkd["category"][XmlNodeType.Element];
-                    p.Description = dkd["description"][XmlNodeType.Element];
-                    p.DeliveryCost = dkd["delivery_cost"][XmlNodeType.Element];
-                    p.DeliveryTime = dkd["delivery_period"][XmlNodeType.Element];
-                    p.AfiiliateProdID = dkd["product_id"][XmlNodeType.Element] + dkd["program_id"][XmlNodeType.Element];
-                    p.Currency = dkd["currency"][XmlNodeType.Element];
-                    p.Affiliate = "Webgains";
-                    p.FileName = file;
-                    p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                    products.Add(p);
-                    p = new Product();
-                }
+                //First check if the website is in the database. If not, log it and if so, proceed.
+                string urlLine;
+                bool websitePresent = false;
+                _fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BOBAndFriends\\weburls.txt");
 
+                //Read all lines from the urlTxtFile.
+                while ((urlLine = urlTxtFile.ReadLine()) != null)
+                {
+                    if (urlLine == _fileUrl)// Found a similar website
+                    {
+                        websitePresent = true;
+                        break;
+                    }
+                }
+                // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
+                if (websitePresent == false)
+                {
+                    Statics.Logger.WriteLine("Webshop not found in database: " + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/'));
+                }
+                else
+                {
+                    xvr.CreateReader(file);
+                    foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
+                    {
+                        //Fill the product with fields
+                        p.EAN = dkd["european_article_number"][XmlNodeType.Element];
+                        p.Title = dkd["product_name"][XmlNodeType.Element];
+                        p.Brand = dkd["brand"][XmlNodeType.Element];
+                        p.Price = dkd["price"][XmlNodeType.Element];
+                        p.Url = dkd["deeplink"][XmlNodeType.Element];
+                        p.Image_Loc = dkd["image_url"][XmlNodeType.Element];
+                        p.Category = dkd["category"][XmlNodeType.Element];
+                        p.Description = dkd["description"][XmlNodeType.Element];
+                        p.DeliveryCost = dkd["delivery_cost"][XmlNodeType.Element];
+                        p.DeliveryTime = dkd["delivery_period"][XmlNodeType.Element];
+                        p.AfiiliateProdID = dkd["product_id"][XmlNodeType.Element] + dkd["program_id"][XmlNodeType.Element];
+                        p.Currency = dkd["currency"][XmlNodeType.Element];
+                        p.Affiliate = "Webgains";
+                        p.FileName = file;
+                        p.Webshop = _fileUrl;
+                        products.Add(p);
+                        p = new Product();
+                    }
+                }
             }
             yield return products;
             products.Clear();

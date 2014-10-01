@@ -393,7 +393,7 @@ namespace BobAndFriends
         /// This method will send a product to the residu.
         /// </summary>
         /// <param name="p">The product to be send to the residu.</param>
-        public void SendTo(Product p, string tableName, bool rerun = false)
+        public void SendTo(Product Record, string tableName, bool rerun = false)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -401,21 +401,21 @@ namespace BobAndFriends
             Dictionary<string, object> col_vals = new Dictionary<string, object>();
 
             //Add names/values to the dictionary
-            col_vals.Add("title", p.Title);
-            col_vals.Add("description", p.Description);
-            col_vals.Add("category", p.Category);
-            col_vals.Add("ean", p.EAN);
-            col_vals.Add("sku", p.SKU);
-            col_vals.Add("brand", p.Brand);
+            col_vals.Add("title", Record.Title);
+            col_vals.Add("description", Record.Description);
+            col_vals.Add("category", Record.Category);
+            col_vals.Add("ean", Record.EAN);
+            col_vals.Add("sku", Record.SKU);
+            col_vals.Add("brand", Record.Brand);
 
             if (tableName.Equals("vbobdata"))
             {
                 col_vals.Add("rerun", rerun);
-                col_vals.Add("image_loc", p.Image_Loc);
+                col_vals.Add("image_loc", Record.Image_Loc);
             }
             else
             {
-                col_vals.Add("image", p.Image_Loc);
+                col_vals.Add("image", Record.Image_Loc);
             }
 
             //Declare string for the columns and values
@@ -480,7 +480,17 @@ namespace BobAndFriends
             }
 
             //Execute the query
-            _cmd.ExecuteNonQuery();
+            try
+            {
+                _cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Statics.Logger.WriteLine("Saving to residue failed for the follwing product:\n" +
+                                         "Title:    " + Record.Title + "\n" +
+                                         "EAN:      " + Record.EAN + "\n" +
+                                         "Which produced the following error:\n" + e);
+            }
         }
 
         /// <summary>
@@ -747,30 +757,10 @@ namespace BobAndFriends
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
 
-            decimal? deliveryCost;
-            decimal? price;
-
-            try
-            {
-                deliveryCost = decimal.Parse(Record.DeliveryCost);
-            }
-            catch
-            {
-                deliveryCost = null;
-            }
-            try
-            {
-                price = decimal.Parse(Record.Price);
-            }
-            catch
-            {
-                price = null;
-            }
-
             _cmd.Parameters.AddWithValue("@AID", _articleID);
             _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
-            _cmd.Parameters.AddWithValue("@SHIPCOST", deliveryCost);
-            _cmd.Parameters.AddWithValue("@PRICE", price);
+            _cmd.Parameters.AddWithValue("@SHIPCOST", Record.DeliveryCost);
+            _cmd.Parameters.AddWithValue("@PRICE", Record.Price);
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
             _cmd.Parameters.AddWithValue("@AFNAME", Record.Affiliate);

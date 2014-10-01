@@ -12,6 +12,9 @@ namespace BobAndFriends.Affiliates
 {
     public class CommissionJunction : AffiliateBase
     {
+        // Stores the name of the website that is being processed.
+        private string _fileUrl;
+
         public override string Name { get { return "CommissionJunction"; } }
 
         public override System.Collections.Generic.IEnumerable<List<Product>> ReadFromDir(string dir)
@@ -48,29 +51,52 @@ namespace BobAndFriends.Affiliates
 
             foreach (string file in filePaths)
             {
-                xvr.CreateReader(file, settings);
-                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
+                //First check if the website is in the database. If not, log it and if so, proceed.
+                string urlLine;
+                bool websitePresent = false;
+                _fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BOBAndFriends\\weburls.txt");
+
+                //Read all lines from the urlTxtFile.
+                while ((urlLine = urlTxtFile.ReadLine()) != null)
                 {
-                    p.SKU = dkd["sku"][XmlNodeType.Element];
-                    p.Title = dkd["name"][XmlNodeType.Element];
-                    p.Brand = dkd["manufacturer"][XmlNodeType.Element];
-                    p.Price = dkd["saleprice"][XmlNodeType.Element];
-                    p.Currency = dkd["currency"][XmlNodeType.Element];
-                    p.Category = dkd["advertisercategory"][XmlNodeType.Element];
-                    p.Url = dkd["buyurl"][XmlNodeType.Element];
-                    p.Image_Loc = dkd["imageurl"][XmlNodeType.Element];
-                    p.Description = dkd["description"][XmlNodeType.Element];
-                    p.LastModified = dkd["lastupdated"][XmlNodeType.Element];
-                    p.Stock = dkd["instock"][XmlNodeType.Element];
-                    p.Affiliate = "CommissionJunction";
-                    p.FileName = file;
-                    p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                    if (urlLine == _fileUrl)// Found a similar website
+                    {
+                        websitePresent = true;
+                        break;
+                    }
+                }
+                // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
+                if (websitePresent == false)
+                {
+                    Statics.Logger.WriteLine("Webshop not found in database: " + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/'));
+                }
+                else
+                {
+                    xvr.CreateReader(file, settings);
+                    foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
+                    {
+                        p.SKU = dkd["sku"][XmlNodeType.Element];
+                        p.Title = dkd["name"][XmlNodeType.Element];
+                        p.Brand = dkd["manufacturer"][XmlNodeType.Element];
+                        p.Price = dkd["saleprice"][XmlNodeType.Element];
+                        p.Currency = dkd["currency"][XmlNodeType.Element];
+                        p.Category = dkd["advertisercategory"][XmlNodeType.Element];
+                        p.Url = dkd["buyurl"][XmlNodeType.Element];
+                        p.Image_Loc = dkd["imageurl"][XmlNodeType.Element];
+                        p.Description = dkd["description"][XmlNodeType.Element];
+                        p.LastModified = dkd["lastupdated"][XmlNodeType.Element];
+                        p.Stock = dkd["instock"][XmlNodeType.Element];
+                        p.Affiliate = "CommissionJunction";
+                        p.FileName = file;
+                        p.Webshop = _fileUrl;
 
-                    //Hash the title and the webshop into a unique ID, because CommissionJunction didn't provide any
-                    p.AfiiliateProdID = (p.Title + p.Webshop).ToSHA256();
+                        //Hash the title and the webshop into a unique ID, because CommissionJunction didn't provide any
+                        p.AfiiliateProdID = (p.Title + p.Webshop).ToSHA256();
 
-                    products.Add(p);
-                    p = new Product();
+                        products.Add(p);
+                        p = new Product();
+                    }
                 }
             }
             yield return products;

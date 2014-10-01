@@ -17,6 +17,9 @@ namespace BobAndFriends.Affiliates
     /// </summary>
     public class TradeTracker : AffiliateBase
     {
+        // Stores the name of the website that is being processed.
+        private string _fileUrl;
+
         public override string Name { get { return "TradeTracker"; } }
 
         public override System.Collections.Generic.IEnumerable<List<Product>> ReadFromDir(string dir)
@@ -37,12 +40,13 @@ namespace BobAndFriends.Affiliates
                 //First check if the website is in the database. If not, log it and if so, proceed.
                 string urlLine;
                 bool websitePresent = false;
-                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BobAndFriends\\weburls.txt");
+                _fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BOBAndFriends\\weburls.txt");
 
                 //Read all lines from the urlTxtFile.
                 while ((urlLine = urlTxtFile.ReadLine()) != null)
                 {
-                    if (urlLine == Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/'))// Found a similar website
+                    if (urlLine == _fileUrl)// Found a similar website
                     {
                         websitePresent = true;
                         break;
@@ -169,7 +173,6 @@ namespace BobAndFriends.Affiliates
                                         _reader.MoveToElement();
                                         break;
                                 }
-
                             }
                             if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
                             {
@@ -195,5 +198,3 @@ namespace BobAndFriends.Affiliates
         }
     }
 }
-            
-       
