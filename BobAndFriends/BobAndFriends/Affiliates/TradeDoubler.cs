@@ -94,7 +94,7 @@ namespace BobAndFriends.Affiliates
                         p.DeliveryCost = dkd["shippingCost"][XmlNodeType.Element];
                         p.DeliveryTime = dkd["deliveryTime"][XmlNodeType.Element];
                         p.Stock = dkd["inStock"][XmlNodeType.Element];
-                        p.AfiiliateProdID = dkd["TDProductId"][XmlNodeType.Element];
+                        p.AffiliateProdID = dkd["TDProductId"][XmlNodeType.Element];
                         p.Currency = dkd["currency"][XmlNodeType.Element];
                         p.Affiliate = "TradeDoubler";
                         p.FileName = file;

@@ -62,7 +62,7 @@ namespace BobAndFriends
 
         //These properties do not need private values since they are always set.
         public string Affiliate { get; set; }
-        public string AfiiliateProdID { get; set; }
+        public string AffiliateProdID { get; set; }
         public string FileName { get; set; }
         public string Webshop { get; set; }
 
@@ -70,31 +70,30 @@ namespace BobAndFriends
         {
             foreach (var prop in this.GetType().GetProperties())
             {
+                //We can safely assume all fields are strings, but for the future we throw an exception if a field isn't a string or null.
                 object type = prop.GetValue(this);
-                if (type is string)
+                if (!(type is string) && type != null) throw new NotImplementedException();
+                //Make sure the fields are DEFINITELY not null
+                if (prop.GetValue(this) == null)
+                    prop.SetValue(this, "");
+
+                //Configure the EAN to match the regular expression
+                if (prop.Name == "EAN")
+                    prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? prop.GetValue(this) : "");
+
+                //Configure the price or deliveryCost to not contain a ',' but a '.' instead, and then match it to the regular expression
+                if (prop.Name == "Price")
                 {
-                    //Make sure the fields are DEFINITELY not null
-                    if (prop.GetValue(this) == null)
-                        prop.SetValue(this, "");
-
-                    //Configure the EAN to match the regular expression
-                    if (prop.Name == "EAN")
-                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? prop.GetValue(this) : "");
-
-                    //Configure the price or deliveryCost to not contain a ',' but a '.' instead, and then match it to the regular expression
-                    if (prop.Name == "Price")
-                    {
-                        prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
-                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
-                    }
-
-                    if(prop.Name == "DeliveryCost")
-                    {
-                        prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
-                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : null);
-                    }
+                    prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
+                    prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
                 }
-            }
+
+                if (prop.Name == "DeliveryCost")
+                {
+                    prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
+                    prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : null);
+                }
+            }          
         }
     }
 }

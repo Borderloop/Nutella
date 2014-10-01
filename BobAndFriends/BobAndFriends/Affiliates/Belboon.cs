@@ -94,7 +94,7 @@ namespace BobAndFriends.Affiliates
                         p.LastModified = dkd["lastupdate"][XmlNodeType.Element];
                         p.DeliveryCost = dkd["shipping"][XmlNodeType.Element];
                         p.Stock = dkd["availabilty"][XmlNodeType.Element];
-                        p.AfiiliateProdID = dkd["belboonproductnumber"][XmlNodeType.Element];
+                        p.AffiliateProdID = dkd["belboonproductnumber"][XmlNodeType.Element];
                         p.Affiliate = "Belboon";
                         p.FileName = file;
                         p.Webshop = _fileUrl;

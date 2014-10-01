@@ -169,7 +169,7 @@ namespace BobAndFriends.Affiliates
 
                                     case "ProductID":
                                         _reader.Read();
-                                        p.AfiiliateProdID = _reader.Value;
+                                        p.AffiliateProdID = _reader.Value;
                                         break;
 
                                     case "Product":

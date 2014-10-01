@@ -93,7 +93,7 @@ namespace BobAndFriends.Affiliates
                         p.Description = dkd["description"][XmlNodeType.Element];
                         p.DeliveryCost = dkd["delivery_cost"][XmlNodeType.Element];
                         p.DeliveryTime = dkd["delivery_period"][XmlNodeType.Element];
-                        p.AfiiliateProdID = dkd["product_id"][XmlNodeType.Element] + dkd["program_id"][XmlNodeType.Element];
+                        p.AffiliateProdID = dkd["product_id"][XmlNodeType.Element] + dkd["program_id"][XmlNodeType.Element];
                         p.Currency = dkd["currency"][XmlNodeType.Element];
                         p.Affiliate = "Webgains";
                         p.FileName = file;

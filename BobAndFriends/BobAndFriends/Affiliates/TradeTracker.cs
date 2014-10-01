@@ -83,7 +83,7 @@ namespace BobAndFriends.Affiliates
                                 {
                                     case "product":
                                         p = new Product();
-                                        p.AfiiliateProdID = _reader.GetAttribute("ID");
+                                        p.AffiliateProdID = _reader.GetAttribute("ID");
                                         break;
 
                                     case "name":
@@ -126,6 +126,13 @@ namespace BobAndFriends.Affiliates
                                                 _reader.Read();
                                                 _reader.Read();
                                                 p.Currency = _reader.Value;
+                                                break;
+
+                                            case "color":
+                                                _reader.Read();
+                                                _reader.Read();
+                                                _reader.Read();
+                                                p.Title += " " + _reader.Value;
                                                 break;
 
                                             case "EAN":
