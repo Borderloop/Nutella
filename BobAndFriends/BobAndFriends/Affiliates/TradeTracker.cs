@@ -129,6 +129,13 @@ namespace BobAndFriends.Affiliates
                                                 p.Currency = _reader.Value;
                                                 break;
 
+                                            case "color":
+                                                _reader.Read();
+                                                _reader.Read();
+                                                _reader.Read();
+                                                p.Title += " " + _reader.Value;
+                                                break;
+
                                             case "EAN":
                                                 _reader.Read();
                                                 _reader.Read();
