@@ -501,15 +501,13 @@ namespace BobAndFriends
             // First insert data into the article table and get article id.
             // EAN and title are always present at this point, so add these no matter what.
             // Also add the title to the title synonym table by returning the title id.
-            // After that, save the product data right away. Since it's a new article, it won't have any product data yet. 
             string query = "INSERT INTO article (description, brand, image_loc)" +
                            "VALUES (@DESCRIPTION, @BRAND, @IMAGE_LOC);\n " +
                            "SELECT LAST_INSERT_ID() INTO @articleId;\n" +
                            "INSERT INTO ean VALUES (@EAN, @articleId);\n" +
                            "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, @COUNTRYID, @articleId);\n" +
                            "SELECT LAST_INSERT_ID() INTO @titleId;\n" +
-                           "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);\n" +
-                           "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK);\n";
+                           "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);\n";
                            
 
             // We need to know if there is an SKU and if so, add it to the query.
@@ -517,8 +515,15 @@ namespace BobAndFriends
             {
                 query += "INSERT INTO sku VALUES (@SKU, @articleId);\n";
             }
-            // We need to return the article ID for saving product data later on.
-            query += "SELECT @articleId";
+            // After that, save the product data right away. Since it's a new article, it won't have any product data yet. 
+            // We also need to return the article ID for saving product data later on.
+            query += "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK);\n" + 
+                     "SELECT @articleId";
+
+            if (Record.DeliveryCost == "")
+            {
+                Record.DeliveryCost = null;
+            }
 
             // Create a new command and add all the parameters;
             _cmd = new MySqlCommand(query, _conn);

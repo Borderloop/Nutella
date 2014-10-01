@@ -173,14 +173,14 @@ namespace BobAndFriends.Affiliates
                                         _reader.MoveToElement();
                                         break;
                                 }
+                            }
 
-                                if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
-                                {
-                                    p.Affiliate = "TradeTracker";
-                                    p.FileName = file;
-                                    p.Webshop = _fileUrl;
-                                    products.Add(p);
-                                }
+                            if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
+                            {
+                                p.Affiliate = "TradeTracker";
+                                p.FileName = file;
+                                p.Webshop = _fileUrl;
+                                products.Add(p);
                             }
                         }
                     }
