@@ -62,7 +62,8 @@ namespace BobAndFriends
             //Stop the stopwatch, work is done.
             _sw.Stop();
 
-            //Write all data to logfile.            
+            //Write all data to logfile.       
+            /*
             base.WriteLine("Last scan: " + DateTime.Now.ToString("HH:mm:ss") + ".");
             base.WriteLine("Processing time: " + _sw.Elapsed);
             base.WriteLine(_data[17] + " products processed.");
@@ -86,7 +87,7 @@ namespace BobAndFriends
             base.WriteLine(_eans.Count + " products have a unique EAN, which is " + Math.Round((double)((double)_eans.Count / (double)_data[0]) * 100, 2) + @"% of all products with an EAN.");
             base.WriteLine(_skus.Count + " products have a unique SKU, which is " + Math.Round((double)((double)_skus.Count / (double)_data[1]) * 100, 2) + @"% of all products with an SKU.");
             base.WriteLine(_cats.Count + " products have a unique category, which is " + Math.Round((double)((double)_cats.Count / (double)_data[4]) * 100, 2) + @"% of all prodcts with a category.");         
-            
+            */
             //Close the streamwriter.
             base.Close();
 
@@ -97,74 +98,74 @@ namespace BobAndFriends
             _data[17] += products.Count;
             foreach (Product p in products)
             {
-                if (!p.EAN.Equals(""))
+                if (!p.EAN.EmptyNull().Equals(""))
                 {
                     _data[0]++;
                     _eans.Add(p.EAN);
                 }
-                if (!p.SKU.Equals(""))
+                if (!p.SKU.EmptyNull().Equals(""))
                 {
                     _data[1]++;
                     _skus.Add(p.SKU);
                 }
-                if (!p.Title.Equals(""))
+                if (!p.Title.EmptyNull().Equals(""))
                 {
                     _data[2]++;
                 }
-                if (!p.Brand.Equals(""))
+                if (!p.Brand.EmptyNull().Equals(""))
                 {
                     _data[3]++;
                 }
-                if (!p.Category.Equals(""))
+                if (!p.Category.EmptyNull().Equals(""))
                 {
                     _data[4]++;
                     _cats.Add(p.Category);
                 }
-                if (!p.Price.Equals(""))
+                if (!p.Price.EmptyNull().Equals(""))
                 {
                     _data[5]++;
                 }
-                if (!p.Url.Equals(""))
+                if (!p.Url.EmptyNull().Equals(""))
                 {
                     _data[6]++;
                 }
-                if (!p.Currency.Equals(""))
+                if (!p.Currency.EmptyNull().Equals(""))
                 {
                     _data[7]++;
                 }
-                if (!p.Description.Equals(""))
+                if (!p.Description.EmptyNull().Equals(""))
                 {
                     _data[8]++;
                 }
-                if (!p.Image_Loc.Equals(""))
+                if (!p.Image_Loc.EmptyNull().Equals(""))
                 {
                     _data[9]++;
                 }
-                if (!p.DeliveryCost.Equals(""))
+                if (!p.DeliveryCost.EmptyNull().Equals(""))
                 {
                     _data[10]++;
                 }
-                if (!p.DeliveryTime.Equals(""))
+                if (!p.DeliveryTime.EmptyNull().Equals(""))
                 {
                     _data[11]++;
                 }
-                if (!p.Stock.Equals(""))
+                if (!p.Stock.EmptyNull().Equals(""))
                 {
                     _data[12]++;
                 }
-                if (!p.LastModified.Equals(""))
+                if (!p.LastModified.EmptyNull().Equals(""))
                 {
                     _data[13]++;
                 }
-                if (!p.ValidUntil.Equals(""))
+                if (!p.ValidUntil.EmptyNull().Equals(""))
                 {
                     _data[14]++;
                 }
-                if (!(p.EAN.Equals("")) && !(p.SKU.Equals("")))
+                if (!(p.EAN.EmptyNull().Equals("")) && !(p.SKU.EmptyNull().Equals("")))
                 {
                     _data[15]++;
                 }
-                if (!(p.Brand.Equals("")) && !(p.SKU.Equals("")))
+                if (!(p.Brand.EmptyNull().Equals("")) && !(p.SKU.EmptyNull().Equals("")))
                 {
                     _data[16]++;
                 }

@@ -10,6 +10,10 @@ using System.Text.RegularExpressions;
 
 namespace BobAndFriends.Affiliates
 {
+    /// <summary>
+    /// This class represents the reading from the .xml files delivered by Webgains.
+    /// The reading is automated by using the XmlValueReader.
+    /// </summary>
     public class Daisycon : AffiliateBase
     {
         public override string Name { get { return "Daisycon"; } }
@@ -27,8 +31,29 @@ namespace BobAndFriends.Affiliates
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
+            //Initialize XmlValueReader and its keys
+            XmlValueReader xvr = new XmlValueReader();
+            xvr.ProductEnd = "item";
+            xvr.AddKeys("ean_code", XmlNodeType.Element);
+            xvr.AddKeys("title", XmlNodeType.Element);
+            xvr.AddKeys("brand", XmlNodeType.Element);
+            xvr.AddKeys("minimum_price", XmlNodeType.Element);
+            xvr.AddKeys("link", XmlNodeType.Element);
+            xvr.AddKeys("img_medium", XmlNodeType.Element);
+            xvr.AddKeys("category", XmlNodeType.Element);
+            xvr.AddKeys("description", XmlNodeType.Element);
+            xvr.AddKeys("shipping_cost", XmlNodeType.Element);
+            xvr.AddKeys("shippingcost", XmlNodeType.Element);
+            xvr.AddKeys("stock", XmlNodeType.Element);
+            xvr.AddKeys("shipping_duration_descr", XmlNodeType.Element);
+            xvr.AddKeys("shipping_duration", XmlNodeType.Element);
+            xvr.AddKeys("daisycon_unique_id", XmlNodeType.Element);
+
+            Product p = new Product();
+
             foreach (string file in filePaths)
             {
+<<<<<<< HEAD
                 //First check if the website is in the database. If not, log it and if so, proceed.
                 string urlLine;
                 bool websitePresent = false;
@@ -165,3 +190,34 @@ namespace BobAndFriends.Affiliates
         }
     }
 }
+=======
+                xvr.CreateReader(file);
+                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
+                {
+                    p.EAN = dkd["ean_code"][XmlNodeType.Element]; 
+                    p.Title = dkd["title"][XmlNodeType.Element];
+                    p.Brand = dkd["brand"][XmlNodeType.Element];
+                    p.Price = dkd["minimum_price"][XmlNodeType.Element];
+                    p.Url = dkd["link"][XmlNodeType.Element];
+                    p.Image_Loc = dkd["img_medium"][XmlNodeType.Element];
+                    p.Category = dkd["category"][XmlNodeType.Element];
+                    p.Description = dkd["description"][XmlNodeType.Element];
+                    p.DeliveryCost = dkd["shipping_cost"][XmlNodeType.Element] == default(string) ? dkd["shippingcost"][XmlNodeType.Element] : dkd["shipping_duration"][XmlNodeType.Element];
+                    p.DeliveryTime = dkd["shipping_duration"][XmlNodeType.Element];
+                    p.Stock = dkd["stock"][XmlNodeType.Element] == default(string) ? dkd["shipping_duration_descr"][XmlNodeType.Element] : dkd["stock"][XmlNodeType.Element];
+                    p.AfiiliateProdID = dkd["daisycon_unique_id"][XmlNodeType.Element];
+                    p.Currency = "EUR";
+                    p.Affiliate = "Daisycon";
+                    p.FileName = file;
+                    p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                    products.Add(p);
+                    p = new Product();
+                }
+            }
+            yield return products;
+            products.Clear();
+        }
+    }
+}
+    
+>>>>>>> 9fa828420c9ef33f5cde6400d5dc76e5613c4aee

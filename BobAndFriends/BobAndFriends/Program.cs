@@ -39,7 +39,7 @@ namespace BobAndFriends
              
             //DatabaseJanitor crapper = new DatabaseJanitor();
             //crapper.Cleanup();    
- 
+
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
@@ -47,7 +47,7 @@ namespace BobAndFriends
             //Start threads
             producer.Start();
             consumer.Start();
-            
+
             
             //Application.EnableVisualStyles();
             //Application.Run(new VisualBob());

@@ -10,6 +10,11 @@ using System.Text.RegularExpressions;
 
 namespace BobAndFriends.Affiliates
 {
+    /// <summary>
+    /// This class represents the reading from the .xml files delivered by Zanox.
+    /// This reading cannot be automated with the XmlValueReader because the xml
+    /// is delivered too complicated.
+    /// </summary>
     public class Zanox : AffiliateBase
     {
         public override string Name { get { return "Zanox"; } }
@@ -72,6 +77,7 @@ namespace BobAndFriends.Affiliates
 
                             if (_reader.IsStartElement())
                             {
+<<<<<<< HEAD
                                 switch (_reader.Name)
                                 {
                                     case "streamCurrency":
@@ -150,6 +156,83 @@ namespace BobAndFriends.Affiliates
                                         _reader.MoveToElement();
                                         break;
                                 }
+=======
+                                case "streamCurrency":
+                                    _reader.Read();                                    
+                                    currency = _reader.Value;                                   
+                                    break;
+
+                                case "lastUpdated":
+                                    _reader.Read();
+                                    lastUpdated = _reader.Value;
+                                    break;
+
+                                case "record":
+                                    p = new Product();
+                                    break;
+
+                                case "column":
+                                    if (_reader.HasAttributes) { _reader.MoveToNextAttribute(); }
+                                    switch (_reader.Value)
+                                    {
+                                        case "url":
+                                            _reader.Read();
+                                            p.Url = _reader.Value;
+                                            break;
+
+                                        case "title":
+                                            _reader.Read();
+                                            p.Title = _reader.Value;
+                                            break;
+
+                                        case "ean":
+                                            _reader.Read();
+                                            p.EAN = _reader.Value;
+                                            break;
+
+                                        case "price":
+                                            _reader.Read();
+                                            p.Price = _reader.Value;
+                                            break;
+
+                                        case "image":
+                                            _reader.Read();
+                                            p.Image_Loc = _reader.Value;
+                                            break;
+
+                                        case "category":
+                                            _reader.Read();
+                                            p.Category = _reader.Value;
+                                            break;
+
+                                        case "description":
+                                            _reader.Read();
+                                            p.Description = _reader.Value;
+                                            break;
+
+                                        case "price_shipping":
+                                            _reader.Read();
+                                            p.DeliveryCost = _reader.Value;
+                                            break;
+
+                                        case "stock":
+                                            _reader.Read();
+                                            p.Stock = _reader.Value;
+                                            break;
+
+                                        case "timetoship":
+                                            _reader.Read();
+                                            p.DeliveryTime = _reader.Value;
+                                            break;    
+                                         
+                                        case "zupid":
+                                            _reader.Read();
+                                            p.AfiiliateProdID = _reader.Value;
+                                            break;
+                                    }
+                                    _reader.MoveToElement();
+                                    break;
+>>>>>>> 9fa828420c9ef33f5cde6400d5dc76e5613c4aee
                             }
 
                             if (_reader.Name.Equals("record") && _reader.NodeType == XmlNodeType.EndElement)

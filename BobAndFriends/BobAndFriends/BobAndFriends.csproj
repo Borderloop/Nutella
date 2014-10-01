@@ -50,6 +50,7 @@
     <Compile Include="Affiliates\AffiliateBase.cs" />
     <Compile Include="Affiliates\Affilinet.cs" />
     <Compile Include="Affiliates\Belboon.cs" />
+    <Compile Include="Affiliates\CommissionJunction.cs" />
     <Compile Include="BobAndFriends\BOB.cs" />
     <Compile Include="Affiliates\Daisycon.cs" />
     <Compile Include="BobAndFriends\DatabaseJanitor.cs" />

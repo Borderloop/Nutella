@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace BobAndFriends
 {
@@ -64,5 +65,30 @@ namespace BobAndFriends
         public string AfiiliateProdID { get; set; }
         public string FileName { get; set; }
         public string Webshop { get; set; }
+
+        public void CleanupFields()
+        {
+            foreach (var prop in this.GetType().GetProperties())
+            {
+                object type = prop.GetValue(this);
+                if (type is string)
+                {
+                    //Make sure the fields are DEFINITELY not null
+                    if (prop.GetValue(this) == null)
+                        prop.SetValue(this, "");
+
+                    //Configure the EAN to match the regular expression
+                    if (prop.Name == "EAN")
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? prop.GetValue(this) : "");
+
+                    //Configure the price or deliveryCost to not contain a ',' but a '.' instead, and then match it to the regular expression
+                    if (prop.Name == "Price" || prop.Name == "DeliveryCost")
+                    {
+                        prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(,\d{1,2})?$") ? prop.GetValue(this) : "");
+                    }
+                }
+            }
+        }
     }
 }
