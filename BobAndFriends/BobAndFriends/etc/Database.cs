@@ -145,7 +145,7 @@ namespace BobAndFriends
         public int GetArticleNumber(string table, string column, string value)
         {
             string query = "SELECT * FROM  " + table + " WHERE " + column + " = @VALUE";
-            //string query = "SELECT * FROM  " + table + " WHERE " + column + " = '" + value + "'";
+
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
             MySqlParameter val = _cmd.Parameters.Add("@VALUE", MySqlDbType.VarChar, 20);

@@ -87,6 +87,11 @@ namespace BobAndFriends
             }
             Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
             sw.Restart();
+
+            if (Record.EAN == null)
+            {
+                Record.EAN = "";
+            }
             //If the first check does not go well, check for the ean.
             if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
@@ -125,11 +130,15 @@ namespace BobAndFriends
                 return;
             }
             Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
-            if (Record.Title != "" && Record.EAN != null)
+            if (Record.Title != "" && Record.EAN != "")
             {
                 //The product has a brand name which doesn't exist in the database and has a title, so save it to the database
                 SaveNewArticle(Record);
                 return;
+            }
+            else//           !!!!!!!!!!!!   TEMPORARY, REMOVE WHEN RELEVANCE MATCHER IS TURNED BACK ON    !!!!!!!!!!!
+            {
+                sendToResidue(Record);
             }
         }       
 
