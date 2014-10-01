@@ -12,16 +12,6 @@ namespace BobAndFriends
     public class BOB
     {
         /// <summary>
-        /// Contains all the categories from the Borderloop category tree.
-        /// </summary>
-        private DataTable Categories;
-
-        /// <summary>
-        /// Contains all the category synonyms for the Borderloop category tree.
-        /// </summary>
-        private DataTable CategorySynonyms;
-
-        /// <summary>
         /// Contains all data of the products which have been fixed and are to be rerunned again.
         /// </summary>
         private DataTable Rerunnables;
@@ -29,12 +19,7 @@ namespace BobAndFriends
         /// <summary>
         /// If a match if found, store the ID in this field.
         /// </summary>
-        private int _matchedArticleID = 1;
-
-        /// <summary>
-        /// If a category match is found, store its id in this field.
-        /// </summary>
-        private int _categoryID;
+        private int _matchedArticleID;
 
         /// <summary>
         /// A flag to keep track of when we're rerunning through the residue.
@@ -70,6 +55,7 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             */
+            Console.WriteLine("Busy with: " + Record.Title);
             if (Record.Title.Contains(Record.Brand) && Record.Brand != "")
             {
                 //Split the title with the Brand, leaving at least two strings
@@ -77,77 +63,78 @@ namespace BobAndFriends
                 string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
                 Record.Title = String.Concat(s);
             }
-            
-            //Don't run if the webshop is not in the database
-            List<string> columns = new List<string>();
-            columns.Add ("*");
-            DataTable dt = Database.Instance.Select(columns, "webshop", "url", Record.Webshop);
+            Stopwatch sw = new Stopwatch();
 
-            if (dt.Rows.Count > 0)
+            if (Record.SKU.Length > 15)
             {
-                if (Record.SKU.Length > 15)
-                {
-                    Record.SKU = "";
-                }
-
-                //Get country id
-                _countryID = GetCountryId(Record.Webshop);
-
-                if (Database.Instance.HasArticles())
-                {
-                    //First test - EAN/SKU match and perfect title matching.
-
-                    //If checkSKU() return true, the record matches with a product in the database and its data
-                    //can be added to the product. It is done then.
-                    if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
-                    {
-                        //The product has an SKU and it's a match.
-                        SaveMatch(Record);
-                        return;
-                    }
-
-                    //If the first check does not go well, check for the ean.
-                    if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
-                    {
-                        SaveMatch(Record);
-                        return;
-                    }
-
-                    //The product has no valid EAN and no valid SKU, therefore we will match titles.
-                    if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
-                    {
-                        //We found a perfect title match. Awesome!
-                        SaveMatch(Record);
-                        return;
-                    }
-                }
-                // If checkBrand() returns false, the record doesn't contain a brand. Send record
-                // to residue and stop execution of method.
-                if (CheckBrand(Record))
-                {
-                    sendToResidue(Record);
-                    return;
-                }
-
-                //Run a brand check. If it exists, we can go on to match the product by relevance.
-                //If it doesn't. however, we have to create a new product.
-                if (CheckBrandInDatabase(Record))
-                {
-                    //MatchByRelevance(Record);
-                    SaveNewArticle(Record);
-                }
-                else if (Record.Title != "" && Record.EAN != null)
-                {
-                    //The product has a brand name which doesnt exist in the and has a title, so save it to the database
-                    SaveNewArticle(Record);
-                    return;
-                }
+                Record.SKU = "";
             }
+            sw.Restart();
+            //Get country id
+            _countryID = GetCountryId(Record.Webshop);
+            Console.WriteLine("Finished getting country id in: {0}", sw.Elapsed);
+
+            //First test - EAN/SKU match and perfect title matching.
+            sw.Restart();
+            //If checkSKU() return true, the record matches with a product in the database and its data
+            //can be added to the product. It is done then.
+            if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+            {
+                //The product has an SKU and it's a match.
+                SaveMatch(Record);
+                return;
+            }
+            Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
+            sw.Restart();
+            //If the first check does not go well, check for the ean.
+            if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+            {
+                SaveMatch(Record);
+                return;
+            }
+            Console.WriteLine("Finished unsuccesfull ean check: {0}", sw.Elapsed);
+            sw.Restart();
+            /*//The product has no valid EAN and no valid SKU, therefore we will match titles.
+            if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
+            {
+                //We found a perfect title match. Awesome!
+                SaveMatch(Record);
+                return;
+            }
+            Console.WriteLine("Finished unsuccesfull title check in: {0}", sw.Elapsed);
+            sw.Restart();*/
+            // If checkBrand() returns false, the record doesn't contain a brand. Send record
+            // to residue and stop execution of method.
+            if (CheckBrand(Record))
+            {
+                sendToResidue(Record);
+                return;
+            }
+            Console.WriteLine("Finished brand check: {0}", sw.Elapsed);
+            sw.Restart();
+            //Run a brand check. If it exists, we can go on to match the product by relevance.
+            //If it doesn't. however, we have to create a new product.
+            if (CheckBrandInDatabase(Record))
+            {
+                Console.WriteLine("Brand is in database");
+                //MatchByRelevance(Record);
+                SaveNewArticle(Record);
+                return;
+            }
+            Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
+            if (Record.Title != "" && Record.EAN != null)
+            {
+                //The product has a brand name which doesnt exist in the and has a title, so save it to the database
+                SaveNewArticle(Record);
+                return;
+            }
+
             else // Log the website that was not present
             {
-                Statics.Logger.WriteLine("Webshop not found in database: " + Record.Webshop);
-            }   
+                Console.WriteLine("Webshop not found in database: " + Record.Webshop);
+            }
         }
+        
 
         /// <summary>
         /// Also initializes dummy data. For test purposes only
@@ -270,22 +257,24 @@ namespace BobAndFriends
         /// </summary>
         private void  SaveMatch(Product Record)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             List<string> columns = new List<string>();
             // Add columns for article table, afterwards clear the columns and do the same for ean, sku and title.
             columns.Add("brand AS 'article-Brand'");
-            columns.Add("description AS 'article-Description");
+            columns.Add("description AS 'article-Description'");
             columns.Add("image_loc AS 'article-Image_Loc'");
 
             //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
-            DataTable articleTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "article");
+            DataTable articleTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "article", "id");
 
             columns.Clear();
             columns.Add("ean AS 'ean-EAN'");
-            DataTable eanTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "ean");
+            DataTable eanTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "ean", "article_id");
 
             columns.Clear();
             columns.Add("sku AS 'sku-SKU'");
-            DataTable skuTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "sku");
+            DataTable skuTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "sku", "article_id");
             DataTable titleSynonymTable = Database.Instance.GetTitleSynonymTableForArticle(_matchedArticleID);
 
 
@@ -339,6 +328,8 @@ namespace BobAndFriends
                 Database.Instance.DeleteFromResidue(Record);
             }
 
+            Statics.Logger.WriteLine("Finished saving match in: {0}", sw.Elapsed);
+            sw.Stop();
         }
 
         /// <summary>
@@ -493,6 +484,8 @@ namespace BobAndFriends
         /// <param name="p"></param>
         private void sendToResidue(Product p)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             //If we are rerunning through the residue, this product already exists there.
             //No need to add it again.
             if (rerunningResidue)
@@ -502,6 +495,8 @@ namespace BobAndFriends
 
             //Call SendToResidue() to do so.
             Database.Instance.SendTo(p, "residue");
+            Console.WriteLine("Finished sending to residue in : " + sw.Elapsed);
+            sw.Stop();
         }
 
         /// <summary>
@@ -544,11 +539,11 @@ namespace BobAndFriends
         /// <param name="Record">The product to be put in the database</param>
         private void SaveNewArticle(Product Record)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             // Invoke SaveNewArticle() from the database object.
-            Database.Instance.SaveNewArticle(Record, _categoryID, _countryID);
-
-            // Save product data to database.
-            //SaveProductData(Record);
+            Database.Instance.SaveNewArticle(Record, _countryID);
+            Console.WriteLine("Finished saving new article in: {0}", sw.Elapsed);
         }
 
         /// <summary>
@@ -558,24 +553,27 @@ namespace BobAndFriends
         /// <param name="Record">The product with its product data to be saves</param>
         private void SaveProductData(Product Record)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             Database.Instance.SaveProductData(Record);
+            Console.WriteLine("Finished saving product data in: {0}", sw.Elapsed);
         }
 
         private void CompareProductData(Product Record)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             //First select the product data from the product table for the given record
             DataTable productData = Database.Instance.GetProductData(Record, _matchedArticleID);
-            Statics.Logger.WriteLine("Comparing product data......");
 
             // If there are no rows returned, there is not yet any deliveryinfo for this record. Save it.
             if (productData.Rows.Count == 0)
             {
-                Statics.Logger.WriteLine("No similar product data found!");
+                Console.WriteLine("Finished comparing, no similar data found. Time: {0}", sw.Elapsed);
                 SaveProductData(Record);
             }
             else// Else there already is product data for this record: Compare the product data with the record data for each column.
             {
-                Statics.Logger.WriteLine("Product data already in there, starting comparising....");
                 string query = "UPDATE product SET";
                 string columnName = "";
                 foreach (DataColumn column in productData.Columns)
@@ -583,8 +581,10 @@ namespace BobAndFriends
                     String recordValue = GetPropValue(Record, column.ToString()).ToString();
                     Object o = productData.Rows[0][column].ToString();
 
+                    string dbValue = o.ToString().Replace(',', '.');
+
                     // If the record value and article value don't match for this column, the data has changed.
-                    if (recordValue != o.ToString())
+                    if (recordValue != dbValue)
                     {
                         // First rename aliasses to the right column names.
                         if (column.ToString().Equals("DeliveryTime"))
@@ -613,10 +613,13 @@ namespace BobAndFriends
                 {
                     query = query.Remove(query.Length - 1, 1);
                     query += " WHERE article_id = " + _matchedArticleID + " AND webshop_url = '" + Record.Webshop + "'";
+                    Console.WriteLine("Finished comparing, different values found in: {0}", sw.Elapsed);
+                    Console.WriteLine(query);
 
                     Database.Instance.UpdateProductData(query);
                 }
             }
+            Console.WriteLine("Finished total comparison in: ", sw.Elapsed);
         }
 
         private int GetCountryId(string webshop)

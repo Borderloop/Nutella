@@ -34,10 +34,12 @@ namespace BobAndFriends
             
             //Initialize
             Initialize();
-<<<<<<< HEAD
 
             Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
-
+             
+            //DatabaseJanitor crapper = new DatabaseJanitor();
+            //crapper.Cleanup();    
+ 
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
@@ -45,19 +47,6 @@ namespace BobAndFriends
             //Start threads
             producer.Start();
             consumer.Start();
-=======
-             
-            //DatabaseJanitor crapper = new DatabaseJanitor();
-            //crapper.Cleanup();    
-  
-            //Create threads
-            producer = new Thread(new ThreadStart(ProductFeedReader));
-            //consumer = new Thread(new ThreadStart(ProductDequeuer));
-            
-            //Start threads
-            producer.Start();
-            //consumer.Start();
->>>>>>> ce361d6f9a6618d078a618deeed878bbd97bfd77
             
             
             //Application.EnableVisualStyles();

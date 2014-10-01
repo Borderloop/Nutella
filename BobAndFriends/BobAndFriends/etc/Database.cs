@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Diagnostics;
 
 namespace BobAndFriends
 {
@@ -140,23 +141,25 @@ namespace BobAndFriends
         /// <returns></returns>
         public int GetArticleNumber(string table, string column, string value)
         {
-            string query = "SELECT * FROM  " + table + " WHERE " + column + " = " + value;
-
+            string query = "SELECT * FROM  " + table + " WHERE " + column + " = @VALUE";
+            //string query = "SELECT * FROM  " + table + " WHERE " + column + " = '" + value + "'";
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
+            MySqlParameter val = _cmd.Parameters.Add("@VALUE", MySqlDbType.VarChar, 20);
+            val.Value = value;
 
             DataTable _resultTable = new DataTable();
             _resultTable.Load(_cmd.ExecuteReader());
 
             //Return the article number if found, -1 otherwise.
-            try
+            if (_resultTable.Rows.Count > 0)
             {
-                return Int32.Parse(_resultTable.Rows.Count > 0 ? _resultTable.Rows[0].ToString() : "-1");
+                return Convert.ToInt32(_resultTable.Rows[0]["article_id"]);
             }
-            catch
-            {
+            else{
                 return -1;
             }
+
         }
 
         public bool CheckIfBrandExists(string brand)
@@ -164,7 +167,7 @@ namespace BobAndFriends
             DataTable _resultTable = new DataTable();
 
             //Create the query
-            string query = "SELECT brand FROM article WHERE brand=@BRAND";
+            string query = "SELECT brand FROM article WHERE brand=@BRAND LIMIT 1;";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
@@ -191,12 +194,10 @@ namespace BobAndFriends
         /// <param name="columns">The columns to select</param>
         /// <param name="table">The table to get the results from</param>
         /// <returns></returns>
-        public DataTable GetTableForArticle(int aid, List<string> columns, string table)
+        public DataTable GetTableForArticle(int aid, List<string> columns, string table, string whereClause)
         {
-            string query = GenerateSelectQuery(columns, table, "article_id", aid.ToString());
-
-            DataTable _resultTable = Read(query);
-            return _resultTable;
+            string query = GenerateSelectQuery(columns, table, whereClause, aid.ToString());
+            return Read(query);
         }
 
         /// <summary>
@@ -224,7 +225,7 @@ namespace BobAndFriends
             // If the where clause is not empty, a where clause is present so add this also.
             if (whereClause != null)
             {
-                query += " WHERE " + whereClause + " = " + value;
+                query += " WHERE " + whereClause + " = '" + value + "'";
             }
 
             return query;
@@ -390,6 +391,8 @@ namespace BobAndFriends
         /// <param name="p">The product to be send to the residu.</param>
         public void SendTo(Product p, string tableName, bool rerun = false)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             //Create a dictionary containing column names and values
             Dictionary<string, object> col_vals = new Dictionary<string, object>();
 
@@ -480,60 +483,49 @@ namespace BobAndFriends
         /// Used to save a new article.
         /// </summary>
         /// <param name="Record">The article to be saved</param>
-        public void SaveNewArticle(Product Record, int categoryID, int countryId)
+        public void SaveNewArticle(Product Record, int countryId)
         {
-            // First insert data into the article table
-            string query = "INSERT INTO article (description, brand, image_loc) " +
-                           "VALUES (@DESCRIPTION, @BRAND, @IMAGE_LOC)";
+            // We want to insert everything at once to reduce proccessing time, start building the query here.
 
+            // First insert data into the article table and get article id.
+            // EAN and title are always present at this point, so add these no matter what.
+            // Also add the title to the title synonym table by returning the title id.
+            // After that, save the product data right away. Since it's a new article, it won't have any product data yet. 
+            string query = "INSERT INTO article (description, brand, image_loc)" +
+                           "VALUES (@DESCRIPTION, @BRAND, @IMAGE_LOC);\n " +
+                           "SELECT LAST_INSERT_ID() INTO @articleId;\n" +
+                           "INSERT INTO ean VALUES (@EAN, @articleId);\n" +
+                           "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, @COUNTRYID, @articleId);\n" +
+                           "SELECT LAST_INSERT_ID() INTO @titleId;\n" +
+                           "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);\n" +
+                           "INSERT INTO product (article_id, ship_time, ship_cost, price, webshop_url, direct_link) VALUES (@articleId, @SHIPTIME, @SHIPCOST, @PRICE, @WEBSHOP_URL, @DIRECT_LINK);\n";
+                           
+
+            // We need to know if there is an SKU and if so, add it to the query.
+            if (Record.SKU != "")
+            {
+                query += "INSERT INTO sku VALUES (@SKU, @articleId);\n";
+            }
+            // We need to return the article ID for saving product data later on.
+            query += "SELECT @articleId";
+
+            // Create a new command and add all the parameters;
             _cmd = new MySqlCommand(query, _conn);
             _cmd.Parameters.AddWithValue("@DESCRIPTION", Record.Description);
             _cmd.Parameters.AddWithValue("@BRAND", Record.Brand);
             _cmd.Parameters.AddWithValue("@IMAGE_LOC", Record.Image_Loc);
-            _cmd.ExecuteNonQuery();
+            _cmd.Parameters.AddWithValue("@EAN", Record.EAN);
+            _cmd.Parameters.AddWithValue("@TITLE", Record.Title);
+            _cmd.Parameters.AddWithValue("@COUNTRYID", countryId);
+            _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
+            _cmd.Parameters.AddWithValue("@SHIPCOST", deliveryCost);
+            _cmd.Parameters.AddWithValue("@PRICE", price);
+            _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
+            _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
+            if (Record.SKU != "") { _cmd.Parameters.AddWithValue("@SKU", Record.SKU); }
 
-            // Then get the article id for the inserted article.
-            string query2 = "SELECT LAST_INSERT_ID()";
-            MySqlCommand _cmd2 = new MySqlCommand(query2, _conn);
-            MySqlDataReader rdr = _cmd2.ExecuteReader();
-            rdr.Read();
-            _articleID = rdr.GetInt32(0);
-            rdr.Close();
-
-            // Insert remaining data now the article id is available, but only
-            // add them if they're not empty to prevent errors.
-            string query3 = "";
-
-            if (Record.EAN != null)
-            {
-                query3 += "INSERT INTO ean VALUES (@EAN, @AID);";
-            }
-            if (Record.SKU != "")
-            {
-                query3 += "INSERT INTO sku VALUES (@SKU, @AID); ";
-            }
-            if (Record.Title != "")
-            {
-                query3 += "INSERT INTO title (title, country_id, article_id) VALUES (@TITLE, @COUNTRYID, @AID); " +
-                          "SELECT LAST_INSERT_ID() INTO @titleId; " +
-                          "INSERT INTO title_synonym(title, title_id) VALUES (@TITLE, @titleId);";
-            }
-            // Don't execute when none of the records are present, which means
-            // the query is empty.
-            if (query3 != "")
-            {
-                MySqlCommand _cmd3 = new MySqlCommand(query3, _conn);
-                _cmd3.Parameters.AddWithValue("@AID", _articleID);
-                if (Record.EAN != null) { _cmd3.Parameters.AddWithValue("@EAN", Record.EAN); }
-                if(Record.SKU != "") {_cmd3.Parameters.AddWithValue("@SKU", Record.SKU);}
-                if(Record.Title != "") 
-                {
-                    _cmd3.Parameters.AddWithValue("@TITLE", Record.Title);
-                    _cmd3.Parameters.AddWithValue("@COUNTRYID", countryId);
-                }
-
-                _cmd3.ExecuteNonQuery();
-            }
+            // Execute query and return the article ID for the article that just got inserted at the same time.
+            _articleID = Convert.ToInt32(_cmd.ExecuteScalar());
         }
 
         /// This method will close the connection with the database.
@@ -567,8 +559,7 @@ namespace BobAndFriends
         {
             string query = GenerateSelectQuery(columns, table, whereClause, value);
 
-            DataTable _resultTable = Read(query);
-            return _resultTable;
+            return Read(query);
         }
 
         public DataTable GetSuggestedProducts(int productID)
@@ -742,27 +733,41 @@ namespace BobAndFriends
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
 
-            decimal? deliverycost;
+            decimal? deliveryCost;
+            decimal? price;
 
             try
             {
-                deliverycost = decimal.Parse(Record.DeliveryCost);
+                deliveryCost = decimal.Parse(Record.DeliveryCost);
             }
             catch
             {
-                deliverycost = null;
+                deliveryCost = null;
+            }
+            try
+            {
+                price = decimal.Parse(Record.Price);
+            }
+            catch
+            {
+                price = null;
             }
 
             _cmd.Parameters.AddWithValue("@AID", _articleID);
             _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
-            _cmd.Parameters.AddWithValue("@SHIPCOST", deliverycost);
-            _cmd.Parameters.AddWithValue("@PRICE", Record.Price);
-            _cmd.Parameters.AddWithValue("@SHIPCOST", Record.DeliveryCost == "" ? -1 : Convert.ToDouble(Record.DeliveryCost));
-            _cmd.Parameters.AddWithValue("@PRICE", Record.Price == "" ? -1 : Convert.ToDouble(Record.Price));
+            _cmd.Parameters.AddWithValue("@SHIPCOST", deliveryCost);
+            _cmd.Parameters.AddWithValue("@PRICE", price);
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
 
-            _cmd.ExecuteNonQuery();
+            try
+            {
+                _cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Statics.Logger.WriteLine("Error saving product data: " + e);
+            }
         }
 
         /// <summary>
@@ -785,8 +790,18 @@ namespace BobAndFriends
         /// <param name="query">The query to be executed to the database</param>
         public void UpdateProductData(string query)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
-            _cmd.ExecuteNonQuery();
+            try
+            {
+                _cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException){
+                Statics.Logger.WriteLine("Updating product data produced error for the below query: \n" + query);
+            }
+            Statics.Logger.WriteLine("Finished updating product data in: " + sw.Elapsed);
+            sw.Stop();
         }
 
         public int GetCountryId(string webshop)
@@ -878,7 +893,5 @@ namespace BobAndFriends
 
             _cmd.ExecuteNonQuery();
         }
-
-        
     }
 }
