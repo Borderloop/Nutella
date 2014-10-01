@@ -746,8 +746,8 @@ namespace BobAndFriends
 
             _cmd.Parameters.AddWithValue("@AID", _articleID);
             _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
-            _cmd.Parameters.AddWithValue("@SHIPCOST", deliveryCost);
-            _cmd.Parameters.AddWithValue("@PRICE", price);
+            _cmd.Parameters.AddWithValue("@SHIPCOST", Record.DeliveryCost);
+            _cmd.Parameters.AddWithValue("@PRICE", Record.Price);
             _cmd.Parameters.AddWithValue("@WEBSHOP_URL", Record.Webshop);
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
             _cmd.Parameters.AddWithValue("@AFNAME", Record.Affiliate);
