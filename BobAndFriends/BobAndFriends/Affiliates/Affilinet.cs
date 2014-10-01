@@ -76,93 +76,12 @@ namespace BobAndFriends.Affiliates
 
                             if (_reader.IsStartElement())
                             {
-<<<<<<< HEAD
                                 switch (_reader.Name)
                                 {
                                     case "EAN":
                                         _reader.Read();
-                                        p.EAN = Regex.IsMatch(_reader.Value, @"^[0-9]{10,13}$") ? _reader.Value : "";
+                                        p.EAN = _reader.Value;
                                         break;
-=======
-                                case "EAN":
-                                    _reader.Read();
-                                    p.EAN = _reader.Value;
-                                    break;
-
-                                case "Title":
-                                    _reader.Read();
-                                    p.Title = _reader.Value;
-                                    break;
-
-                                case "Brand":
-                                    _reader.Read();
-                                    p.Brand = _reader.Value;
-                                    break;
-
-                                case "Price":
-                                    _reader.Read();
-                                    p.Price = _reader.Value;
-                                    break;
-
-                                case "CurrencySymbol":
-                                    _reader.Read();
-                                    p.Currency = _reader.Value;
-                                    break;
-
-                                case "ValidTo":
-                                    _reader.Read();
-                                    p.ValidUntil = _reader.Value;
-                                    break;
-
-                                case "Deeplinks":
-                                    _reader.Read();
-                                    _reader.Read();
-
-                                    p.Url = _reader.Value;
-
-                                    //Read again twice to avoid double products because some genius made the xml file have two Product elements...
-                                    _reader.Read();
-                                    _reader.Read();
-                                    break;
-
-                                case "Images":
-                                    _reader.Read();
-                                    _reader.ReadToFollowing("URL");
-                                    _reader.Read();
-                                    p.Image_Loc = _reader.Value;
-                                    break;
-
-                                case "ProductCategoryPath":
-                                    _reader.Read();
-                                    p.Category = _reader.Value;
-                                    break;
-
-                                case "Description":
-                                    _reader.Read();
-                                    p.Description = _reader.Value;
-                                    break;
-
-                                case "LastUpdate":
-                                    _reader.Read();
-                                    p.LastModified = _reader.Value;
-                                    break;
-
-                                case "Shipping":
-                                    _reader.Read();
-                                    _reader.ReadToFollowing("Shipping");
-                                    _reader.Read();
-                                    p.DeliveryCost = _reader.Value;
-                                    break;
-
-                                case "Properties":
-                                    _reader.Read();
-                                    while (!(_reader.Name.Equals("Properties") && _reader.NodeType == XmlNodeType.EndElement))
-                                    {
-                                        if (_reader.HasAttributes && _reader["Title"].Equals("STOCK"))
-                                        {
-                                            break;
-                                        }
->>>>>>> 9fa828420c9ef33f5cde6400d5dc76e5613c4aee
 
                                     case "Title":
                                         _reader.Read();

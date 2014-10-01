@@ -744,26 +744,6 @@ namespace BobAndFriends
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
 
-            decimal? deliveryCost;
-            decimal? price;
-
-            try
-            {
-                deliveryCost = decimal.Parse(Record.DeliveryCost);
-            }
-            catch
-            {
-                deliveryCost = null;
-            }
-            try
-            {
-                price = decimal.Parse(Record.Price);
-            }
-            catch
-            {
-                price = null;
-            }
-
             _cmd.Parameters.AddWithValue("@AID", _articleID);
             _cmd.Parameters.AddWithValue("@SHIPTIME", Record.DeliveryTime);
             _cmd.Parameters.AddWithValue("@SHIPCOST", deliveryCost);
