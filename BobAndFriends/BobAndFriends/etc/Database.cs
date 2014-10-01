@@ -525,8 +525,18 @@ namespace BobAndFriends
             _cmd.Parameters.AddWithValue("@DIRECT_LINK", Record.Url);
             if (Record.SKU != "") { _cmd.Parameters.AddWithValue("@SKU", Record.SKU); }
 
-            // Execute query and return the article ID for the article that just got inserted at the same time.
-            _articleID = Convert.ToInt32(_cmd.ExecuteScalar());
+            try
+            {
+                // Execute query and return the article ID for the article that just got inserted at the same time.
+                _articleID = Convert.ToInt32(_cmd.ExecuteScalar());
+            }
+            catch (MySqlException e)
+            {
+                Statics.Logger.WriteLine("Saving new article failed for the follwing product:\n" +
+                                         "Title:    " + Record.Title + "\n" +
+                                         "EAN:      " + Record.EAN + "\n" +
+                                         "Which produced the following error:\n" + e);
+            }
         }
 
         /// This method will close the connection with the database.
@@ -769,7 +779,10 @@ namespace BobAndFriends
             }
             catch (MySqlException e)
             {
-                Statics.Logger.WriteLine("Error saving product data: " + e);
+                Statics.Logger.WriteLine("Saving product data failed for the follwing product:\n" +
+                                         "Title:    " + Record.Title + "\n" +
+                                         "EAN:      " + Record.EAN + "\n" +
+                                         "Which produced the following error:\n" + e);
             }
         }
 
