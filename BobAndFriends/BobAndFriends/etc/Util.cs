@@ -88,5 +88,10 @@ namespace BobAndFriends
             }
             return sb.ToString();
         }
+
+        public static bool Contains(this string source, string input, StringComparison comp)
+        {
+            return source.IndexOf(input, comp) >= 0;
+        }
     }
 }

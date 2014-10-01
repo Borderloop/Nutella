@@ -47,7 +47,7 @@ namespace BobAndFriends
             /*
             //Precondition: Record has to be clean; the title should not include
             //the brand name or the sku value. Therefore, we filter them out.
-            if (Record.Title.Contains(Record.SKU) && Record.SKU != "")
+            if (Record.Title.Contains(Record.SKU, StringComparison.OrdinalIgnoreCase) && Record.SKU != "")
             {
                 //Split the title with the SKU, leaving at least two strings
                 //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
@@ -56,7 +56,7 @@ namespace BobAndFriends
             }
             */
             Console.WriteLine("Busy with: " + Record.Title);
-            if (Record.Title.Contains(Record.Brand) && Record.Brand != "")
+            if (Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase) && Record.Brand != "")
             {
                 //Split the title with the Brand, leaving at least two strings
                 //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.

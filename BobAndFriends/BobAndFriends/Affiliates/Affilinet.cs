@@ -195,7 +195,6 @@ namespace BobAndFriends.Affiliates
                     {
                         Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                     }
-
                     yield return products;
                     products.Clear();
                 }
