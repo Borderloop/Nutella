@@ -37,7 +37,7 @@ namespace BobAndFriends.Affiliates
                 //First check if the website is in the database. If not, log it and if so, proceed.
                 string urlLine;
                 bool websitePresent = false;
-                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BOBAndFriends\\weburls.txt");
+                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BobAndFriends\\weburls.txt");
 
                 //Read all lines from the urlTxtFile.
                 while ((urlLine = urlTxtFile.ReadLine()) != null)
@@ -170,13 +170,13 @@ namespace BobAndFriends.Affiliates
                                         break;
                                 }
 
-                                if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
-                                {
-                                    p.Affiliate = "TradeTracker";
-                                    p.FileName = file;
-                                    p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                                    products.Add(p);
-                                }
+                            }
+                            if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
+                            {
+                                p.Affiliate = "TradeTracker";
+                                p.FileName = file;
+                                p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                products.Add(p);
                             }
                         }
                     }

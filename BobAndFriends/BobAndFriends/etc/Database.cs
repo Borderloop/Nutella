@@ -51,6 +51,9 @@ namespace BobAndFriends
             }
         }
 
+        /// <summary>
+        /// Return whether the connection is open or not.
+        /// </summary>
         public bool isConnected
         {
             get { return _conn.State == ConnectionState.Open; }

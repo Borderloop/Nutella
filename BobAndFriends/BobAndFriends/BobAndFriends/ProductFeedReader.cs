@@ -81,11 +81,11 @@ namespace BobAndFriends
                         //Push all the products to the queue so BOB can process them.
                         foreach(Product p in products)
                         {
-                            while(ProductQueue.queue.Count > Statics.maxQueueSize)
-                            {
-                                Console.WriteLine("ProductFeedReader sleeping...");
-                                Thread.Sleep(10000);
-                            }
+                            //while(ProductQueue.queue.Count > Statics.maxQueueSize)
+                            //{
+                            //    Console.WriteLine("ProductFeedReader sleeping...");
+                            //    Thread.Sleep(10000);
+                            //}
                             p.CleanupFields();
                             ProductQueue.Enqueue(p);
                         }
