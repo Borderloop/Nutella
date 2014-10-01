@@ -70,6 +70,15 @@ namespace BobAndFriends
                 Record.SKU = "";
             }
             sw.Restart();
+
+            //Check if product already exists in database by affiliate and unique affiliate number.
+            if((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
+            {
+                //There is a match with a unique article, meaning the record is one. Just update it where necessary.
+                CompareProductData(Record);
+                return;
+            }
+
             //Get country id
             _countryID = GetCountryId(Record.Webshop);
             Console.WriteLine("Finished getting country id in: {0}", sw.Elapsed);
@@ -133,6 +142,11 @@ namespace BobAndFriends
             {
                 Console.WriteLine("Webshop not found in database: " + Record.Webshop);
             }
+        }
+
+        private int GetAIDFromUAC(Product record)
+        {
+            return Database.Instance.GetAIDFromUAC(record);
         }
         
 

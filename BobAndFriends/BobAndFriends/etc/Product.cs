@@ -70,8 +70,9 @@ namespace BobAndFriends
         {
             foreach (var prop in this.GetType().GetProperties())
             {
+                //We can safely assume all fields are strings, but for the future we throw an exception if a field isn't a string or null.
                 object type = prop.GetValue(this);
-
+                if (!(type is string) && type != null) throw new NotImplementedException();
                 //Make sure the fields are DEFINITELY not null
                 if (prop.GetValue(this) == null)
                     prop.SetValue(this, "");

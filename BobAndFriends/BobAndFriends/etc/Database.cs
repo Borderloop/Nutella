@@ -190,6 +190,19 @@ namespace BobAndFriends
             return _resultTable.Rows.Count > 0;
         }
 
+        public int GetAIDFromUAC(Product record)
+        {
+            DataTable resultTable = new DataTable();
+
+            string query = "SELECT article_id FROM product WHERE affiliate_name=" + record.Affiliate + " AND affiliate_unique_id=" + record.AfiiliateProdID;
+
+            _cmd = new MySqlCommand(query, _conn);
+
+            object obj = _cmd.ExecuteScalar();
+            int articleId;
+            return (articleId = ((obj != null || obj != DBNull.Value) ? articleId = Convert.ToInt32(obj) : -1));
+        }
+
 
         /// <summary>
         /// Gets table data for a given table and article id.
