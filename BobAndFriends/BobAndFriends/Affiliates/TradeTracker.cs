@@ -52,11 +52,10 @@ namespace BobAndFriends.Affiliates
                         break;
                     }
                 }
-                websitePresent = true;
                 // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
                 if (websitePresent == false)
                 {
-                    Statics.Logger.WriteLine("Webshop not found in database: " + Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/'));
+                    Statics.Logger.WriteLine("Webshop not found in database: " + _fileUrl);
                 }
                 else
                 {
@@ -182,11 +181,12 @@ namespace BobAndFriends.Affiliates
                                         break;
                                 }
                             }
+
                             if (_reader.Name.Equals("product") && _reader.NodeType == XmlNodeType.EndElement)
                             {
                                 p.Affiliate = "TradeTracker";
                                 p.FileName = file;
-                                p.Webshop = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                                p.Webshop = _fileUrl;
                                 products.Add(p);
                             }
                         }

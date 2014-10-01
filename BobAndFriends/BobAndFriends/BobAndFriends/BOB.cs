@@ -56,6 +56,7 @@ namespace BobAndFriends
             }
             */
             Console.WriteLine("Busy with: " + Record.Title);
+
             if (Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase) && Record.Brand != "")
             {
                 //Split the title with the Brand, leaving at least two strings
@@ -72,12 +73,12 @@ namespace BobAndFriends
             sw.Restart();
 
             //Check if product already exists in database by affiliate and unique affiliate number.
-            if((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
+            /*if ((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
             {
                 //There is a match with a unique article, meaning the record is one. Just update it where necessary.
                 CompareProductData(Record);
                 return;
-            }
+            }*/
             Console.WriteLine("Finished unsuccesful id in: {0}", sw.Elapsed);
             sw.Restart();
 
@@ -97,6 +98,7 @@ namespace BobAndFriends
             }
             Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
             sw.Restart();
+
             //If the first check does not go well, check for the ean.
             if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
@@ -114,6 +116,7 @@ namespace BobAndFriends
             }
             Console.WriteLine("Finished unsuccesfull title check in: {0}", sw.Elapsed);
             sw.Restart();*/
+
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
             if (CheckBrand(Record))
@@ -123,35 +126,34 @@ namespace BobAndFriends
             }
             Console.WriteLine("Finished brand check: {0}", sw.Elapsed);
             sw.Restart();
+
             //Run a brand check. If it exists, we can go on to match the product by relevance.
             //If it doesn't. however, we have to create a new product.
-            if (CheckBrandInDatabase(Record))
+            /*if (CheckBrandInDatabase(Record))
             {
                 Console.WriteLine("Brand is in database");
                 //MatchByRelevance(Record);
                 SaveNewArticle(Record);
                 return;
-            }
+            }*/
             Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
-            if (Record.Title != "" && Record.EAN != null)
+            if (Record.Title != "" && Record.EAN != "")
             {
-                //The product has a brand name which doesnt exist in the and has a title, so save it to the database
+                //The product has a brand name which doesn't exist in the database and has a title, so save it to the database
                 SaveNewArticle(Record);
                 return;
             }
-
-            else // Log the website that was not present
+            else//           !!!!!!!!!!!!   TEMPORARY, REMOVE WHEN RELEVANCE MATCHER IS TURNED BACK ON    !!!!!!!!!!!
             {
-                Console.WriteLine("Webshop not found in database: " + Record.Webshop);
+                sendToResidue(Record);
             }
-        }
+        }       
 
         private int GetAIDFromUAC(Product record)
         {
             return Database.Instance.GetAIDFromUAC(record);
         }
         
-
         /// <summary>
         /// Also initializes dummy data. For test purposes only
         /// </summary>
@@ -344,7 +346,7 @@ namespace BobAndFriends
                 Database.Instance.DeleteFromResidue(Record);
             }
 
-            Statics.Logger.WriteLine("Finished saving match in: {0}", sw.Elapsed);
+            Console.WriteLine("Finished saving match in: {0}", sw.Elapsed);
             sw.Stop();
         }
 
