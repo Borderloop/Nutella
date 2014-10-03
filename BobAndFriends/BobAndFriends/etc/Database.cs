@@ -330,10 +330,7 @@ namespace BobAndFriends
             string query = "SELECT id FROM title WHERE article_id = " + aId + " AND country_id = " + countryId;
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
-            MySqlDataReader rdr = _cmd.ExecuteReader();
-            rdr.Read();
-            int aid = rdr.GetInt32(0);
-            rdr.Close();
+            int aid = Convert.ToInt32(_cmd.ExecuteScalar());
 
             return aid;
         }
@@ -847,10 +844,7 @@ namespace BobAndFriends
             string query = "SELECT country_id FROM webshop WHERE url = '" + webshop + "'";
 
             MySqlCommand _cmd = new MySqlCommand(query, _conn);
-            MySqlDataReader rdr = _cmd.ExecuteReader();
-            rdr.Read();
-            int countryId = rdr.GetInt32(0);
-            rdr.Close();
+            int countryId = Convert.ToInt32(_cmd.ExecuteScalar());
 
             return countryId;
         }

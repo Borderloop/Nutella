@@ -94,43 +94,83 @@ namespace BobAndFriends
                         break;
 
                     case "Title":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxTitleSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxTitleSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "Brand":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxBrandSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxBrandSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "SKU":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxSkuSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxSkuSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "Image_Loc":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxImageUrlSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxImageUrlSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "Category":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxCategorySize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxCategorySize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "DeliveryTime":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxShipTimeSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxShipTimeSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "Webshop":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxWebShopUrlSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxWebShopUrlSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "Url":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxDirectLinkSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxDirectLinkSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "Affiliate":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateNameSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateNameSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
 
                     case "AffiliateProdID":
-                        if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateProductIdSize) return false;
+                        if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateProductIdSize)
+                        {
+                            prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
+                            return false;
+                        }
                         break;
                 }
             }
