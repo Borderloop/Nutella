@@ -30,5 +30,25 @@ namespace BobAndFriends
         public static Dictionary<string,string> settings;
 
         public static int maxQueueSize;
+
+        public static int maxSkuSize;
+
+        public static int maxBrandSize;
+
+        public static int maxTitleSize;
+
+        public static int maxImageUrlSize;
+
+        public static int maxCategorySize;
+
+        public static int maxShipTimeSize;
+
+        public static int maxWebShopUrlSize;
+
+        public static int maxDirectLinkSize;
+
+        public static int maxAffiliateNameSize;
+
+        public static int maxAffiliateProductIdSize;
     }
 }

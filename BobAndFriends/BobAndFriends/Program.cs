@@ -121,6 +121,16 @@ namespace BobAndFriends
             Statics.TickCount = 0;
             Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);
             Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
+            Statics.maxSkuSize = Int32.Parse(Statics.settings["maxskusize"]);
+            Statics.maxBrandSize = Int32.Parse(Statics.settings["maxbrandsize"]);
+            Statics.maxTitleSize = Int32.Parse(Statics.settings["maxtitlesize"]);
+            Statics.maxImageUrlSize = Int32.Parse(Statics.settings["maximageurlsize"]);
+            Statics.maxCategorySize = Int32.Parse(Statics.settings["maxcategorysize"]);
+            Statics.maxShipTimeSize = Int32.Parse(Statics.settings["maxshiptimesize"]);
+            Statics.maxWebShopUrlSize = Int32.Parse(Statics.settings["maxwebshopurlsize"]);
+            Statics.maxDirectLinkSize = Int32.Parse(Statics.settings["maxdirectlinksize"]);
+            Statics.maxAffiliateNameSize = Int32.Parse(Statics.settings["maxaffiliatenamesize"]);
+            Statics.maxAffiliateProductIdSize = Int32.Parse(Statics.settings["maxaffiliateproductidsize"]);
         }
 
 

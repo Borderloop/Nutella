@@ -86,7 +86,12 @@ namespace BobAndFriends
                                 Console.WriteLine("ProductFeedReader sleeping...");
                                 Thread.Sleep(10000);
                             }
-                            p.CleanupFields();
+                            if (!p.CleanupFields())
+                            {
+                                Statics.Logger.WriteLine("Product has invalid properties.");
+                                Statics.Logger.WriteLine(p.ToString());
+                                continue;
+                            }
 
                             ProductQueue.Enqueue(p);
                         }

@@ -66,7 +66,7 @@ namespace BobAndFriends
         public string FileName { get; set; }
         public string Webshop { get; set; }
 
-        public void CleanupFields()
+        public bool CleanupFields()
         {
             foreach (var prop in this.GetType().GetProperties())
             {
@@ -77,23 +77,74 @@ namespace BobAndFriends
                 if (prop.GetValue(this) == null)
                     prop.SetValue(this, "");
 
-                //Configure the EAN to match the regular expression
-                if (prop.Name == "EAN")
-                    prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? prop.GetValue(this) : "");
-
-                //Configure the price or deliveryCost to not contain a ',' but a '.' instead, and then match it to the regular expression
-                if (prop.Name == "Price")
+                switch(prop.Name)
                 {
-                    prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
-                    prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
-                }
+                    case "EAN":
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? prop.GetValue(this) : "");
+                        break;
 
-                if (prop.Name == "DeliveryCost")
-                {
-                    prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
-                    prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : null);
+                    case "Price":
+                        prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
+                        break;
+
+                    case "DeliveryCost":
+                        prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : null);
+                        break;
+
+                    case "Title":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxTitleSize) return false;
+                        break;
+
+                    case "Brand":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxBrandSize) return false;
+                        break;
+
+                    case "SKU":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxSkuSize) return false;
+                        break;
+
+                    case "Image_Loc":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxImageUrlSize) return false;
+                        break;
+
+                    case "Category":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxCategorySize) return false;
+                        break;
+
+                    case "DeliveryTime":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxShipTimeSize) return false;
+                        break;
+
+                    case "Webshop":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxWebShopUrlSize) return false;
+                        break;
+
+                    case "Url":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxDirectLinkSize) return false;
+                        break;
+
+                    case "Affiliate":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateNameSize) return false;
+                        break;
+
+                    case "AffiliateProdID":
+                        if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateProductIdSize) return false;
+                        break;
                 }
-            }          
+            }
+            return true;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var prop in this.GetType().GetProperties())
+            {
+                sb.AppendLine(prop.Name + ": " + prop.GetValue(this));
+            }
+            return sb.ToString();
         }
     }
 }
