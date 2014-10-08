@@ -92,6 +92,29 @@ namespace BobAndFriends
             //can be added to the product. It is done then.
             if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
+                int catid;
+                if ((catid = GetCategoryId(_matchedArticleID.ToString())) != -1)
+                {
+                    int catSynId;
+                    if ((catSynId = checkCategorySynonym(Record.Category, Record.Webshop)) == -1)
+                    {
+                        Database.Instance.InsertIntoCatSynonyms(catid, Record.Category, Record.Webshop);
+                    }
+                }
+                else
+                {
+                    // After EAN matched, check if given category exists in database. If exist insert category id and article id in cat-article table.
+                    if ((catid = checkCategorySynonym(Record.Category, Record.Webshop)) != -1)
+                    {
+                        Database.Instance.InsertNewCatArtile(catid, _matchedArticleID);
+                        Console.Write("Article toegevoegd onder category: " + catid);
+                    }
+                    else
+                    {
+                        sendToResidue(Record);
+                        return;
+                    }
+                }
                 //The product has an SKU and it's a match.
                 SaveMatch(Record);
                 return;
@@ -102,6 +125,30 @@ namespace BobAndFriends
             //If the first check does not go well, check for the ean.
             if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
+                int catid;
+                if ((catid = GetCategoryId(_matchedArticleID.ToString())) != -1)
+                {
+                    int catSynId;
+                    if ((catSynId = checkCategorySynonym(Record.Category, Record.Webshop)) == -1)
+                    {
+                        Database.Instance.InsertIntoCatSynonyms(catid, Record.Category, Record.Webshop);
+                    }
+                }
+                else
+                {
+                    // After EAN matched, check if given category exists in database. If exist insert category id and article id in cat-article table.
+                    if ((catid = checkCategorySynonym(Record.Category, Record.Webshop)) != -1)
+                    {
+                        Database.Instance.InsertNewCatArtile(catid, _matchedArticleID);
+                        Console.Write("Article toegevoegd onder category: " + catid);
+                    }
+                    else
+                    {
+                        sendToResidue(Record);
+                        return;
+                    }
+                }
+                //The product has an EAN and it's a match.
                 SaveMatch(Record);
                 return;
             }
@@ -495,6 +542,17 @@ namespace BobAndFriends
             //Return the article number, or -1 otherwise.
             return Database.Instance.GetArticleNumber("title", "title", title);
         }
+
+        private int GetCategoryId(string category)
+        {
+            //Return the article number, or -1 otherwise.
+            return Database.Instance.GetCategoryNumber("cat_article", "article_id", category);
+        }
+
+        private int checkCategorySynonym(string p, string webshop)
+        {
+            return Database.Instance.CheckCategorySynonym(p, webshop);
+        } 
 
         /// <summary>
         /// This method will send a product to the residue

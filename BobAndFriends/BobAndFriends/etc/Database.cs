@@ -336,6 +336,79 @@ namespace BobAndFriends
         }
 
         /// <summary>
+        /// Get the category id of the searched category if exist
+        /// </summary>
+        /// <param name="table">The table to search category</param>
+        /// <param name="column">The column that is searched for a value.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <returns></returns>
+        public int GetCategoryNumber(string table, string column, string value)
+        {
+            string query = "SELECT category_id FROM  " + table + " WHERE " + column + " = @VALUE LIMIT 1";
+
+            //Create the connection.
+            _cmd = new MySqlCommand(query, _conn);
+            MySqlParameter val = _cmd.Parameters.Add("@VALUE", MySqlDbType.VarChar, 20);
+            val.Value = value;
+
+            DataTable _resultCategory = new DataTable();
+            _resultCategory.Load(_cmd.ExecuteReader());
+
+            if (_resultCategory.Rows.Count > 0)
+            {
+                return Convert.ToInt32(_resultCategory.Rows[0]["category_id"]);
+            }
+
+            else
+            {
+                return -1;
+            }
+        }
+
+        public int CheckCategorySynonym(string p, string webshop)
+        {
+            DataTable dt = Read("SELECT category_id FROM category_synonym WHERE description = '" + p + "' AND web_url = '" + webshop + "'");
+
+            if (dt.Rows.Count > 0)
+            {
+                return (int)dt.Rows[0]["category_id"];
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        public void InsertIntoCatSynonyms(int catid, string description, string web_url)
+        {
+            string query = "INSERT INTO category_synonym VALUES (@CATID, @CATDESCR, @WEB_URL)";
+
+            _cmd = new MySqlCommand(query, _conn);
+
+            _cmd.Parameters.AddWithValue("@CATID", catid);
+            _cmd.Parameters.AddWithValue("@CATDESCR", description);
+            _cmd.Parameters.AddWithValue("@WEB_URL", web_url);
+
+            _cmd.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// This method insert the category id and article id thats matched and insert this to the cat-article table.
+        /// </summary>
+        /// <param name="category_id">The category id from the article</param>
+        /// <param name="article_id">The article id of the inserted product</param>
+        public void InsertNewCatArtile(int category_id, int article_id)
+        {
+            string query = "INSERT INTO cat_article (category_id, article_id) VALUES (@CATEGORYID, @ARTICLEID)";
+
+            MySqlCommand _cmd = new MySqlCommand(query, _conn);
+            _cmd.Parameters.AddWithValue("@CATEGORYID", category_id);
+            _cmd.Parameters.AddWithValue("@ARTICLEID", article_id);
+
+            _cmd.ExecuteNonQuery();
+        }
+
+        /// <summary>
         /// Inserts a new title in the title_synonym table if a new title is found.
         /// </summary>
         /// <param name="titleId">The title id which the synonym belongs to</param>

@@ -36,7 +36,7 @@ namespace BobAndFriends
             Initialize();
 
             Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
-             
+
             //DatabaseJanitor crapper = new DatabaseJanitor();
             //crapper.Cleanup();    
 
