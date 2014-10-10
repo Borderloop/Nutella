@@ -376,13 +376,13 @@ namespace BobAndFriends
         /// <returns></returns>
         public int CheckCategorySynonym(string table, string description, string web_url, string p, string webshop)
         {
-            string query = "SELECT category_id FROM " + table + " WHERE " + description + " =@P AND " + web_url + "=@WEBSHOP";
+            /*
+            string query = "SELECT category_id FROM category_synonym WHERE description=@P AND web_url=@WEBSHOP";
 
             //Create the connection.
             _cmd = new MySqlCommand(query, _conn);
             MySqlParameter val = _cmd.Parameters.Add("@P", MySqlDbType.VarChar, 20);
             val.Value = p;
-
 
             DataTable _resultTable = new DataTable();
             _resultTable.Load(_cmd.ExecuteReader());
@@ -391,6 +391,17 @@ namespace BobAndFriends
             if (_resultTable.Rows.Count > 0)
             {
                 return Convert.ToInt32(_resultTable.Rows[0]["category_id"]);
+            }
+            else
+            {
+                return -1;
+            }
+            */
+            DataTable dt = Read("SELECT category_id FROM category_synonym WHERE description = '" + p + "' AND web_url = '" + webshop + "'");
+
+            if (dt.Rows.Count > 0)
+            {
+                return (int)dt.Rows[0]["category_id"];
             }
             else
             {
