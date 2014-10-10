@@ -93,9 +93,11 @@ namespace BobAndFriends
             if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
                 int catid;
+                // After SKU match, check if given category exist in database.
                 if ((catid = GetCategoryId(_matchedArticleID.ToString())) != -1)
                 {
                     int catSynId;
+                    // if category id not exist add category to category_synonym.
                     if ((catSynId = checkCategorySynonym(Record.Category, Record.Webshop)) == -1)
                     {
                         Database.Instance.InsertIntoCatSynonyms(catid, Record.Category, Record.Webshop);
@@ -103,7 +105,7 @@ namespace BobAndFriends
                 }
                 else
                 {
-                    // After EAN matched, check if given category exists in database. If exist insert category id and article id in cat-article table.
+                    // After SKU match, check if given category exists in database. If exist insert category id and article id in cat-article table.
                     if ((catid = checkCategorySynonym(Record.Category, Record.Webshop)) != -1)
                     {
                         Database.Instance.InsertNewCatArtile(catid, _matchedArticleID);
@@ -126,9 +128,11 @@ namespace BobAndFriends
             if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
                 int catid;
+                // After EAN match, check if given category exist in database.
                 if ((catid = GetCategoryId(_matchedArticleID.ToString())) != -1)
                 {
                     int catSynId;
+                    // if category id not exist add category to category_synonym.
                     if ((catSynId = checkCategorySynonym(Record.Category, Record.Webshop)) == -1)
                     {
                         Database.Instance.InsertIntoCatSynonyms(catid, Record.Category, Record.Webshop);
@@ -543,15 +547,26 @@ namespace BobAndFriends
             return Database.Instance.GetArticleNumber("title", "title", title);
         }
 
+        /// <summary>
+        /// This method return the category id if this exist in cat_article. 
+        /// </summary>
+        /// <param name="category">Category</param>
+        /// <returns></returns>
         private int GetCategoryId(string category)
         {
             //Return the article number, or -1 otherwise.
             return Database.Instance.GetCategoryNumber("cat_article", "article_id", category);
         }
 
+        /// <summary>
+        /// This method checks if category exist in category_synonym or cat-article.
+        /// </summary>
+        /// <param name="p">Category</param>
+        /// <param name="webshop">Webshop</param>
+        /// <returns></returns>
         private int checkCategorySynonym(string p, string webshop)
         {
-            return Database.Instance.CheckCategorySynonym(p, webshop);
+            return Database.Instance.CheckCategorySynonym("category_synonym", "description", "web_url", p, webshop);
         } 
 
         /// <summary>

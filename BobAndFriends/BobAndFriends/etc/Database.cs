@@ -365,13 +365,32 @@ namespace BobAndFriends
             }
         }
 
-        public int CheckCategorySynonym(string p, string webshop)
+        /// <summary>
+        /// This method checks if given category exist in database
+        /// </summary>
+        /// <param name="table">Table</param>
+        /// <param name="description">Description</param>
+        /// <param name="web_url">Webshop</param>
+        /// <param name="p">Value description</param>
+        /// <param name="webshop">Value webshop</param>
+        /// <returns></returns>
+        public int CheckCategorySynonym(string table, string description, string web_url, string p, string webshop)
         {
-            DataTable dt = Read("SELECT category_id FROM category_synonym WHERE description = '" + p + "' AND web_url = '" + webshop + "'");
+            string query = "SELECT category_id FROM " + table + " WHERE " + description + " =@P AND " + web_url + "=@WEBSHOP";
 
-            if (dt.Rows.Count > 0)
+            //Create the connection.
+            _cmd = new MySqlCommand(query, _conn);
+            MySqlParameter val = _cmd.Parameters.Add("@P", MySqlDbType.VarChar, 20);
+            val.Value = p;
+
+
+            DataTable _resultTable = new DataTable();
+            _resultTable.Load(_cmd.ExecuteReader());
+
+            //Return the article number if found, -1 otherwise.
+            if (_resultTable.Rows.Count > 0)
             {
-                return (int)dt.Rows[0]["category_id"];
+                return Convert.ToInt32(_resultTable.Rows[0]["category_id"]);
             }
             else
             {
@@ -379,6 +398,12 @@ namespace BobAndFriends
             }
         }
 
+        /// <summary>
+        /// This method add category to category_synonym
+        /// </summary>
+        /// <param name="catid">Category_id</param>
+        /// <param name="description">Description</param>
+        /// <param name="web_url">Webshop</param>
         public void InsertIntoCatSynonyms(int catid, string description, string web_url)
         {
             string query = "INSERT INTO category_synonym VALUES (@CATID, @CATDESCR, @WEB_URL)";
