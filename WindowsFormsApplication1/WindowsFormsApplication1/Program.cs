@@ -18,7 +18,7 @@ namespace WindowsFormsApplication1
             Database.Instance.Connect("127.0.0.1", "borderloop", "root", "wachtwoord");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new CategoryMatcher());
         }
     }
 }

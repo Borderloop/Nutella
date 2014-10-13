@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{915D82B0-59BD-441F-BFF4-5D5898B6391D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BorderSource</RootNamespace>
+    <AssemblyName>BorderSource</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\Connector NET 6.8.3\Assemblies\v4.5\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\Connector NET 6.8.3\Assemblies\v4.5\MySql.Data.Entity.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BetsyContext\affiliate.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\article.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\BetsyModel.Context.cs">
+      <DependentUpon>BetsyModel.Context.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="BetsyContext\BetsyModel.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="BetsyContext\BetsyModel.Designer.cs">
+      <DependentUpon>BetsyModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="BetsyContext\category.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\category_synonym.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\country.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\ean.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\language.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\mark.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\payment_method.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\product.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\residue.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\sender.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\sku.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\title.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\title_synonym.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\users.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\vbobdata.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\vbob_suggested.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\webshop.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Database.cs" />
+    <Compile Include="Common\DualKeyDictionary.cs" />
+    <Compile Include="Common\INIFile.cs" />
+    <Compile Include="Common\Logger.cs" />
+    <Compile Include="Common\Product.cs" />
+    <Compile Include="Common\Statics.cs" />
+    <Compile Include="Common\TypeSwitch.cs" />
+    <Compile Include="Common\Util.cs" />
+    <Compile Include="Common\XmlValueReader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="BetsyContext\BetsyModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>BetsyModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="BetsyContext\BetsyModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>BetsyModel.edmx</DependentUpon>
+      <LastGenOutput>BetsyModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="BetsyContext\BetsyModel.edmx.diagram">
+      <DependentUpon>BetsyModel.edmx</DependentUpon>
+    </None>
+    <None Include="BetsyContext\BetsyModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>BetsyModel.edmx</DependentUpon>
+      <LastGenOutput>BetsyModel.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

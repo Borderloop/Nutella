@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Data;
 using System.Reflection;
+using BorderSource.Common;
 
 namespace BobAndFriends
 {
@@ -73,7 +74,7 @@ namespace BobAndFriends
                     AffiliateBase af = (AffiliateBase)type.GetConstructor(Type.EmptyTypes).Invoke(null);
 
                     //Invoke ReadFromDir() and read all products
-                    foreach (List<Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
+                    foreach (List<BorderSource.Common.Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
                     {
                         //Save some data to the logger for statistics.
                         //Statics.Logger.AddStats(products);

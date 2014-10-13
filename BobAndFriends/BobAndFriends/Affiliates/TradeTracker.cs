@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml;
 using System.Threading;
 using System.Text.RegularExpressions;
+using BorderSource.Common;
 
 namespace BobAndFriends.Affiliates
 {

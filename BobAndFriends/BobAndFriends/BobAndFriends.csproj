@@ -88,148 +88,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="affiliate.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Affiliates\AffiliateBase.cs" />
     <Compile Include="Affiliates\Affilinet.cs" />
     <Compile Include="Affiliates\Belboon.cs" />
     <Compile Include="Affiliates\CommissionJunction.cs" />
-    <Compile Include="article.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="BetsyModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BetsyModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="BetsyModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="BetsyModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BetsyModel.edmx</DependentUpon>
-    </Compile>
     <Compile Include="BobAndFriends\BOB.cs" />
     <Compile Include="Affiliates\Daisycon.cs" />
     <Compile Include="BobAndFriends\DatabaseJanitor.cs" />
-    <Compile Include="category.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="category_synonym.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="country.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ean.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="etc\Database.cs" />
-    <Compile Include="etc\DualKeyDictionary.cs" />
-    <Compile Include="etc\INIFile.cs" />
-    <Compile Include="etc\Logger.cs" />
-    <Compile Include="etc\Product.cs" />
     <Compile Include="BobAndFriends\ProductFeedReader.cs" />
     <Compile Include="BobAndFriends\ProductQueue.cs" />
-    <Compile Include="etc\TypeSwitch.cs" />
-    <Compile Include="etc\XmlValueReader.cs" />
-    <Compile Include="language.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="mark.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="payment_method.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="product.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="etc\Statics.cs" />
     <Compile Include="Affiliates\TradeDoubler.cs" />
     <Compile Include="Affiliates\TradeTracker.cs" />
-    <Compile Include="etc\Util.cs" />
     <Compile Include="Affiliates\Webgains.cs" />
     <Compile Include="Affiliates\Zanox.cs" />
-    <Compile Include="residue.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="sender.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="sku.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="title.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="title_synonym.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="users.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="vbobdata.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="vbob_suggested.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="VisualBob\VisualBob.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VisualBob\VisualBob.Designer.cs">
-      <DependentUpon>VisualBob.cs</DependentUpon>
-    </Compile>
-    <Compile Include="webshop.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VisualBob\VisualBob.resx">
-      <DependentUpon>VisualBob.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EntityDeploy Include="BetsyModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>BetsyModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="BetsyModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BetsyModel.Context.cs</LastGenOutput>
-      <DependentUpon>BetsyModel.edmx</DependentUpon>
-    </None>
-    <None Include="BetsyModel.edmx.diagram">
-      <DependentUpon>BetsyModel.edmx</DependentUpon>
-    </None>
-    <None Include="BetsyModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BetsyModel.cs</LastGenOutput>
-      <DependentUpon>BetsyModel.edmx</DependentUpon>
-    </None>
     <None Include="BobAndFriends_TemporaryKey.pfx" />
-    <None Include="packages.config" />
-    <None Include="Resources\vBOBLogoNew.png" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -250,6 +129,15 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="VisualBob\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BorderSource\BorderSource.csproj">
+      <Project>{915d82b0-59bd-441f-bff4-5d5898b6391d}</Project>
+      <Name>BorderSource</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
