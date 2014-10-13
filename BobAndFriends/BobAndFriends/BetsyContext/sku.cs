@@ -7,17 +7,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class users
+    public partial class sku
     {
-        public int id { get; set; }
-        public string username { get; set; }
-        public string password { get; set; }
-        public string salt { get; set; }
-        public string email { get; set; }
+        public string sku1 { get; set; }
+        public int article_id { get; set; }
+    
+        public virtual article article { get; set; }
     }
 }

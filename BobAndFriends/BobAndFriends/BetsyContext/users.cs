@@ -7,17 +7,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class category_synonym
+    public partial class users
     {
-        public int category_id { get; set; }
-        public string description { get; set; }
-        public string web_url { get; set; }
-    
-        public virtual category category { get; set; }
+        public int id { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string salt { get; set; }
+        public string email { get; set; }
     }
 }

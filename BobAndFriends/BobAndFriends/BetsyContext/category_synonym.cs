@@ -7,16 +7,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class ean
+    public partial class category_synonym
     {
-        public string ean1 { get; set; }
-        public int article_id { get; set; }
+        public int category_id { get; set; }
+        public string description { get; set; }
     
-        public virtual article article { get; set; }
+        public virtual category category { get; set; }
     }
 }

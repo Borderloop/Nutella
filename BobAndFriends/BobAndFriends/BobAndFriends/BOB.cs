@@ -86,6 +86,7 @@ namespace BobAndFriends
             //can be added to the product. It is done then.
             if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
+                /*
                 int catid;
                 // After SKU match, check if given category exist in database.
                 if ((catid = GetCategoryId(_matchedArticleID)) != -1)
@@ -110,6 +111,7 @@ namespace BobAndFriends
                         return;
                     }
                 }
+                 */
                 //The product has an SKU and it's a match.
                 SaveMatch(Record);
                 return;
@@ -120,6 +122,7 @@ namespace BobAndFriends
             //If the first check does not go well, check for the ean.
             if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
+                /*
                 int catid;
                 // After EAN match, check if given category exist in database.
                 if ((catid = GetCategoryId(_matchedArticleID)) != -1)
@@ -144,6 +147,7 @@ namespace BobAndFriends
                         return;
                     }
                 }
+                */
                 //The product has an EAN and it's a match.
                 SaveMatch(Record);
                 return;

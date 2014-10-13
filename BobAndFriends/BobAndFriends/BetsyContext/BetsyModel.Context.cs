@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Data.Entity;
@@ -19,10 +19,7 @@ namespace BobAndFriends
             : base("name=BetsyModel")
         {
         }
-
-        public BetsyModel(string connStr) : base(connStr)
-        {
-        }
+    
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             throw new UnintentionalCodeFirstException();

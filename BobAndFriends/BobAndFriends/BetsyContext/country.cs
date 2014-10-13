@@ -7,21 +7,28 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class sender
+    public partial class country
     {
-        public sender()
+        public country()
         {
+            this.title = new HashSet<title>();
             this.webshop = new HashSet<webshop>();
+            this.webshop1 = new HashSet<webshop>();
+            this.vbobdata = new HashSet<vbobdata>();
         }
     
         public short id { get; set; }
-        public string sender1 { get; set; }
+        public string extension { get; set; }
+        public string name { get; set; }
     
+        public virtual ICollection<title> title { get; set; }
         public virtual ICollection<webshop> webshop { get; set; }
+        public virtual ICollection<webshop> webshop1 { get; set; }
+        public virtual ICollection<vbobdata> vbobdata { get; set; }
     }
 }

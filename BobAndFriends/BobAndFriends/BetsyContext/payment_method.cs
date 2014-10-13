@@ -7,18 +7,21 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class vbob_suggested
+    public partial class payment_method
     {
-        public int id { get; set; }
-        public int article_id { get; set; }
-        public int vbob_id { get; set; }
+        public payment_method()
+        {
+            this.webshop = new HashSet<webshop>();
+        }
     
-        public virtual article article { get; set; }
-        public virtual vbobdata vbobdata { get; set; }
+        public short id { get; set; }
+        public string method { get; set; }
+    
+        public virtual ICollection<webshop> webshop { get; set; }
     }
 }

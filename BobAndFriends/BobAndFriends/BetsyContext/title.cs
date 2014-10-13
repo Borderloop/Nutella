@@ -7,25 +7,25 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class category
+    public partial class title
     {
-        public category()
+        public title()
         {
-            this.category_synonym = new HashSet<category_synonym>();
-            this.article = new HashSet<article>();
+            this.title_synonym = new HashSet<title_synonym>();
         }
     
         public int id { get; set; }
-        public string description { get; set; }
-        public Nullable<sbyte> menulevel { get; set; }
-        public Nullable<int> called_by { get; set; }
+        public string title1 { get; set; }
+        public short country_id { get; set; }
+        public int article_id { get; set; }
     
-        public virtual ICollection<category_synonym> category_synonym { get; set; }
-        public virtual ICollection<article> article { get; set; }
+        public virtual article article { get; set; }
+        public virtual country country { get; set; }
+        public virtual ICollection<title_synonym> title_synonym { get; set; }
     }
 }

@@ -7,15 +7,24 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class sku
+    public partial class product
     {
-        public string sku1 { get; set; }
+        public int id { get; set; }
         public int article_id { get; set; }
+        public string ship_time { get; set; }
+        public Nullable<decimal> ship_cost { get; set; }
+        public decimal price { get; set; }
+        public string webshop_url { get; set; }
+        public string direct_link { get; set; }
+        public System.DateTime last_modified { get; set; }
+        public System.DateTime valid_until { get; set; }
+        public string affiliate_name { get; set; }
+        public string affiliate_unique_id { get; set; }
     
         public virtual article article { get; set; }
     }

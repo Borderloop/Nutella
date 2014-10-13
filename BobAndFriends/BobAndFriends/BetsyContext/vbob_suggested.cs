@@ -7,25 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class title
+    public partial class vbob_suggested
     {
-        public title()
-        {
-            this.title_synonym = new HashSet<title_synonym>();
-        }
-    
         public int id { get; set; }
-        public string title1 { get; set; }
-        public short country_id { get; set; }
         public int article_id { get; set; }
+        public int vbob_id { get; set; }
     
         public virtual article article { get; set; }
-        public virtual country country { get; set; }
-        public virtual ICollection<title_synonym> title_synonym { get; set; }
+        public virtual vbobdata vbobdata { get; set; }
     }
 }

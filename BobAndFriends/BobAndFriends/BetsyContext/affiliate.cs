@@ -7,20 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class residue
+    public partial class affiliate
     {
-        public string title { get; set; }
-        public string image { get; set; }
-        public string description { get; set; }
-        public string category { get; set; }
-        public string ean { get; set; }
-        public string sku { get; set; }
-        public string brand { get; set; }
-        public int id { get; set; }
+        public string affiliate1 { get; set; }
+        public short approved { get; set; }
+        public int webshop_id { get; set; }
+        public string extra { get; set; }
+    
+        public virtual webshop webshop { get; set; }
     }
 }

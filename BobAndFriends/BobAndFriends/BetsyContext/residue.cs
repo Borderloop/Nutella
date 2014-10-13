@@ -7,30 +7,20 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class vbobdata
+    public partial class residue
     {
-        public vbobdata()
-        {
-            this.vbob_suggested = new HashSet<vbob_suggested>();
-        }
-    
-        public int id { get; set; }
         public string title { get; set; }
+        public string image { get; set; }
+        public string description { get; set; }
+        public string category { get; set; }
         public string ean { get; set; }
         public string sku { get; set; }
         public string brand { get; set; }
-        public string category { get; set; }
-        public string description { get; set; }
-        public Nullable<bool> rerun { get; set; }
-        public string image_loc { get; set; }
-        public Nullable<short> country_id { get; set; }
-    
-        public virtual ICollection<vbob_suggested> vbob_suggested { get; set; }
-        public virtual country country { get; set; }
+        public int id { get; set; }
     }
 }

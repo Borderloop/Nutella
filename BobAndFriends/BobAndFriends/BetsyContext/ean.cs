@@ -7,18 +7,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BobAndFriends
+namespace BobAndFriends.BetsyContext
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class affiliate
+    public partial class ean
     {
-        public string affiliate1 { get; set; }
-        public short approved { get; set; }
-        public int webshop_id { get; set; }
-        public string extra { get; set; }
+        public string ean1 { get; set; }
+        public int article_id { get; set; }
     
-        public virtual webshop webshop { get; set; }
+        public virtual article article { get; set; }
     }
 }
