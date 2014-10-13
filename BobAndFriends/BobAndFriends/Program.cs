@@ -133,6 +133,14 @@ namespace BobAndFriends
             //Start it
             pfr.Start();
 
+            Product p = new Product()
+            {
+                EAN = "test",
+                SKU = "test",
+                Title = "test"
+            };
+            ProductQueue.Enqueue(p);
+
             Console.WriteLine("Thread 1 is done.");
             Console.WriteLine("Queue size: " + ProductQueue.queue.Count);
         }

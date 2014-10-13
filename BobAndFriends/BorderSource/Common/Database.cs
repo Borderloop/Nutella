@@ -53,7 +53,7 @@ namespace BorderSource.Common
             EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
             entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
             entityConnStrBuilder.ProviderConnectionString = providerConnStrBuilder.ToString();
-            entityConnStrBuilder.Metadata = "res://*/BetsyModel.csdl|res://*/BetsyModel.ssdl|res://*/BetsyModel.msl";
+            entityConnStrBuilder.Metadata = "res://*/BetsyContext.BetsyModel.csdl|res://*/BetsyContext.BetsyModel.ssdl|res://*/BetsyContext.BetsyModel.msl";
 
             _conStr = entityConnStrBuilder.ConnectionString;
         }
