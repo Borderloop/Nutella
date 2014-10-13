@@ -133,7 +133,7 @@ namespace BobAndFriends.Affiliates
                                                 _reader.Read();
                                                 _reader.Read();
                                                 _reader.Read();
-                                                p.Title += " " + _reader.Value;
+                                                p.Title += Regex.IsMatch(@"^[a-zA-Z\s]+$", _reader.Value) ?  " " + _reader.Value : "";
                                                 break;
 
                                             case "EAN":
