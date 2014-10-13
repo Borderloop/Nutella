@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualBob", "VisualBob\Visu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CategoryMatcher", "CategoryMatcher\CategoryMatcher.csproj", "{B9042CA1-9E5E-49FA-9105-6F91AE419490}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baximus", "Baximus\Baximus.csproj", "{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B9042CA1-9E5E-49FA-9105-6F91AE419490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9042CA1-9E5E-49FA-9105-6F91AE419490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9042CA1-9E5E-49FA-9105-6F91AE419490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

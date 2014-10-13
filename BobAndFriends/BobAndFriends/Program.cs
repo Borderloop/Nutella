@@ -110,12 +110,8 @@ namespace BobAndFriends
                     Console.WriteLine("THREW EXCEPTION {0}: " + e.ToString() + " FROM " + e.StackTrace, errorCount);
                     Statics.Logger.WriteLine("ERROR#{0} " + e.Message, errorCount);
                     errorCount++;
-                    Console.WriteLine("Press enter to clear all pools and continue.");
-                    Console.Read();
-
-                    //Probably the underlying connection. 
-                    //Trying to clear the pools, then move on.
-                    MySql.Data.MySqlClient.MySqlConnection.ClearAllPools();      
+                    Console.WriteLine("Press enter to try to continue continue.");
+                    Console.Read();   
 
                 }            
             }
