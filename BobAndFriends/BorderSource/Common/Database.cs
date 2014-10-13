@@ -123,7 +123,7 @@ namespace BorderSource.Common
         {
             using (var db = new BetsyModel(_conStr))
             {
-                var product = db.product.Where(p => p.affiliate_name == record.Affiliate && p.affiliate_unique_id == record.AffiliateProdID).FirstOrDefault();
+                var product = db.product.Where(p => p.webshop_url == record.Webshop && p.affiliate_unique_id == record.AffiliateProdID).FirstOrDefault();
                 return product == default(product) ? -1 : product.article_id;
             }
         }
@@ -330,7 +330,7 @@ namespace BorderSource.Common
                 decimal castedShipCost;
                 decimal castedPrice;
                 if (!(decimal.TryParse(Record.DeliveryCost, NumberStyles.Any, CultureInfo.InvariantCulture, out castedShipCost))) Console.WriteLine("Cannot cast shipping cost " + Record.DeliveryCost + " to decimal.");
-                if (!(decimal.TryParse(Record.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out castedPrice))) Console.WriteLine("Cannot cast price " + Record.Price + " to decimal."); ;
+                if (!(decimal.TryParse(Record.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out castedPrice))) Console.WriteLine("Cannot cast price " + Record.Price + " to decimal.");
 
                 product product = new product
                 {
@@ -547,62 +547,54 @@ namespace BorderSource.Common
         {
             using (var db = new BetsyModel(_conStr))
             {
-                try
+                db.product.Attach(productData);
+                var entry = db.Entry(productData);
+
+                //Alter updated product
+                foreach (PropertyInfo p in productData.GetType().GetProperties())
                 {
-                    db.product.Attach(productData);
-                    var entry = db.Entry(productData);
+                    //Loop over things like "article_id", "id", etc.
+                    if (!Statics.TwoWayDBProductToBobProductMapping.ContainsKey(p.Name)) continue;
 
-                    //Alter updated product
-                    foreach (PropertyInfo p in productData.GetType().GetProperties())
+                    object recordValue = GetPropValue(Record, Statics.TwoWayDBProductToBobProductMapping[p.Name]);
+
+                    object dbValue = p.GetValue(productData, null);
+
+                    if (dbValue.GetType().Equals(typeof(System.DateTime)))
                     {
-                        //Loop over things like "article_id", "id", etc.
-                        if (!Statics.TwoWayDBProductToBobProductMapping.ContainsKey(p.Name)) continue;
-
-                        object recordValue = GetPropValue(Record, Statics.TwoWayDBProductToBobProductMapping[p.Name]);
-
-                        object dbValue = p.GetValue(productData, null);
-
-                        if (dbValue.GetType().Equals(typeof(System.DateTime)))
+                        DateTime correctValue;
+                        if (!(DateTime.TryParse((string)recordValue, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
+                        else if (!correctValue.Equals(dbValue))
                         {
-                            DateTime correctValue;
-                            if (!(DateTime.TryParse((string)recordValue, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
-                            else if (!correctValue.Equals(dbValue))
-                            {
-                                p.SetValue(productData, correctValue);
-                                entry.Property(p.Name).IsModified = true;
-                            }
-
+                            p.SetValue(productData, correctValue);
+                            entry.Property(p.Name).IsModified = true;
                         }
-                        else if (dbValue.GetType().Equals(typeof(System.Decimal)))
+
+                    }
+                    else if (dbValue.GetType().Equals(typeof(System.Decimal)))
+                    {
+                        decimal correctValue;
+                        if (!(decimal.TryParse((string)recordValue, NumberStyles.Any, CultureInfo.InvariantCulture, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
+                        else if (!correctValue.Equals(dbValue))
                         {
-                            decimal correctValue;
-                            if (!(decimal.TryParse((string)recordValue, NumberStyles.Any, CultureInfo.InvariantCulture, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
-                            else if (!correctValue.Equals(dbValue))
-                            {
-                                p.SetValue(productData, correctValue);
-                                entry.Property(p.Name).IsModified = true;
-                            }
-                        }
-                        else
-                        {
-                            if (!recordValue.Equals(dbValue))
-                            {
-                                p.SetValue(productData, recordValue);
-                                entry.Property(p.Name).IsModified = true;
-                            }
+                            p.SetValue(productData, correctValue);
+                            entry.Property(p.Name).IsModified = true;
                         }
                     }
-                    db.SaveChanges();
+                    else
+                    {
+                        if (!recordValue.Equals(dbValue))
+                        {
+                            p.SetValue(productData, recordValue);
+                            entry.Property(p.Name).IsModified = true;
+                        }
+                    }
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Caught exception in UpdateProductData, message: " + e.Message);
-                    Console.WriteLine("Trying to force the connection to open...");
-                    db.Database.Connection.Open();                   
-                }
-            } 
+                db.SaveChanges();
+            }
+        } 
               
-        }
+        
 
         /// <summary>
         /// Gets the value of a Record for a given property

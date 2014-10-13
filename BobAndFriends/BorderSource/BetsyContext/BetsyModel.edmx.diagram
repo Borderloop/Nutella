@@ -42,6 +42,14 @@
         <AssociationConnector Association="BetsyModel.Model.web_sender" ManuallyRouted="false" />
         <AssociationConnector Association="BetsyModel.Model.web_sendingcountry" ManuallyRouted="false" />
         <AssociationConnector Association="BetsyModel.Model.FK_vbobdata_country" />
+        <EntityTypeShape EntityType="BetsyModel.Model.biggest_price_differences" Width="1.5" PointX="9.25" PointY="14.875" />
+        <EntityTypeShape EntityType="BetsyModel.Model.country_price_differences" Width="1.5" PointX="6.25" PointY="15" />
+        <AssociationConnector Association="BetsyModel.Model.fk_biggest_price_differences_article" />
+        <AssociationConnector Association="BetsyModel.Model.fk_country_price_differences_article" />
+        <AssociationConnector Association="BetsyModel.Model.fk_biggest_price_differences_country" />
+        <AssociationConnector Association="BetsyModel.Model.fk_biggest_price_differences_product" />
+        <AssociationConnector Association="BetsyModel.Model.fk_country_price_differences_country" />
+        <AssociationConnector Association="BetsyModel.Model.fk_country_price_differences_product" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
