@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BorderSource", "BorderSourc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualBob", "VisualBob\VisualBob.csproj", "{5D8EAA60-FA65-49E6-8189-9D91754B52FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CategoryMatcher", "..\WindowsFormsApplication1\WindowsFormsApplication1\CategoryMatcher.csproj", "{5BC02D95-4ECE-49E5-9D29-036219E576F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CategoryMatcher", "CategoryMatcher\CategoryMatcher.csproj", "{B9042CA1-9E5E-49FA-9105-6F91AE419490}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{5D8EAA60-FA65-49E6-8189-9D91754B52FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D8EAA60-FA65-49E6-8189-9D91754B52FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D8EAA60-FA65-49E6-8189-9D91754B52FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5BC02D95-4ECE-49E5-9D29-036219E576F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5BC02D95-4ECE-49E5-9D29-036219E576F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5BC02D95-4ECE-49E5-9D29-036219E576F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5BC02D95-4ECE-49E5-9D29-036219E576F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9042CA1-9E5E-49FA-9105-6F91AE419490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9042CA1-9E5E-49FA-9105-6F91AE419490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9042CA1-9E5E-49FA-9105-6F91AE419490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9042CA1-9E5E-49FA-9105-6F91AE419490}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApplication1
+namespace CategoryMatcher
 {
-    public partial class CategoryMatcher : Form
+    public partial class CategoryMatcherForm : Form
     {
 
         private DataTable selectedCategory;
@@ -21,7 +21,7 @@ namespace WindowsFormsApplication1
         private BindingSource inkDesBind;
         private BindingSource matProduct;
 
-        public CategoryMatcher()
+        public CategoryMatcherForm()
         {
             InitializeComponent();
 
@@ -67,18 +67,18 @@ namespace WindowsFormsApplication1
         {
             try
             {
-                if(categoryGridView.SelectedRows.Count == 0 || inkomendGridView.SelectedRows.Count == 0)
+                if (categoryGridView.SelectedRows.Count == 0 || inkomendGridView.SelectedRows.Count == 0)
                 {
                     MessageBox.Show("No rows selected. Select a row to match the product to a sugestion.");
                     return;
                 }
-                
+
                 Database.Instance.InsertIntoCatSynonyms((int)categoryGridView.SelectedRows[0].Cells["id"].Value, (string)inkomendGridView.SelectedRows[0].Cells["category"].Value, (string)inkomendGridView.SelectedRows[0].Cells["web_url"].Value);
             }
 
             catch (MySql.Data.MySqlClient.MySqlException ex)
             {
-                Console.WriteLine(ex.ToString()+"Duplicate");
+                Console.WriteLine(ex.ToString() + "Duplicate");
                 MessageBox.Show("Duplicate entry for key");
             }
         }
@@ -140,17 +140,6 @@ namespace WindowsFormsApplication1
             inkDesBind.DataSource = inkomendDescription;
             inkomendGridView.DataSource = inkDesBind;
             inkomendGridView.DataSource = inkomendDescription;
-        }
-
-        private void txt_search_TextChanged(object sender, EventArgs e)
-        {
-            DataTable inkomendDescription = Database.Instance.getCategoryInkomend(txt_search.Text);
-
-            inkDesBind.DataSource = inkomendDescription;
-            inkomendGridView.DataSource = inkDesBind;
-            inkomendGridView.DataSource = inkomendDescription;
-
-            RefreshAll();
         }
     }
 }
