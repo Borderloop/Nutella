@@ -16,105 +16,96 @@ namespace BobAndFriends
 
         public void Cleanup()
         {
-            //For debugging, open a conneciont    
-            Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
-
-            //Throw an exception if the database is not conencted.
-            if(!Database.Instance.isConnected)
-            {                         
-                throw new DatabaseNotConnectedException("Database connection is not open.");
-            }
-
-            //Cleanup EAN
-            //If there are multiple EANs, save them as matches with the first.
-            DataTable dirtyEANS = Database.Instance.GetDuplicateEANs();
-            
-            //The table will give an ean and the first article ID.
-            foreach(DataRow row in dirtyEANS.Rows)
+            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
             {
-                //First, get the article number 
-                string ean = row.Field<string>("ean");
-                int correctAID = row.Field<int>("article_id");
-
-                //Get all the other aid's, which are wrongly implemented. Delete them.
-                DataTable wrongAIDs = Database.Instance.GetAIDsFromEAN(ean, correctAID);
-                foreach(DataRow row2 in wrongAIDs.Rows)
-                {                   
-                    int wrongAID = row2.Field<int>("article_id");
-                    //Update product to point to the right article
-                    Database.Instance.UpdateProductAID(wrongAID, correctAID);
-
-                    //Add title of the wrong product to the title synonyms of the correct product.
-                    Database.Instance.AddTitleSynonym(wrongAID, correctAID);
-
-                    //Delete all other entries of the article
-                    Database.Instance.DeleteArticle(wrongAID);
-
-                    Statics.Logger.WriteLine("Redirected EAN " + ean + " with article id " + wrongAID + " to article id " + correctAID + ".");
-                }
-            }
-
-            //Cleanup SKU
-            //If there are multiple SKUs, save them as matches with the first.
-            DataTable dirtySKUS = Database.Instance.GetDuplicateSKUs();
-
-            //The table will give an ean and the first article ID.
-            foreach (DataRow row in dirtyEANS.Rows)
-            {
-                //First, get the article number 
-                string sku = row.Field<string>("sku");
-                int correctAID = row.Field<int>("article_id");
-
-                //Get all the other aid's, which are wrongly implemented. Delete them.
-                DataTable wrongAIDs = Database.Instance.GetAIDsFromSKU(sku, correctAID);
-                foreach (DataRow row2 in wrongAIDs.Rows)
+                var duplicateEans = db.ean.GroupBy(e => e.ean1).Where(x => x.Count() > 1).Select(val => val.Key);
+                foreach (var ean in duplicateEans)
                 {
-                    int wrongAID = row2.Field<int>("article_id");
-                    //Update product to point to the right article
-                    Database.Instance.UpdateProductAID(wrongAID, correctAID);
+                    article correctArticle = db.article.Where(a => a.ean.Any(e => e.ean1 == ean)).FirstOrDefault();
+                    List<article> wrongArticles = db.article.Where(a => a.ean.Any(e => e.ean1 == ean)).Skip(1).ToList();
+                    foreach(article wrongArticle in wrongArticles)
+                    {
+                        //Set product article id to correctArticle.id
+                        db.product.Where(p => p.article_id == wrongArticle.id).ToList().ForEach(p => p.article_id = correctArticle.id);
 
-                    //Add title of the wrong product to the title synonyms of the correct product.
-                    Database.Instance.AddTitleSynonym(wrongAID, correctAID);
+                        //Add titles of wrongArticle to synonyms of correctArticle.
+                        //If correctArticle already has a title with the same country id, add it to the synonyms.
+                        foreach(title title in wrongArticle.title.ToList())
+                        {
+                            if(correctArticle.title.Any(t => t.country_id == title.country_id))
+                            {
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title == title.title1)))
+                                {
+                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title == title.title1).FirstOrDefault().occurrences++);
+                                }
+                                else
+                                {
+                                    correctArticle.title.FirstOrDefault().title_synonym.Add(new title_synonym { title = title.title1, occurrences = 1, title_id = title.id });
+                                }
+                                
+                            }
+                            else
+                            {
+                                correctArticle.title.Add(title);
+                            }
+                        }
 
-                    //Delete all other entries of the article
-                    Database.Instance.DeleteArticle(wrongAID);
-
-                    Statics.Logger.WriteLine("Redirected SKU " + sku + " with article id " + wrongAID + " to article id " + correctAID + ".");
+                        //Add all title synonyms of wrongArticle to correctArticle withing the correct countryID
+                        wrongArticle.title.ToList().ForEach(t => t.title_synonym.ToList().ForEach(ts => correctArticle.title.Where(ct => ct.country_id == t.country_id).FirstOrDefault().title_synonym.Add(ts)));
+                        db.article.Remove(wrongArticle);
+                    }                                      
                 }
-            }
 
-            //Cleanup title
-            //If there are perfect title matches, save them as matches with the first.
-            DataTable dirtyTitles = Database.Instance.GetDuplicateTitles();
-            foreach(DataRow row in dirtyTitles.Rows)
-            {
-                string title = row.Field<string>("title");
-                int correctAID = Database.Instance.GetCorrectAIDFromTitle(title);
-
-                //Get all the other aid's, which are wrongly implemented. Delete them.
-                DataTable wrongAIDs = Database.Instance.GetAIDsFromTitle(title, correctAID);
-                foreach (DataRow row2 in wrongAIDs.Rows)
+                var duplicateTitles = db.title.GroupBy(t => t.title1).Where(x => x.Count() > 1).Select(val => val.Key);
+                foreach(var dupTitle in duplicateTitles)
                 {
-                    int wrongAID = row2.Field<int>("article_id");
-                    //Update product to point to the right article
-                    Database.Instance.UpdateProductAID(wrongAID, correctAID);
+                    article correctArticle = db.article.Where(a => a.title.Any(t => t.title1 == dupTitle)).FirstOrDefault();
+                    List<article> wrongArticles = db.article.Where(a => a.title.Any(t => t.title1 == dupTitle)).Skip(1).ToList();
+                    foreach (article wrongArticle in wrongArticles)
+                    {
+                        //Set product article id to correctArticle.id
+                        db.product.Where(p => p.article_id == wrongArticle.id).ToList().ForEach(p => p.article_id = correctArticle.id);
 
-                    //Delete all other entries of the article
-                    Database.Instance.DeleteArticle(wrongAID);
+                        //Add titles of wrongArticle to synonyms of correctArticle.
+                        //If correctArticle already has a title with the same country id, add it to the synonyms.
+                        foreach (title title in wrongArticle.title.ToList())
+                        {
+                            //First add title to the title or synonym
+                            if (correctArticle.title.Any(t => t.country_id == title.country_id))
+                            {
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title == title.title1)))
+                                {
+                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title == title.title1).FirstOrDefault().occurrences++);
+                                }
+                                else
+                                {
+                                    correctArticle.title.FirstOrDefault().title_synonym.Add(new title_synonym { title = title.title1, occurrences = 1, title_id = title.id });
+                                }
 
-                    Statics.Logger.WriteLine("Redirected Title \"" + title + "\" with article id " + wrongAID + " to article id " + correctAID + ".");
+                            }
+                            else
+                            {
+                                correctArticle.title.Add(title);
+                            }
+
+                            //Then add the synonyms of the title to the synonym
+                            foreach(title_synonym ts in title.title_synonym)
+                            {
+                                if(correctArticle.title.Any(t => t.title_synonym.Any(cts => cts.title == ts.title)))
+                                {
+                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(cts => cts.title == ts.title).FirstOrDefault().occurrences++);
+                                }
+                                else
+                                {
+                                    correctArticle.title.FirstOrDefault().title_synonym.Add(ts);
+                                }
+                            }
+
+                        }
+                        db.article.Remove(wrongArticle);
+                    }                    
                 }
-
-            }
-
+            }          
         }
-    }
-
-    class DatabaseNotConnectedException : Exception
-    {
-        public DatabaseNotConnectedException() : base() { }
-        public DatabaseNotConnectedException(string msg) : base(msg) { }
-        public DatabaseNotConnectedException(string msg, Exception e) : base(msg, e) { }
-        
     }
 }

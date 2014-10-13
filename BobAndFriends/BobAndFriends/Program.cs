@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Data;
+using System.Data.Entity.Validation;
 
 namespace BobAndFriends
 {
@@ -35,7 +36,7 @@ namespace BobAndFriends
             //Initialize
             Initialize();
 
-            Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
+            //Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
              
             //DatabaseJanitor crapper = new DatabaseJanitor();
             //crapper.Cleanup();    
@@ -55,8 +56,8 @@ namespace BobAndFriends
             //sw = new Stopwatch();
              
             //Application.EnableVisualStyles();
-            /*
-            try
+            
+/*try
             {
                 Application.Run(new VisualBob());
             } 
@@ -67,14 +68,16 @@ namespace BobAndFriends
             finally
             {
                 Application.Exit();
-            }*/
+            }
+ */
         }
 
         static void ProductDequeuer()
         {
             //Create BOB and start dequeueing items.
             BOB bob = new BOB();
-            
+
+            int errorCount = 0;
             //Remain alive while thread one isnt done
             while (true)
             {
@@ -88,7 +91,34 @@ namespace BobAndFriends
                     break;
                 }
                 //Process the product otherwise.
-                bob.Process(p);
+                try
+                {
+                    bob.Process(p);
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            Console.WriteLine("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    Console.Read();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("THREW EXCEPTION {0}: " + e.ToString() + " FROM " + e.StackTrace, errorCount);
+                    Statics.Logger.WriteLine("ERROR#{0} " + e.Message, errorCount);
+                    errorCount++;
+                    Console.WriteLine("Press enter to clear all pools and continue.");
+                    Console.Read();
+
+                    //Probably the underlying connection. 
+                    //Trying to clear the pools, then move on.
+                    MySql.Data.MySqlClient.MySqlConnection.ClearAllPools();      
+
+                }            
             }
 
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
@@ -116,8 +146,17 @@ namespace BobAndFriends
         {
             //Initialize all the values for the static variables in the Statics class. These
             //variables are used throughout the whole program.
+
+            #region Settings
             Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
+            #endregion
+
+            #region Loggers
             Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+            Statics.SqlLogger = new Logger(Statics.settings["logpath"] + "\\sqldump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
+            #endregion
+
+            #region Values
             Statics.TickCount = 0;
             Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);
             Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
@@ -131,6 +170,33 @@ namespace BobAndFriends
             Statics.maxDirectLinkSize = Int32.Parse(Statics.settings["maxdirectlinksize"]);
             Statics.maxAffiliateNameSize = Int32.Parse(Statics.settings["maxaffiliatenamesize"]);
             Statics.maxAffiliateProductIdSize = Int32.Parse(Statics.settings["maxaffiliateproductidsize"]);
+            Statics.maxResidueListSize = Int32.Parse(Statics.settings["maxresiduelistsize"]);
+            #endregion
+
+            #region Mapping of DBProduct to BobProduct
+            Statics.TwoWayDBProductToBobProductMapping = new Dictionary<string, string>();
+            Statics.TwoWayDBProductToBobProductMapping.Add("ship_time", "DeliveryTime");
+            Statics.TwoWayDBProductToBobProductMapping.Add("ship_cost", "DeliveryCost");
+            Statics.TwoWayDBProductToBobProductMapping.Add("price", "Price");
+            Statics.TwoWayDBProductToBobProductMapping.Add("webshop_url", "Webshop");
+            Statics.TwoWayDBProductToBobProductMapping.Add("direct_link", "Url");
+            Statics.TwoWayDBProductToBobProductMapping.Add("last_modified", "LastModified");
+            Statics.TwoWayDBProductToBobProductMapping.Add("valid_until", "ValidUntil");
+            Statics.TwoWayDBProductToBobProductMapping.Add("affiliate_name", "Affiliate");
+            Statics.TwoWayDBProductToBobProductMapping.Add("affiliate_unique_id", "AffiliateProdID");
+            #endregion
+
+            #region Mapping of BobProduct to DBProduct
+            Statics.TwoWayDBProductToBobProductMapping.Add("DeliveryTime", "ship_time");
+            Statics.TwoWayDBProductToBobProductMapping.Add("DeliveryCost", "ship_cost");
+            Statics.TwoWayDBProductToBobProductMapping.Add("Price", "price");
+            Statics.TwoWayDBProductToBobProductMapping.Add("Webshop", "webshop_url");
+            Statics.TwoWayDBProductToBobProductMapping.Add("Url", "direct_link");
+            Statics.TwoWayDBProductToBobProductMapping.Add("LastModified", "last_modified");
+            Statics.TwoWayDBProductToBobProductMapping.Add("ValidUntil", "valid_until");
+            Statics.TwoWayDBProductToBobProductMapping.Add("Affiliate", "affiliate_name");
+            Statics.TwoWayDBProductToBobProductMapping.Add("AffiliateProdID", "affiliate_unique_id");
+            #endregion
         }
 
 

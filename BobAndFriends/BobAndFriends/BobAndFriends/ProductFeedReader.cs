@@ -83,7 +83,6 @@ namespace BobAndFriends
                         {
                             while(ProductQueue.queue.Count > Statics.maxQueueSize)
                             {
-                                Console.WriteLine("ProductFeedReader sleeping...");
                                 Thread.Sleep(10000);
                             }
                             if (!p.CleanupFields())

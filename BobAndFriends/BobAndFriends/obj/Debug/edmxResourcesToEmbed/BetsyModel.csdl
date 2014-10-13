@@ -1,0 +1,485 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BetsyModel.Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="affiliate">
+    <Key>
+      <PropertyRef Name="affiliate1" />
+      <PropertyRef Name="webshop_id" />
+    </Key>
+    <Property Name="affiliate1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="approved" Type="Int16" Nullable="false" />
+    <Property Name="webshop_id" Type="Int32" Nullable="false" />
+    <Property Name="extra" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="webshop" Relationship="Self.fk_affiliate_webshop" FromRole="affiliate" ToRole="webshop" />
+  </EntityType>
+  <EntityType Name="article">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="brand" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="image_loc" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="ean" Relationship="Self.fk_ean_article" FromRole="article" ToRole="ean" />
+    <NavigationProperty Name="product" Relationship="Self.fk_product_article" FromRole="article" ToRole="product" />
+    <NavigationProperty Name="sku" Relationship="Self.fk_sku_article" FromRole="article" ToRole="sku" />
+    <NavigationProperty Name="title" Relationship="Self.fk_title_article" FromRole="article" ToRole="title" />
+    <NavigationProperty Name="vbob_suggested" Relationship="Self.fk_vbob_suggested_article" FromRole="article" ToRole="vbob_suggested" />
+    <NavigationProperty Name="category" Relationship="Self.cat_article" FromRole="article" ToRole="category" />
+  </EntityType>
+  <EntityType Name="category">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="description" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="menulevel" Type="SByte" />
+    <Property Name="called_by" Type="Int32" />
+    <NavigationProperty Name="category_synonym" Relationship="Self.fk_category_synonyms_category" FromRole="category" ToRole="category_synonym" />
+    <NavigationProperty Name="article" Relationship="Self.cat_article" FromRole="category" ToRole="article" />
+  </EntityType>
+  <EntityType Name="category_synonym">
+    <Key>
+      <PropertyRef Name="category_id" />
+      <PropertyRef Name="description" />
+    </Key>
+    <Property Name="category_id" Type="Int32" Nullable="false" />
+    <Property Name="description" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="category" Relationship="Self.fk_category_synonyms_category" FromRole="category_synonym" ToRole="category" />
+  </EntityType>
+  <EntityType Name="country">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="extension" Type="String" MaxLength="3" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="title" Relationship="Self.fk_title_country" FromRole="country" ToRole="title" />
+    <NavigationProperty Name="webshop" Relationship="Self.fk_webshop_country" FromRole="country" ToRole="webshop" />
+    <NavigationProperty Name="webshop1" Relationship="Self.web_sendingcountry" FromRole="country" ToRole="webshop" />
+    <NavigationProperty Name="vbobdata" Relationship="BetsyModel.Model.FK_vbobdata_country" FromRole="country" ToRole="vbobdata" />
+  </EntityType>
+  <EntityType Name="ean">
+    <Key>
+      <PropertyRef Name="ean1" />
+      <PropertyRef Name="article_id" />
+    </Key>
+    <Property Name="ean1" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="article" Relationship="Self.fk_ean_article" FromRole="ean" ToRole="article" />
+  </EntityType>
+  <EntityType Name="language">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="language1" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="short_language" Type="String" MaxLength="3" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="webshop" Relationship="Self.web_language" FromRole="language" ToRole="webshop" />
+  </EntityType>
+  <EntityType Name="mark">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="mark1" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="logo_klein" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="logo_groot" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="webshop" Relationship="Self.web_mark" FromRole="mark" ToRole="webshop" />
+  </EntityType>
+  <EntityType Name="payment_method">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="method" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="webshop" Relationship="Self.web_payment" FromRole="payment_method" ToRole="webshop" />
+  </EntityType>
+  <EntityType Name="product">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <Property Name="ship_time" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ship_cost" Type="Decimal" />
+    <Property Name="price" Type="Decimal" Nullable="false" />
+    <Property Name="webshop_url" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="direct_link" Type="String" MaxLength="300" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="last_modified" Type="DateTime" Nullable="false" />
+    <Property Name="valid_until" Type="DateTime" Nullable="false" />
+    <Property Name="affiliate_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="affiliate_unique_id" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="article" Relationship="Self.fk_product_article" FromRole="product" ToRole="article" />
+  </EntityType>
+  <EntityType Name="sender">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="sender1" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="webshop" Relationship="Self.web_sender" FromRole="sender" ToRole="webshop" />
+  </EntityType>
+  <EntityType Name="sku">
+    <Key>
+      <PropertyRef Name="sku1" />
+      <PropertyRef Name="article_id" />
+    </Key>
+    <Property Name="sku1" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="article" Relationship="Self.fk_sku_article" FromRole="sku" ToRole="article" />
+  </EntityType>
+  <EntityType Name="title">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="title1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="country_id" Type="Int16" Nullable="false" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="article" Relationship="Self.fk_title_article" FromRole="title" ToRole="article" />
+    <NavigationProperty Name="country" Relationship="Self.fk_title_country" FromRole="title" ToRole="country" />
+    <NavigationProperty Name="title_synonym" Relationship="Self.fk_title_synonym_title" FromRole="title" ToRole="title_synonym" />
+  </EntityType>
+  <EntityType Name="title_synonym">
+    <Key>
+      <PropertyRef Name="title" />
+      <PropertyRef Name="title_id" />
+    </Key>
+    <Property Name="title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="title_id" Type="Int32" Nullable="false" />
+    <Property Name="occurrences" Type="Int16" />
+    <NavigationProperty Name="title1" Relationship="Self.fk_title_synonym_title" FromRole="title_synonym" ToRole="title" />
+  </EntityType>
+  <EntityType Name="users">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="username" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="password" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="salt" Type="String" MaxLength="16" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="email" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+  </EntityType>
+  <EntityType Name="vbob_suggested">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <Property Name="vbob_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="article" Relationship="Self.fk_vbob_suggested_article" FromRole="vbob_suggested" ToRole="article" />
+    <NavigationProperty Name="vbobdata" Relationship="Self.fk_vbob_suggested_vbob" FromRole="vbob_suggested" ToRole="vbobdata" />
+  </EntityType>
+  <EntityType Name="vbobdata">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="ean" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="sku" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="brand" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="category" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="rerun" Type="Boolean" />
+    <Property Name="image_loc" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="vbob_suggested" Relationship="Self.fk_vbob_suggested_vbob" FromRole="vbobdata" ToRole="vbob_suggested" />
+    <Property Name="country_id" Type="Int16" />
+    <NavigationProperty Name="country" Relationship="BetsyModel.Model.FK_vbobdata_country" FromRole="vbobdata" ToRole="country" />
+  </EntityType>
+  <EntityType Name="webshop">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="url" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="country_id" Type="Int16" Nullable="false" />
+    <Property Name="logo_small" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="logo_large" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="shipping_cost" Type="Decimal" />
+    <NavigationProperty Name="affiliate" Relationship="Self.fk_affiliate_webshop" FromRole="webshop" ToRole="affiliate" />
+    <NavigationProperty Name="country" Relationship="Self.fk_webshop_country" FromRole="webshop" ToRole="country" />
+    <NavigationProperty Name="language" Relationship="Self.web_language" FromRole="webshop" ToRole="language" />
+    <NavigationProperty Name="mark" Relationship="Self.web_mark" FromRole="webshop" ToRole="mark" />
+    <NavigationProperty Name="payment_method" Relationship="Self.web_payment" FromRole="webshop" ToRole="payment_method" />
+    <NavigationProperty Name="sender" Relationship="Self.web_sender" FromRole="webshop" ToRole="sender" />
+    <NavigationProperty Name="country1" Relationship="Self.web_sendingcountry" FromRole="webshop" ToRole="country" />
+  </EntityType>
+  <EntityType Name="residue">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="image" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="category" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="ean" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="sku" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="brand" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="id" Type="Int32" Nullable="false" />
+  </EntityType>
+  <Association Name="fk_affiliate_webshop">
+    <End Role="webshop" Type="Self.webshop" Multiplicity="1" />
+    <End Role="affiliate" Type="Self.affiliate" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="webshop">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="affiliate">
+        <PropertyRef Name="webshop_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_ean_article">
+    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="ean" Type="Self.ean" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="ean">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_product_article">
+    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="product" Type="Self.product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="product">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_sku_article">
+    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="sku" Type="Self.sku" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="sku">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_title_article">
+    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="title" Type="Self.title" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="title">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_vbob_suggested_article">
+    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="vbob_suggested" Type="Self.vbob_suggested" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="vbob_suggested">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_category_synonyms_category">
+    <End Role="category" Type="Self.category" Multiplicity="1" />
+    <End Role="category_synonym" Type="Self.category_synonym" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="category">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="category_synonym">
+        <PropertyRef Name="category_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_title_country">
+    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="title" Type="Self.title" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="country">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="title">
+        <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_webshop_country">
+    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="country">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="webshop">
+        <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_title_synonym_title">
+    <End Role="title" Type="Self.title" Multiplicity="1" />
+    <End Role="title_synonym" Type="Self.title_synonym" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="title">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="title_synonym">
+        <PropertyRef Name="title_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_vbob_suggested_vbob">
+    <End Role="vbobdata" Type="Self.vbobdata" Multiplicity="1" />
+    <End Role="vbob_suggested" Type="Self.vbob_suggested" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="vbobdata">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="vbob_suggested">
+        <PropertyRef Name="vbob_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="cat_article">
+    <End Role="article" Type="Self.article" Multiplicity="*" />
+    <End Role="category" Type="Self.category" Multiplicity="*" />
+  </Association>
+  <Association Name="web_language">
+    <End Role="language" Type="Self.language" Multiplicity="*" />
+    <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
+  </Association>
+  <Association Name="web_mark">
+    <End Role="mark" Type="Self.mark" Multiplicity="*" />
+    <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
+  </Association>
+  <Association Name="web_payment">
+    <End Role="payment_method" Type="Self.payment_method" Multiplicity="*" />
+    <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
+  </Association>
+  <Association Name="web_sender">
+    <End Role="sender" Type="Self.sender" Multiplicity="*" />
+    <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
+  </Association>
+  <Association Name="web_sendingcountry">
+    <End Role="country" Type="Self.country" Multiplicity="*" />
+    <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
+  </Association>
+  <EntityContainer Name="BetsyModel" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="affiliate" EntityType="Self.affiliate" />
+    <EntitySet Name="article" EntityType="Self.article" />
+    <EntitySet Name="category" EntityType="Self.category" />
+    <EntitySet Name="category_synonym" EntityType="Self.category_synonym" />
+    <EntitySet Name="country" EntityType="Self.country" />
+    <EntitySet Name="ean" EntityType="Self.ean" />
+    <EntitySet Name="language" EntityType="Self.language" />
+    <EntitySet Name="mark" EntityType="Self.mark" />
+    <EntitySet Name="payment_method" EntityType="Self.payment_method" />
+    <EntitySet Name="product" EntityType="Self.product" />
+    <EntitySet Name="sender" EntityType="Self.sender" />
+    <EntitySet Name="sku" EntityType="Self.sku" />
+    <EntitySet Name="title" EntityType="Self.title" />
+    <EntitySet Name="title_synonym" EntityType="Self.title_synonym" />
+    <EntitySet Name="users" EntityType="Self.users" />
+    <EntitySet Name="vbob_suggested" EntityType="Self.vbob_suggested" />
+    <EntitySet Name="vbobdata" EntityType="Self.vbobdata" />
+    <EntitySet Name="webshop" EntityType="Self.webshop" />
+    <EntitySet Name="residue" EntityType="Self.residue" />
+    <AssociationSet Name="fk_affiliate_webshop" Association="Self.fk_affiliate_webshop">
+      <End Role="webshop" EntitySet="webshop" />
+      <End Role="affiliate" EntitySet="affiliate" />
+    </AssociationSet>
+    <AssociationSet Name="fk_ean_article" Association="Self.fk_ean_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="ean" EntitySet="ean" />
+    </AssociationSet>
+    <AssociationSet Name="fk_product_article" Association="Self.fk_product_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="product" EntitySet="product" />
+    </AssociationSet>
+    <AssociationSet Name="fk_sku_article" Association="Self.fk_sku_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="sku" EntitySet="sku" />
+    </AssociationSet>
+    <AssociationSet Name="fk_title_article" Association="Self.fk_title_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="title" EntitySet="title" />
+    </AssociationSet>
+    <AssociationSet Name="fk_vbob_suggested_article" Association="Self.fk_vbob_suggested_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="vbob_suggested" EntitySet="vbob_suggested" />
+    </AssociationSet>
+    <AssociationSet Name="fk_category_synonyms_category" Association="Self.fk_category_synonyms_category">
+      <End Role="category" EntitySet="category" />
+      <End Role="category_synonym" EntitySet="category_synonym" />
+    </AssociationSet>
+    <AssociationSet Name="fk_title_country" Association="Self.fk_title_country">
+      <End Role="country" EntitySet="country" />
+      <End Role="title" EntitySet="title" />
+    </AssociationSet>
+    <AssociationSet Name="fk_webshop_country" Association="Self.fk_webshop_country">
+      <End Role="country" EntitySet="country" />
+      <End Role="webshop" EntitySet="webshop" />
+    </AssociationSet>
+    <AssociationSet Name="fk_title_synonym_title" Association="Self.fk_title_synonym_title">
+      <End Role="title" EntitySet="title" />
+      <End Role="title_synonym" EntitySet="title_synonym" />
+    </AssociationSet>
+    <AssociationSet Name="fk_vbob_suggested_vbob" Association="Self.fk_vbob_suggested_vbob">
+      <End Role="vbobdata" EntitySet="vbobdata" />
+      <End Role="vbob_suggested" EntitySet="vbob_suggested" />
+    </AssociationSet>
+    <AssociationSet Name="cat_article" Association="Self.cat_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="category" EntitySet="category" />
+    </AssociationSet>
+    <AssociationSet Name="web_language" Association="Self.web_language">
+      <End Role="language" EntitySet="language" />
+      <End Role="webshop" EntitySet="webshop" />
+    </AssociationSet>
+    <AssociationSet Name="web_mark" Association="Self.web_mark">
+      <End Role="mark" EntitySet="mark" />
+      <End Role="webshop" EntitySet="webshop" />
+    </AssociationSet>
+    <AssociationSet Name="web_payment" Association="Self.web_payment">
+      <End Role="payment_method" EntitySet="payment_method" />
+      <End Role="webshop" EntitySet="webshop" />
+    </AssociationSet>
+    <AssociationSet Name="web_sender" Association="Self.web_sender">
+      <End Role="sender" EntitySet="sender" />
+      <End Role="webshop" EntitySet="webshop" />
+    </AssociationSet>
+    <AssociationSet Name="web_sendingcountry" Association="Self.web_sendingcountry">
+      <End Role="country" EntitySet="country" />
+      <End Role="webshop" EntitySet="webshop" />
+    </AssociationSet>
+    <AssociationSet Name="FK_vbobdata_country" Association="BetsyModel.Model.FK_vbobdata_country">
+      <End Role="country" EntitySet="country" />
+      <End Role="vbobdata" EntitySet="vbobdata" />
+    </AssociationSet>
+  </EntityContainer>
+  <Association Name="FK_vbobdata_country">
+    <End Type="BetsyModel.Model.country" Role="country" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BetsyModel.Model.vbobdata" Role="vbobdata" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="country">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="vbobdata">
+        <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

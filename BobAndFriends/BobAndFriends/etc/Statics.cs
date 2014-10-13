@@ -24,6 +24,8 @@ namespace BobAndFriends
         /// </summary>
         public static Logger Logger;
 
+        public static Logger SqlLogger;
+
         /// <summary>
         /// The settings used in the program.
         /// </summary>
@@ -50,5 +52,9 @@ namespace BobAndFriends
         public static int maxAffiliateNameSize;
 
         public static int maxAffiliateProductIdSize;
+
+        public static int maxResidueListSize;
+
+        public static Dictionary<string, string> TwoWayDBProductToBobProductMapping;
     }
 }

@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Data;
 using System.Reflection;
+using System.Globalization;
 
 namespace BobAndFriends
 {
     public class BOB
     {
-        /// <summary>
-        /// Contains all data of the products which have been fixed and are to be rerunned again.
-        /// </summary>
-        private DataTable Rerunnables;
-
         /// <summary>
         /// If a match if found, store the ID in this field.
         /// </summary>
@@ -30,8 +26,6 @@ namespace BobAndFriends
 
         public BOB()
         {
-            //Initialize BOB
-            Initialize();
 
             //First process the products which are flagged for a rerun by the GUI.
             //These products contain the best data since they are manually configured.
@@ -79,12 +73,12 @@ namespace BobAndFriends
                 CompareProductData(Record);
                 return;
             }
-            Console.WriteLine("Finished unsuccesful id in: {0}", sw.Elapsed);
+            //Console.WriteLine("Finished unsuccesful id in: {0}", sw.Elapsed);
             sw.Restart();
 
             //Get country id
             _countryID = GetCountryId(Record.Webshop);
-            Console.WriteLine("Finished getting country id in: {0}", sw.Elapsed);
+            //Console.WriteLine("Finished getting country id in: {0}", sw.Elapsed);
 
             //First test - EAN/SKU match and perfect title matching.
             sw.Restart();
@@ -96,7 +90,7 @@ namespace BobAndFriends
                 SaveMatch(Record);
                 return;
             }
-            Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
+            //Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
             sw.Restart();
 
             //If the first check does not go well, check for the ean.
@@ -105,7 +99,7 @@ namespace BobAndFriends
                 SaveMatch(Record);
                 return;
             }
-            Console.WriteLine("Finished unsuccesfull ean check: {0}", sw.Elapsed);
+            //Console.WriteLine("Finished unsuccesfull ean check: {0}", sw.Elapsed);
             sw.Restart();
             /*//The product has no valid EAN and no valid SKU, therefore we will match titles.
             if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
@@ -124,7 +118,7 @@ namespace BobAndFriends
                 sendToResidue(Record);
                 return;
             }
-            Console.WriteLine("Finished brand check: {0}", sw.Elapsed);
+            //Console.WriteLine("Finished brand check: {0}", sw.Elapsed);
             sw.Restart();
 
             //Run a brand check. If it exists, we can go on to match the product by relevance.
@@ -136,7 +130,7 @@ namespace BobAndFriends
                 SaveNewArticle(Record);
                 return;
             }*/
-            Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
+            //Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
             if (Record.Title != "" && Record.EAN != "")
             {
                 //The product has a brand name which doesn't exist in the database and has a title, so save it to the database
@@ -149,65 +143,32 @@ namespace BobAndFriends
             }
         }       
 
+            
+        public void ProcessRerunnables()
+        {
+            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            {
+                IEnumerable<vbobdata> Rerunnables = db.vbobdata.Where(v => v.rerun == true).ToList();
+                Product p = new Product();
+                foreach (vbobdata data in Rerunnables)
+                {
+                    p.Title = data.title;
+                    p.EAN = data.ean;
+                    p.SKU = data.sku;
+                    p.Brand = data.brand;
+                    p.Category = data.category;
+                    p.Description = data.description;
+                    p.Image_Loc = data.image_loc;
+
+                    Process(p);
+                }
+            }          
+        }
+
         private int GetAIDFromUAC(Product record)
         {
             return Database.Instance.GetAIDFromUAC(record);
-        }
-        
-        /// <summary>
-        /// Also initializes dummy data. For test purposes only
-        /// </summary>
-        private void Initialize()
-        {
-            // Open the connection with the database
-            OpenDatabaseConnection();
-        }
-
-        /// <summary>
-        /// Method to open the connection with the database.
-        /// </summary>
-        private void OpenDatabaseConnection()
-        {
-            Console.WriteLine("\n\t\t\t\t\tOpening connection with database...\n");
-
-            try
-            {
-                //Open the database connection. The program should stop if this fails.
-                Database.Instance.Connect(Statics.settings["dbsource"], Statics.settings["dbname"], Statics.settings["dbuid"], Statics.settings["dbpw"]);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("\n\t\t\t\t\tConnection failed.\n");
-                Console.WriteLine("\t\t\t\t\tError: " + e.Message);
-                Console.WriteLine("\t\t\t\t\tFrom: " + e.Source);
-                Console.WriteLine("\t\t\t\t\tPress enter to exit.\n");
-                Console.Read();
-                Environment.Exit(0);
-            }
-
-            Console.WriteLine("\n\t\t\t\t\tConnection opened.\n");
-        }
-
-        public void ProcessRerunnables()
-        {
-            List<string> columns = new List<string>();
-            columns.Add("*");
-
-            Rerunnables = Database.Instance.Select(columns, "vbobdata", "rerun", "1");
-            Product p = new Product();
-            foreach (DataRow row in Rerunnables.Rows)
-            {
-                p.Title = row.Field<String>("title") ?? "";
-                p.EAN = row.Field<String>("ean") ?? "";
-                p.SKU = row.Field<String>("sku") ?? "";
-                p.Brand = row.Field<String>("brand") ?? "";
-                p.Category = row.Field<String>("category") ?? "";
-                p.Description = row.Field<String>("description") ?? "";
-                p.Image_Loc = row.Field<String>("image_loc") ?? "";
-
-                Process(p);
-            }
-        }
+        }  
 
         /// <summary>
         /// This method will rerun all the products in the residue through BOB.
@@ -217,34 +178,30 @@ namespace BobAndFriends
         public void RerunResidue()
         {
             Console.WriteLine("Started rerunning the residue.");
+
             //Set flag to true
             rerunningResidue = true;
 
             //Count rows before starting
             int rowsBefore = Database.Instance.CountRows("residue");
 
-            //Get the whole residue
-            List<string> columns = new List<string>();
-            columns.Add("*");
-            DataTable residue = Database.Instance.Select(columns, "residue");
-
-            //Create a product
-            Product p = new Product();
-
-            //Loop through each row
-            foreach (DataRow row in residue.Rows)
+            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
             {
-                p.Title = row.Field<String>("title") ?? "";
-                p.EAN = row.Field<String>("ean") ?? "";
-                p.SKU = row.Field<String>("sku") ?? "";
-                p.Brand = row.Field<String>("brand") ?? "";
-                p.Category = row.Field<String>("category") ?? "";
-                p.Description = row.Field<String>("description") ?? "";
-                p.Image_Loc = row.Field<String>("image") ?? "";
+                 ;
+                Product p = new Product();
+                foreach (residue data in db.residue.ToList())
+                {
+                    p.Title = data.title;
+                    p.EAN = data.ean;
+                    p.SKU = data.sku;
+                    p.Brand = data.brand;
+                    p.Category = data.category;
+                    p.Description = data.description;
+                    p.Image_Loc = data.image;
 
-                Process(p);
+                    Process(p);
+                }
             }
-
             //count rows afterwards
             int rowsAfter = Database.Instance.CountRows("residue");
 
@@ -277,63 +234,9 @@ namespace BobAndFriends
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            List<string> columns = new List<string>();
-            // Add columns for article table, afterwards clear the columns and do the same for ean, sku and title.
-            columns.Add("brand AS 'article-Brand'");
-            columns.Add("description AS 'article-Description'");
-            columns.Add("image_loc AS 'article-Image_Loc'");
 
-            //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
-            DataTable articleTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "article", "id");
-
-            columns.Clear();
-            columns.Add("ean AS 'ean-EAN'");
-            DataTable eanTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "ean", "article_id");
-
-            columns.Clear();
-            columns.Add("sku AS 'sku-SKU'");
-            DataTable skuTable = Database.Instance.GetTableForArticle(_matchedArticleID, columns, "sku", "article_id");
-            DataTable titleSynonymTable = Database.Instance.GetTitleSynonymTableForArticle(_matchedArticleID);
-
-
-            // Put these DataTables in an array for looping.
-            DataTable[] dtArray = new DataTable[3];
-            dtArray[0] = articleTable;
-            dtArray[1] = eanTable;
-            dtArray[2] = skuTable;
-
-            //Loop over each DataTable and its columns
-            foreach (DataTable dt in dtArray)
-            {
-                foreach (DataColumn column in dt.Columns)
-                {
-                    Object o;
-                    try
-                    {
-                        o = dt.Rows[0][column];
-                    }
-                    // No records in given table for this article. This always is the ean or sku table. Insert right away and break.
-                    catch (IndexOutOfRangeException)  
-                    {
-                        UpdateEmptyColumn(column, Record);
-                        break;
-                    }
-                    if (dt.Rows.OfType<DataRow>().Any(r => r.IsNull(column) || o.ToString().Equals(""))) // If matched article has no value for this column...
-                    {
-                        UpdateEmptyColumn(column, Record); //Update the empty column
-                    }
-
-                    // Else, the column has a value so check if the article value differs from the record value and if so, add this to the article.
-                    // This is only for the ean and sku tables, not for the article table. This table can't and shouldn't contain double data.
-                    else if(dt != dtArray[0])
-                    {
-                        AddDoubleColumnData(dt, column, Record);
-                    }
-                }
-            }
-
-            // Next up is the title_synonym table. Since it has two tables and needs extra processing, this is done seperately from the other tables.
-            CheckTitles(titleSynonymTable, Record);
+            //Save the match
+            Database.Instance.SaveMatch(Record, _matchedArticleID, _countryID);
 
             // Finally compare the product data
             CompareProductData(Record);
@@ -348,116 +251,6 @@ namespace BobAndFriends
 
             Console.WriteLine("Finished saving match in: {0}", sw.Elapsed);
             sw.Stop();
-        }
-
-        /// <summary>
-        /// This method updates an empty column for an article, or inserts an entry if
-        /// the title or sku table is empty
-        /// </summary>
-        /// <param name="column">The column to be updated</param>
-        /// <param name="Record">The record that contains the to be inserted data</param>
-        private void UpdateEmptyColumn(DataColumn column, Product Record)
-        {
-            String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
-            String recordValue = GetPropValue(Record, splitted[1]).ToString();
-
-            //If the record value is empty, an update or insert won't be neccesary at all.
-            if (recordValue != "")
-            {
-                // If the TABLE name doesn't equal 'article', it's either the ean, sku or titles table. Also meaning that 
-                // there is no record in this table at all for the matched article. Because of this, an update won't work:
-                // Insert instead.
-                if (splitted[0] != "article")
-                {
-                    Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID, _countryID);
-                }
-                else
-                {
-                    Database.Instance.Update(splitted[0], splitted[1], recordValue, _matchedArticleID);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Adds an ean or sku to an article if it is not yet present in the database. 
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <param name="column"></param>
-        /// <param name="Record"></param>
-        private void AddDoubleColumnData(DataTable dt, DataColumn column, Product Record)
-        {
-            String[] splitted = column.ToString().Split('-'); // Column name comes with table name and column name, seperated by '-'.
-            String recordValue = GetPropValue(Record, splitted[1]).ToString();
-
-            bool hasMatch;
-
-            try
-            {
-                hasMatch = dt.AsEnumerable().Any(row => recordValue.ToLower() == row.Field<String>(column).ToLower());
-            }
-            catch (InvalidCastException) // An ean is returned, which is int64 instead of string. Convert values for this.
-            {
-                //This should not be thrown anymore since we changed EAN to be a string.
-                hasMatch = dt.AsEnumerable().Any(row => Convert.ToInt64(recordValue) == row.Field<Int64>(column));
-            }
-
-            // If hasMatch is false, a different value is found. Insert this into the database, but only if the record value is not empty.
-            if (hasMatch == false && recordValue != null && recordValue != "")
-            {
-                Database.Instance.AddForMatch(splitted[0], recordValue, _matchedArticleID, _countryID);
-            }
-        }
-
-        /// <summary>
-        /// This method checks if there are article titles similar to the record titles. If so, the match occurrence is
-        /// updated. The occurrence is used to check which title to use for the main title, which is also done in this method.
-        /// If there's no match, add a new match.
-        /// </summary>
-        /// <param name="titleSynonymTable"></param>
-        /// <param name="Record"></param>
-        private void CheckTitles(DataTable titleSynonymTable, Product Record)
-        {
-            DataRow[] foundRow = titleSynonymTable.Select("Title = '" + Record.Title + "'");
-
-            // If the returned rows are bigger then 0, they're always one and found a match. We need to update the occurance column
-            if (foundRow.Count() > 0)
-            {
-                // Always one row, which is the match, get the title, occurences and title_id for it.
-                string matchedTitle = foundRow[0]["title"].ToString();
-                int matchedOccurrences = Convert.ToInt32(foundRow[0]["occurrences"]);
-                int matchedTitleId = Convert.ToInt32(foundRow[0]["title_id"]);
-
-                // Add one for the occurance and update this in the database
-                matchedOccurrences++;
-                Database.Instance.UpdateTitleSynonymOccurrences(matchedTitleId, matchedOccurrences, matchedTitle);
-
-                // Now it needs to check if the updated title has a higher occurrences value than the one in the title table.
-                // If this is the case, the title in the title table must be replaced with this title.
-                int titleOccurrences = Database.Instance.GetOccurrencesForTitle(matchedTitleId);
-                if (matchedOccurrences > titleOccurrences)
-                {
-                    Database.Instance.UpdateTitle(matchedTitleId, matchedTitle);
-                }
-
-
-            }
-            else // Else no match is found, so insert a new record 
-            {
-                // First get the title id, then insert a new record with that title id;
-                int titleId = Database.Instance.GetTitleId(_matchedArticleID, _countryID);
-                Database.Instance.InsertNewTitle(titleId, Record.Title);
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a Record for a given property
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="propName"></param>
-        /// <returns></returns>
-        private static object GetPropValue(Product record, string propName)
-        {
-            return record.GetType().GetProperty(propName).GetValue(record, null);
         }
 
         /// <summary>
@@ -512,7 +305,7 @@ namespace BobAndFriends
             }
 
             //Call SendToResidue() to do so.
-            Database.Instance.SendTo(p, "residue");
+            Database.Instance.SendToResidue(p);
             Console.WriteLine("Finished sending to residue in : " + sw.Elapsed);
             sw.Stop();
         }
@@ -536,8 +329,8 @@ namespace BobAndFriends
         {
             //                          IMPORTANT!!!!!!!!!!
             //FIX THIS METHOD!!!! VBOBDATA NEEDS TO BE REMOVED IF NEW ARTICLE IS SAVED
-            Database.Instance.SendTo(Record, "vbobdata");
-            bool match = Database.Instance.GetRelevantMatches(Record);
+            int lastInserted = Database.Instance.SendToVBobData(Record);
+            bool match = Database.Instance.GetRelevantMatches(Record, lastInserted);
 
             // If no matches are found for vbob, save the record as a new article.
             if (match == false)
@@ -569,11 +362,11 @@ namespace BobAndFriends
         /// this record.
         /// </summary>
         /// <param name="Record">The product with its product data to be saves</param>
-        private void SaveProductData(Product Record)
+        private void SaveProductData(Product Record, int matchedArticleId)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            Database.Instance.SaveProductData(Record);
+            Database.Instance.SaveProductData(Record, matchedArticleId);
             Console.WriteLine("Finished saving product data in: {0}", sw.Elapsed);
         }
 
@@ -582,60 +375,18 @@ namespace BobAndFriends
             Stopwatch sw = new Stopwatch();
             sw.Start();
             //First select the product data from the product table for the given record
-            DataTable productData = Database.Instance.GetProductData(Record, _matchedArticleID);
+            product productData = Database.Instance.GetProductData(Record, _matchedArticleID);
 
             // If there are no rows returned, there is not yet any deliveryinfo for this record. Save it.
-            if (productData.Rows.Count == 0)
+            if (productData == default(product))
             {
                 Console.WriteLine("Finished comparing, no similar data found. Time: {0}", sw.Elapsed);
-                SaveProductData(Record);
+                SaveProductData(Record, _matchedArticleID);
             }
             else// Else there already is product data for this record: Compare the product data with the record data for each column.
             {
-                string query = "UPDATE product SET";
-                string columnName = "";
-                foreach (DataColumn column in productData.Columns)
-                {
-                    String recordValue = GetPropValue(Record, column.ToString()).ToString();
-                    Object o = productData.Rows[0][column].ToString();
-
-                    string dbValue = o.ToString().Replace(',', '.');
-
-                    // If the record value and article value don't match for this column, the data has changed.
-                    if (recordValue != dbValue)
-                    {
-                        // First rename aliasses to the right column names.
-                        if (column.ToString().Equals("DeliveryTime"))
-                        {
-                            columnName = "ship_time";
-                        }
-                        else if (column.ToString().Equals("DeliveryCost"))
-                        {
-                            columnName = "ship_cost";
-                        }
-                        else if (column.ToString().Equals("Url"))
-                        {
-                            columnName = "direct_link";
-                        }
-                        else
-                        {
-                            columnName = column.ToString();
-                        }
-                        query += " " + columnName + " = '" + recordValue + "',";
-                    }
-                }
-
-                // If the query is not its default value, different data is found but there is a comma on the last character spot. 
-                // Delete the last comma, add WHERE clause and call update method for Database.
-                if (!query.Equals("UPDATE product SET"))
-                {
-                    query = query.Remove(query.Length - 1, 1);
-                    query += " WHERE article_id = " + _matchedArticleID + " AND webshop_url = '" + Record.Webshop + "'";
-                    Console.WriteLine("Finished comparing, different values found in: {0}", sw.Elapsed);
-                    Console.WriteLine(query);
-
-                    Database.Instance.UpdateProductData(query);
-                }
+                Database.Instance.UpdateProductData(productData, Record);
+                Console.WriteLine("Finished comparing, different values found in: {0}", sw.Elapsed);
             }
             Console.WriteLine("Finished total comparison in: ", sw.Elapsed);
         }
@@ -651,9 +402,6 @@ namespace BobAndFriends
         public void FinalizeAndClose()
         {
             Console.WriteLine("\n\t\t\t\t\tClosing connection with database...");
-
-            //Close the database.
-            Database.Instance.Close();
 
             //Close everything and shut down.
             Console.WriteLine("\t\t\t\t\tWriting data to logfile...");
