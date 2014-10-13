@@ -16,6 +16,7 @@ namespace BobAndFriends
     {
         public int category_id { get; set; }
         public string description { get; set; }
+        public string web_url { get; set; }
     
         public virtual category category { get; set; }
     }

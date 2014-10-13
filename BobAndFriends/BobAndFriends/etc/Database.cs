@@ -544,7 +544,7 @@ namespace BobAndFriends
 
         public void UpdateProductData(product productData, Product Record)
         {
-            using (var db = new BetsyModel())
+            using (var db = new BetsyModel(_conStr))
             {
                 try
                 {
@@ -612,6 +612,69 @@ namespace BobAndFriends
         private static object GetPropValue(Product record, string propName)
         {
             return record.GetType().GetProperty(propName).GetValue(record, null);
+        }
+
+        /// <summary>
+        /// Get the category id of the searched category if exist
+        /// </summary>
+        /// <param name="table">The table to search category</param>
+        /// <param name="column">The column that is searched for a value.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <returns></returns>
+        public int GetCategoryNumber(string table, string column, int articleId)
+        {
+            using(var db = new BetsyModel(_conStr))
+            {
+                category cat = db.article.Where(a => a.id == articleId).FirstOrDefault().category.FirstOrDefault();
+                return cat == default(category) ? -1 : cat.id;
+            }
+        }
+
+        /// <summary>
+        /// This method checks if given category exist in database
+        /// </summary>
+        /// <param name="table">Table</param>
+        /// <param name="description">Description</param>
+        /// <param name="web_url">Webshop</param>
+        /// <param name="p">Value description</param>
+        /// <param name="webshop">Value webshop</param>
+        /// <returns></returns>
+        public int CheckCategorySynonym(string table, string description, string web_url, string p, string webshop)
+        {
+            using(var db = new BetsyModel(_conStr))
+            {
+                category_synonym catSyn = db.category_synonym.Where(cs => cs.web_url == webshop && cs.description == p).FirstOrDefault();
+                return catSyn == default(category_synonym) ? -1 : catSyn.category_id;
+            }          
+        }
+
+        /// <summary>
+        /// This method add category to category_synonym
+        /// </summary>
+        /// <param name="catid">Category_id</param>
+        /// <param name="description">Description</param>
+        /// <param name="web_url">Webshop</param>
+        public void InsertIntoCatSynonyms(int catid, string description, string web_url)
+        {
+            using(var db = new BetsyModel(_conStr))
+            {
+                db.category_synonym.Add(new category_synonym { category_id = catid, description = description, web_url = web_url });
+            }
+        }
+
+        /// <summary>
+        /// This method insert the category id and article id thats matched and insert this to the cat-article table.
+        /// </summary>
+        /// <param name="category_id">The category id from the article</param>
+        /// <param name="article_id">The article id of the inserted product</param>
+        public void InsertNewCatArtile(int category_id, int article_id)
+        {
+            using(var db = new BetsyModel(_conStr))
+            {
+                category catToAdd = db.category.Where(c=> c.id == category_id).FirstOrDefault();
+                db.article.Where(a => a.id == article_id).FirstOrDefault().category.Add(catToAdd);
+                db.SaveChanges();
+            }
         }
     }
 }
