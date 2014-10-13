@@ -12,6 +12,7 @@ namespace Baximus
     {
         static void Main(string[] args)
         {
+            Initialize();
             CalculateBiggestDifferences();
             CalculateBiggestDifferencesPerCountry();          
         }
@@ -120,6 +121,13 @@ namespace Baximus
                 //Sve the remaining articles
                 db.SaveChanges();
             }
+        }
+
+        static void Initialize()
+        {
+            #region Settings
+            Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
+            #endregion
         }
     }
 }

@@ -34,6 +34,7 @@
     <EntitySetMapping Name="category_synonym">
       <EntityTypeMapping TypeName="BetsyModel.Model.category_synonym">
         <MappingFragment StoreEntitySet="category_synonym">
+          <ScalarProperty Name="web_url" ColumnName="web_url" />
           <ScalarProperty Name="category_id" ColumnName="category_id" />
           <ScalarProperty Name="description" ColumnName="description" />
         </MappingFragment>
@@ -158,7 +159,6 @@
     <EntitySetMapping Name="vbobdata">
       <EntityTypeMapping TypeName="BetsyModel.Model.vbobdata">
         <MappingFragment StoreEntitySet="vbobdata">
-          <ScalarProperty Name="country_id" ColumnName="country_id" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="title" ColumnName="title" />
           <ScalarProperty Name="ean" ColumnName="ean" />
@@ -187,6 +187,7 @@
     <EntitySetMapping Name="residue">
       <EntityTypeMapping TypeName="BetsyModel.Model.residue">
         <MappingFragment StoreEntitySet="residue">
+          <ScalarProperty Name="web_url" ColumnName="web_url" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="title" ColumnName="title" />
           <ScalarProperty Name="image" ColumnName="image" />
@@ -246,5 +247,31 @@
         <ScalarProperty Name="id" ColumnName="webshop_id" />
       </EndProperty>
     </AssociationSetMapping>
+    <EntitySetMapping Name="biggest_price_differences">
+      <EntityTypeMapping TypeName="BetsyModel.Model.biggest_price_differences">
+        <MappingFragment StoreEntitySet="biggest_price_differences">
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
+          <ScalarProperty Name="difference" ColumnName="difference" />
+          <ScalarProperty Name="country_id" ColumnName="country_id" />
+          <ScalarProperty Name="highest_price" ColumnName="highest_price" />
+          <ScalarProperty Name="lowest_price" ColumnName="lowest_price" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="country_price_differences">
+      <EntityTypeMapping TypeName="BetsyModel.Model.country_price_differences">
+        <MappingFragment StoreEntitySet="country_price_differences">
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
+          <ScalarProperty Name="difference" ColumnName="difference" />
+          <ScalarProperty Name="country_id" ColumnName="country_id" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

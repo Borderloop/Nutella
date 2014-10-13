@@ -25,6 +25,8 @@
     <NavigationProperty Name="title" Relationship="Self.fk_title_article" FromRole="article" ToRole="title" />
     <NavigationProperty Name="vbob_suggested" Relationship="Self.fk_vbob_suggested_article" FromRole="article" ToRole="vbob_suggested" />
     <NavigationProperty Name="category" Relationship="Self.cat_article" FromRole="article" ToRole="category" />
+    <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_article" FromRole="article" ToRole="biggest_price_differences" />
+    <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_article" FromRole="article" ToRole="country_price_differences" />
   </EntityType>
   <EntityType Name="category">
     <Key>
@@ -41,10 +43,12 @@
     <Key>
       <PropertyRef Name="category_id" />
       <PropertyRef Name="description" />
+      <PropertyRef Name="web_url" />
     </Key>
     <Property Name="category_id" Type="Int32" Nullable="false" />
     <Property Name="description" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
     <NavigationProperty Name="category" Relationship="Self.fk_category_synonyms_category" FromRole="category_synonym" ToRole="category" />
+    <Property Name="web_url" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityType Name="country">
     <Key>
@@ -57,6 +61,8 @@
     <NavigationProperty Name="webshop" Relationship="Self.fk_webshop_country" FromRole="country" ToRole="webshop" />
     <NavigationProperty Name="webshop1" Relationship="Self.web_sendingcountry" FromRole="country" ToRole="webshop" />
     <NavigationProperty Name="vbobdata" Relationship="BetsyModel.Model.FK_vbobdata_country" FromRole="country" ToRole="vbobdata" />
+    <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_country" FromRole="country" ToRole="biggest_price_differences" />
+    <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_country" FromRole="country" ToRole="country_price_differences" />
   </EntityType>
   <EntityType Name="ean">
     <Key>
@@ -110,6 +116,8 @@
     <Property Name="affiliate_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
     <Property Name="affiliate_unique_id" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
     <NavigationProperty Name="article" Relationship="Self.fk_product_article" FromRole="product" ToRole="article" />
+    <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_product" FromRole="product" ToRole="biggest_price_differences" />
+    <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="product" ToRole="country_price_differences" />
   </EntityType>
   <EntityType Name="sender">
     <Key>
@@ -218,6 +226,7 @@
     <Property Name="sku" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
     <Property Name="brand" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
     <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="web_url" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
   </EntityType>
   <Association Name="fk_affiliate_webshop">
     <End Role="webshop" Type="Self.webshop" Multiplicity="1" />
@@ -467,6 +476,32 @@
       <End Role="country" EntitySet="country" />
       <End Role="vbobdata" EntitySet="vbobdata" />
     </AssociationSet>
+    <EntitySet Name="biggest_price_differences" EntityType="BetsyModel.Model.biggest_price_differences" />
+    <EntitySet Name="country_price_differences" EntityType="BetsyModel.Model.country_price_differences" />
+    <AssociationSet Name="fk_biggest_price_differences_article" Association="BetsyModel.Model.fk_biggest_price_differences_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="biggest_price_differences" EntitySet="biggest_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_country_price_differences_article" Association="BetsyModel.Model.fk_country_price_differences_article">
+      <End Role="article" EntitySet="article" />
+      <End Role="country_price_differences" EntitySet="country_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_biggest_price_differences_country" Association="BetsyModel.Model.fk_biggest_price_differences_country">
+      <End Role="country" EntitySet="country" />
+      <End Role="biggest_price_differences" EntitySet="biggest_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_biggest_price_differences_product" Association="BetsyModel.Model.fk_biggest_price_differences_product">
+      <End Role="product" EntitySet="product" />
+      <End Role="biggest_price_differences" EntitySet="biggest_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_country_price_differences_country" Association="BetsyModel.Model.fk_country_price_differences_country">
+      <End Role="country" EntitySet="country" />
+      <End Role="country_price_differences" EntitySet="country_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_country_price_differences_product" Association="BetsyModel.Model.fk_country_price_differences_product">
+      <End Role="product" EntitySet="product" />
+      <End Role="country_price_differences" EntitySet="country_price_differences" />
+    </AssociationSet>
   </EntityContainer>
   <Association Name="FK_vbobdata_country">
     <End Type="BetsyModel.Model.country" Role="country" Multiplicity="0..1">
@@ -479,6 +514,108 @@
       </Principal>
       <Dependent Role="vbobdata">
         <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="biggest_price_differences">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <Property Name="lowest_price" Type="Decimal" Nullable="false" />
+    <Property Name="highest_price" Type="Decimal" Nullable="false" />
+    <Property Name="country_id" Type="Int16" Nullable="false" />
+    <Property Name="difference" Type="Decimal" Nullable="false" />
+    <Property Name="last_updated" Type="DateTime" Nullable="false" />
+    <Property Name="product_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_biggest_price_differences_article" FromRole="biggest_price_differences" ToRole="article" />
+    <NavigationProperty Name="country" Relationship="BetsyModel.Model.fk_biggest_price_differences_country" FromRole="biggest_price_differences" ToRole="country" />
+    <NavigationProperty Name="product" Relationship="BetsyModel.Model.fk_biggest_price_differences_product" FromRole="biggest_price_differences" ToRole="product" />
+  </EntityType>
+  <EntityType Name="country_price_differences">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <Property Name="country_id" Type="Int16" Nullable="false" />
+    <Property Name="difference" Type="Decimal" Nullable="false" />
+    <Property Name="last_updated" Type="DateTime" Nullable="false" />
+    <Property Name="product_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_country_price_differences_article" FromRole="country_price_differences" ToRole="article" />
+    <NavigationProperty Name="country" Relationship="BetsyModel.Model.fk_country_price_differences_country" FromRole="country_price_differences" ToRole="country" />
+    <NavigationProperty Name="product" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="country_price_differences" ToRole="product" />
+  </EntityType>
+  <Association Name="fk_biggest_price_differences_article">
+    <End Type="BetsyModel.Model.article" Role="article" Multiplicity="1" />
+    <End Type="BetsyModel.Model.biggest_price_differences" Role="biggest_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="biggest_price_differences">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_country_price_differences_article">
+    <End Type="BetsyModel.Model.article" Role="article" Multiplicity="1" />
+    <End Type="BetsyModel.Model.country_price_differences" Role="country_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="country_price_differences">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_biggest_price_differences_country">
+    <End Type="BetsyModel.Model.country" Role="country" Multiplicity="1" />
+    <End Type="BetsyModel.Model.biggest_price_differences" Role="biggest_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="country">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="biggest_price_differences">
+        <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_biggest_price_differences_product">
+    <End Type="BetsyModel.Model.product" Role="product" Multiplicity="1" />
+    <End Type="BetsyModel.Model.biggest_price_differences" Role="biggest_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="product">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="biggest_price_differences">
+        <PropertyRef Name="product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_country_price_differences_country">
+    <End Type="BetsyModel.Model.country" Role="country" Multiplicity="1" />
+    <End Type="BetsyModel.Model.country_price_differences" Role="country_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="country">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="country_price_differences">
+        <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_country_price_differences_product">
+    <End Type="BetsyModel.Model.product" Role="product" Multiplicity="1" />
+    <End Type="BetsyModel.Model.country_price_differences" Role="country_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="product">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="country_price_differences">
+        <PropertyRef Name="product_id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

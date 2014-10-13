@@ -19,6 +19,19 @@
     <Property Name="description" Type="text" />
     <Property Name="image_loc" Type="varchar" MaxLength="255" />
   </EntityType>
+  <EntityType Name="biggest_price_differences">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="article_id" Type="int" Nullable="false" />
+    <Property Name="lowest_price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+    <Property Name="highest_price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+    <Property Name="country_id" Type="smallint" Nullable="false" />
+    <Property Name="difference" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+    <Property Name="last_updated" Type="timestamp" Precision="0" Nullable="false" />
+    <Property Name="product_id" Type="int" Nullable="false" />
+  </EntityType>
   <EntityType Name="cat_article">
     <Key>
       <PropertyRef Name="category_id" />
@@ -40,9 +53,11 @@
     <Key>
       <PropertyRef Name="category_id" />
       <PropertyRef Name="description" />
+      <PropertyRef Name="web_url" />
     </Key>
     <Property Name="category_id" Type="int" Nullable="false" />
     <Property Name="description" Type="char" MaxLength="50" Nullable="false" />
+    <Property Name="web_url" Type="char" MaxLength="50" Nullable="false" />
   </EntityType>
   <EntityType Name="country">
     <Key>
@@ -51,6 +66,17 @@
     <Property Name="id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="extension" Type="char" MaxLength="3" Nullable="false" />
     <Property Name="name" Type="varchar" MaxLength="20" Nullable="false" />
+  </EntityType>
+  <EntityType Name="country_price_differences">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="article_id" Type="int" Nullable="false" />
+    <Property Name="country_id" Type="smallint" Nullable="false" />
+    <Property Name="difference" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+    <Property Name="last_updated" Type="timestamp" Precision="0" Nullable="false" />
+    <Property Name="product_id" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="ean">
     <Key>
@@ -104,14 +130,15 @@
     <Key>
       <PropertyRef Name="id" />
     </Key>
-    <Property Name="title" Type="varchar" MaxLength="255" Nullable="false" />
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="title" Type="varchar" MaxLength="255" />
     <Property Name="image" Type="varchar" MaxLength="255" />
     <Property Name="description" Type="text" />
     <Property Name="category" Type="varchar" MaxLength="255" />
     <Property Name="ean" Type="varchar" MaxLength="15" />
-    <Property Name="sku" Type="varchar" MaxLength="25" />
+    <Property Name="sku" Type="varchar" MaxLength="20" />
     <Property Name="brand" Type="varchar" MaxLength="50" />
-    <Property Name="id" Type="int" Nullable="false" />
+    <Property Name="web_url" Type="varchar" MaxLength="50" />
   </EntityType>
   <EntityType Name="sender">
     <Key>
@@ -177,7 +204,6 @@
     <Property Name="description" Type="text" />
     <Property Name="rerun" Type="bool" />
     <Property Name="image_loc" Type="varchar" MaxLength="255" />
-    <Property Name="country_id" Type="smallint" />
   </EntityType>
   <EntityType Name="web_language">
     <Key>
@@ -243,6 +269,42 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="fk_biggest_price_differences-article">
+    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="biggest_price_differences" Type="Self.biggest_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="biggest_price_differences">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_biggest_price_differences-country">
+    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="biggest_price_differences" Type="Self.biggest_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="country">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="biggest_price_differences">
+        <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_biggest_price_differences-product">
+    <End Role="product" Type="Self.product" Multiplicity="1" />
+    <End Role="biggest_price_differences" Type="Self.biggest_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="product">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="biggest_price_differences">
+        <PropertyRef Name="product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="fk_cat_article-article">
     <End Role="article" Type="Self.article" Multiplicity="1" />
     <End Role="cat_article" Type="Self.cat_article" Multiplicity="*" />
@@ -276,6 +338,42 @@
       </Principal>
       <Dependent Role="category_synonym">
         <PropertyRef Name="category_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_country_price_differences-article">
+    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="country_price_differences" Type="Self.country_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="article">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="country_price_differences">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_country_price_differences-country">
+    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="country_price_differences" Type="Self.country_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="country">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="country_price_differences">
+        <PropertyRef Name="country_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_country_price_differences-product">
+    <End Role="product" Type="Self.product" Multiplicity="1" />
+    <End Role="country_price_differences" Type="Self.country_price_differences" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="product">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="country_price_differences">
+        <PropertyRef Name="product_id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -498,20 +596,6 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_vbobdata_country">
-    <End Role="country" Type="Self.country" Multiplicity="0..1">
-      <OnDelete Action="Cascade" />
-    </End>
-    <End Role="vbobdata" Type="Self.vbobdata" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="country">
-        <PropertyRef Name="id" />
-      </Principal>
-      <Dependent Role="vbobdata">
-        <PropertyRef Name="country_id" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="fk_webshop-country">
     <End Role="country" Type="Self.country" Multiplicity="1" />
     <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
@@ -527,10 +611,12 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
   <EntityContainer Name="BetsyModelModelStoreContainer">
     <EntitySet Name="affiliate" EntityType="Self.affiliate" Schema="test2" store:Type="Tables" />
     <EntitySet Name="article" EntityType="Self.article" Schema="test2" store:Type="Tables" />
+    <EntitySet Name="biggest_price_differences" EntityType="Self.biggest_price_differences" Schema="test2" store:Type="Tables" />
     <EntitySet Name="cat_article" EntityType="Self.cat_article" Schema="test2" store:Type="Tables" />
     <EntitySet Name="category" EntityType="Self.category" Schema="test2" store:Type="Tables" />
     <EntitySet Name="category_synonym" EntityType="Self.category_synonym" Schema="test2" store:Type="Tables" />
     <EntitySet Name="country" EntityType="Self.country" Schema="test2" store:Type="Tables" />
+    <EntitySet Name="country_price_differences" EntityType="Self.country_price_differences" Schema="test2" store:Type="Tables" />
     <EntitySet Name="ean" EntityType="Self.ean" Schema="test2" store:Type="Tables" />
     <EntitySet Name="language" EntityType="Self.language" Schema="test2" store:Type="Tables" />
     <EntitySet Name="mark" EntityType="Self.mark" Schema="test2" store:Type="Tables" />
@@ -554,6 +640,18 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
       <End Role="webshop" EntitySet="webshop" />
       <End Role="affiliate" EntitySet="affiliate" />
     </AssociationSet>
+    <AssociationSet Name="fk_biggest_price_differences-article" Association="Self.fk_biggest_price_differences-article">
+      <End Role="article" EntitySet="article" />
+      <End Role="biggest_price_differences" EntitySet="biggest_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_biggest_price_differences-country" Association="Self.fk_biggest_price_differences-country">
+      <End Role="country" EntitySet="country" />
+      <End Role="biggest_price_differences" EntitySet="biggest_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_biggest_price_differences-product" Association="Self.fk_biggest_price_differences-product">
+      <End Role="product" EntitySet="product" />
+      <End Role="biggest_price_differences" EntitySet="biggest_price_differences" />
+    </AssociationSet>
     <AssociationSet Name="fk_cat_article-article" Association="Self.fk_cat_article-article">
       <End Role="article" EntitySet="article" />
       <End Role="cat_article" EntitySet="cat_article" />
@@ -565,6 +663,18 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     <AssociationSet Name="fk_category_synonyms-category" Association="Self.fk_category_synonyms-category">
       <End Role="category" EntitySet="category" />
       <End Role="category_synonym" EntitySet="category_synonym" />
+    </AssociationSet>
+    <AssociationSet Name="fk_country_price_differences-article" Association="Self.fk_country_price_differences-article">
+      <End Role="article" EntitySet="article" />
+      <End Role="country_price_differences" EntitySet="country_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_country_price_differences-country" Association="Self.fk_country_price_differences-country">
+      <End Role="country" EntitySet="country" />
+      <End Role="country_price_differences" EntitySet="country_price_differences" />
+    </AssociationSet>
+    <AssociationSet Name="fk_country_price_differences-product" Association="Self.fk_country_price_differences-product">
+      <End Role="product" EntitySet="product" />
+      <End Role="country_price_differences" EntitySet="country_price_differences" />
     </AssociationSet>
     <AssociationSet Name="fk_ean-article" Association="Self.fk_ean-article">
       <End Role="article" EntitySet="article" />
@@ -637,10 +747,6 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     <AssociationSet Name="fk_vbob_suggested-vbob" Association="Self.fk_vbob_suggested-vbob">
       <End Role="vbobdata" EntitySet="vbobdata" />
       <End Role="vbob_suggested" EntitySet="vbob_suggested" />
-    </AssociationSet>
-    <AssociationSet Name="FK_vbobdata_country" Association="Self.FK_vbobdata_country">
-      <End Role="country" EntitySet="country" />
-      <End Role="vbobdata" EntitySet="vbobdata" />
     </AssociationSet>
     <AssociationSet Name="fk_webshop-country" Association="Self.fk_webshop-country">
       <End Role="country" EntitySet="country" />

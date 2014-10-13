@@ -68,14 +68,17 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="BetsyContext\BetsyModel.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="BetsyContext\BetsyModel.Designer.cs">
       <DependentUpon>BetsyModel.edmx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="BetsyContext\biggest_price_differences.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="BetsyContext\category.cs">
       <DependentUpon>BetsyModel.tt</DependentUpon>
@@ -84,6 +87,9 @@
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="BetsyContext\country.cs">
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BetsyContext\country_price_differences.cs">
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="BetsyContext\ean.cs">

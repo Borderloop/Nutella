@@ -26,6 +26,8 @@ public partial class BetsyModel : DbContext
 
     }
 
+    public BetsyModel(string conStr) : base(conStr) { }
+
     protected override void OnModelCreating(DbModelBuilder modelBuilder)
     {
         throw new UnintentionalCodeFirstException();
