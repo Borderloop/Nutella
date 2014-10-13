@@ -78,7 +78,7 @@ namespace Baximus
 
                     //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
 
-                    decimal dutchPrice = article.product.Where(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id == 1).FirstOrDefault().price;
+                    decimal dutchPrice = article.product.Where(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id == 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault().price;
 
                     foreach(product product in article.product)
                     {
@@ -96,7 +96,9 @@ namespace Baximus
                             db.country_price_differences.Attach(cpd);
                             var entry = db.Entry(cpd);
                             cpd.difference = difference;
+                            cpd.product_id = product.id;
                             entry.Property("difference").IsModified = true;
+                            entry.Property("product_id").IsModified = true;
                             count++;
                         }
                         else
