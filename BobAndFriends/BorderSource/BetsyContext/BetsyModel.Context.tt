@@ -64,7 +64,7 @@ if (!loader.IsLazyLoadingEnabled(container))
 #>
         this.Configuration.LazyLoadingEnabled = false;
 <#
-}
+}	
 
 foreach (var entitySet in container.BaseEntitySets.OfType<EntitySet>())
 {
@@ -79,6 +79,8 @@ foreach (var entitySet in container.BaseEntitySets.OfType<EntitySet>())
 }
 #>
     }
+
+	public <#=code.Escape(container)#>(string conStr) : base(conStr) { }
 
     protected override void OnModelCreating(DbModelBuilder modelBuilder)
     {

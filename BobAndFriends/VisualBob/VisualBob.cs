@@ -95,7 +95,8 @@ namespace VisualBob
                 return;
             }
             article selected = (article)suggestedProductsDataGrid.SelectedRows[0].DataBoundItem;
-            Database.Instance.SaveMatch(ToProduct(selectedProduct), selected.id, (int)selectedProduct.country_id);
+            // TO BE IMPLEMENTED
+            //Database.Instance.SaveMatch(ToProduct(selectedProduct), selected.id, (int)selectedProduct.country_id);
             Database.Instance.DeleteFromVbobData(selectedProduct.id);
             ShowNext();
         }
@@ -108,7 +109,8 @@ namespace VisualBob
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            Database.Instance.SaveNewArticle(ToProduct(selectedProduct),(int)selectedProduct.country_id);
+            //TO BE IMPLEMENTED
+            //Database.Instance.SaveNewArticle(ToProduct(selectedProduct),(int)selectedProduct.country_id);
             Database.Instance.DeleteFromVbobData(selectedProduct.id);
             ShowNext();
         }

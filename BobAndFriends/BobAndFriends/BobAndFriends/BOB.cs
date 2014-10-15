@@ -483,6 +483,7 @@ namespace BobAndFriends
             //Close everything and shut down.
             Console.WriteLine("\t\t\t\t\tWriting data to logfile...");
             Statics.Logger.Close();
+            Statics.SqlLogger.Close();
             Console.WriteLine("\t\t\t\t\tDone.");
             Environment.Exit(1);
         }

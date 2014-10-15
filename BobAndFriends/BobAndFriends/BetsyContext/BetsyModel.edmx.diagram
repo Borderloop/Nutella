@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="915af0a29d5d4e7e8a6c35f99115750a" Name="Diagram1">
+        <EntityTypeShape EntityType="BetsyModel.Model.affiliate" Width="1.5" PointX="8.25" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.article" Width="1.5" PointX="0.75" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.category" Width="1.5" PointX="3" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.category_synonym" Width="1.5" PointX="5.25" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.country" Width="1.5" PointX="0.75" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.ean" Width="1.5" PointX="3" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.language" Width="1.5" PointX="3.75" PointY="15.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.mark" Width="1.5" PointX="3.75" PointY="17.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.payment_method" Width="1.5" PointX="3.75" PointY="20.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.product" Width="1.5" PointX="3" PointY="25.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.sender" Width="1.5" PointX="3.75" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.sku" Width="1.5" PointX="3" PointY="30" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.title" Width="1.5" PointX="3" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.title_synonym" Width="1.5" PointX="5.25" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.users" Width="1.5" PointX="7.75" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.vbob_suggested" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.vbobdata" Width="1.5" PointX="0.75" PointY="10.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.webshop" Width="1.5" PointX="6" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BetsyModel.Model.residue" Width="1.5" PointX="9.75" PointY="10.875" IsExpanded="true" />
+        <AssociationConnector Association="BetsyModel.Model.fk_affiliate_webshop" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_ean_article" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_product_article" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_sku_article" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_title_article" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_vbob_suggested_article" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_category_synonyms_category" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_title_country" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_webshop_country" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_title_synonym_title" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.fk_vbob_suggested_vbob" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.cat_article" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.web_language" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.web_mark" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.web_payment" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.web_sender" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.web_sendingcountry" ManuallyRouted="false" />
+        <AssociationConnector Association="BetsyModel.Model.FK_vbobdata_country" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

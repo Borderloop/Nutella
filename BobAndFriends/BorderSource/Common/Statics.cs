@@ -24,7 +24,7 @@ namespace BorderSource.Common
         /// </summary>
         public static Logger Logger;
 
-        public static Logger SqlLogger;
+        public static QueryLogger SqlLogger;
 
         /// <summary>
         /// The settings used in the program.

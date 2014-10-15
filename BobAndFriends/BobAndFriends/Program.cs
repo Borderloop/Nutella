@@ -46,29 +46,7 @@ namespace BobAndFriends
             
             //Start threads
             producer.Start();
-            consumer.Start();
-
-            
-            //Application.EnableVisualStyles();
-            //Application.Run(new VisualBob());
-
-            //sw = new Stopwatch();
-             
-            //Application.EnableVisualStyles();
-            
-/*try
-            {
-                Application.Run(new VisualBob());
-            } 
-            catch(Exception e)
-            {
-                //don't do anything as it is not that important
-            }
-            finally
-            {
-                Application.Exit();
-            }
- */
+            consumer.Start();         
         }
 
         static void ProductDequeuer()
@@ -156,7 +134,7 @@ namespace BobAndFriends
 
             #region Loggers
             Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
-            Statics.SqlLogger = new Logger(Statics.settings["logpath"] + "\\sqldump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
+            Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
             #endregion
 
             #region Values

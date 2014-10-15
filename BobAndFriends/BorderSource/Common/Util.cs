@@ -80,6 +80,16 @@ namespace BorderSource.Common
             return literal.ToString();
         }
 
+        public static string RemoveEscapedCharacters(this string str)
+        {
+            StringBuilder sb = new StringBuilder();
+            string[] parts = str.Split(new char[] { ' ', '\n', '\t', '\r', '\f', '\v', '\\' });
+            foreach(string s in parts)
+                sb.Append(s);
+            return sb.ToString();
+        }
+
+
         public static string EmptyNull(this string str) { return str ?? ""; }
 
         public static string ToSHA256(this string str)

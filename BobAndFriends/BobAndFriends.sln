@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CategoryMatcher", "Category
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baximus", "Baximus\Baximus.csproj", "{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crapper", "Crapper\Crapper.csproj", "{2DFB7C26-BCE5-42C6-997E-EA761BD3F401}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetsyTest", "BetsyTest\BetsyTest.csproj", "{1EE4D645-FD29-4EC6-9FBF-42D378DAA4B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BFF8CAC-26C6-489B-8F9F-EBBBAAF4D4F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DFB7C26-BCE5-42C6-997E-EA761BD3F401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DFB7C26-BCE5-42C6-997E-EA761BD3F401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DFB7C26-BCE5-42C6-997E-EA761BD3F401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DFB7C26-BCE5-42C6-997E-EA761BD3F401}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EE4D645-FD29-4EC6-9FBF-42D378DAA4B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EE4D645-FD29-4EC6-9FBF-42D378DAA4B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EE4D645-FD29-4EC6-9FBF-42D378DAA4B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EE4D645-FD29-4EC6-9FBF-42D378DAA4B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

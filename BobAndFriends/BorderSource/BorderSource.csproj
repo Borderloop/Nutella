@@ -67,11 +67,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="BetsyContext\BetsyModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="BetsyContext\BetsyModel.Designer.cs">
       <DependentUpon>BetsyModel.edmx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -139,6 +134,7 @@
     <Compile Include="Common\INIFile.cs" />
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\Product.cs" />
+    <Compile Include="Common\QueryLogger.cs" />
     <Compile Include="Common\Statics.cs" />
     <Compile Include="Common\TypeSwitch.cs" />
     <Compile Include="Common\Util.cs" />

@@ -19,7 +19,8 @@ namespace Baximus
 
         static void CalculateBiggestDifferences()
         {
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            string conStr = Database.Instance.GetConnectionString();
+            using (var db = new BetsyModel(conStr))
             {
                 int count = 0;
                 //Calculate biggest price differences
@@ -66,7 +67,8 @@ namespace Baximus
 
         static void CalculateBiggestDifferencesPerCountry()
         {
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            string conStr = Database.Instance.GetConnectionString();
+            using (var db = new BetsyModel(conStr))
             {
                 int count = 0;
                 foreach (article article in db.article)
@@ -130,6 +132,10 @@ namespace Baximus
             #region Settings
             Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
             #endregion
+
+            #region Loggers
+            Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
+            #endregion 
         }
     }
 }

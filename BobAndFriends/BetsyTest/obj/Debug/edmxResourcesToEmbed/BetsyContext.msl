@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="BetsyModelStoreContainer" CdmEntityContainer="BetsyEntities">
+    <EntitySetMapping Name="affiliate">
+      <EntityTypeMapping TypeName="BetsyModel.affiliate">
+        <MappingFragment StoreEntitySet="affiliate">
+          <ScalarProperty Name="affiliate1" ColumnName="affiliate" />
+          <ScalarProperty Name="approved" ColumnName="approved" />
+          <ScalarProperty Name="webshop_id" ColumnName="webshop_id" />
+          <ScalarProperty Name="extra" ColumnName="extra" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="article">
+      <EntityTypeMapping TypeName="BetsyModel.article">
+        <MappingFragment StoreEntitySet="article">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="brand" ColumnName="brand" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="image_loc" ColumnName="image_loc" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="biggest_price_differences">
+      <EntityTypeMapping TypeName="BetsyModel.biggest_price_differences">
+        <MappingFragment StoreEntitySet="biggest_price_differences">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="lowest_price" ColumnName="lowest_price" />
+          <ScalarProperty Name="highest_price" ColumnName="highest_price" />
+          <ScalarProperty Name="country_id" ColumnName="country_id" />
+          <ScalarProperty Name="difference" ColumnName="difference" />
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="category">
+      <EntityTypeMapping TypeName="BetsyModel.category">
+        <MappingFragment StoreEntitySet="category">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="menulevel" ColumnName="menulevel" />
+          <ScalarProperty Name="called_by" ColumnName="called_by" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="category_synonym">
+      <EntityTypeMapping TypeName="BetsyModel.category_synonym">
+        <MappingFragment StoreEntitySet="category_synonym">
+          <ScalarProperty Name="category_id" ColumnName="category_id" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="web_url" ColumnName="web_url" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="country">
+      <EntityTypeMapping TypeName="BetsyModel.country">
+        <MappingFragment StoreEntitySet="country">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="extension" ColumnName="extension" />
+          <ScalarProperty Name="name" ColumnName="name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="country_price_differences">
+      <EntityTypeMapping TypeName="BetsyModel.country_price_differences">
+        <MappingFragment StoreEntitySet="country_price_differences">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="country_id" ColumnName="country_id" />
+          <ScalarProperty Name="difference" ColumnName="difference" />
+          <ScalarProperty Name="last_updated" ColumnName="last_updated" />
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ean">
+      <EntityTypeMapping TypeName="BetsyModel.ean">
+        <MappingFragment StoreEntitySet="ean">
+          <ScalarProperty Name="ean1" ColumnName="ean" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="language">
+      <EntityTypeMapping TypeName="BetsyModel.language">
+        <MappingFragment StoreEntitySet="language">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="language1" ColumnName="language" />
+          <ScalarProperty Name="short_language" ColumnName="short_language" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="mark">
+      <EntityTypeMapping TypeName="BetsyModel.mark">
+        <MappingFragment StoreEntitySet="mark">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="mark1" ColumnName="mark" />
+          <ScalarProperty Name="logo_klein" ColumnName="logo_klein" />
+          <ScalarProperty Name="logo_groot" ColumnName="logo_groot" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="payment_method">
+      <EntityTypeMapping TypeName="BetsyModel.payment_method">
+        <MappingFragment StoreEntitySet="payment_method">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="method" ColumnName="method" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="product">
+      <EntityTypeMapping TypeName="BetsyModel.product">
+        <MappingFragment StoreEntitySet="product">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="ship_time" ColumnName="ship_time" />
+          <ScalarProperty Name="ship_cost" ColumnName="ship_cost" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="webshop_url" ColumnName="webshop_url" />
+          <ScalarProperty Name="direct_link" ColumnName="direct_link" />
+          <ScalarProperty Name="last_modified" ColumnName="last_modified" />
+          <ScalarProperty Name="valid_until" ColumnName="valid_until" />
+          <ScalarProperty Name="affiliate_name" ColumnName="affiliate_name" />
+          <ScalarProperty Name="affiliate_unique_id" ColumnName="affiliate_unique_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="residue">
+      <EntityTypeMapping TypeName="BetsyModel.residue">
+        <MappingFragment StoreEntitySet="residue">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="image" ColumnName="image" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="category" ColumnName="category" />
+          <ScalarProperty Name="ean" ColumnName="ean" />
+          <ScalarProperty Name="sku" ColumnName="sku" />
+          <ScalarProperty Name="brand" ColumnName="brand" />
+          <ScalarProperty Name="web_url" ColumnName="web_url" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="sender">
+      <EntityTypeMapping TypeName="BetsyModel.sender">
+        <MappingFragment StoreEntitySet="sender">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="sender1" ColumnName="sender" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="sku">
+      <EntityTypeMapping TypeName="BetsyModel.sku">
+        <MappingFragment StoreEntitySet="sku">
+          <ScalarProperty Name="sku1" ColumnName="sku" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="title">
+      <EntityTypeMapping TypeName="BetsyModel.title">
+        <MappingFragment StoreEntitySet="title">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="title1" ColumnName="title" />
+          <ScalarProperty Name="country_id" ColumnName="country_id" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="title_synonym">
+      <EntityTypeMapping TypeName="BetsyModel.title_synonym">
+        <MappingFragment StoreEntitySet="title_synonym">
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="title_id" ColumnName="title_id" />
+          <ScalarProperty Name="occurrences" ColumnName="occurrences" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="users">
+      <EntityTypeMapping TypeName="BetsyModel.users">
+        <MappingFragment StoreEntitySet="users">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="username" ColumnName="username" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="salt" ColumnName="salt" />
+          <ScalarProperty Name="email" ColumnName="email" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vbob_suggested">
+      <EntityTypeMapping TypeName="BetsyModel.vbob_suggested">
+        <MappingFragment StoreEntitySet="vbob_suggested">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="vbob_id" ColumnName="vbob_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vbobdata">
+      <EntityTypeMapping TypeName="BetsyModel.vbobdata">
+        <MappingFragment StoreEntitySet="vbobdata">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="ean" ColumnName="ean" />
+          <ScalarProperty Name="sku" ColumnName="sku" />
+          <ScalarProperty Name="brand" ColumnName="brand" />
+          <ScalarProperty Name="category" ColumnName="category" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="rerun" ColumnName="rerun" />
+          <ScalarProperty Name="image_loc" ColumnName="image_loc" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="webshop">
+      <EntityTypeMapping TypeName="BetsyModel.webshop">
+        <MappingFragment StoreEntitySet="webshop">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="url" ColumnName="url" />
+          <ScalarProperty Name="country_id" ColumnName="country_id" />
+          <ScalarProperty Name="logo_small" ColumnName="logo_small" />
+          <ScalarProperty Name="logo_large" ColumnName="logo_large" />
+          <ScalarProperty Name="shipping_cost" ColumnName="shipping_cost" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="cat_article" TypeName="BetsyModel.cat_article" StoreEntitySet="cat_article">
+      <EndProperty Name="article">
+        <ScalarProperty Name="id" ColumnName="article_id" />
+      </EndProperty>
+      <EndProperty Name="category">
+        <ScalarProperty Name="id" ColumnName="category_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="web_language" TypeName="BetsyModel.web_language" StoreEntitySet="web_language">
+      <EndProperty Name="language">
+        <ScalarProperty Name="id" ColumnName="language_id" />
+      </EndProperty>
+      <EndProperty Name="webshop">
+        <ScalarProperty Name="id" ColumnName="webshop_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="web_mark" TypeName="BetsyModel.web_mark" StoreEntitySet="web_mark">
+      <EndProperty Name="mark">
+        <ScalarProperty Name="id" ColumnName="mark_id" />
+      </EndProperty>
+      <EndProperty Name="webshop">
+        <ScalarProperty Name="id" ColumnName="webshop_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="web_payment" TypeName="BetsyModel.web_payment" StoreEntitySet="web_payment">
+      <EndProperty Name="payment_method">
+        <ScalarProperty Name="id" ColumnName="method_id" />
+      </EndProperty>
+      <EndProperty Name="webshop">
+        <ScalarProperty Name="id" ColumnName="webshop_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="web_sender" TypeName="BetsyModel.web_sender" StoreEntitySet="web_sender">
+      <EndProperty Name="sender">
+        <ScalarProperty Name="id" ColumnName="sender_id" />
+      </EndProperty>
+      <EndProperty Name="webshop">
+        <ScalarProperty Name="id" ColumnName="webshop_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="web_sendingcountry" TypeName="BetsyModel.web_sendingcountry" StoreEntitySet="web_sendingcountry">
+      <EndProperty Name="country">
+        <ScalarProperty Name="id" ColumnName="country_id" />
+      </EndProperty>
+      <EndProperty Name="webshop">
+        <ScalarProperty Name="id" ColumnName="webshop_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+  </EntityContainerMapping>
+</Mapping>

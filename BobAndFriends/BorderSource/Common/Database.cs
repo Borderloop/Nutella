@@ -79,6 +79,11 @@ namespace BorderSource.Common
             return _conStr;
         }
 
+        /// <summary>
+        /// THIS NEEDS REFACTORING
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         public int CountRows(string tableName)
         {
             using(var db = new BetsyModel(_conStr))
@@ -99,14 +104,19 @@ namespace BorderSource.Common
         {
             using (var db = new BetsyModel(_conStr))
             {
-                var actualTable = from t in table where column == value select t;
-
-                if (actualTable == null) return -1;
-                if (actualTable is ean) return ((ean)actualTable).article_id;
-                if (actualTable is sku) return ((sku)actualTable).article_id;
-                if (actualTable is title) return ((title)actualTable).article_id;
-
-                return -1;
+                switch (table)
+                {
+                    case "ean":
+                        var actualEan = db.ean.Where(e => e.ean1 == value).FirstOrDefault();
+                        return actualEan == default(ean) ? -1 : actualEan.article_id;
+                    case "sku":
+                        var actualSku = db.sku.Where(s => s.sku1 == value).FirstOrDefault();
+                        return actualSku == default(sku) ? -1 : actualSku.article_id;
+                    case "title":
+                        var actualTitle = db.title.Where(t => t.title1 == value).FirstOrDefault();
+                        return actualTitle == default(title) ? -1 : actualTitle.article_id;
+                    default: return -1;
+                }                   
             }
         }
 
@@ -140,26 +150,36 @@ namespace BorderSource.Common
 
 
                 //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
-                if (!(articleTable.ean.Any(e => e.ean1 == Record.EAN)) && Record.EAN != "") articleTable.ean.Add(new ean { ean1 = Record.EAN, article_id = matchedArticleID });
+                if (!(articleTable.ean.Any(e => e.ean1 == Record.EAN)) && Record.EAN != "") articleTable.ean.Add(new ean { ean1 = Record.EAN, article_id = matchedArticleID });              
                 if (!(articleTable.sku.Any(s => s.sku1 == Record.SKU)) && Record.SKU != "") articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
-                int titleid = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault().id;
+                title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
 
-                //If any title synonym matches the title, up the occurences.
-                if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title == Record.Title)))
+                if (title == default(title))
                 {
-                    title_synonym ts = db.title_synonym.Where(innerTs => innerTs.title == Record.Title).FirstOrDefault();
-                    ts.occurrences++;
-                    if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
-                    {
-                        UpdateTitle(titleid, ts.title);
-                    }
+                    title addedTitle = new title { title1 = Record.Title, country_id = (short)countryID, article_id = matchedArticleID };
+                    db.title.Add(addedTitle);
+                    db.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title, title_id = addedTitle.id });
                 }
-                //else, add the title to the synonyms.
                 else
                 {
-                    title_synonym ts = new title_synonym { occurrences = 1, title = Record.Title, title_id = titleid };
-                    db.title_synonym.Add(ts);
+                    //If any title synonym matches the title, up the occurences.
+                    if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == Record.Title.ToLower())))
+                    {
+                        title_synonym ts = db.title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
+                        ts.occurrences++;
+                        db.Entry(ts).State = EntityState.Modified;
+                        if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
+                        {
+                            UpdateTitle(title.id, ts.title);
+                        }
+                    }
+                    //else, add the title to the synonyms.
+                    else
+                    {
+                        title_synonym ts = new title_synonym { occurrences = 1, title = Record.Title, title_id = title.id };
+                        db.title_synonym.Add(ts);
+                    }
                 }
 
                 db.SaveChanges();
@@ -196,6 +216,7 @@ namespace BorderSource.Common
             {
                 var newTitle = db.title.Where(t => t.id == titleId).FirstOrDefault();
                 newTitle.title1 = title;
+                db.Entry(newTitle).State = EntityState.Modified;
                 db.SaveChanges();
             }
         }
@@ -209,7 +230,6 @@ namespace BorderSource.Common
         
             residue res = new residue
             {
-                //id = residueId++,
                 title = p.Title,
                 description = p.Description,
                 category = p.Category,
@@ -221,8 +241,8 @@ namespace BorderSource.Common
 
             pendingResidue.Add(res);
 
-            if (pendingResidue.Count > Statics.maxResidueListSize)
-            {
+            //if (pendingResidue.Count > Statics.maxResidueListSize)
+            //{
                 sw.Start();
                 Console.WriteLine("Started writing {0} products to residue", pendingResidue.Count);
                 foreach (residue residue in pendingResidue)
@@ -235,7 +255,7 @@ namespace BorderSource.Common
                 }               
                 Console.WriteLine("Saved {0} products to residue in {1}", pendingResidue.Count, sw.Elapsed);
                 pendingResidue.Clear();
-            }
+            //}
         }
 
         /// This method will send a product to the residu.
@@ -270,7 +290,7 @@ namespace BorderSource.Common
         {
             using(var db = new BetsyModel(_conStr))
             {
-                country cou = db.country.Where(c => c.id == 1).FirstOrDefault() ;
+                country cou = db.country.Where(c => c.id == countryId).FirstOrDefault() ;
                 webshop webshop = db.webshop.Where(w => w.url == Record.Webshop).FirstOrDefault();
 
                 if(webshop == default(webshop))
@@ -313,7 +333,8 @@ namespace BorderSource.Common
                 title_synonym ts = new title_synonym
                 {
                     title = Record.Title,
-                    title_id = title.id
+                    title_id = title.id,
+                    occurrences = 1
                 };
                 db.title_synonym.Add(ts);
 

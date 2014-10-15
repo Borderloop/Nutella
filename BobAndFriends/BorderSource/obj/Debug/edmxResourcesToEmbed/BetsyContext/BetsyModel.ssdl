@@ -270,7 +270,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_biggest_price_differences-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="biggest_price_differences" Type="Self.biggest_price_differences" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -282,7 +284,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_biggest_price_differences-country">
-    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="country" Type="Self.country" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="biggest_price_differences" Type="Self.biggest_price_differences" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="country">
@@ -294,7 +298,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_biggest_price_differences-product">
-    <End Role="product" Type="Self.product" Multiplicity="1" />
+    <End Role="product" Type="Self.product" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="biggest_price_differences" Type="Self.biggest_price_differences" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="product">
@@ -306,7 +312,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_cat_article-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="cat_article" Type="Self.cat_article" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -318,7 +326,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_cat_article-category">
-    <End Role="category" Type="Self.category" Multiplicity="1" />
+    <End Role="category" Type="Self.category" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="cat_article" Type="Self.cat_article" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="category">
@@ -330,7 +340,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_category_synonyms-category">
-    <End Role="category" Type="Self.category" Multiplicity="1" />
+    <End Role="category" Type="Self.category" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="category_synonym" Type="Self.category_synonym" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="category">
@@ -342,7 +354,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_country_price_differences-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="country_price_differences" Type="Self.country_price_differences" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -354,7 +368,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_country_price_differences-country">
-    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="country" Type="Self.country" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="country_price_differences" Type="Self.country_price_differences" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="country">
@@ -366,7 +382,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_country_price_differences-product">
-    <End Role="product" Type="Self.product" Multiplicity="1" />
+    <End Role="product" Type="Self.product" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="country_price_differences" Type="Self.country_price_differences" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="product">
@@ -378,7 +396,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_ean-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="ean" Type="Self.ean" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -462,7 +482,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_product-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="product" Type="Self.product" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -525,7 +547,9 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_sku-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="sku" Type="Self.sku" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -537,7 +561,9 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_title_synonym-title">
-    <End Role="title" Type="Self.title" Multiplicity="1" />
+    <End Role="title" Type="Self.title" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="title_synonym" Type="Self.title_synonym" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="title">
@@ -549,7 +575,9 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_title-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="title" Type="Self.title" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -561,7 +589,9 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_title-country">
-    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="country" Type="Self.country" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="title" Type="Self.title" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="country">
@@ -573,7 +603,9 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_vbob_suggested-article">
-    <End Role="article" Type="Self.article" Multiplicity="1" />
+    <End Role="article" Type="Self.article" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="vbob_suggested" Type="Self.vbob_suggested" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="article">
@@ -585,7 +617,9 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_vbob_suggested-vbob">
-    <End Role="vbobdata" Type="Self.vbobdata" Multiplicity="1" />
+    <End Role="vbobdata" Type="Self.vbobdata" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="vbob_suggested" Type="Self.vbob_suggested" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="vbobdata">
@@ -597,7 +631,9 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
     </ReferentialConstraint>
   </Association>
   <Association Name="fk_webshop-country">
-    <End Role="country" Type="Self.country" Multiplicity="1" />
+    <End Role="country" Type="Self.country" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="country">
