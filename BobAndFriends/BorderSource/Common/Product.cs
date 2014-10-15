@@ -72,6 +72,7 @@ namespace BorderSource.Common
             {
                 //We can safely assume all fields are strings, but for the future we throw an exception if a field isn't a string or null.
                 object type = prop.GetValue(this);
+                decimal parsedPrice;
                 if (!(type is string) && type != null) throw new NotImplementedException();
                 //Make sure the fields are DEFINITELY not null
                 if (prop.GetValue(this) == null)
@@ -86,6 +87,8 @@ namespace BorderSource.Common
                     case "Price":
                         prop.SetValue(this, (prop.GetValue(this) as string).Replace(',', '.'));
                         prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
+                        if (prop.GetValue(this) as string == "") return false;
+                        if ((parsedPrice = decimal.Parse(prop.GetValue(this) as string))==0) return false; 
                         break;
 
                     case "DeliveryCost":

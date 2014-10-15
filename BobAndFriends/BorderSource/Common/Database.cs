@@ -150,8 +150,8 @@ namespace BorderSource.Common
 
 
                 //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
-                if (!(articleTable.ean.Any(e => e.ean1 == Record.EAN)) && Record.EAN != "") articleTable.ean.Add(new ean { ean1 = Record.EAN, article_id = matchedArticleID });              
-                if (!(articleTable.sku.Any(s => s.sku1 == Record.SKU)) && Record.SKU != "") articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
+                if (!(articleTable.ean.Any(e => e.ean1 == Record.EAN)) && Record.EAN != "") db.ean.Add(new ean { ean1 = Record.EAN, article_id = matchedArticleID });
+                if (!(articleTable.sku.Any(s => s.sku1 == Record.SKU)) && Record.SKU != "") db.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
                 title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
 
