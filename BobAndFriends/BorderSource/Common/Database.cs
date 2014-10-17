@@ -690,5 +690,15 @@ namespace BorderSource.Common
                 db.SaveChanges();
             }
         }
+
+        public List<string> GetAllWebshopNames()
+        {
+            using(var db = new BetsyModel(_conStr))
+            {
+                List<string> names = new List<string>();
+                db.webshop.ToList().ForEach(w => names.Add(w.name));
+                return names;
+            }
+        }
     }
 }

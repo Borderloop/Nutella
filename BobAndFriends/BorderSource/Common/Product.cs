@@ -81,7 +81,7 @@ namespace BorderSource.Common
                 switch(prop.Name)
                 {
                     case "EAN":
-                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? prop.GetValue(this) : "");
+                        prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? (prop.GetValue(this) as string).Trim() : "");
                         break;
 
                     case "Price":
@@ -102,6 +102,10 @@ namespace BorderSource.Common
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
+                        }
                         break;
 
                     case "Brand":
@@ -109,6 +113,10 @@ namespace BorderSource.Common
                         {
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
+                        }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
                         }
                         break;
 
@@ -118,6 +126,10 @@ namespace BorderSource.Common
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
+                        }
                         break;
 
                     case "Image_Loc":
@@ -125,6 +137,10 @@ namespace BorderSource.Common
                         {
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
+                        }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
                         }
                         break;
 
@@ -134,6 +150,10 @@ namespace BorderSource.Common
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
+                        }
                         break;
 
                     case "DeliveryTime":
@@ -141,6 +161,10 @@ namespace BorderSource.Common
                         {
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
+                        }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
                         }
                         break;
 
@@ -150,6 +174,10 @@ namespace BorderSource.Common
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
+                        }
                         break;
 
                     case "Url":
@@ -157,6 +185,10 @@ namespace BorderSource.Common
                         {
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
+                        }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
                         }
                         break;
 
@@ -166,6 +198,10 @@ namespace BorderSource.Common
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
+                        }
                         break;
 
                     case "AffiliateProdID":
@@ -173,6 +209,10 @@ namespace BorderSource.Common
                         {
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
+                        }
+                        else
+                        {
+                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
                         }
                         break;
                 }

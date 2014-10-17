@@ -17,8 +17,6 @@ namespace BobAndFriends.Affiliates
     /// </summary>
     public class Belboon : AffiliateBase
     {
-        // Stores the name of the website that is being processed.
-        private string fileUrl;
 
         public override string Name { get { return "Belboon"; } }
 
@@ -57,51 +55,36 @@ namespace BobAndFriends.Affiliates
 
             foreach (string file in filePaths)
             {
-                //First check if the website is in the database. If not, log it and if so, proceed.
-                string urlLine;
-                bool websitePresent = false;
-                fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BOBAndFriends\\weburls.txt");
+                string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
-                //Read all lines from the urlTxtFile.
-                while ((urlLine = urlTxtFile.ReadLine()) != null)
-                {
-                    if (urlLine == fileUrl)// Found a similar website
-                    {
-                        websitePresent = true;
-                        break;
-                    }
-                }
-                // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
-                if (websitePresent == false)
+                // If the webshop is not found in the webshop list no further processing needed.
+                if (!Statics.webshopNames.Any(w => w == fileUrl))
                 {
                     Statics.Logger.WriteLine("Webshop not found in database: " + fileUrl);
+                    continue;
                 }
-                else
+                xvr.CreateReader(file);
+                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    xvr.CreateReader(file);
-                    foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
-                    {
-                        p.EAN = dkd["ean"][XmlNodeType.Element];
-                        p.Title = dkd["productname"][XmlNodeType.Element];
-                        p.Brand = dkd["brandname"][XmlNodeType.Element];
-                        p.Price = dkd["currentprice"][XmlNodeType.Element];
-                        p.Currency = dkd["currency"][XmlNodeType.Element];
-                        p.ValidUntil = dkd["validuntil"][XmlNodeType.Element];
-                        p.Url = dkd["deeplinkurl"][XmlNodeType.Element];
-                        p.Image_Loc = dkd["imagesmallurl"][XmlNodeType.Element];
-                        p.Category = dkd["productcategory"][XmlNodeType.Element];
-                        p.Description = dkd["productdescriptionslong"][XmlNodeType.Element];
-                        p.LastModified = dkd["lastupdate"][XmlNodeType.Element];
-                        p.DeliveryCost = dkd["shipping"][XmlNodeType.Element];
-                        p.Stock = dkd["availabilty"][XmlNodeType.Element];
-                        p.AffiliateProdID = dkd["belboonproductnumber"][XmlNodeType.Element];
-                        p.Affiliate = "Belboon";
-                        p.FileName = file;
-                        p.Webshop = fileUrl;
-                        products.Add(p);
-                        p = new Product();
-                    }
+                    p.EAN = dkd["ean"][XmlNodeType.Element];
+                    p.Title = dkd["productname"][XmlNodeType.Element];
+                    p.Brand = dkd["brandname"][XmlNodeType.Element];
+                    p.Price = dkd["currentprice"][XmlNodeType.Element];
+                    p.Currency = dkd["currency"][XmlNodeType.Element];
+                    p.ValidUntil = dkd["validuntil"][XmlNodeType.Element];
+                    p.Url = dkd["deeplinkurl"][XmlNodeType.Element];
+                    p.Image_Loc = dkd["imagesmallurl"][XmlNodeType.Element];
+                    p.Category = dkd["productcategory"][XmlNodeType.Element];
+                    p.Description = dkd["productdescriptionslong"][XmlNodeType.Element];
+                    p.LastModified = dkd["lastupdate"][XmlNodeType.Element];
+                    p.DeliveryCost = dkd["shipping"][XmlNodeType.Element];
+                    p.Stock = dkd["availabilty"][XmlNodeType.Element];
+                    p.AffiliateProdID = dkd["belboonproductnumber"][XmlNodeType.Element];
+                    p.Affiliate = "Belboon";
+                    p.FileName = file;
+                    p.Webshop = fileUrl;
+                    products.Add(p);
+                    p = new Product();
                 }
             }
             yield return products;

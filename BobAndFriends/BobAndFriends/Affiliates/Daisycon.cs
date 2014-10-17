@@ -17,8 +17,6 @@ namespace BobAndFriends
     /// </summary>
     public class Daisycon : AffiliateBase
     {
-        // Stores the name of the website that is being processed.
-        private string fileUrl;
 
         public override string Name { get { return "Daisycon"; } }
 
@@ -57,50 +55,35 @@ namespace BobAndFriends
 
             foreach (string file in filePaths)
             {
-                //First check if the website is in the database. If not, log it and if so, proceed.
-                string urlLine;
-                bool websitePresent = false;
-                fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BOBAndFriends\\weburls.txt");
+                string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
-                //Read all lines from the urlTxtFile.
-                while ((urlLine = urlTxtFile.ReadLine()) != null)
-                {
-                    if (urlLine == fileUrl)// Found a similar website
-                    {
-                        websitePresent = true;
-                        break;
-                    }
-                }
-                // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
-                if (websitePresent == false)
+                // If the webshop is not found in the webshop list no further processing needed.
+                if (!Statics.webshopNames.Any(w => w == fileUrl))
                 {
                     Statics.Logger.WriteLine("Webshop not found in database: " + fileUrl);
+                    continue;
                 }
-                else
+                xvr.CreateReader(file);
+                foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    xvr.CreateReader(file);
-                    foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
-                    {
-                        p.EAN = dkd["ean_code"][XmlNodeType.Element];
-                        p.Title = dkd["title"][XmlNodeType.Element];
-                        p.Brand = dkd["brand"][XmlNodeType.Element];
-                        p.Price = dkd["minimum_price"][XmlNodeType.Element];
-                        p.Url = dkd["link"][XmlNodeType.Element];
-                        p.Image_Loc = dkd["img_medium"][XmlNodeType.Element];
-                        p.Category = dkd["category"][XmlNodeType.Element];
-                        p.Description = dkd["description"][XmlNodeType.Element];
-                        p.DeliveryCost = dkd["shipping_cost"][XmlNodeType.Element] == default(string) ? dkd["shippingcost"][XmlNodeType.Element] : dkd["shipping_duration"][XmlNodeType.Element];
-                        p.DeliveryTime = dkd["shipping_duration"][XmlNodeType.Element];
-                        p.Stock = dkd["stock"][XmlNodeType.Element] == default(string) ? dkd["shipping_duration_descr"][XmlNodeType.Element] : dkd["stock"][XmlNodeType.Element];
-                        p.AffiliateProdID = dkd["daisycon_unique_id"][XmlNodeType.Element];
-                        p.Currency = "EUR";
-                        p.Affiliate = "Daisycon";
-                        p.FileName = file;
-                        p.Webshop = fileUrl;
-                        products.Add(p);
-                        p = new Product();
-                    }
+                    p.EAN = dkd["ean_code"][XmlNodeType.Element];
+                    p.Title = dkd["title"][XmlNodeType.Element];
+                    p.Brand = dkd["brand"][XmlNodeType.Element];
+                    p.Price = dkd["minimum_price"][XmlNodeType.Element];
+                    p.Url = dkd["link"][XmlNodeType.Element];
+                    p.Image_Loc = dkd["img_medium"][XmlNodeType.Element];
+                    p.Category = dkd["category"][XmlNodeType.Element];
+                    p.Description = dkd["description"][XmlNodeType.Element];
+                    p.DeliveryCost = dkd["shipping_cost"][XmlNodeType.Element] == default(string) ? dkd["shippingcost"][XmlNodeType.Element] : dkd["shipping_duration"][XmlNodeType.Element];
+                    p.DeliveryTime = dkd["shipping_duration"][XmlNodeType.Element];
+                    p.Stock = dkd["stock"][XmlNodeType.Element] == default(string) ? dkd["shipping_duration_descr"][XmlNodeType.Element] : dkd["stock"][XmlNodeType.Element];
+                    p.AffiliateProdID = dkd["daisycon_unique_id"][XmlNodeType.Element];
+                    p.Currency = "EUR";
+                    p.Affiliate = "Daisycon";
+                    p.FileName = file;
+                    p.Webshop = fileUrl;
+                    products.Add(p);
+                    p = new Product();
                 }
             }
             yield return products;

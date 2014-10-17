@@ -56,5 +56,7 @@ namespace BorderSource.Common
         public static int maxResidueListSize;
 
         public static Dictionary<string, string> TwoWayDBProductToBobProductMapping;
+
+        public static List<string> webshopNames;
     }
 }

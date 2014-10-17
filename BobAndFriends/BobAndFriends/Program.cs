@@ -178,6 +178,10 @@ namespace BobAndFriends
             Statics.TwoWayDBProductToBobProductMapping.Add("Affiliate", "affiliate_name");
             Statics.TwoWayDBProductToBobProductMapping.Add("AffiliateProdID", "affiliate_unique_id");
             #endregion
+
+            #region Webshop names
+            Statics.webshopNames = Database.Instance.GetAllWebshopNames();
+            #endregion
         }
 
 
