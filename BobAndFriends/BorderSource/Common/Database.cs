@@ -166,7 +166,8 @@ namespace BorderSource.Common
                     //If any title synonym matches the title, up the occurences.
                     if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == Record.Title.ToLower())))
                     {
-                        title_synonym ts = db.title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
+                        //Each article has at most one title for one countryId.
+                        title_synonym ts = articleTable.title.First(t => t.country_id == countryID).title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
                         ts.occurrences++;
                         db.Entry(ts).State = EntityState.Modified;
                         if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
@@ -181,7 +182,6 @@ namespace BorderSource.Common
                         db.title_synonym.Add(ts);
                     }
                 }
-
                 db.SaveChanges();
             }
         }
@@ -326,7 +326,6 @@ namespace BorderSource.Common
                     title1 = Record.Title,
                     country_id = (short)countryId,
                     article_id = art.id,
-                    country = cou
                 };
                 db.title.Add(title);
 
@@ -362,7 +361,8 @@ namespace BorderSource.Common
                     webshop_url = webshop.url,
                     direct_link = Record.Url,
                     affiliate_name = Record.Affiliate,
-                    affiliate_unique_id = Record.AffiliateProdID                  
+                    affiliate_unique_id = Record.AffiliateProdID, 
+                    last_modified = DateTime.Now
                 };
                 db.product.Add(product);
                 db.SaveChanges();

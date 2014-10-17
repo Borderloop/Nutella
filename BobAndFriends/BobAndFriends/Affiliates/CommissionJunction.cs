@@ -14,7 +14,7 @@ namespace BobAndFriends.Affiliates
     public class CommissionJunction : AffiliateBase
     {
         // Stores the name of the website that is being processed.
-        private string _fileUrl;
+        private string fileUrl;
 
         public override string Name { get { return "CommissionJunction"; } }
 
@@ -55,13 +55,13 @@ namespace BobAndFriends.Affiliates
                 //First check if the website is in the database. If not, log it and if so, proceed.
                 string urlLine;
                 bool websitePresent = false;
-                _fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
+                fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
                 System.IO.StreamReader urlTxtFile = new System.IO.StreamReader("C:\\BorderSoftware\\BOBAndFriends\\weburls.txt");
 
                 //Read all lines from the urlTxtFile.
                 while ((urlLine = urlTxtFile.ReadLine()) != null)
                 {
-                    if (urlLine == _fileUrl)// Found a similar website
+                    if (urlLine == fileUrl)// Found a similar website
                     {
                         websitePresent = true;
                         break;
@@ -70,7 +70,7 @@ namespace BobAndFriends.Affiliates
                 // If websitePresent == false, the webshop is not found in the webshop list. No further processing needed.
                 if (websitePresent == false)
                 {
-                    Statics.Logger.WriteLine("Webshop not found in database: " + _fileUrl);
+                    Statics.Logger.WriteLine("Webshop not found in database: " + fileUrl);
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace BobAndFriends.Affiliates
                         p.Stock = dkd["instock"][XmlNodeType.Element];
                         p.Affiliate = "CommissionJunction";
                         p.FileName = file;
-                        p.Webshop = _fileUrl;
+                        p.Webshop = fileUrl;
 
                         //Hash the title and the webshop into a unique ID, because CommissionJunction didn't provide any
                         p.AffiliateProdID = (p.Title + p.Webshop).ToSHA256();
