@@ -72,25 +72,11 @@ namespace BobAndFriends
                 {
                     bob.Process(p);
                 }
-                catch (DbEntityValidationException dbEx)
-                {
-                    foreach (var validationErrors in dbEx.EntityValidationErrors)
-                    {
-                        foreach (var validationError in validationErrors.ValidationErrors)
-                        {
-                            Console.WriteLine("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                        }
-                    }
-                    Console.Read();
-                }
                 catch (Exception e)
                 {
                     Console.WriteLine("THREW EXCEPTION {0}: " + e.ToString() + " FROM " + e.StackTrace, errorCount);
                     Statics.Logger.WriteLine("ERROR#{0} " + e.Message, errorCount);
-                    errorCount++;
-                    Console.WriteLine("Press enter to try to continue continue.");
-                    Console.Read();   
-
+                    errorCount++; 
                 }            
             }
 
@@ -110,14 +96,6 @@ namespace BobAndFriends
 
             //Start it
             pfr.Start();
-
-            Product p = new Product()
-            {
-                EAN = "test",
-                SKU = "test",
-                Title = "test"
-            };
-            ProductQueue.Enqueue(p);
 
             Console.WriteLine("Thread 1 is done.");
             Console.WriteLine("Queue size: " + ProductQueue.queue.Count);

@@ -12,14 +12,18 @@ namespace BorderSource.Common
         private StringBuilder buffer;
 
         private bool selectQuery = false;
-        public QueryLogger(string logPath) : base(logPath) { }
+        public QueryLogger(string logPath) : base(logPath) 
+        {
+            buffer = new StringBuilder();
+        }
 
         public override void Write(string value)
         {
             //Open connection - open buffer
             if (value.Contains("Opened connection"))
             {
-                buffer = new StringBuilder();
+                selectQuery = false;
+                buffer.Clear();
                 return;
             }
 
@@ -29,15 +33,13 @@ namespace BorderSource.Common
 
             //Get parameter values and replace them in the bufferstring.
             if(value.Contains(@"-- @"))
-            {
-                string param;
-                
+            {                           
             }
 
             //Close connection - end of query
             if (value.Contains("Closed connection"))
             {
-                if (selectQuery) buffer.Clear();
+                if (selectQuery) return;
                 base.Write(buffer.ToString().RemoveEscapedCharacters());
                 return;
             }
@@ -46,5 +48,9 @@ namespace BorderSource.Common
             buffer.Append(value);
         }
 
+        public override void Close()
+        {
+            base.Close();
+        }
     }
 }

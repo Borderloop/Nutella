@@ -164,5 +164,10 @@ namespace BorderSource.Common
 
             return item;
         }
+
+        public static string Truncate(this string str, int maxLength)
+        {
+            return str.Substring(0, Math.Min(str.Length, maxLength));
+        }
     }
 }

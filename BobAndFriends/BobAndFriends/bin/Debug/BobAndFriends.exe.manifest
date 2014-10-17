@@ -47,14 +47,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="49152">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="40960">
       <assemblyIdentity name="BobAndFriends" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>9H2Rg+/lTFUPrZZu2b59oVSJeGAhP552hCHfM6TuDpk=</dsig:DigestValue>
+        <dsig:DigestValue>uue//Dp5WURQdgDuBGsuIjvoBlmEGDInYthJTme/mkU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -66,7 +66,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>4BFw2OwVgFJQ8dZCANAMqCQnjMRIwRPhkt49+PxNrj8=</dsig:DigestValue>
+        <dsig:DigestValue>ASy5m+9Y2S9hEqzTcie8dxRcHY4TKK9x+EJIRQjeDpw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

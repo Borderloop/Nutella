@@ -96,7 +96,6 @@
     <Compile Include="Affiliates\CommissionJunction.cs" />
     <Compile Include="BobAndFriends\BOB.cs" />
     <Compile Include="Affiliates\Daisycon.cs" />
-    <Compile Include="BobAndFriends\DatabaseJanitor.cs" />
     <Compile Include="BobAndFriends\ProductFeedReader.cs" />
     <Compile Include="BobAndFriends\ProductQueue.cs" />
     <Compile Include="Program.cs" />

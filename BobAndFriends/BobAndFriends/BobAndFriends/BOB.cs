@@ -51,7 +51,7 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             */
-            Console.WriteLine("Busy with: " + Record.Title);
+            Console.WriteLine("Busy with: " + Record.Title.Truncate(20));
 
             if (Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase) && Record.Brand != "")
             {
@@ -71,6 +71,7 @@ namespace BobAndFriends
             //Check if product already exists in database by affiliate and unique affiliate number.
             if ((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
             {
+                Console.WriteLine("Found an already existing product for " + Record.Title.Truncate(10));
                 //There is a match with a unique article, meaning the record is one. Just update it where necessary.
                 CompareProductData(Record);
                 return;
@@ -114,6 +115,7 @@ namespace BobAndFriends
                     }
                 }
                  */
+                Console.WriteLine("Found an already existing SKU for " + Record.Title.Truncate(10) + " with SKU " + Record.SKU);
                 //The product has an SKU and it's a match.
                 SaveMatch(Record);
                 return;
@@ -150,6 +152,7 @@ namespace BobAndFriends
                     }
                 }
                 */
+                Console.WriteLine("Found an already existing EAN for " + Record.Title.Truncate(10) + " with EAN " + Record.EAN);
                 //The product has an EAN and it's a match.
                 SaveMatch(Record);
                 return;
@@ -457,13 +460,13 @@ namespace BobAndFriends
             // If there are no rows returned, there is not yet any deliveryinfo for this record. Save it.
             if (productData == default(product))
             {
-                Console.WriteLine("Finished comparing, no similar data found. Time: {0}", sw.Elapsed);
+                Console.WriteLine("No product found for " + Record.Title.Truncate(10) + "... for webshop " + Record.Webshop + ".\n Time: {0}", sw.Elapsed);
                 SaveProductData(Record, _matchedArticleID);
             }
             else// Else there already is product data for this record: Compare the product data with the record data for each column.
             {
                 Database.Instance.UpdateProductData(productData, Record);
-                Console.WriteLine("Finished comparing, different values found in: {0}", sw.Elapsed);
+                Console.WriteLine("Updated product in: {0}", sw.Elapsed);
             }
             Console.WriteLine("Finished total comparison in: ", sw.Elapsed);
         }
@@ -485,7 +488,6 @@ namespace BobAndFriends
             Statics.Logger.Close();
             Statics.SqlLogger.Close();
             Console.WriteLine("\t\t\t\t\tDone.");
-            Environment.Exit(1);
         }
 
     }

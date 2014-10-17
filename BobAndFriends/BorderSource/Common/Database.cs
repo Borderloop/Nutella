@@ -143,15 +143,11 @@ namespace BorderSource.Common
             using (var db = new BetsyModel(_conStr))
             {
                 //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
-                article articleTable = db.article.Where(a => a.id == matchedArticleID).Include(a => a.ean)
-                    .Include(a => a.sku)
-                    .Include(t => t.title.Select(ts => ts.title_synonym))
-                    .FirstOrDefault();
-
+                article articleTable = db.article.Where(a => a.id == matchedArticleID).FirstOrDefault();
 
                 //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
                 if (!(articleTable.ean.Any(e => e.ean1 == Record.EAN)) && Record.EAN != "") db.ean.Add(new ean { ean1 = Record.EAN, article_id = matchedArticleID });
-                if (!(articleTable.sku.Any(s => s.sku1 == Record.SKU)) && Record.SKU != "") db.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
+                if (!(articleTable.sku.Any(s => s.sku1.ToLower() == Record.SKU.ToLower())) && Record.SKU != "") db.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
                 title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
 
@@ -169,10 +165,9 @@ namespace BorderSource.Common
                         //Each article has at most one title for one countryId.
                         title_synonym ts = articleTable.title.First(t => t.country_id == countryID).title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
                         ts.occurrences++;
-                        db.Entry(ts).State = EntityState.Modified;
                         if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
                         {
-                            UpdateTitle(title.id, ts.title);
+                            title.title1 = ts.title;
                         }
                     }
                     //else, add the title to the synonyms.
@@ -205,22 +200,6 @@ namespace BorderSource.Common
             }
         }
 
-        /// <summary>
-        /// Updates the title in the title table. This is done if another title has a higher occurrence then the one in the title table.
-        /// </summary>
-        /// <param name="titleId">The id of the title to be updated</param>
-        /// <param name="title">The new title</param>
-        public void UpdateTitle(int titleId, string title)
-        {
-            using (var db = new BetsyModel(_conStr))
-            {
-                var newTitle = db.title.Where(t => t.id == titleId).FirstOrDefault();
-                newTitle.title1 = title;
-                db.Entry(newTitle).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-        }
-
         /// This method will send a product to the residu.
         /// </summary>
         /// <param name="p">The product to be send to the residu.</param>
@@ -241,21 +220,30 @@ namespace BorderSource.Common
 
             pendingResidue.Add(res);
 
-            //if (pendingResidue.Count > Statics.maxResidueListSize)
-            //{
+            if (pendingResidue.Count > Statics.maxResidueListSize)
+            {
                 sw.Start();
                 Console.WriteLine("Started writing {0} products to residue", pendingResidue.Count);
-                foreach (residue residue in pendingResidue)
+                using (var db = new BetsyModel(_conStr))
                 {
-                    using (var db = new BetsyModel(_conStr))
+                    double count = 0;
+                    int i = 10;
+                    foreach (residue residue in pendingResidue)
                     {
                         db.residue.Add(residue);
-                        db.SaveChanges();
+                        count++;
+                        if(((count/(double)pendingResidue.Count))*100 > i)
+                        {
+                            Console.Write(i + "% . "); 
+                            i += 10;
+                        }
                     }
-                }               
+                    Console.Write(i + "% Done. Saving... "); 
+                    db.SaveChanges();
+                }
                 Console.WriteLine("Saved {0} products to residue in {1}", pendingResidue.Count, sw.Elapsed);
                 pendingResidue.Clear();
-            //}
+            }
         }
 
         /// This method will send a product to the residu.
@@ -349,8 +337,8 @@ namespace BorderSource.Common
 
                 decimal castedShipCost;
                 decimal castedPrice;
-                if (!(decimal.TryParse(Record.DeliveryCost, NumberStyles.Any, CultureInfo.InvariantCulture, out castedShipCost))) Console.WriteLine("Cannot cast shipping cost " + Record.DeliveryCost + " to decimal.");
-                if (!(decimal.TryParse(Record.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out castedPrice))) Console.WriteLine("Cannot cast price " + Record.Price + " to decimal.");
+                decimal.TryParse(Record.DeliveryCost, NumberStyles.Any, CultureInfo.InvariantCulture, out castedShipCost);
+                decimal.TryParse(Record.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out castedPrice);
 
                 product product = new product
                 {
@@ -584,7 +572,7 @@ namespace BorderSource.Common
                     if (dbValue.GetType().Equals(typeof(System.DateTime)))
                     {
                         DateTime correctValue;
-                        if (!(DateTime.TryParse((string)recordValue, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
+                        if (!(DateTime.TryParse((string)recordValue, out correctValue))) { continue; }
                         else if (!correctValue.Equals(dbValue))
                         {
                             p.SetValue(productData, correctValue);
@@ -595,7 +583,7 @@ namespace BorderSource.Common
                     else if (dbValue.GetType().Equals(typeof(System.Decimal)))
                     {
                         decimal correctValue;
-                        if (!(decimal.TryParse((string)recordValue, NumberStyles.Any, CultureInfo.InvariantCulture, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
+                        if (!(decimal.TryParse((string)recordValue, NumberStyles.Any, CultureInfo.InvariantCulture, out correctValue))) { continue; }
                         else if (!correctValue.Equals(dbValue))
                         {
                             p.SetValue(productData, correctValue);
@@ -696,7 +684,7 @@ namespace BorderSource.Common
             using(var db = new BetsyModel(_conStr))
             {
                 List<string> names = new List<string>();
-                db.webshop.ToList().ForEach(w => names.Add(w.name));
+                db.webshop.ToList().ForEach(w => names.Add(w.url));
                 return names;
             }
         }

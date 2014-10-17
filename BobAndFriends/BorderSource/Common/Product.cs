@@ -82,6 +82,7 @@ namespace BorderSource.Common
                 {
                     case "EAN":
                         prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? (prop.GetValue(this) as string).Trim() : "");
+                        if ((prop.GetValue(this) as string).Contains("00000000000")) return false;
                         break;
 
                     case "Price":
@@ -105,6 +106,7 @@ namespace BorderSource.Common
                         else
                         {
                             prop.SetValue(this, (prop.GetValue(this) as string).Trim());
+                            if (prop.GetValue(this) as string == "") return false;
                         }
                         break;
 
@@ -121,6 +123,8 @@ namespace BorderSource.Common
                         break;
 
                     case "SKU":
+                        if ((prop.GetValue(this) as string).Length < 4) return false;
+                        if ((prop.GetValue(this) as string).Contains("!")) return false;
                         if ((prop.GetValue(this) as string).Length > Statics.maxSkuSize)
                         {
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");

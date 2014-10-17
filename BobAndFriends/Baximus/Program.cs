@@ -22,46 +22,59 @@ namespace Baximus
             string conStr = Database.Instance.GetConnectionString();
             using (var db = new BetsyModel(conStr))
             {
-                int count = 0;
-                //Calculate biggest price differences
-                foreach (article article in db.article)
+                var pageSize = 100;
+                var total = db.article.Count();
+                int pages = total / pageSize;
+                int pageNumber = 0;
+
+                while (pageNumber < pages)
                 {
-                    biggest_price_differences bpd = new biggest_price_differences();
-                    bpd.highest_price = Int32.MaxValue;
-                    bpd.lowest_price = Int32.MaxValue;
+                    Console.WriteLine("Page: " + pageNumber + "/" + total + " with records " + (pageNumber * pageSize) + " - " + (pageNumber * pageSize + pageSize));
 
-                    //We need at least 2 products and 1 dutch product to compare
-                    if (article.product.Count() < 2) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id == 1)) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id != 1)) continue;
+                    var currentArticleSet = db.article.OrderBy(a => a.id).Skip(pageNumber * pageSize).Take(pageSize).ToList();
 
-                    //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
-
-                    //Highest price is the lowest dutch price.
-                    bpd.highest_price = article.product.Where(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id == 1).Min(p => p.price);
-
-                    //Get the lowest foreign product as a whole, because we need more data from it.
-                    product lowest = article.product.Where(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id != 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault();
-
-                    bpd.lowest_price = lowest.price;
-                    bpd.product_id = lowest.id;
-                    bpd.country_id = db.webshop.Where(w => w.name == lowest.webshop_url).FirstOrDefault().country_id;
-
-                    bpd.article_id = article.id;
-                    bpd.difference = bpd.highest_price - bpd.lowest_price;
-
-                    db.biggest_price_differences.Add(bpd);
-                    count++;
-
-                    //Only save changes every 5000th product
-                    if (count == 5000)
+                    int count = 0;
+                    //Calculate biggest price differences
+                    foreach (article article in currentArticleSet)
                     {
-                        db.SaveChanges();
-                    }
-                }
+                        biggest_price_differences bpd = new biggest_price_differences();
+                        bpd.highest_price = Int32.MaxValue;
+                        bpd.lowest_price = Int32.MaxValue;
 
-                //Sve the remaining articles
-                db.SaveChanges();
+                        //We need at least 2 products and 1 dutch product to compare
+                        if (article.product.Count() < 2) continue;
+                        if (!article.product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().id == 1)) continue;
+                        if (!article.product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().id != 1)) continue;
+
+                        //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
+
+                        //Highest price is the lowest dutch price.
+                        bpd.highest_price = article.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().id == 1).Min(p => p.price);
+
+                        //Get the lowest foreign product as a whole, because we need more data from it.
+                        product lowest = article.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().id != 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault();
+
+                        bpd.lowest_price = lowest.price;
+                        bpd.product_id = lowest.id;
+                        bpd.country_id = db.webshop.Where(w => w.url == lowest.webshop_url).FirstOrDefault().country_id;
+
+                        bpd.article_id = article.id;
+                        bpd.difference = bpd.highest_price - bpd.lowest_price;
+
+                        db.biggest_price_differences.Add(bpd);
+                        count++;
+
+                        //Only save changes every 5000th product
+                        if (count == 5000)
+                        {
+                            db.SaveChanges();
+                        }
+                    }
+
+                    pageNumber++;
+                    //Sve the remaining articles
+                    db.SaveChanges();
+                }
             }
         }
 
@@ -70,60 +83,70 @@ namespace Baximus
             string conStr = Database.Instance.GetConnectionString();
             using (var db = new BetsyModel(conStr))
             {
-                int count = 0;
-                foreach (article article in db.article)
-                {                   
-                    //We need at least 1 foreign product and 1 dutch product to compare
-                    if (article.product.Count < 2) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id == 1)) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id != 1)) continue;
+                var pageSize = 25;
+                var total = db.article.Count();
+                int pages = total / pageSize;
+                int pageNumber = 0;
 
-                    //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
-
-                    decimal dutchPrice = article.product.Where(p => db.webshop.Where(w => w.name == p.webshop_url).FirstOrDefault().id == 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault().price;
-
-                    foreach(product product in article.product)
+                while (pageNumber < pages)
+                {
+                    int count = 0;
+                    foreach (article article in db.article)
                     {
-                        country_price_differences cpd = new country_price_differences();
+                        //We need at least 1 foreign product and 1 dutch product to compare
+                        if (article.product.Count < 2) continue;
+                        if (!article.product.Any(p => db.webshop.Any(w => w.country_id == 1))) continue;
+                        if (!article.product.Any(p => db.webshop.Any(w => w.country_id == 1))) continue;
 
-                        short country_id = db.webshop.Where(w => w.name == product.webshop_url).FirstOrDefault().country_id;
-                        if (country_id == 1) continue;
+                        //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
 
-                        decimal difference = dutchPrice - product.price;
-                        if (db.country_price_differences.Any(c => c.article_id == article.id && c.country_id == country_id))
+                        decimal dutchPrice = article.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().id == 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault().price;
+
+                        foreach (product product in article.product)
                         {
-                            //There already exists a record for this country - check if the difference is bigger, if yes then add, else, just continue
-                            if (db.country_price_differences.Where(c => c.article_id == article.id && c.country_id == country_id).FirstOrDefault().difference > difference) continue;
+                            country_price_differences cpd = new country_price_differences();
 
-                            db.country_price_differences.Attach(cpd);
-                            var entry = db.Entry(cpd);
-                            cpd.difference = difference;
-                            cpd.product_id = product.id;
-                            entry.Property("difference").IsModified = true;
-                            entry.Property("product_id").IsModified = true;
-                            count++;
-                        }
-                        else
-                        {
+                            short country_id = db.webshop.Where(w => w.url == product.webshop_url).FirstOrDefault().country_id;
+                            if (country_id == 1) continue;
 
-                            cpd.article_id = article.id;
-                            cpd.country_id = country_id;
-                            cpd.difference = difference;
-                            cpd.product_id = product.id;
+                            decimal difference = dutchPrice - product.price;
+                            if (db.country_price_differences.Any(c => c.article_id == article.id && c.country_id == country_id))
+                            {
+                                //There already exists a record for this country - check if the difference is bigger, if yes then add, else, just continue
+                                if (db.country_price_differences.Where(c => c.article_id == article.id && c.country_id == country_id).FirstOrDefault().difference > difference) continue;
 
-                            db.country_price_differences.Add(cpd);
-                            count++;
+                                db.country_price_differences.Attach(cpd);
+                                var entry = db.Entry(cpd);
+                                cpd.difference = difference;
+                                cpd.product_id = product.id;
+                                entry.Property("difference").IsModified = true;
+                                entry.Property("product_id").IsModified = true;
+                                count++;
+                            }
+                            else
+                            {
+
+                                cpd.article_id = article.id;
+                                cpd.country_id = country_id;
+                                cpd.difference = difference;
+                                cpd.product_id = product.id;
+
+                                db.country_price_differences.Add(cpd);
+                                count++;
+                            }
+                            //Only save changes every 5000th product
+                            if (count == 5000)
+                            {
+                                db.SaveChanges();
+                            }
                         }
-                        //Only save changes every 5000th product
-                        if (count == 5000)
-                        {
-                            db.SaveChanges();
-                        }
-                    } 
+                    }
+
+                    pageNumber++;
+
+                    //Sve the remaining articles
+                    db.SaveChanges();
                 }
-
-                //Sve the remaining articles
-                db.SaveChanges();
             }
         }
 
