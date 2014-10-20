@@ -93,6 +93,14 @@ namespace BorderSource.Common
             }
         }
 
+        public int GetArticleCount()
+        {
+            using(var db = new BetsyModel(_conStr))
+            {
+                return db.article.Count();
+            }
+        }
+
         /// <summary>
         /// Gets the article id for a given table and record.
         /// </summary>
