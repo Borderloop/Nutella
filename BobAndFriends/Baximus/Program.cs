@@ -52,11 +52,6 @@ namespace Baximus
                     bpd.highest_price = Int32.MaxValue;
                     bpd.lowest_price = Int32.MaxValue;
 
-                    //We need at least 2 products and 1 dutch product to compare
-                    if (article.product.Count() < 2) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id == 1)) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id != 1)) continue;
-
                     //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
 
                     //Highest price is the lowest dutch price.
@@ -135,13 +130,6 @@ namespace Baximus
                 Console.WriteLine("Started calculating biggest price differences...");
                 foreach (article article in currentArticleSet)
                 {
-                    //We need at least 1 foreign product and 1 dutch product to compare
-                    if (article.product.Count < 2) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id == 1)) continue;
-                    if (!article.product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id != 1)) continue;
-
-                    //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
-
                     decimal dutchPrice = article.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id == 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault().price;
 
                     foreach (product product in article.product)
