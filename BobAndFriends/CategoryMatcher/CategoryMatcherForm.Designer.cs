@@ -124,7 +124,7 @@
             this.label1.TabIndex = 10;
             this.label1.Text = "Borderloop Categories";
             // 
-            // CategoryMatcher
+            // CategoryMatcherForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -138,7 +138,7 @@
             this.Controls.Add(this.match_categorysyn);
             this.Controls.Add(this.inkomendGridView);
             this.Controls.Add(this.categoryGridView);
-            this.Name = "CategoryMatcher";
+            this.Name = "CategoryMatcherForm";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.categoryGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.inkomendGridView)).EndInit();

@@ -173,9 +173,15 @@ namespace BorderSource.Common
                         //Each article has at most one title for one countryId.
                         title_synonym ts = articleTable.title.First(t => t.country_id == countryID).title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
                         ts.occurrences++;
+                        db.title_synonym.Attach(ts);
+                        var synEntry = db.Entry(ts);
+                        synEntry.Property(syn => syn.occurrences).IsModified = true;
                         if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
                         {
                             title.title1 = ts.title;
+                            db.title.Attach(title);
+                            var titleEntry = db.Entry(title);
+                            titleEntry.Property(t => t.title1).IsModified = true;
                         }
                     }
                     //else, add the title to the synonyms.
@@ -186,25 +192,6 @@ namespace BorderSource.Common
                     }
                 }
                 db.SaveChanges();
-            }
-        }
-
-        /// <summary>
-        /// This method updates the occurrences column for a given title
-        /// </summary>
-        /// <param name="titleId">Id of the title belonging to the title synonym</param>
-        /// <param name="occurrences">Amount of occurences, this will get updated</param>
-        /// <param name="title">The title to be updated</param>
-        public void UpdateTitleSynonymOccurrences(int titleId, int occurrences, string title)
-        {
-            using(var db = new BetsyModel(_conStr))
-            {
-                var title_syn = db.title_synonym.Where(ts => ts.title_id == titleId && ts.title == title).FirstOrDefault();
-                if(title_syn != null)
-                {
-                    title_syn.occurrences = (short?)occurrences;
-                    db.SaveChanges();
-                }
             }
         }
 
@@ -223,7 +210,8 @@ namespace BorderSource.Common
                 ean = p.EAN,
                 sku = p.SKU,
                 brand = p.Brand,
-                image = p.Image_Loc
+                image = p.Image_Loc,
+                web_url = p.Webshop
             };
 
             pendingResidue.Add(res);
@@ -358,7 +346,7 @@ namespace BorderSource.Common
                     direct_link = Record.Url,
                     affiliate_name = Record.Affiliate,
                     affiliate_unique_id = Record.AffiliateProdID, 
-                    last_modified = DateTime.Now
+                    last_modified = System.DateTime.Now
                 };
                 db.product.Add(product);
                 db.SaveChanges();
@@ -519,7 +507,8 @@ namespace BorderSource.Common
                     webshop_url = webshop.url,
                     direct_link = Record.Url,
                     affiliate_name = Record.Affiliate,
-                    affiliate_unique_id = Record.AffiliateProdID
+                    affiliate_unique_id = Record.AffiliateProdID,
+                    last_modified = System.DateTime.Now
                 };
 
                 db.product.Add(product);

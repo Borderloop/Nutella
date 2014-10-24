@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="915af0a29d5d4e7e8a6c35f99115750a" Name="Diagram1" ZoomLevel="40">
+      <Diagram DiagramId="915af0a29d5d4e7e8a6c35f99115750a" Name="Diagram1" ZoomLevel="77">
         <EntityTypeShape EntityType="BetsyModel.Model.affiliate" Width="1.5" PointX="10.5" PointY="19.75" />
         <EntityTypeShape EntityType="BetsyModel.Model.article" Width="1.5" PointX="0.75" PointY="12.625" />
         <EntityTypeShape EntityType="BetsyModel.Model.biggest_price_differences" Width="1.5" PointX="5.25" PointY="12.25" />
@@ -22,7 +22,6 @@
         <EntityTypeShape EntityType="BetsyModel.Model.sku" Width="1.5" PointX="3" PointY="31.625" />
         <EntityTypeShape EntityType="BetsyModel.Model.title" Width="1.5" PointX="3" PointY="16.125" />
         <EntityTypeShape EntityType="BetsyModel.Model.title_synonym" Width="1.5" PointX="5.25" PointY="19.375" />
-        <EntityTypeShape EntityType="BetsyModel.Model.users" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="BetsyModel.Model.vbob_suggested" Width="1.5" PointX="6" PointY="16.375" />
         <EntityTypeShape EntityType="BetsyModel.Model.vbobdata" Width="1.5" PointX="3.75" PointY="22.875" />
         <EntityTypeShape EntityType="BetsyModel.Model.webshop" Width="1.5" PointX="8.25" PointY="18.875" />

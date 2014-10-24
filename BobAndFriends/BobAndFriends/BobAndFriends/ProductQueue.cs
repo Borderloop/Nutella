@@ -57,6 +57,7 @@ namespace BobAndFriends
                         //Stop waiting and return null.
                         return null;
                     }
+                    Console.WriteLine("Queue starved, waiting...");
                     //Wait for the pulse, than release the lock
                     Monitor.Wait(queueLock, 2000);
                 }  

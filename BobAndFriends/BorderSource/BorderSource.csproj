@@ -67,6 +67,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="BetsyContext\BetsyModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BetsyModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="BetsyContext\BetsyModel.Designer.cs">
       <DependentUpon>BetsyModel.edmx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -115,9 +120,6 @@
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="BetsyContext\title_synonym.cs">
-      <DependentUpon>BetsyModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="BetsyContext\users.cs">
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="BetsyContext\vbobdata.cs">

@@ -178,16 +178,6 @@
           <Property Name="title_id" Type="int" Nullable="false" />
           <Property Name="occurrences" Type="smallint" />
         </EntityType>
-        <EntityType Name="users">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="username" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="password" Type="char" MaxLength="64" Nullable="false" />
-          <Property Name="salt" Type="char" MaxLength="16" Nullable="false" />
-          <Property Name="email" Type="varchar" MaxLength="255" Nullable="false" />
-        </EntityType>
         <EntityType Name="vbob_suggested">
           <Key>
             <PropertyRef Name="id" />
@@ -636,9 +626,7 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_webshop-country">
-          <End Role="country" Type="Self.country" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="country" Type="Self.country" Multiplicity="1" />
           <End Role="webshop" Type="Self.webshop" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="country">
@@ -668,7 +656,6 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <EntitySet Name="sku" EntityType="Self.sku" Schema="test2" store:Type="Tables" />
           <EntitySet Name="title" EntityType="Self.title" Schema="test2" store:Type="Tables" />
           <EntitySet Name="title_synonym" EntityType="Self.title_synonym" Schema="test2" store:Type="Tables" />
-          <EntitySet Name="users" EntityType="Self.users" Schema="test2" store:Type="Tables" />
           <EntitySet Name="vbob_suggested" EntityType="Self.vbob_suggested" Schema="test2" store:Type="Tables" />
           <EntitySet Name="vbobdata" EntityType="Self.vbobdata" Schema="test2" store:Type="Tables" />
           <EntitySet Name="web_language" EntityType="Self.web_language" Schema="test2" store:Type="Tables" />
@@ -816,7 +803,6 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <EntitySet Name="sku" EntityType="BetsyModel.Model.sku" />
           <EntitySet Name="title" EntityType="BetsyModel.Model.title" />
           <EntitySet Name="title_synonym" EntityType="BetsyModel.Model.title_synonym" />
-          <EntitySet Name="users" EntityType="BetsyModel.Model.users" />
           <EntitySet Name="vbob_suggested" EntityType="BetsyModel.Model.vbob_suggested" />
           <EntitySet Name="vbobdata" EntityType="BetsyModel.Model.vbobdata" />
           <EntitySet Name="webshop" EntityType="BetsyModel.Model.webshop" />
@@ -1113,16 +1099,6 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <Property Name="title_id" Type="Int32" Nullable="false" />
           <Property Name="occurrences" Type="Int16" />
           <NavigationProperty Name="title1" Relationship="BetsyModel.Model.fk_title_synonym_title" FromRole="title_synonym" ToRole="title" />
-        </EntityType>
-        <EntityType Name="users">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="username" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="password" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="salt" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
-          <Property Name="email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="vbob_suggested">
           <Key>
@@ -1594,17 +1570,6 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
                 <ScalarProperty Name="occurrences" ColumnName="occurrences" />
                 <ScalarProperty Name="title_id" ColumnName="title_id" />
                 <ScalarProperty Name="title" ColumnName="title" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="users">
-            <EntityTypeMapping TypeName="BetsyModel.Model.users">
-              <MappingFragment StoreEntitySet="users">
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="salt" ColumnName="salt" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

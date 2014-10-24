@@ -137,6 +137,51 @@ namespace CategoryMatcher
         public DataTable LinkedProductCategory(String web_url)
         {
             return Read("SELECT * FROM residue WHERE web_url LIKE '%" + web_url + "%' LIMIT 10");
-        }       
+        }
+       
+        public void bah()
+        {
+            List<string> synonyms = new List<string>();
+
+            string query = "SELECT id FROM title WHERE article_id = @ARTICLEID";
+            DataTable titleTable = new DataTable();
+
+            using(MySqlConnection connection = new MySqlConnection("some connectionstring"))
+            {
+                using(MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ARTICLEID", 27);
+                    using(MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                    {
+                        adapter.Fill(titleTable);
+                    }
+                }
+            }
+
+            string query2 = "SELECT title FROM title_synonym WHERE title_id = @TITLEID";
+            foreach(DataRow row in titleTable.Rows)
+            {
+                int titleId = (int)row["id"];
+                DataTable synonymTable = new DataTable();
+
+                using (MySqlConnection connection = new MySqlConnection("some connectionstring"))
+                {
+                    using (MySqlCommand command = new MySqlCommand(query2, connection))
+                    {
+                        command.Parameters.AddWithValue("TITLEID", titleId);
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                        {
+                            adapter.Fill(synonymTable);
+                        }
+                    }
+                }
+              
+                foreach(DataRow synonymRow in synonymTable.Rows)
+                {
+                    synonyms.Add((string)synonymRow["title"]);
+                }
+            }
+
+        }
     }
 }

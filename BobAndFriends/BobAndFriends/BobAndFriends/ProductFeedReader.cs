@@ -55,6 +55,8 @@ namespace BobAndFriends
             //Get all the directories in the productfeed folder.
             string[] dirs = Directory.GetDirectories(_productFeedPath);
 
+            int wrongProductCount = 0;
+
             Console.WriteLine("Started reading files...");
 
             //To read all the data from the affiliates, we simply loop through all the classes which are a
@@ -88,8 +90,8 @@ namespace BobAndFriends
                             }
                             if (!p.CleanupFields())
                             {
-                                Statics.Logger.WriteLine("Product has invalid properties.");
-                                Statics.Logger.WriteLine(p.ToString());
+                                Statics.Logger.WriteLine("Product " + wrongProductCount + " " + p.Title.Truncate(20) + "... has invalid properties.");
+                                wrongProductCount++;
                                 continue;
                             }
 

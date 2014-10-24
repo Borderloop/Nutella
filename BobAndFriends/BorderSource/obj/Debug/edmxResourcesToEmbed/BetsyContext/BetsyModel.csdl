@@ -18,7 +18,6 @@
     <EntitySet Name="sku" EntityType="BetsyModel.Model.sku" />
     <EntitySet Name="title" EntityType="BetsyModel.Model.title" />
     <EntitySet Name="title_synonym" EntityType="BetsyModel.Model.title_synonym" />
-    <EntitySet Name="users" EntityType="BetsyModel.Model.users" />
     <EntitySet Name="vbob_suggested" EntityType="BetsyModel.Model.vbob_suggested" />
     <EntitySet Name="vbobdata" EntityType="BetsyModel.Model.vbobdata" />
     <EntitySet Name="webshop" EntityType="BetsyModel.Model.webshop" />
@@ -315,16 +314,6 @@
     <Property Name="title_id" Type="Int32" Nullable="false" />
     <Property Name="occurrences" Type="Int16" />
     <NavigationProperty Name="title1" Relationship="BetsyModel.Model.fk_title_synonym_title" FromRole="title_synonym" ToRole="title" />
-  </EntityType>
-  <EntityType Name="users">
-    <Key>
-      <PropertyRef Name="id" />
-    </Key>
-    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="username" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-    <Property Name="password" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-    <Property Name="salt" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
-    <Property Name="email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityType Name="vbob_suggested">
     <Key>

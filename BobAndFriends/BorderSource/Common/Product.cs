@@ -105,7 +105,7 @@ namespace BorderSource.Common
                         }
                         else
                         {
-                            prop.SetValue(this, (prop.GetValue(this) as string).Trim());
+                            prop.SetValue(this, (prop.GetValue(this) as string).EscapeChars().Trim());
                             if (prop.GetValue(this) as string == "") return false;
                         }
                         break;
@@ -173,6 +173,7 @@ namespace BorderSource.Common
                         break;
 
                     case "Webshop":
+                        if ((prop.GetValue(this) as string) == "www.hardware.nl") this.GetType().GetProperty("SKU").SetValue(this, "");
                         if ((prop.GetValue(this) as string).Length > Statics.maxWebShopUrlSize)
                         {
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");

@@ -83,12 +83,18 @@ namespace BorderSource.Common
         public static string RemoveEscapedCharacters(this string str)
         {
             StringBuilder sb = new StringBuilder();
-            string[] parts = str.Split(new char[] { ' ', '\n', '\t', '\r', '\f', '\v', '\\' });
+            string[] parts = str.Split(new char[] { ' ', '\n', '\t', '\r', '\f', '\v', '\\' },StringSplitOptions.RemoveEmptyEntries);
             foreach(string s in parts)
-                sb.Append(s);
+                sb.Append(s + " ");
             return sb.ToString();
         }
 
+        public static string EscapeChars(this string input)
+        {
+            char[] chars = { '.', '/', '\\', '>', '<', ':', '*', '?', '\"', '|' };
+            foreach(char c in chars) input.Replace(c, ' ');
+            return input;
+        }
 
         public static string EmptyNull(this string str) { return str ?? ""; }
 

@@ -177,17 +177,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="users">
-      <EntityTypeMapping TypeName="BetsyModel.Model.users">
-        <MappingFragment StoreEntitySet="users">
-          <ScalarProperty Name="email" ColumnName="email" />
-          <ScalarProperty Name="salt" ColumnName="salt" />
-          <ScalarProperty Name="password" ColumnName="password" />
-          <ScalarProperty Name="username" ColumnName="username" />
-          <ScalarProperty Name="id" ColumnName="id" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="vbob_suggested">
       <EntityTypeMapping TypeName="BetsyModel.Model.vbob_suggested">
         <MappingFragment StoreEntitySet="vbob_suggested">

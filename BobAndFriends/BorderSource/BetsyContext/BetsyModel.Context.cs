@@ -6,8 +6,6 @@
 //     Manual changes to this file will be overwritten if the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using BorderSource.Common;
-
 
 namespace BorderSource.BetsyContext
 {
@@ -22,10 +20,7 @@ namespace BorderSource.BetsyContext
         {
         }
     
-    	public BetsyModel(string conStr) : base(conStr) 
-        {
-            this.Database.Log = Statics.SqlLogger.Write;
-        }
+    	public BetsyModel(string conStr) : base(conStr) { }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -49,7 +44,6 @@ namespace BorderSource.BetsyContext
         public virtual DbSet<sku> sku { get; set; }
         public virtual DbSet<title> title { get; set; }
         public virtual DbSet<title_synonym> title_synonym { get; set; }
-        public virtual DbSet<users> users { get; set; }
         public virtual DbSet<vbob_suggested> vbob_suggested { get; set; }
         public virtual DbSet<vbobdata> vbobdata { get; set; }
         public virtual DbSet<webshop> webshop { get; set; }

@@ -11,24 +11,22 @@ namespace Baximus
 {
     class Program
     {
+        static List<article> articleList;
+
         static void Main(string[] args)
         {
-            Initialize();
+            Initialize();          
             CalculateBiggestDifferences();
             CalculateBiggestDifferencesPerCountry();          
         }
 
-        static void CalculateBiggestDifferences()
-        {
-            Console.WriteLine("----- STARTED COMPARING BIGGEST PRICE DIFFERENCE PER PRODUCT -----");
-            string conStr = Database.Instance.GetConnectionString();
+        static void FillArticleList()
+        {          
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(conStr))
+            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
             {
                 Console.Write(" Done\n");
                 Console.Write("Fetching foreign products...");
-                List<article> currentArticleSet = new List<article>();
-
                 var foreignProductList = db.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id != 1).ToList();
 
                 Console.Write(" Done\n");
@@ -38,15 +36,24 @@ namespace Baximus
                 {
                     if (db.article.Where(a => a.id == prod.article_id).FirstOrDefault().product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id == 1))
                     {
-                        currentArticleSet.Add(db.article.Where(a => a.id == prod.article_id).FirstOrDefault());
+                        articleList.Add(db.article.Where(a => a.id == prod.article_id).FirstOrDefault());
                     }
                 }
+                Console.Write(" Done\n");
+            }
+        }
 
+        static void CalculateBiggestDifferences()
+        {
+            Console.WriteLine("----- STARTED COMPARING BIGGEST PRICE DIFFERENCE PER PRODUCT -----");
+            Console.Write("Connecting to database...");
+            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            {
                 Console.Write(" Done\n");
 
                 Console.WriteLine("Started calculating biggest price differences...");
                 //Calculate biggest price differences
-                foreach (article article in currentArticleSet)
+                foreach (article article in articleList)
                 {
                     biggest_price_differences bpd = new biggest_price_differences();
                     bpd.highest_price = Int32.MaxValue;
@@ -66,6 +73,7 @@ namespace Baximus
 
                     bpd.article_id = article.id;
                     bpd.difference = bpd.highest_price - bpd.lowest_price;
+                    bpd.last_updated = System.DateTime.Now;
 
                     biggest_price_differences entry;
                     if ((entry = db.biggest_price_differences.Where(b => b.article_id == bpd.article_id).FirstOrDefault()) != default(biggest_price_differences))
@@ -89,7 +97,7 @@ namespace Baximus
                     else
                     {
                         db.biggest_price_differences.Add(bpd);
-                        Console.WriteLine("Added article " + entry.article_id + " with difference of " + entry.difference);
+                        Console.WriteLine("Added article " + bpd.article_id + " with difference of " + bpd.difference);
                     }
 
                 }
@@ -104,31 +112,13 @@ namespace Baximus
         static void CalculateBiggestDifferencesPerCountry()
         {
             Console.WriteLine("----- STARTED COMPARING BIGGEST PRICE DIFFERENCE PER COUNTRY ------");
-            string conStr = Database.Instance.GetConnectionString();
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(conStr))
-            {
-                List<article> currentArticleSet = new List<article>();
-
-                Console.Write(" Done\n");
-                Console.Write("Fetching foreign products...");
-                var foreignProductList = db.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id != 1).ToList();
-
-                Console.Write(" Done\n");
-
-                Console.Write("Fetching articles with foreign products and dutch products...");
-                foreach (product prod in foreignProductList)
-                {
-                    if (db.article.Where(a => a.id == prod.article_id).FirstOrDefault().product.Any(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id == 1))
-                    {
-                        currentArticleSet.Add(db.article.Where(a => a.id == prod.article_id).FirstOrDefault());
-                    }
-                }
-
+            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            {              
                 Console.Write(" Done\n");
 
                 Console.WriteLine("Started calculating biggest price differences...");
-                foreach (article article in currentArticleSet)
+                foreach (article article in articleList)
                 {
                     decimal dutchPrice = article.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id == 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault().price;
 
@@ -143,10 +133,16 @@ namespace Baximus
                         if (db.country_price_differences.Any(c => c.article_id == article.id && c.country_id == country_id))
                         {
                             //There already exists a record for this country - check if the difference is bigger, if yes then add, else, just continue
-                            if (db.country_price_differences.Where(c => c.article_id == article.id && c.country_id == country_id).FirstOrDefault().difference > difference) continue;
+                            country_price_differences entry;
+                            if ((entry = db.country_price_differences.Where(c => c.article_id == article.id && c.country_id == country_id).FirstOrDefault()).difference >= difference)
+                            {
+                                Console.WriteLine("Did not update article " + article.id + " (bigger/equal difference already in database)");
+                                continue;
+                            }
 
-                            cpd.difference = difference;
-                            cpd.product_id = product.id;
+                            entry.difference = difference;
+                            entry.product_id = product.id;
+                            entry.last_updated = System.DateTime.Now;
 
                             Console.WriteLine("Updated article " + article.id + " with difference of " + difference);
                         }
@@ -157,6 +153,7 @@ namespace Baximus
                             cpd.country_id = country_id;
                             cpd.difference = difference;
                             cpd.product_id = product.id;
+                            cpd.last_updated = System.DateTime.Now;
 
                             db.country_price_differences.Add(cpd);
                             Console.WriteLine("Added article " + article.id + " with difference of " + difference);
@@ -182,6 +179,11 @@ namespace Baximus
             #region Loggers
             Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
             #endregion 
+
+            #region articleList
+            articleList = new List<article>();
+            FillArticleList();
+            #endregion
         }
     }
 }

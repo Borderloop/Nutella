@@ -51,7 +51,7 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             */
-            Console.WriteLine("Busy with: " + Record.Title.Truncate(20));
+            Console.WriteLine("Busy with: " + Record.Title.Truncate(20) + " from " + Record.Webshop);
 
             if (Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase) && Record.Brand != "")
             {
@@ -481,13 +481,12 @@ namespace BobAndFriends
         /// </summary>
         public void FinalizeAndClose()
         {
-            Console.WriteLine("\n\t\t\t\t\tClosing connection with database...");
 
             //Close everything and shut down.
-            Console.WriteLine("\t\t\t\t\tWriting data to logfile...");
+            Console.WriteLine("Writing data to logfile...");
             Statics.Logger.Close();
             Statics.SqlLogger.Close();
-            Console.WriteLine("\t\t\t\t\tDone.");
+            Console.WriteLine("Done.");
         }
 
     }

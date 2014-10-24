@@ -65,6 +65,7 @@ if (!loader.IsLazyLoadingEnabled(container))
         this.Configuration.LazyLoadingEnabled = false;
 <#
 }	
+	
 
 foreach (var entitySet in container.BaseEntitySets.OfType<EntitySet>())
 {
