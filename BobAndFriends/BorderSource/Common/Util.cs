@@ -83,9 +83,9 @@ namespace BorderSource.Common
         public static string RemoveEscapedCharacters(this string str)
         {
             StringBuilder sb = new StringBuilder();
-            string[] parts = str.Split(new char[] { ' ', '\n', '\t', '\r', '\f', '\v', '\\' },StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = str.Split(new char[] {'\n', '\t', '\r', '\f', '\v', '\\' });
             foreach(string s in parts)
-                sb.Append(s + " ");
+                sb.Append(s);
             return sb.ToString();
         }
 
@@ -174,6 +174,44 @@ namespace BorderSource.Common
         public static string Truncate(this string str, int maxLength)
         {
             return str.Substring(0, Math.Min(str.Length, maxLength));
+        }
+
+        public static string ConcatAllButFirst(this string[] str)
+        {
+            StringBuilder sb = new StringBuilder();
+            bool first = true;
+            foreach(string s in str)
+            {
+                if(first)
+                {
+                    first = false;
+                    continue;
+                }
+                sb.Append(s);
+            }
+            return sb.ToString();
+        }
+
+        public static string[] SplitFirstOnly(this string str, char c)
+        {
+            string[] splitted = str.Split(c);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 1; i < splitted.Length; i++)
+            {
+                sb.Append(splitted[i] + c);
+            }
+            sb.Remove(sb.Length - 1, 1);
+            return new string[] {splitted[0], sb.ToString()};
+        }
+
+        public static int GetCumulativeValuesFromRange(this int[] array, int start, int end)
+        {
+            int sum = 0;
+            for(int i = start; i <= end; i++)
+            {
+                sum += array[i];
+            }
+            return sum;
         }
     }
 }

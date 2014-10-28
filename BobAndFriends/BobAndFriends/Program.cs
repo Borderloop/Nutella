@@ -10,12 +10,15 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Data;
 using System.Data.Entity.Validation;
+using System.Runtime.InteropServices;
 using BorderSource.Common;
 
 namespace BobAndFriends
 {
     class Program
     {
+        static bool exitSystem = false;
+
         /// <summary>
         /// This thread is used by the productfeedreader, being the producer in this application.
         /// </summary>
@@ -26,6 +29,48 @@ namespace BobAndFriends
         /// </summary>
         public static Thread consumer;
 
+        #region Trap application termination
+        [DllImport("Kernel32")]
+        private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
+
+        private delegate bool EventHandler(CtrlType sig);
+        static EventHandler _handler;
+
+        enum CtrlType
+        {
+            CTRL_C_EVENT = 0,
+            CTRL_BREAK_EVENT = 1,
+            CTRL_CLOSE_EVENT = 2,
+            CTRL_LOGOFF_EVENT = 5,
+            CTRL_SHUTDOWN_EVENT = 6
+        }
+
+        private static bool Handler(CtrlType sig)
+        {
+            Console.WriteLine("Exiting system due to external CTRL-C, or process kill, or shutdown");
+
+            using (Logger logger = new Logger(Statics.LoggerPath))
+            {
+                logger.WriteStatistics();
+            }
+
+            producer.Abort();
+            consumer.Abort();
+
+            Console.WriteLine("Shutting down.");
+
+            //allow main to run off
+            exitSystem = true;
+
+            //shutdown right away so there are no lingering threads
+            Environment.Exit(-1);
+
+            return true;
+        }
+        #endregion
+
+
+
         /// <summary>
         /// Main method will only start the ProductFeedReader
         /// </summary>
@@ -33,7 +78,9 @@ namespace BobAndFriends
         [STAThread]
         static void Main(string[] args)
         {
-            
+            _handler += new EventHandler(Handler);
+            SetConsoleCtrlHandler(_handler, true);
+
             //Initialize
             Initialize();
 
@@ -43,10 +90,15 @@ namespace BobAndFriends
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
             consumer = new Thread(new ThreadStart(ProductDequeuer));
-            
+
             //Start threads
             producer.Start();
-            consumer.Start();         
+            consumer.Start();
+            while (!exitSystem)
+            {
+                Thread.Sleep(100);
+            }
+
         }
 
         static void ProductDequeuer()
@@ -63,28 +115,37 @@ namespace BobAndFriends
 
                 //Break out of while loop when the queue gives null. This only happens when 
                 //productfeedreader is flagged as done.
-                if(p == null)
+                if (p == null)
                 {
                     break;
                 }
                 //Process the product otherwise.
                 try
                 {
+                    TimeStatisticsMapper.StartTimeMeasure("Process product of " + p.Webshop);
+                    TimeStatisticsMapper.StartTimeMeasure("Process method general");
                     bob.Process(p);
+                    TimeStatisticsMapper.StopTimeMeasure("Process method general");
+                    TimeStatisticsMapper.StopTimeMeasure("Process product of " + p.Webshop);
+                }
+                catch (ThreadAbortException)
+                {
+                    Console.WriteLine("From consumer: Thread was aborted. Shutting down.");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("THREW EXCEPTION {0}: " + e.ToString() + " FROM " + e.StackTrace, errorCount);
-                    Statics.Logger.WriteLine("ERROR#{0} " + e.Message, errorCount);
-                    errorCount++; 
-                }            
+                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    {
+                        logger.WriteLine("ERROR#{0} " + e.ToString(), errorCount);
+                    }
+                    errorCount++;
+                }
             }
+
 
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
             //bob.RerunResidue();
-
-            //Tidy up and close
-            bob.FinalizeAndClose();
 
             Console.WriteLine("Thread 2 is done.");
         }
@@ -111,7 +172,7 @@ namespace BobAndFriends
             #endregion
 
             #region Loggers
-            Statics.Logger = new Logger(Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+            Statics.LoggerPath = Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
             Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
             #endregion
 
@@ -161,7 +222,5 @@ namespace BobAndFriends
             Statics.webshopNames = Database.Instance.GetAllWebshopNames();
             #endregion
         }
-
-
     }
 }

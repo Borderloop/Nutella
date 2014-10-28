@@ -9,43 +9,68 @@ namespace BorderSource.Common
 {
     public class QueryLogger : StreamWriter
     {
-        private StringBuilder buffer;
+        private Dictionary<string, string> _params;
+        private StringBuilder _buffer;
 
         private bool selectQuery = false;
         public QueryLogger(string logPath) : base(logPath) 
         {
-            buffer = new StringBuilder();
+            _buffer = new StringBuilder();
+            _params = new Dictionary<string, string>();
         }
 
         public override void Write(string value)
         {
-            //Open connection - open buffer
+            if (value.Contains("Started transaction") || value.Contains("Committed transaction") || value.Contains("Disposed transaction")) return;
+            //Open connection - open _buffer
             if (value.Contains("Opened connection"))
             {
                 selectQuery = false;
-                buffer.Clear();
+                return;
+            }           
+
+            //Get parameter values and replace them in the bufferstring.
+            if(value.Contains("--"))
+            {        
+                //In comments now. Params are given with an "@".
+                if (!value.Contains("@")) return;
+                //Definitely a param now
+                string param = value.Substring(2).Split(':')[0].Trim();
+                string val = value.SplitFirstOnly(':')[1].Split('(')[0].Trim();
+                if (_params.Keys.Contains(param))
+                {
+                    //Clearly we already have this param, meaning we have multiple updates in one transaction
+                    foreach (KeyValuePair<string, string> pair in _params)
+                    {
+                        _buffer.Replace(pair.Key, pair.Value);
+                    }
+                    _params.Clear();
+                    string buffer = _buffer.ToString().RemoveEscapedCharacters() + ";";
+                    _buffer.Clear();
+                    _buffer.Append(buffer);
+                }
+                _params.Add(param, val);
+                return;
+   
+            }
+
+            //Close connection - end of query
+            if (value.Contains("Closed"))
+            {
+                if (selectQuery) return;
+                foreach(KeyValuePair<string, string> pair in _params)
+                {
+                    _buffer.Replace(pair.Key, pair.Value);
+                }
+                base.Write(_buffer.ToString().RemoveEscapedCharacters() + ";");
+                _buffer.Clear();
+                _params.Clear();
                 return;
             }
 
             //Only procede if it is not a select query
             if (value.Contains("SELECT")) selectQuery = true;
-            else buffer.Append(value);
-
-            //Get parameter values and replace them in the bufferstring.
-            if(value.Contains(@"-- @"))
-            {                           
-            }
-
-            //Close connection - end of query
-            if (value.Contains("Closed connection"))
-            {
-                if (selectQuery) return;
-                base.Write(buffer.ToString().RemoveEscapedCharacters());
-                return;
-            }
-
-
-            buffer.Append(value);
+            else _buffer.Append(value);
         }
 
         public override void Close()

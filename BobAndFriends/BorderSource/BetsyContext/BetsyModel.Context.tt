@@ -43,6 +43,8 @@ namespace <#=code.EscapeNamespace(codeNamespace)#>
 using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using BorderSource.Common;
+
 <#
 if (container.FunctionImports.Any())
 {
@@ -81,7 +83,10 @@ foreach (var entitySet in container.BaseEntitySets.OfType<EntitySet>())
 #>
     }
 
-	public <#=code.Escape(container)#>(string conStr) : base(conStr) { }
+	public <#=code.Escape(container)#>(string conStr) : base(conStr) 
+	{
+			Database.Log = Statics.SqlLogger.Write;
+	 }
 
     protected override void OnModelCreating(DbModelBuilder modelBuilder)
     {

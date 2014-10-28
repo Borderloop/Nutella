@@ -12,6 +12,8 @@ namespace BorderSource.BetsyContext
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using BorderSource.Common;
+    
     
     public partial class BetsyModel : DbContext
     {
@@ -20,7 +22,10 @@ namespace BorderSource.BetsyContext
         {
         }
     
-    	public BetsyModel(string conStr) : base(conStr) { }
+    	public BetsyModel(string conStr) : base(conStr) 
+    	{
+    			Database.Log = Statics.SqlLogger.Write;
+    	 }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

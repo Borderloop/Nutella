@@ -49,13 +49,9 @@ namespace BobAndFriends
         /// </summary>
         public void Start()
         {
-            //Start the stopwatch for time measuring
-            Statics.Logger.StartStopwatch();
                   
             //Get all the directories in the productfeed folder.
             string[] dirs = Directory.GetDirectories(_productFeedPath);
-
-            int wrongProductCount = 0;
 
             Console.WriteLine("Started reading files...");
 
@@ -90,8 +86,6 @@ namespace BobAndFriends
                             }
                             if (!p.CleanupFields())
                             {
-                                Statics.Logger.WriteLine("Product " + wrongProductCount + " " + p.Title.Truncate(20) + "... has invalid properties.");
-                                wrongProductCount++;
                                 continue;
                             }
 

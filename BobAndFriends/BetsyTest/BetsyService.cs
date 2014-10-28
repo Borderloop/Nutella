@@ -323,8 +323,8 @@ namespace BetsyTest
         {
             decimal castedShipCost;
             decimal castedPrice;
-            if (!(decimal.TryParse(Record.DeliveryCost, NumberStyles.Any, CultureInfo.InvariantCulture, out castedShipCost))) Statics.Logger.WriteLine("Cannot cast " + Record.DeliveryCost + " to decimal.");
-            if (!(decimal.TryParse(Record.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out castedPrice))) Statics.Logger.WriteLine("Cannot cast " + Record.Price + " to decimal."); ;
+            if (!(decimal.TryParse(Record.DeliveryCost, NumberStyles.Any, CultureInfo.InvariantCulture, out castedShipCost))) { }
+            if (!(decimal.TryParse(Record.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out castedPrice))) { }
 
             webshop webshop = _context.webshop.Where(w => w.url == Record.Webshop).FirstOrDefault();
 

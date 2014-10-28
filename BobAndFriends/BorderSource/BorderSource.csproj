@@ -136,8 +136,12 @@
     <Compile Include="Common\INIFile.cs" />
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\Product.cs" />
+    <Compile Include="Common\PropertyStatistics.cs" />
+    <Compile Include="Common\PropertyStatisticsMapper.cs" />
     <Compile Include="Common\QueryLogger.cs" />
     <Compile Include="Common\Statics.cs" />
+    <Compile Include="Common\TimeStatisticsMapper.cs" />
+    <Compile Include="Common\TimeStatistics.cs" />
     <Compile Include="Common\TypeSwitch.cs" />
     <Compile Include="Common\Util.cs" />
     <Compile Include="Common\XmlValueReader.cs" />

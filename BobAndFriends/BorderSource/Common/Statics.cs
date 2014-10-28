@@ -22,7 +22,7 @@ namespace BorderSource.Common
         /// <summary>
         /// The logger used in the program.
         /// </summary>
-        public static Logger Logger;
+        public static string LoggerPath;
 
         public static QueryLogger SqlLogger;
 
@@ -30,6 +30,8 @@ namespace BorderSource.Common
         /// The settings used in the program.
         /// </summary>
         public static Dictionary<string,string> settings;
+
+        public static Dictionary<string, int> DbPropertySizes;
 
         public static int maxQueueSize;
 

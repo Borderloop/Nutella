@@ -40,7 +40,10 @@ namespace BobAndFriends.Affiliates
                 // If the webshop is not found in the webshop list no further processing needed.
                 if (!Statics.webshopNames.Any(w => w == fileUrl))
                 {
-                    Statics.Logger.WriteLine("Webshop not found in database: " + fileUrl);
+                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    {
+                        logger.WriteLine("Webshop not found in database: " + fileUrl);
+                    }
                     continue;
                 }
                 try
@@ -160,6 +163,13 @@ namespace BobAndFriends.Affiliates
                                             _reader.Read();
                                             p.SKU = _reader.Value;
                                             break;
+
+                                        case "phonePrice":
+                                            _reader.Read();
+                                            _reader.Read();
+                                            _reader.Read();
+                                            p.Price = _reader.Value;
+                                            break;
                                     }
                                     _reader.MoveToElement();
                                     break;
@@ -175,13 +185,23 @@ namespace BobAndFriends.Affiliates
                         }
                     }
                 }
+                catch (ThreadAbortException threab)
+                {
+                    Console.WriteLine("From producer: Thread was aborted. Shutting down.");
+                }
                 catch (XmlException xmle)
                 {
-                    Statics.Logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    {
+                        logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                    }
                 }
                 catch (Exception e)
                 {
-                    Statics.Logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    {
+                        logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                    }
                 }
                 yield return products;
                 products.Clear();

@@ -60,7 +60,10 @@ namespace BobAndFriends
                 // If the webshop is not found in the webshop list no further processing needed.
                 if (!Statics.webshopNames.Any(w => w == fileUrl))
                 {
-                    Statics.Logger.WriteLine("Webshop not found in database: " + fileUrl);
+                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    {
+                        logger.WriteLine("Webshop not found in database: " + fileUrl);
+                    }
                     continue;
                 }
                 xvr.CreateReader(file);

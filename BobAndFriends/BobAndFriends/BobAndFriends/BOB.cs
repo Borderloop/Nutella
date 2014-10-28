@@ -24,6 +24,8 @@ namespace BobAndFriends
         /// </summary>
         private bool rerunningResidue = false;
 
+        private Product _record;
+
         private int _countryID;
 
         public BOB()
@@ -39,7 +41,8 @@ namespace BobAndFriends
         /// all methods are called in this order. 
         /// </summary>
         public void Process(Product Record = null)
-        {
+        {          
+            _record = Record;
             /*
             //Precondition: Record has to be clean; the title should not include
             //the brand name or the sku value. Therefore, we filter them out.
@@ -51,44 +54,40 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             */
-            Console.WriteLine("Busy with: " + Record.Title.Truncate(20) + " from " + Record.Webshop);
+            Console.WriteLine("Busy with: " + _record.Title.Truncate(20) + " from " + _record.Webshop);
 
-            if (Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase) && Record.Brand != "")
+            if (_record.Title.Contains(_record.Brand, StringComparison.OrdinalIgnoreCase) && _record.Brand != "")
             {
                 //Split the title with the Brand, leaving at least two strings
                 //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
-                string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
-                Record.Title = String.Concat(s);
+                string[] s = _record.Title.Split(new string[] { _record.Brand }, StringSplitOptions.RemoveEmptyEntries);
+                _record.Title = String.Concat(s);
             }
-            Stopwatch sw = new Stopwatch();
 
-            if (Record.SKU.Length > 15)
-            {
-                Record.SKU = "";
-            }
-            sw.Restart();
-
+            TimeStatisticsMapper.StartTimeMeasure("Unique ID check");
             //Check if product already exists in database by affiliate and unique affiliate number.
-            if ((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
+            if ((_matchedArticleID = GetAIDFromUAC(_record)) != -1)
             {
-                Console.WriteLine("Found an already existing product for " + Record.Title.Truncate(10));
+                TimeStatisticsMapper.StopTimeMeasure("Unique ID check");
+                Console.WriteLine("Found an already existing product for " + _record.Title.Truncate(10));
                 //There is a match with a unique article, meaning the record is one. Just update it where necessary.
-                CompareProductData(Record);
+                CompareProductData(_record);
                 return;
             }
-            //Console.WriteLine("Finished unsuccesful id in: {0}", sw.Elapsed);
-            sw.Restart();
+            TimeStatisticsMapper.StopTimeMeasure("Unique ID check");
 
             //Get country id
-            _countryID = GetCountryId(Record.Webshop);
-            //Console.WriteLine("Finished getting country id in: {0}", sw.Elapsed);
+            TimeStatisticsMapper.StartTimeMeasure("Country ID check");
+            _countryID = GetCountryId(_record.Webshop);
+            TimeStatisticsMapper.StopTimeMeasure("Country ID check");
 
             //First test - EAN/SKU match and perfect title matching.
-            sw.Restart();
             //If checkSKU() return true, the record matches with a product in the database and its data
             //can be added to the product. It is done then.
-            if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
+            TimeStatisticsMapper.StartTimeMeasure("SKU check");
+            if ((_record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(_record.SKU)) != -1)
             {
+                TimeStatisticsMapper.StopTimeMeasure("SKU check");
                 /*
                 int catid;
                 // After SKU match, check if given category exist in database.
@@ -115,17 +114,18 @@ namespace BobAndFriends
                     }
                 }
                  */
-                Console.WriteLine("Found an already existing SKU for " + Record.Title.Truncate(10) + " with SKU " + Record.SKU);
+                Console.WriteLine("Found an already existing SKU for " + _record.Title.Truncate(10) + " with SKU " + _record.SKU);
                 //The product has an SKU and it's a match.
-                SaveMatch(Record);
+                SaveMatch(_record);
                 return;
             }
-            //Console.WriteLine("Finished unsuccesfull sku check: {0}", sw.Elapsed);
-            sw.Restart();
+            TimeStatisticsMapper.StopTimeMeasure("SKU check");
 
             //If the first check does not go well, check for the ean.
-            if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
+            TimeStatisticsMapper.StartTimeMeasure("EAN check");
+            if (!_record.EAN.Equals("") && (_matchedArticleID = checkEAN(_record.EAN)) != -1)
             {
+                TimeStatisticsMapper.StopTimeMeasure("EAN check");
                 /*
                 int catid;
                 // After EAN match, check if given category exist in database.
@@ -154,11 +154,11 @@ namespace BobAndFriends
                 */
                 Console.WriteLine("Found an already existing EAN for " + Record.Title.Truncate(10) + " with EAN " + Record.EAN);
                 //The product has an EAN and it's a match.
-                SaveMatch(Record);
+                SaveMatch(_record);
                 return;
             }
-            //Console.WriteLine("Finished unsuccesfull ean check: {0}", sw.Elapsed);
-            sw.Restart();
+            TimeStatisticsMapper.StopTimeMeasure("EAN check");
+
             /*//The product has no valid EAN and no valid SKU, therefore we will match titles.
             if ((_matchedArticleID = checkTitle(Record.Title)) != -1)
             {
@@ -171,13 +171,14 @@ namespace BobAndFriends
 
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
-            if (CheckBrand(Record))
+            TimeStatisticsMapper.StartTimeMeasure("Brand check");
+            if (CheckBrand(_record))
             {
-                sendToResidue(Record);
+                TimeStatisticsMapper.StopTimeMeasure("Brand check");
+                //sendToResidue(Record);
                 return;
             }
-            //Console.WriteLine("Finished brand check: {0}", sw.Elapsed);
-            sw.Restart();
+            TimeStatisticsMapper.StopTimeMeasure("Brand check");
 
             //Run a brand check. If it exists, we can go on to match the product by relevance.
             //If it doesn't. however, we have to create a new product.
@@ -189,15 +190,17 @@ namespace BobAndFriends
                 return;
             }*/
             //Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
-            if (Record.Title != "" && Record.EAN != "")
+            if (_record.Title != "" && _record.EAN != "")
             {
                 //The product has a brand name which doesn't exist in the database and has a title, so save it to the database
-                SaveNewArticle(Record);
+                TimeStatisticsMapper.StartTimeMeasure("SaveNewArticle method");
+                SaveNewArticle(_record);
+                TimeStatisticsMapper.StopTimeMeasure("SaveNewArticle method");
                 return;
             }
             else//           !!!!!!!!!!!!   TEMPORARY, REMOVE WHEN RELEVANCE MATCHER IS TURNED BACK ON    !!!!!!!!!!!
             {
-                sendToResidue(Record);
+                //sendToResidue(Record);
             }
         }       
 
@@ -288,13 +291,12 @@ namespace BobAndFriends
         /// This method is called when a match is found. It saves the found match to the database.
         /// It adds missing data to the found article and adds synonyms.
         /// </summary>
-        private void  SaveMatch(Product Record)
+        private void SaveMatch(Product Record)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             //Save the match
+            TimeStatisticsMapper.StartTimeMeasure("SaveMatch method");
             Database.Instance.SaveMatch(Record, _matchedArticleID, _countryID);
+            TimeStatisticsMapper.StopTimeMeasure("SaveMatch method");
 
             // Finally compare the product data
             CompareProductData(Record);
@@ -306,9 +308,6 @@ namespace BobAndFriends
             {
                 Database.Instance.DeleteFromResidue(Record);
             }
-
-            Console.WriteLine("Finished saving match in: {0}", sw.Elapsed);
-            sw.Stop();
         }
 
         /// <summary>
@@ -375,8 +374,6 @@ namespace BobAndFriends
         /// <param name="p"></param>
         private void sendToResidue(Product p)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             //If we are rerunning through the residue, this product already exists there.
             //No need to add it again.
             if (rerunningResidue)
@@ -386,8 +383,7 @@ namespace BobAndFriends
 
             //Call SendToResidue() to do so.
             Database.Instance.SendToResidue(p);
-            Console.WriteLine("Finished sending to residue in : " + sw.Elapsed);
-            sw.Stop();
+
         }
 
         /// <summary>
@@ -430,11 +426,8 @@ namespace BobAndFriends
         /// <param name="Record">The product to be put in the database</param>
         private void SaveNewArticle(Product Record)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             // Invoke SaveNewArticle() from the database object.
             Database.Instance.SaveNewArticle(Record, _countryID);
-            Console.WriteLine("Finished saving new article in: {0}", sw.Elapsed);
         }
 
         /// <summary>
@@ -444,50 +437,33 @@ namespace BobAndFriends
         /// <param name="Record">The product with its product data to be saves</param>
         private void SaveProductData(Product Record, int matchedArticleId)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            TimeStatisticsMapper.StartTimeMeasure("SaveProductData method");
             Database.Instance.SaveProductData(Record, matchedArticleId);
-            Console.WriteLine("Finished saving product data in: {0}", sw.Elapsed);
+            TimeStatisticsMapper.StopTimeMeasure("SaveProductData method");
         }
 
         private void CompareProductData(Product Record)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             //First select the product data from the product table for the given record
             product productData = Database.Instance.GetProductData(Record, _matchedArticleID);
 
             // If there are no rows returned, there is not yet any deliveryinfo for this record. Save it.
             if (productData == default(product))
             {
-                Console.WriteLine("No product found for " + Record.Title.Truncate(10) + "... for webshop " + Record.Webshop + ".\n Time: {0}", sw.Elapsed);
+                Console.WriteLine("No product found for " + Record.Title.Truncate(10) + "... for webshop " + Record.Webshop);
                 SaveProductData(Record, _matchedArticleID);
             }
             else// Else there already is product data for this record: Compare the product data with the record data for each column.
             {
+                TimeStatisticsMapper.StartTimeMeasure("UpdateProductData method");
                 Database.Instance.UpdateProductData(productData, Record);
-                Console.WriteLine("Updated product in: {0}", sw.Elapsed);
+                TimeStatisticsMapper.StopTimeMeasure("UpdateProductData method");
             }
-            Console.WriteLine("Finished total comparison in: ", sw.Elapsed);
         }
 
         private int GetCountryId(string webshop)
         {
             return Database.Instance.GetCountryId(webshop);
         }
-
-        /// <summary>
-        /// BOB will clean up everything and close the app here.
-        /// </summary>
-        public void FinalizeAndClose()
-        {
-
-            //Close everything and shut down.
-            Console.WriteLine("Writing data to logfile...");
-            Statics.Logger.Close();
-            Statics.SqlLogger.Close();
-            Console.WriteLine("Done.");
-        }
-
     }
 }
