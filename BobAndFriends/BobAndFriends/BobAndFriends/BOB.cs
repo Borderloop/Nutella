@@ -24,8 +24,6 @@ namespace BobAndFriends
         /// </summary>
         private bool rerunningResidue = false;
 
-        private Product _record;
-
         private int _countryID;
 
         public BOB()
@@ -42,7 +40,6 @@ namespace BobAndFriends
         /// </summary>
         public void Process(Product Record = null)
         {          
-            _record = Record;
             /*
             //Precondition: Record has to be clean; the title should not include
             //the brand name or the sku value. Therefore, we filter them out.
@@ -54,38 +51,38 @@ namespace BobAndFriends
                 Record.Title = String.Concat(s);
             }
             */
-            Console.WriteLine("Busy with: " + _record.Title.Truncate(20) + " from " + _record.Webshop);
+            Console.WriteLine("Busy with: " + Record.Title.Truncate(20) + " from " + Record.Webshop);
 
-            if (_record.Title.Contains(_record.Brand, StringComparison.OrdinalIgnoreCase) && _record.Brand != "")
+            if (Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase) && Record.Brand != "")
             {
                 //Split the title with the Brand, leaving at least two strings
                 //These splitted strings can be empty; therefore, remove them using StringSplitOptions.RemoveEmptyEntries.
-                string[] s = _record.Title.Split(new string[] { _record.Brand }, StringSplitOptions.RemoveEmptyEntries);
-                _record.Title = String.Concat(s);
+                string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
+                Record.Title = String.Concat(s);
             }
 
             TimeStatisticsMapper.StartTimeMeasure("Unique ID check");
             //Check if product already exists in database by affiliate and unique affiliate number.
-            if ((_matchedArticleID = GetAIDFromUAC(_record)) != -1)
+            if ((_matchedArticleID = GetAIDFromUAC(Record)) != -1)
             {
                 TimeStatisticsMapper.StopTimeMeasure("Unique ID check");
-                Console.WriteLine("Found an already existing product for " + _record.Title.Truncate(10));
+                Console.WriteLine("Found an already existing product for " + Record.Title.Truncate(10));
                 //There is a match with a unique article, meaning the record is one. Just update it where necessary.
-                CompareProductData(_record);
+                CompareProductData(Record);
                 return;
             }
             TimeStatisticsMapper.StopTimeMeasure("Unique ID check");
 
             //Get country id
             TimeStatisticsMapper.StartTimeMeasure("Country ID check");
-            _countryID = GetCountryId(_record.Webshop);
+            _countryID = GetCountryId(Record.Webshop);
             TimeStatisticsMapper.StopTimeMeasure("Country ID check");
 
             //First test - EAN/SKU match and perfect title matching.
             //If checkSKU() return true, the record matches with a product in the database and its data
             //can be added to the product. It is done then.
             TimeStatisticsMapper.StartTimeMeasure("SKU check");
-            if ((_record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(_record.SKU)) != -1)
+            if ((Record.SKU.Length >= 3) && (_matchedArticleID = checkSKU(Record.SKU)) != -1)
             {
                 TimeStatisticsMapper.StopTimeMeasure("SKU check");
                 /*
@@ -114,16 +111,16 @@ namespace BobAndFriends
                     }
                 }
                  */
-                Console.WriteLine("Found an already existing SKU for " + _record.Title.Truncate(10) + " with SKU " + _record.SKU);
+                Console.WriteLine("Found an already existing SKU for " + Record.Title.Truncate(10) + " with SKU " + Record.SKU);
                 //The product has an SKU and it's a match.
-                SaveMatch(_record);
+                SaveMatch(Record);
                 return;
             }
             TimeStatisticsMapper.StopTimeMeasure("SKU check");
 
             //If the first check does not go well, check for the ean.
             TimeStatisticsMapper.StartTimeMeasure("EAN check");
-            if (!_record.EAN.Equals("") && (_matchedArticleID = checkEAN(_record.EAN)) != -1)
+            if (!Record.EAN.Equals("") && (_matchedArticleID = checkEAN(Record.EAN)) != -1)
             {
                 TimeStatisticsMapper.StopTimeMeasure("EAN check");
                 /*
@@ -154,7 +151,7 @@ namespace BobAndFriends
                 */
                 Console.WriteLine("Found an already existing EAN for " + Record.Title.Truncate(10) + " with EAN " + Record.EAN);
                 //The product has an EAN and it's a match.
-                SaveMatch(_record);
+                SaveMatch(Record);
                 return;
             }
             TimeStatisticsMapper.StopTimeMeasure("EAN check");
@@ -172,7 +169,7 @@ namespace BobAndFriends
             // If checkBrand() returns false, the record doesn't contain a brand. Send record
             // to residue and stop execution of method.
             TimeStatisticsMapper.StartTimeMeasure("Brand check");
-            if (CheckBrand(_record))
+            if (CheckBrand(Record))
             {
                 TimeStatisticsMapper.StopTimeMeasure("Brand check");
                 //sendToResidue(Record);
@@ -190,11 +187,11 @@ namespace BobAndFriends
                 return;
             }*/
             //Console.WriteLine("Finished checking if brand is in database in: {0}", sw.Elapsed);
-            if (_record.Title != "" && _record.EAN != "")
+            if (Record.Title != "" && Record.EAN != "")
             {
                 //The product has a brand name which doesn't exist in the database and has a title, so save it to the database
                 TimeStatisticsMapper.StartTimeMeasure("SaveNewArticle method");
-                SaveNewArticle(_record);
+                SaveNewArticle(Record);
                 TimeStatisticsMapper.StopTimeMeasure("SaveNewArticle method");
                 return;
             }

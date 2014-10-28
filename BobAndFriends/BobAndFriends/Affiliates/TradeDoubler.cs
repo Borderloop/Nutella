@@ -90,9 +90,9 @@ namespace BobAndFriends.Affiliates
                     products.Add(p);
                     p = new Product();
                 }
-            }
-            yield return products;
-            products.Clear();
+                yield return products;
+                products.Clear();
+            }           
         }
     }
 }

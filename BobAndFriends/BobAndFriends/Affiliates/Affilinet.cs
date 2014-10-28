@@ -47,6 +47,7 @@ namespace BobAndFriends.Affiliates
                     }
                     continue;
                 }
+
                 try
                 {
                     XmlReader _reader = XmlReader.Create(file);
@@ -174,7 +175,8 @@ namespace BobAndFriends.Affiliates
                         }
                     }
                 }
-                catch(ThreadAbortException threab)
+
+                catch (ThreadAbortException threab)
                 {
                     Console.WriteLine("From producer: Thread was aborted. Shutting down.");
                 }
@@ -195,7 +197,7 @@ namespace BobAndFriends.Affiliates
                 yield return products;
                 products.Clear();
             }
-        }      
+        }        
     }
 }
 
