@@ -4,7 +4,9 @@ import os
 '''
 This class constructs the logger for every module requesting it. It takes 2 parameters:
 logName assigns the name to the logger, fileName assigns the name used by the log files.
-'''        
+'''
+
+
 def createLogger(logName, fileName):
     os.chdir('C:\BorderSoftware\Boris\log')
     log = logging.getLogger(logName)

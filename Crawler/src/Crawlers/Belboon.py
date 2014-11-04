@@ -9,7 +9,7 @@ from threading import Thread, Lock
 
 class Crawler():
     def __init__(self):
-        self.parseCongigFile()
+        self.parseConfigFile()
 
     wsdlUrl = ''
     urlCategories = {}
@@ -17,9 +17,8 @@ class Crawler():
     email = ''
     password = ''
     urlCategoryXmlPath = ''
-    feedIdFilePath = ''
-    phpPath = ''
     feedPath = ''
+    phpPath = ''
     amountOfThreads = ''
 
     client = ''
@@ -39,13 +38,12 @@ class Crawler():
         self.gatherData()
 
     # Procedure to parse the config file
-    def parseCongigFile(self):
+    def parseConfigFile(self):
         parser = SafeConfigParser()
         parser.read('C:/BorderSoftware/Boris/settings/boris.ini')
-        self.email = parser.get('Belboon', 'email')
+        self.email = parser.get('General', 'email')
         self.password = parser.get('Belboon', 'password')
         self.urlCategoryXmlPath = parser.get('Belboon', 'urlcategoryxml')
-        self.feedIdFilePath = parser.get('Belboon', 'feedidfile')
         self.phpPath = parser.get('Belboon', 'phppath')
         self.feedPath = parser.get('Belboon', 'feedpath')
         self.wsdlUrl = parser.get('Belboon', 'wsdlurl')
@@ -63,7 +61,7 @@ class Crawler():
                 elif cell.column == 'B':  # Correct feed category
                     self.urlCategories[website] = cell.value
     
-    # Fills the queue with feeds so
+    # Gather feed IDs and call php script to download product data for these feed id's.
     def gatherData(self):
         feeds = self.client.getFeeds(self.sessionHash)
         
@@ -78,7 +76,7 @@ class Crawler():
             if feedUrl == 'www.kabelmeister.de' and passedKabel is False:
                 passedKabel = True
                 continue
-            
+
             feedId = feed.item[0].value
             feedUrl = self.stripUrl(feed.item[5].value)
             
@@ -137,7 +135,7 @@ class Crawler():
                 child = SubElement(product, key)
                 child.text = record[key]
 
-            ElementTree(root).write(self.feedPath + feedUrl + '.xml', encoding='UTF-8')
+        ElementTree(root).write(self.feedPath + feedUrl + '.xml', encoding='UTF-8')
 
         self.lock.acquire()
         try:
@@ -145,5 +143,4 @@ class Crawler():
         finally:
             self.lock.release()
 
-        print 'Active threads: ' + str(self.activeThreads)
         print 'Done crawling ' + feedUrl
