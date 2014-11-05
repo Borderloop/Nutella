@@ -69,12 +69,11 @@ class Crawler():
                     else:  # Else it's just one url, save this
                         print 'Crawling ' +website
                         self.save(affiliate, url, website)
-                        
-            
+
     # Downloads and saves the xml file under the correct name
     def save(self, affiliate, url, website):
+        website = website.replace('/', '$')
         # Download xml file and write it to a file
-        
         # If the save fails, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
