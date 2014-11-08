@@ -48,6 +48,15 @@
         <AssociationConnector Association="BetsyModel.Model.web_payment" />
         <AssociationConnector Association="BetsyModel.Model.web_sender" />
         <AssociationConnector Association="BetsyModel.Model.web_sendingcountry" />
+        <EntityTypeShape EntityType="BetsyModel.Model.articletemp" Width="1.5" PointX="7.375" PointY="4.375" />
+        <EntityTypeShape EntityType="BetsyModel.Model.categorytemp" Width="1.5" PointX="9.625" PointY="1.25" />
+        <EntityTypeShape EntityType="BetsyModel.Model.eantemp" Width="1.5" PointX="9.625" PointY="3.75" />
+        <EntityTypeShape EntityType="BetsyModel.Model.skutemp" Width="1.5" PointX="9.625" PointY="8.5" />
+        <EntityTypeShape EntityType="BetsyModel.Model.titletemp" Width="1.5" PointX="9.625" PointY="6.125" />
+        <AssociationConnector Association="BetsyModel.Model.fk_ean_articletemp" />
+        <AssociationConnector Association="BetsyModel.Model.fk_sku_articletemp" />
+        <AssociationConnector Association="BetsyModel.Model.fk_title_articletemp" />
+        <AssociationConnector Association="BetsyModel.Model.cat_articletemp" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

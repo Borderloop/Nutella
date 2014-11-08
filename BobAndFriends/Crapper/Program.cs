@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using BorderSource.BetsyContext;
+using BorderSource.Common;
 using System.Data.Common;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
 using System.Data.Entity.Core.EntityClient;
-using BorderSource.BetsyContext;
-using BorderSource.Common;
+using MySql.Data.MySqlClient;
+
 
 namespace Crapper
 {
     public class Program
     {
+        static string ConnectionString;
         static void Main(string[] args)
         {          
             Initialize();
@@ -24,7 +28,7 @@ namespace Crapper
         static void CleanupEanDupes()
         {
             Console.WriteLine("Started looking for EAN dupes...");
-            using (var db = new BetsyModel(BorderSource.Common.Database.Instance.GetConnectionString()))
+            using (var db = new BetsyModel(ConnectionString))
             {
                 db.Configuration.LazyLoadingEnabled = false;
                 var duplicateEans = db.ean.GroupBy(e => e.ean1).Where(x => x.Count() > 1).Select(val => val.Key).ToList();
@@ -164,7 +168,7 @@ namespace Crapper
         static void CleanupTitleDupes()
         {
             Console.WriteLine("Started looking for Title dupes...");
-            using (var db = new BetsyModel(BorderSource.Common.Database.Instance.GetConnectionString()))
+            using (var db = new BetsyModel(ConnectionString))
             {
                 var duplicateTitles = db.title.GroupBy(t => t.title1).Where(x => x.Count() > 1).Select(val => val.Key).ToList();
                 string correctTitle;
@@ -307,6 +311,26 @@ namespace Crapper
             #region Loggers
             Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
             #endregion 
+
+            #region ConnectionString
+            MySqlConnectionStringBuilder providerConnStrBuilder = new MySqlConnectionStringBuilder();
+            providerConnStrBuilder.AllowUserVariables = true;
+            providerConnStrBuilder.AllowZeroDateTime = true;
+            providerConnStrBuilder.ConvertZeroDateTime = true;
+            providerConnStrBuilder.MaximumPoolSize = 32767;
+            providerConnStrBuilder.Pooling = true;
+            providerConnStrBuilder.Database = Statics.settings["dbname"];
+            providerConnStrBuilder.Password = Statics.settings["dbpw"];
+            providerConnStrBuilder.Server = Statics.settings["dbsource"];
+            providerConnStrBuilder.UserID = Statics.settings["dbuid"];
+
+            EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
+            entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
+            entityConnStrBuilder.ProviderConnectionString = providerConnStrBuilder.ToString();
+            entityConnStrBuilder.Metadata = "res://*/BetsyContext.BetsyModel.csdl|res://*/BetsyContext.BetsyModel.ssdl|res://*/BetsyContext.BetsyModel.msl";
+
+            ConnectionString = entityConnStrBuilder.ConnectionString;
+            #endregion ConnectionString
         }
     }
 }

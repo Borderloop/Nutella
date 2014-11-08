@@ -58,11 +58,11 @@ namespace BobAndFriends.Affiliates
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
                 // If the webshop is not found in the webshop list no further processing needed.
-                if (!Statics.webshopNames.Any(w => w == fileUrl))
+                if (!Lookup.WebshopLookup.Contains(fileUrl))
                 {
-                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    using (Logger logger = new Logger(Statics.LoggerPath, true))
                     {
-                        logger.WriteLine("Webshop not found in database: " + fileUrl);
+                        logger.WriteLine("Webshop not found in database: " + fileUrl + " from " + Name);
                     }
                     continue;
                 }
@@ -89,6 +89,12 @@ namespace BobAndFriends.Affiliates
                     p.Webshop = fileUrl;
                     products.Add(p);
                     p = new Product();
+
+                    if (products.Count > PackageSize)
+                    {
+                        yield return products;
+                        products.Clear();
+                    }
                 }
                 yield return products;
                 products.Clear();

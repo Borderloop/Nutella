@@ -52,5 +52,10 @@ namespace BorderSource.BetsyContext
         public virtual DbSet<vbob_suggested> vbob_suggested { get; set; }
         public virtual DbSet<vbobdata> vbobdata { get; set; }
         public virtual DbSet<webshop> webshop { get; set; }
+        public virtual DbSet<articletemp> articletemp { get; set; }
+        public virtual DbSet<categorytemp> categorytemp { get; set; }
+        public virtual DbSet<eantemp> eantemp { get; set; }
+        public virtual DbSet<skutemp> skutemp { get; set; }
+        public virtual DbSet<titletemp> titletemp { get; set; }
     }
 }

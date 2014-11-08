@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 using System.Reflection;
 using BorderSource.BetsyContext;
 using BorderSource.Common;
+using System.Data.Common;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity;
+using System.Data.Entity.Core.EntityClient;
+using MySql.Data.MySqlClient;
 
 namespace Baximus
 {
     class Program
     {
         static List<article> articleList;
+        static string ConnectionString;
 
         static void Main(string[] args)
         {
@@ -23,7 +29,7 @@ namespace Baximus
         static void FillArticleList()
         {          
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            using (var db = new BetsyModel(ConnectionString))
             {
                 Console.Write(" Done\n");
                 Console.Write("Fetching foreign products...");
@@ -47,7 +53,7 @@ namespace Baximus
         {
             Console.WriteLine("----- STARTED COMPARING BIGGEST PRICE DIFFERENCE PER PRODUCT -----");
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            using (var db = new BetsyModel(ConnectionString))
             {
                 Console.Write(" Done\n");
 
@@ -113,7 +119,7 @@ namespace Baximus
         {
             Console.WriteLine("----- STARTED COMPARING BIGGEST PRICE DIFFERENCE PER COUNTRY ------");
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            using (var db = new BetsyModel(ConnectionString))
             {              
                 Console.Write(" Done\n");
 
@@ -184,6 +190,27 @@ namespace Baximus
             articleList = new List<article>();
             FillArticleList();
             #endregion
+
+            #region ConnectionString
+            MySqlConnectionStringBuilder providerConnStrBuilder = new MySqlConnectionStringBuilder();
+            providerConnStrBuilder.AllowUserVariables = true;
+            providerConnStrBuilder.AllowZeroDateTime = true;
+            providerConnStrBuilder.ConvertZeroDateTime = true;
+            providerConnStrBuilder.MaximumPoolSize = 32767;
+            providerConnStrBuilder.Pooling = true;
+            providerConnStrBuilder.Database = Statics.settings["dbname"];
+            providerConnStrBuilder.Password = Statics.settings["dbpw"];
+            providerConnStrBuilder.Server = Statics.settings["dbsource"];
+            providerConnStrBuilder.UserID = Statics.settings["dbuid"];
+
+            EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
+            entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
+            entityConnStrBuilder.ProviderConnectionString = providerConnStrBuilder.ToString();
+            entityConnStrBuilder.Metadata = "res://*/BetsyContext.BetsyModel.csdl|res://*/BetsyContext.BetsyModel.ssdl|res://*/BetsyContext.BetsyModel.msl";
+
+            ConnectionString = entityConnStrBuilder.ConnectionString;
+            #endregion ConnectionString
+
         }
     }
 }

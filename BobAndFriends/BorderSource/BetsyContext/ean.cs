@@ -14,7 +14,7 @@ namespace BorderSource.BetsyContext
     
     public partial class ean
     {
-        public string ean1 { get; set; }
+        public long ean1 { get; set; }
         public int article_id { get; set; }
     
         public virtual article article { get; set; }

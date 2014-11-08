@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BobAndFriends.AffiliateBase" Collapsed="true">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\AffiliateBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Daisycon" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\Daisycon.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.BOB" Collapsed="true">
+    <Position X="18.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAgAAhASQAAAAAAAgACAgAmEAAAAAQgAgAAAIBgIAA=</HashCode>
+      <FileName>BobAndFriends\BOB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.ProductFeedReader" Collapsed="true">
+    <Position X="20.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAABAAAAACAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BobAndFriends\ProductFeedReader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Program" Collapsed="true">
+    <Position X="20.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAQAAAAEAABAAAAAAAAOAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Affiliates.Affilinet" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\Affilinet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Affiliates.Belboon" Collapsed="true">
+    <Position X="14" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\Belboon.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Affiliates.CommissionJunction" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\CommissionJunction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Affiliates.TradeDoubler" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\TradeDoubler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Affiliates.TradeTracker" Collapsed="true">
+    <Position X="11.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\TradeTracker.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Affiliates.Webgains" Collapsed="true">
+    <Position X="16.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\Webgains.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BobAndFriends.Affiliates.Zanox" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Affiliates\Zanox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

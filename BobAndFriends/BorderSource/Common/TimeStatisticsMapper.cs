@@ -7,19 +7,49 @@ using System.Diagnostics;
 
 namespace BorderSource.Common
 {
-    public class TimeStatisticsMapper
+    public class TimeStatisticsMapper : IStatisticsMapper
     {
-        public static Dictionary<string, TimeStatistics> map = new Dictionary<string, TimeStatistics>();
-
-        public static void StartTimeMeasure(string name)
+        private static TimeStatisticsMapper _instance;
+        public static TimeStatisticsMapper Instance
         {
-            if (!map.Keys.Contains(name)) map.Add(name, new TimeStatistics());
-            map[name].StartStopwatch();       
+            get
+            {
+                if (_instance == null) _instance = new TimeStatisticsMapper();
+                return _instance;
+            }
         }
 
-        public static void StopTimeMeasure(string name)
+        private Dictionary<string, IStatistics> _map = new Dictionary<string, IStatistics>();
+        public Dictionary<string, IStatistics> map
         {
-            map[name].StopStopwatch();    
+            get
+            {
+                return _map;
+            }
+        }
+
+        public void StartTimeMeasure(string key)
+        {
+            if (!map.Keys.Contains(key)) Add(key, new TimeStatistics());
+            ((TimeStatistics)map[key]).StartStopwatch();       
+        }
+
+        public void StopTimeMeasure(string key)
+        {
+           ((TimeStatistics)map[key]).StopStopwatch();    
+        }
+
+        public void StopAll()
+        {
+            foreach(string key in map.Keys)
+            {
+                ((TimeStatistics)map[key]).StopStopwatch();
+            }
+        }
+
+        public void Add(string key, IStatistics statistics)
+        {
+            map.Add(key, statistics);
         }
     }
 }

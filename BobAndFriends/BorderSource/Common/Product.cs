@@ -84,7 +84,7 @@ namespace BorderSource.Common
                         prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^[0-9]{10,13}$") ? (prop.GetValue(this) as string).Trim() : "");
                         if ((prop.GetValue(this) as string).Contains("00000000000"))
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             return false;
                         }
                         break;
@@ -94,12 +94,12 @@ namespace BorderSource.Common
                         prop.SetValue(this, Regex.IsMatch(prop.GetValue(this) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(this) : "");
                         if (prop.GetValue(this) as string == "")
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             return false;
                         }
                         if ((parsedPrice = decimal.Parse(prop.GetValue(this) as string)) == 0)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             return false;
                         }
                         break;
@@ -112,7 +112,7 @@ namespace BorderSource.Common
                     case "Title":
                         if ((prop.GetValue(this) as string).Length > Statics.maxTitleSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -121,7 +121,7 @@ namespace BorderSource.Common
                             prop.SetValue(this, (prop.GetValue(this) as string).EscapeChars().Trim());
                             if (prop.GetValue(this) as string == "")
                             {
-                                PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                                PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                                 return false;
                             }
                         }
@@ -130,7 +130,7 @@ namespace BorderSource.Common
                     case "Brand":
                         if ((prop.GetValue(this) as string).Length > Statics.maxBrandSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -143,12 +143,12 @@ namespace BorderSource.Common
                     case "SKU":
                         if ((prop.GetValue(this) as string).Contains("!"))
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             return false; 
                         }
                         if ((prop.GetValue(this) as string).Length > Statics.maxSkuSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -161,7 +161,7 @@ namespace BorderSource.Common
                     case "Image_Loc":
                         if ((prop.GetValue(this) as string).Length > Statics.maxImageUrlSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -174,7 +174,7 @@ namespace BorderSource.Common
                     case "Category":
                         if ((prop.GetValue(this) as string).Length > Statics.maxCategorySize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -187,7 +187,7 @@ namespace BorderSource.Common
                     case "DeliveryTime":
                         if ((prop.GetValue(this) as string).Length > Statics.maxShipTimeSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -201,7 +201,7 @@ namespace BorderSource.Common
                         if ((prop.GetValue(this) as string) == "www.hardware.nl") this.GetType().GetProperty("SKU").SetValue(this, "");
                         if ((prop.GetValue(this) as string).Length > Statics.maxWebShopUrlSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -214,7 +214,7 @@ namespace BorderSource.Common
                     case "Url":
                         if ((prop.GetValue(this) as string).Length > Statics.maxDirectLinkSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -227,7 +227,7 @@ namespace BorderSource.Common
                     case "Affiliate":
                         if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateNameSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -240,7 +240,7 @@ namespace BorderSource.Common
                     case "AffiliateProdID":
                         if ((prop.GetValue(this) as string).Length > Statics.maxAffiliateProductIdSize)
                         {
-                            PropertyStatisticsMapper.Add(prop.Name, prop.GetValue(this) as string);
+                            PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(this) as string);
                             prop.SetValue(this, "--!--" + prop.GetValue(this) + "--!--");
                             return false;
                         }
@@ -248,6 +248,9 @@ namespace BorderSource.Common
                         {
                             prop.SetValue(this, (prop.GetValue(this) as string).Trim());
                         }
+                        break;
+                    case "Description":
+                        prop.SetValue(this, "");
                         break;
                 }
             }

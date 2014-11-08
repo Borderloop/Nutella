@@ -60,14 +60,14 @@ namespace VisualBob
             {
                 this.Visible = true;
             }
-            selectedProduct = Database.Instance.GetNextVBobProduct();
+            //selectedProduct = Database.Instance.GetNextVBobProduct();
             if (selectedProduct.Equals(default(vbobdata)))
             {
                 MessageBox.Show("There are no more products in the database. Closing VisualBob.");
                 Application.Exit();
                 return;
             }
-            suggestedProducts = Database.Instance.GetSuggestedProducts(selectedProduct.id);
+            //suggestedProducts = Database.Instance.GetSuggestedProducts(selectedProduct.id);
 
             selProdBind.DataSource = selectedProduct;
             selectedProductDataGrid.DataSource = selProdBind;
@@ -97,13 +97,13 @@ namespace VisualBob
             article selected = (article)suggestedProductsDataGrid.SelectedRows[0].DataBoundItem;
             // TO BE IMPLEMENTED
             //Database.Instance.SaveMatch(ToProduct(selectedProduct), selected.id, (int)selectedProduct.country_id);
-            Database.Instance.DeleteFromVbobData(selectedProduct.id);
+            //Database.Instance.DeleteFromVbobData(selectedProduct.id);
             ShowNext();
         }
 
         private void rerunButton_Click(object sender, EventArgs e)
         {
-            Database.Instance.RerunVbobEntry(selectedProduct);
+            //Database.Instance.RerunVbobEntry(selectedProduct);
             ShowNext();
         }
 
@@ -111,14 +111,14 @@ namespace VisualBob
         {
             //TO BE IMPLEMENTED
             //Database.Instance.SaveNewArticle(ToProduct(selectedProduct),(int)selectedProduct.country_id);
-            Database.Instance.DeleteFromVbobData(selectedProduct.id);
+            //Database.Instance.DeleteFromVbobData(selectedProduct.id);
             ShowNext();
         }
 
         private void residuButton_Click(object sender, EventArgs e)
         {
-            Database.Instance.SendToResidue(ToProduct(selectedProduct));
-            Database.Instance.DeleteFromVbobData(selectedProduct.id);
+            //Database.Instance.SendToResidue(ToProduct(selectedProduct));
+            //Database.Instance.DeleteFromVbobData(selectedProduct.id);
             
             ShowNext();
         }

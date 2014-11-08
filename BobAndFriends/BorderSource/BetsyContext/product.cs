@@ -31,6 +31,7 @@ namespace BorderSource.BetsyContext
         public System.DateTime valid_until { get; set; }
         public string affiliate_name { get; set; }
         public string affiliate_unique_id { get; set; }
+        public int popularity { get; set; }
     
         public virtual article article { get; set; }
         public virtual ICollection<biggest_price_differences> biggest_price_differences { get; set; }

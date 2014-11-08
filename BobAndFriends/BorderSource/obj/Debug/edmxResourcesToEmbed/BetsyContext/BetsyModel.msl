@@ -113,6 +113,7 @@
     <EntitySetMapping Name="product">
       <EntityTypeMapping TypeName="BetsyModel.Model.product">
         <MappingFragment StoreEntitySet="product">
+          <ScalarProperty Name="popularity" ColumnName="popularity" />
           <ScalarProperty Name="affiliate_unique_id" ColumnName="affiliate_unique_id" />
           <ScalarProperty Name="affiliate_name" ColumnName="affiliate_name" />
           <ScalarProperty Name="valid_until" ColumnName="valid_until" />
@@ -260,6 +261,57 @@
       </EndProperty>
       <EndProperty Name="country">
         <ScalarProperty Name="id" ColumnName="country_id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <EntitySetMapping Name="articletemp">
+      <EntityTypeMapping TypeName="BetsyModel.Model.articletemp">
+        <MappingFragment StoreEntitySet="articletemp">
+          <ScalarProperty Name="image_loc" ColumnName="image_loc" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="brand" ColumnName="brand" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="categorytemp">
+      <EntityTypeMapping TypeName="BetsyModel.Model.categorytemp">
+        <MappingFragment StoreEntitySet="categorytemp">
+          <ScalarProperty Name="called_by" ColumnName="called_by" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="eantemp">
+      <EntityTypeMapping TypeName="BetsyModel.Model.eantemp">
+        <MappingFragment StoreEntitySet="eantemp">
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="ean" ColumnName="ean" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="skutemp">
+      <EntityTypeMapping TypeName="BetsyModel.Model.skutemp">
+        <MappingFragment StoreEntitySet="skutemp">
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="sku" ColumnName="sku" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="titletemp">
+      <EntityTypeMapping TypeName="BetsyModel.Model.titletemp">
+        <MappingFragment StoreEntitySet="titletemp">
+          <ScalarProperty Name="article_id" ColumnName="article_id" />
+          <ScalarProperty Name="title" ColumnName="title" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="cat_articletemp" TypeName="BetsyModel.Model.cat_articletemp" StoreEntitySet="cat_articletemp">
+      <EndProperty Name="categorytemp">
+        <ScalarProperty Name="id" ColumnName="category_id" />
+      </EndProperty>
+      <EndProperty Name="articletemp">
+        <ScalarProperty Name="id" ColumnName="article_id" />
       </EndProperty>
     </AssociationSetMapping>
   </EntityContainerMapping>

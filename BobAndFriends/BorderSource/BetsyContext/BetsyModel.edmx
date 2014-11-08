@@ -22,6 +22,15 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="brand" Type="varchar" MaxLength="100" />
           <Property Name="description" Type="text" />
+          <Property Name="image_loc" Type="varchar" MaxLength="350" />
+        </EntityType>
+        <EntityType Name="articletemp">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="brand" Type="varchar" MaxLength="100" />
+          <Property Name="description" Type="text" />
           <Property Name="image_loc" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="biggest_price_differences">
@@ -45,6 +54,14 @@
           <Property Name="category_id" Type="int" Nullable="false" />
           <Property Name="article_id" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="cat_articletemp">
+          <Key>
+            <PropertyRef Name="category_id" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="category_id" Type="int" Nullable="false" />
+          <Property Name="article_id" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="category">
           <Key>
             <PropertyRef Name="id" />
@@ -61,8 +78,16 @@
             <PropertyRef Name="web_url" />
           </Key>
           <Property Name="category_id" Type="int" Nullable="false" />
-          <Property Name="description" Type="char" MaxLength="50" Nullable="false" />
+          <Property Name="description" Type="char" MaxLength="200" Nullable="false" />
           <Property Name="web_url" Type="char" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="categorytemp">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="description" Type="char" MaxLength="50" Nullable="false" />
+          <Property Name="called_by" Type="int" />
         </EntityType>
         <EntityType Name="country">
           <Key>
@@ -84,6 +109,14 @@
           <Property Name="product_id" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ean">
+          <Key>
+            <PropertyRef Name="ean" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="ean" Type="ubigint" Nullable="false" />
+          <Property Name="article_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="eantemp">
           <Key>
             <PropertyRef Name="ean" />
             <PropertyRef Name="article_id" />
@@ -121,15 +154,16 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="article_id" Type="int" Nullable="false" />
-          <Property Name="ship_time" Type="char" MaxLength="50" />
+          <Property Name="ship_time" Type="char" MaxLength="60" />
           <Property Name="ship_cost" Type="decimal" Precision="10" Scale="2" />
           <Property Name="price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
           <Property Name="webshop_url" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="direct_link" Type="varchar" MaxLength="300" Nullable="false" />
+          <Property Name="direct_link" Type="varchar" MaxLength="350" Nullable="false" />
           <Property Name="last_modified" Type="timestamp" Precision="0" Nullable="false" />
           <Property Name="valid_until" Type="timestamp" Precision="0" Nullable="false" />
           <Property Name="affiliate_name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="affiliate_unique_id" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="popularity" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="residue">
           <Key>
@@ -157,6 +191,14 @@
             <PropertyRef Name="sku" />
             <PropertyRef Name="article_id" />
           </Key>
+          <Property Name="sku" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="article_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="skutemp">
+          <Key>
+            <PropertyRef Name="sku" />
+            <PropertyRef Name="article_id" />
+          </Key>
           <Property Name="sku" Type="varchar" MaxLength="25" Nullable="false" />
           <Property Name="article_id" Type="int" Nullable="false" />
         </EntityType>
@@ -177,6 +219,14 @@
           <Property Name="title" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="title_id" Type="int" Nullable="false" />
           <Property Name="occurrences" Type="smallint" />
+        </EntityType>
+        <EntityType Name="titletemp">
+          <Key>
+            <PropertyRef Name="title" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="title" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="article_id" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="vbob_suggested">
           <Key>
@@ -320,6 +370,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_cat_article-articletemp">
+          <End Role="articletemp" Type="Self.articletemp" Multiplicity="1" />
+          <End Role="cat_articletemp" Type="Self.cat_articletemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="articletemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="cat_articletemp">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_cat_article-category">
           <End Role="category" Type="Self.category" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -330,6 +392,18 @@
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="cat_article">
+              <PropertyRef Name="category_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_cat_article-categorytemp">
+          <End Role="categorytemp" Type="Self.categorytemp" Multiplicity="1" />
+          <End Role="cat_articletemp" Type="Self.cat_articletemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="categorytemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="cat_articletemp">
               <PropertyRef Name="category_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -400,6 +474,18 @@
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="ean">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_ean-articletemp">
+          <End Role="articletemp" Type="Self.articletemp" Multiplicity="1" />
+          <End Role="eantemp" Type="Self.eantemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="articletemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="eantemp">
               <PropertyRef Name="article_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -555,6 +641,18 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_sku-articletemp">
+          <End Role="articletemp" Type="Self.articletemp" Multiplicity="1" />
+          <End Role="skutemp" Type="Self.skutemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="articletemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="skutemp">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_title_synonym-title">
           <End Role="title" Type="Self.title" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -579,6 +677,18 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="title">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_title-articletemp">
+          <End Role="articletemp" Type="Self.articletemp" Multiplicity="1" />
+          <End Role="titletemp" Type="Self.titletemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="articletemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="titletemp">
               <PropertyRef Name="article_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -640,13 +750,17 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
         <EntityContainer Name="BetsyModelModelStoreContainer">
           <EntitySet Name="affiliate" EntityType="Self.affiliate" Schema="test2" store:Type="Tables" />
           <EntitySet Name="article" EntityType="Self.article" Schema="test2" store:Type="Tables" />
+          <EntitySet Name="articletemp" EntityType="Self.articletemp" Schema="test2" store:Type="Tables" />
           <EntitySet Name="biggest_price_differences" EntityType="Self.biggest_price_differences" Schema="test2" store:Type="Tables" />
           <EntitySet Name="cat_article" EntityType="Self.cat_article" Schema="test2" store:Type="Tables" />
+          <EntitySet Name="cat_articletemp" EntityType="Self.cat_articletemp" Schema="test2" store:Type="Tables" />
           <EntitySet Name="category" EntityType="Self.category" Schema="test2" store:Type="Tables" />
           <EntitySet Name="category_synonym" EntityType="Self.category_synonym" Schema="test2" store:Type="Tables" />
+          <EntitySet Name="categorytemp" EntityType="Self.categorytemp" Schema="test2" store:Type="Tables" />
           <EntitySet Name="country" EntityType="Self.country" Schema="test2" store:Type="Tables" />
           <EntitySet Name="country_price_differences" EntityType="Self.country_price_differences" Schema="test2" store:Type="Tables" />
           <EntitySet Name="ean" EntityType="Self.ean" Schema="test2" store:Type="Tables" />
+          <EntitySet Name="eantemp" EntityType="Self.eantemp" Schema="test2" store:Type="Tables" />
           <EntitySet Name="language" EntityType="Self.language" Schema="test2" store:Type="Tables" />
           <EntitySet Name="mark" EntityType="Self.mark" Schema="test2" store:Type="Tables" />
           <EntitySet Name="payment_method" EntityType="Self.payment_method" Schema="test2" store:Type="Tables" />
@@ -654,8 +768,10 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <EntitySet Name="residue" EntityType="Self.residue" Schema="test2" store:Type="Tables" />
           <EntitySet Name="sender" EntityType="Self.sender" Schema="test2" store:Type="Tables" />
           <EntitySet Name="sku" EntityType="Self.sku" Schema="test2" store:Type="Tables" />
+          <EntitySet Name="skutemp" EntityType="Self.skutemp" Schema="test2" store:Type="Tables" />
           <EntitySet Name="title" EntityType="Self.title" Schema="test2" store:Type="Tables" />
           <EntitySet Name="title_synonym" EntityType="Self.title_synonym" Schema="test2" store:Type="Tables" />
+          <EntitySet Name="titletemp" EntityType="Self.titletemp" Schema="test2" store:Type="Tables" />
           <EntitySet Name="vbob_suggested" EntityType="Self.vbob_suggested" Schema="test2" store:Type="Tables" />
           <EntitySet Name="vbobdata" EntityType="Self.vbobdata" Schema="test2" store:Type="Tables" />
           <EntitySet Name="web_language" EntityType="Self.web_language" Schema="test2" store:Type="Tables" />
@@ -684,9 +800,17 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
             <End Role="article" EntitySet="article" />
             <End Role="cat_article" EntitySet="cat_article" />
           </AssociationSet>
+          <AssociationSet Name="fk_cat_article-articletemp" Association="Self.fk_cat_article-articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="cat_articletemp" EntitySet="cat_articletemp" />
+          </AssociationSet>
           <AssociationSet Name="fk_cat_article-category" Association="Self.fk_cat_article-category">
             <End Role="category" EntitySet="category" />
             <End Role="cat_article" EntitySet="cat_article" />
+          </AssociationSet>
+          <AssociationSet Name="fk_cat_article-categorytemp" Association="Self.fk_cat_article-categorytemp">
+            <End Role="categorytemp" EntitySet="categorytemp" />
+            <End Role="cat_articletemp" EntitySet="cat_articletemp" />
           </AssociationSet>
           <AssociationSet Name="fk_category_synonyms-category" Association="Self.fk_category_synonyms-category">
             <End Role="category" EntitySet="category" />
@@ -707,6 +831,10 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <AssociationSet Name="fk_ean-article" Association="Self.fk_ean-article">
             <End Role="article" EntitySet="article" />
             <End Role="ean" EntitySet="ean" />
+          </AssociationSet>
+          <AssociationSet Name="fk_ean-articletemp" Association="Self.fk_ean-articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="eantemp" EntitySet="eantemp" />
           </AssociationSet>
           <AssociationSet Name="fk_language-language" Association="Self.fk_language-language">
             <End Role="language" EntitySet="language" />
@@ -756,6 +884,10 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
             <End Role="article" EntitySet="article" />
             <End Role="sku" EntitySet="sku" />
           </AssociationSet>
+          <AssociationSet Name="fk_sku-articletemp" Association="Self.fk_sku-articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="skutemp" EntitySet="skutemp" />
+          </AssociationSet>
           <AssociationSet Name="fk_title_synonym-title" Association="Self.fk_title_synonym-title">
             <End Role="title" EntitySet="title" />
             <End Role="title_synonym" EntitySet="title_synonym" />
@@ -763,6 +895,10 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <AssociationSet Name="fk_title-article" Association="Self.fk_title-article">
             <End Role="article" EntitySet="article" />
             <End Role="title" EntitySet="title" />
+          </AssociationSet>
+          <AssociationSet Name="fk_title-articletemp" Association="Self.fk_title-articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="titletemp" EntitySet="titletemp" />
           </AssociationSet>
           <AssociationSet Name="fk_title-country" Association="Self.fk_title-country">
             <End Role="country" EntitySet="country" />
@@ -898,6 +1034,27 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
             <End Role="country" EntitySet="country" />
             <End Role="webshop" EntitySet="webshop" />
           </AssociationSet>
+          <EntitySet Name="articletemp" EntityType="BetsyModel.Model.articletemp" />
+          <EntitySet Name="categorytemp" EntityType="BetsyModel.Model.categorytemp" />
+          <EntitySet Name="eantemp" EntityType="BetsyModel.Model.eantemp" />
+          <EntitySet Name="skutemp" EntityType="BetsyModel.Model.skutemp" />
+          <EntitySet Name="titletemp" EntityType="BetsyModel.Model.titletemp" />
+          <AssociationSet Name="fk_ean_articletemp" Association="BetsyModel.Model.fk_ean_articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="eantemp" EntitySet="eantemp" />
+          </AssociationSet>
+          <AssociationSet Name="fk_sku_articletemp" Association="BetsyModel.Model.fk_sku_articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="skutemp" EntitySet="skutemp" />
+          </AssociationSet>
+          <AssociationSet Name="fk_title_articletemp" Association="BetsyModel.Model.fk_title_articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="titletemp" EntitySet="titletemp" />
+          </AssociationSet>
+          <AssociationSet Name="cat_articletemp" Association="BetsyModel.Model.cat_articletemp">
+            <End Role="articletemp" EntitySet="articletemp" />
+            <End Role="categorytemp" EntitySet="categorytemp" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="affiliate">
           <Key>
@@ -997,7 +1154,7 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
             <PropertyRef Name="ean1" />
             <PropertyRef Name="article_id" />
           </Key>
-          <Property Name="ean1" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="ean1" Type="Int64" Nullable="false" />
           <Property Name="article_id" Type="Int32" Nullable="false" />
           <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_ean_article" FromRole="ean" ToRole="article" />
         </EntityType>
@@ -1046,6 +1203,7 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_product_article" FromRole="product" ToRole="article" />
           <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_product" FromRole="product" ToRole="biggest_price_differences" />
           <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="product" ToRole="country_price_differences" />
+          <Property Name="popularity" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="residue">
           <Key>
@@ -1391,6 +1549,95 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <End Type="BetsyModel.Model.country" Role="country" Multiplicity="*" />
           <End Type="BetsyModel.Model.webshop" Role="webshop" Multiplicity="*" />
         </Association>
+        <EntityType Name="articletemp">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="brand" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <Property Name="image_loc" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="eantemp" Relationship="BetsyModel.Model.fk_ean_articletemp" FromRole="articletemp" ToRole="eantemp" />
+          <NavigationProperty Name="skutemp" Relationship="BetsyModel.Model.fk_sku_articletemp" FromRole="articletemp" ToRole="skutemp" />
+          <NavigationProperty Name="titletemp" Relationship="BetsyModel.Model.fk_title_articletemp" FromRole="articletemp" ToRole="titletemp" />
+          <NavigationProperty Name="categorytemp" Relationship="BetsyModel.Model.cat_articletemp" FromRole="articletemp" ToRole="categorytemp" />
+        </EntityType>
+        <EntityType Name="categorytemp">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="called_by" Type="Int32" />
+          <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.cat_articletemp" FromRole="categorytemp" ToRole="articletemp" />
+        </EntityType>
+        <EntityType Name="eantemp">
+          <Key>
+            <PropertyRef Name="ean" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="ean" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="article_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.fk_ean_articletemp" FromRole="eantemp" ToRole="articletemp" />
+        </EntityType>
+        <EntityType Name="skutemp">
+          <Key>
+            <PropertyRef Name="sku" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="sku" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="article_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.fk_sku_articletemp" FromRole="skutemp" ToRole="articletemp" />
+        </EntityType>
+        <EntityType Name="titletemp">
+          <Key>
+            <PropertyRef Name="title" />
+            <PropertyRef Name="article_id" />
+          </Key>
+          <Property Name="title" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="article_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.fk_title_articletemp" FromRole="titletemp" ToRole="articletemp" />
+        </EntityType>
+        <Association Name="fk_ean_articletemp">
+          <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="1" />
+          <End Type="BetsyModel.Model.eantemp" Role="eantemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="articletemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="eantemp">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_sku_articletemp">
+          <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="1" />
+          <End Type="BetsyModel.Model.skutemp" Role="skutemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="articletemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="skutemp">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_title_articletemp">
+          <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="1" />
+          <End Type="BetsyModel.Model.titletemp" Role="titletemp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="articletemp">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="titletemp">
+              <PropertyRef Name="article_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="cat_articletemp">
+          <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="*" />
+          <End Type="BetsyModel.Model.categorytemp" Role="categorytemp" Multiplicity="*" />
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1509,6 +1756,7 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <EntitySetMapping Name="product">
             <EntityTypeMapping TypeName="BetsyModel.Model.product">
               <MappingFragment StoreEntitySet="product">
+                <ScalarProperty Name="popularity" ColumnName="popularity" />
                 <ScalarProperty Name="affiliate_unique_id" ColumnName="affiliate_unique_id" />
                 <ScalarProperty Name="affiliate_name" ColumnName="affiliate_name" />
                 <ScalarProperty Name="valid_until" ColumnName="valid_until" />
@@ -1656,6 +1904,57 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
             </EndProperty>
             <EndProperty Name="country">
               <ScalarProperty Name="id" ColumnName="country_id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="articletemp">
+            <EntityTypeMapping TypeName="BetsyModel.Model.articletemp">
+              <MappingFragment StoreEntitySet="articletemp">
+                <ScalarProperty Name="image_loc" ColumnName="image_loc" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="brand" ColumnName="brand" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="categorytemp">
+            <EntityTypeMapping TypeName="BetsyModel.Model.categorytemp">
+              <MappingFragment StoreEntitySet="categorytemp">
+                <ScalarProperty Name="called_by" ColumnName="called_by" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="eantemp">
+            <EntityTypeMapping TypeName="BetsyModel.Model.eantemp">
+              <MappingFragment StoreEntitySet="eantemp">
+                <ScalarProperty Name="article_id" ColumnName="article_id" />
+                <ScalarProperty Name="ean" ColumnName="ean" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="skutemp">
+            <EntityTypeMapping TypeName="BetsyModel.Model.skutemp">
+              <MappingFragment StoreEntitySet="skutemp">
+                <ScalarProperty Name="article_id" ColumnName="article_id" />
+                <ScalarProperty Name="sku" ColumnName="sku" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="titletemp">
+            <EntityTypeMapping TypeName="BetsyModel.Model.titletemp">
+              <MappingFragment StoreEntitySet="titletemp">
+                <ScalarProperty Name="article_id" ColumnName="article_id" />
+                <ScalarProperty Name="title" ColumnName="title" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="cat_articletemp" TypeName="BetsyModel.Model.cat_articletemp" StoreEntitySet="cat_articletemp">
+            <EndProperty Name="categorytemp">
+              <ScalarProperty Name="id" ColumnName="category_id" />
+            </EndProperty>
+            <EndProperty Name="articletemp">
+              <ScalarProperty Name="id" ColumnName="article_id" />
             </EndProperty>
           </AssociationSetMapping>
         </EntityContainerMapping>
