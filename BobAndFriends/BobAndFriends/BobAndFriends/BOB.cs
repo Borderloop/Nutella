@@ -63,7 +63,7 @@ namespace BobAndFriends.BobAndFriends
 
                 validation.IsValidAsNewArticle = !(EanMatched || SkuMatched) && ProductIsValid && CategoryExists;
 
-                if(!(EanMatched || SkuMatched || validation.IsValidAsNewArticle)) continue;
+                if(!(EanMatched || SkuMatched /*|| validation.IsValidAsNewArticle*/)) continue;
             
                 validation.CategoryId = validation.IsValidAsNewArticle ? 
                                                     Lookup.CategorySynonymLookup.Contains(Record.Category) ? 

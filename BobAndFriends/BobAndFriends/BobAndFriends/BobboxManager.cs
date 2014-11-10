@@ -72,6 +72,12 @@ namespace BobAndFriends.BobAndFriends
                     goto Next;
                 }
 
+                if(validation.IsValidAsNewArticle)
+                {
+                    //BobBox.SaveNewArticle(validation.Product, validation.CountryId, validation.CategoryId);
+                    goto Next;
+                }
+
             Next:
                 {
                     validation = ProductValidationQueue.Instance.Dequeue();
