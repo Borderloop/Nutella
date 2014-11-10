@@ -153,7 +153,7 @@
     <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="brand" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
     <Property Name="description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
-    <Property Name="image_loc" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="image_loc" Type="String" MaxLength="350" FixedLength="false" Unicode="false" />
     <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_article" FromRole="article" ToRole="biggest_price_differences" />
     <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_article" FromRole="article" ToRole="country_price_differences" />
     <NavigationProperty Name="ean" Relationship="BetsyModel.Model.fk_ean_article" FromRole="article" ToRole="ean" />
@@ -270,11 +270,11 @@
     </Key>
     <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="article_id" Type="Int32" Nullable="false" />
-    <Property Name="ship_time" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ship_time" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
     <Property Name="ship_cost" Type="Decimal" />
     <Property Name="price" Type="Decimal" Nullable="false" />
     <Property Name="webshop_url" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-    <Property Name="direct_link" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+    <Property Name="direct_link" Type="String" Nullable="false" MaxLength="350" FixedLength="false" Unicode="false" />
     <Property Name="last_modified" Type="DateTime" Nullable="false" />
     <Property Name="valid_until" Type="DateTime" Nullable="false" />
     <Property Name="affiliate_name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />

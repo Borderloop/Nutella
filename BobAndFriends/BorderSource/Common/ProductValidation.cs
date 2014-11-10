@@ -17,6 +17,7 @@ namespace BorderSource.Common
 
 
         public bool CategorySynonymExists = false;
+        public bool IsValidAsNewArticle = false;
 
         public  bool EanMatched
         {

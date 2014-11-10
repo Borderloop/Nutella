@@ -24,7 +24,8 @@ namespace BorderSource.BetsyContext
     
     	public BetsyModel(string conStr) : base(conStr) 
     	{
-    			Database.Log = Statics.SqlLogger.Write;
+            //ALSO EDIT IN TT FILE
+    			//Database.Log = Statics.SqlLogger.Write;
     	 }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

@@ -13,6 +13,7 @@ using System.Data.Entity.Core.EntityClient;
 using System.Globalization;
 using System.Reflection;
 using BorderSource.BetsyContext;
+using System.Data.Entity.Validation;
 
 namespace BorderSource.Common
 {
@@ -77,16 +78,16 @@ namespace BorderSource.Common
             long ean;
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
             //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
-            if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) context.ean.Add(new ean { ean1 = ean, article_id = matchedArticleID });
-            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToLower() == Record.SKU.ToLower())) ) context.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
+            if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean });
+            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToLower() == Record.SKU.ToLower())) ) articleTable.sku.Add(new sku { sku1 = Record.SKU });
 
             title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
 
             if (title == default(title))
             {
-                title addedTitle = new title { title1 = Record.Title, country_id = (short)countryID, article_id = matchedArticleID };
-                context.title.Add(addedTitle);
-                context.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim(), title_id = addedTitle.id });
+                title addedTitle = new title { title1 = Record.Title, country_id = (short)countryID};
+                articleTable.title.Add(addedTitle);
+                articleTable.title.Where(t => t.country_id == (short)countryID).FirstOrDefault().title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
             }
             else
             {
@@ -97,8 +98,7 @@ namespace BorderSource.Common
                     title_synonym ts = articleTable.title.First(t => t.country_id == countryID).title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
                     ts.occurrences++;
                     context.title_synonym.Attach(ts);
-                    var synEntry = context.Entry(ts);
-                    synEntry.Property(syn => syn.occurrences).IsModified = true;
+                    context.Entry(ts).Property(syn => syn.occurrences).IsModified = true;
                     /*if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
                     {
                         title.title1 = ts.title;
@@ -110,8 +110,7 @@ namespace BorderSource.Common
                 //else, add the title to the synonyms.
                 else
                 {
-                    title_synonym ts = new title_synonym { occurrences = 1, title = Record.Title.Trim(), title_id = title.id };
-                    context.title_synonym.Add(ts);
+                    articleTable.title.Where(t => t.country_id == (short)countryID).FirstOrDefault().title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
                 }
             }
 
@@ -186,35 +185,31 @@ namespace BorderSource.Common
                 ean ean = new ean
                 {
                     ean1 = eanVal,
-                    article_id = art.id
                 };
-                context.ean.Add(ean);
+                art.ean.Add(ean);
             }
 
             title title = new title
             {
                 title1 = Record.Title,
                 country_id = (short)countryId,
-                article_id = art.id,
-            };
-            context.title.Add(title);
+            };          
 
             title_synonym ts = new title_synonym
             {
                 title = Record.Title,
-                title_id = title.id,
                 occurrences = 1
             };
-            context.title_synonym.Add(ts);
+            title.title_synonym.Add(ts);
+            art.title.Add(title);
 
             if (Record.SKU != "")
             {
                 sku sku = new sku
                 {
                     sku1 = Record.SKU,
-                    article_id = art.id
                 };
-                context.sku.Add(sku);
+                art.sku.Add(sku);
             }
 
             decimal castedShipCost;
@@ -224,7 +219,6 @@ namespace BorderSource.Common
 
             product product = new product
             {
-                article_id = art.id,
                 ship_cost = castedShipCost,
                 ship_time = Record.DeliveryTime,
                 price = castedPrice,
@@ -234,7 +228,7 @@ namespace BorderSource.Common
                 affiliate_unique_id = Record.AffiliateProdID,
                 last_modified = System.DateTime.Now
             };
-            context.product.Add(product);
+            art.product.Add(product);
 
         }
 
@@ -377,20 +371,81 @@ namespace BorderSource.Common
 
         public void Commit()
         {
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                            ve.PropertyName,
+                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                            ve.ErrorMessage);
+                    }
+                }
+                throw;
+
+            }
         }
 
         public void CommitAndDispose()
         {
-            context.SaveChanges();
-            context.Dispose();
+            try
+            {
+                context.SaveChanges();
+                context.Dispose();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                            ve.PropertyName,
+                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                            ve.ErrorMessage);
+                    }
+                }
+                throw;
+
+            }
         }
 
         public void CommitAndCreate()
         {
-            context.SaveChanges();
-            context.Dispose();
-            context = new BetsyModel(ConnectionString);
+            try
+            {
+                context.SaveChanges();
+                context.Dispose();
+                context = new BetsyModel(ConnectionString);
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Value: \"{1}\", Error: \"{2}\"",
+                            ve.PropertyName,
+                            eve.Entry.CurrentValues.GetValue<object>(ve.PropertyName),
+                            ve.ErrorMessage);
+                    }
+                }
+                throw;
+
+            }
+
         }
 
     

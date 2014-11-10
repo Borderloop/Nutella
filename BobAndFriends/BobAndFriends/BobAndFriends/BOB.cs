@@ -57,13 +57,22 @@ namespace BobAndFriends.BobAndFriends
 
                 bool EanMatched = ((!Record.EAN.Equals("")) && (matchedArticleID = checkEAN(Record.EAN)) != -1);
                 validation.ArticleNumberOfEanMatch = EanMatched ? matchedArticleID : -1;
-                    
-                if(!(EanMatched || SkuMatched)) continue;
+
+                bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0;
+                bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category) || Lookup.CategorySynonymLookup.Contains(Record.Category);
+
+                validation.IsValidAsNewArticle = !(EanMatched || SkuMatched) && ProductIsValid && CategoryExists;
+
+                if(!(EanMatched || SkuMatched || validation.IsValidAsNewArticle)) continue;
             
-                validation.CategoryId = GetCategoryId(matchedArticleID);
+                validation.CategoryId = validation.IsValidAsNewArticle ? 
+                                                    Lookup.CategorySynonymLookup.Contains(Record.Category) ? 
+                                                    Lookup.CategorySynonymLookup[Record.Category].First().CategoryId : Lookup.CategoryLookup[Record.Category].First().Id 
+                                            : GetCategoryId(matchedArticleID);
+
                 validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category);
 
-                ProductValidationQueue.Instance.Enqueue(validation);   
+                ProductValidationQueue.Instance.Enqueue(validation);
 
                 /*
                 int catId;

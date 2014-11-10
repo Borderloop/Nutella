@@ -12,10 +12,12 @@ namespace BobAndFriends.BobAndFriends
     public class BobboxManager
     {
         private BobBox BobBox;
+        private HashSet<string> AddedCategorySynonyms;
 
         public BobboxManager()
         {
             BobBox = new BobBox();
+            AddedCategorySynonyms = new HashSet<string>();
         }
 
         public void StartValidatingAndSaving()
@@ -28,6 +30,7 @@ namespace BobAndFriends.BobAndFriends
                 {
                     Console.WriteLine("Saving changes for " + CurrentWebshop + " to database...");
                     BobBox.Commit();
+                    AddedCategorySynonyms.Clear();
                     Console.WriteLine("Done saving changes for " + CurrentWebshop);
                 }
 
@@ -49,14 +52,22 @@ namespace BobAndFriends.BobAndFriends
 
                 if (validation.EanMatched)
                 {
-                    if (!validation.CategorySynonymExists) BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category, validation.Product.Webshop);
+                    if (!validation.CategorySynonymExists && !AddedCategorySynonyms.Contains(validation.Product.Category))
+                    {
+                        AddedCategorySynonyms.Add(validation.Product.Category);
+                        BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category, validation.Product.Webshop);
+                    }
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfEanMatch, validation.CountryId);
                     goto Next;
                 }
 
                 if (validation.SkuMatched && !validation.EanMatched)
                 {
-                    if (!validation.CategorySynonymExists) BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category, validation.Product.Webshop);
+                    if (!validation.CategorySynonymExists && !AddedCategorySynonyms.Contains(validation.Product.Category))
+                    {
+                        AddedCategorySynonyms.Add(validation.Product.Category);
+                        BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category, validation.Product.Webshop);
+                    }
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfSkuMatch, validation.CountryId);
                     goto Next;
                 }
