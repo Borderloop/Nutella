@@ -74,7 +74,7 @@ namespace BorderSource.Queue
                     {
                         return null;
                     }
-                    Monitor.Wait(QueueLock, 2000);
+                    Monitor.Wait(QueueLock, 200);
                 }
                 return Queue.Dequeue();
             }

@@ -63,11 +63,11 @@ namespace BorderSource.Common
                         result = actualEan == default(ean) ? -1 : actualEan.article_id;
                         break;
                     case "sku":
-                        var actualSku = db.sku.Where(s => s.sku1.ToLower() == value.ToLower()).FirstOrDefault();
+                        var actualSku = db.sku.Where(s => s.sku1.ToLower().Trim() == value.ToLower().Trim()).FirstOrDefault();
                         result = actualSku == default(sku) ? -1 : actualSku.article_id;
                         break;
                     case "title":
-                        var actualTitle = db.title.Where(t => t.title1 == value).FirstOrDefault();
+                        var actualTitle = db.title.Where(t => t.title1.ToLower().Trim() == value.ToLower().Trim()).FirstOrDefault();
                         result = actualTitle == default(title) ? -1 : actualTitle.article_id;
                         break;
                     default:
@@ -83,7 +83,7 @@ namespace BorderSource.Common
         {
             using (var db = new BetsyModel(ConnectionString))
             {
-                var product = db.product.Where(p => p.webshop_url.ToLower() == record.Webshop.ToLower() && p.affiliate_unique_id == record.AffiliateProdID).FirstOrDefault();
+                var product = db.product.Where(p => p.webshop_url.ToLower().Trim() == record.Webshop.ToLower().Trim() && p.affiliate_unique_id.ToLower().Trim() == record.AffiliateProdID.ToLower().Trim()).FirstOrDefault();
                 int result = product == default(product) ? -1 : product.article_id;
                 return result;
             }
@@ -184,7 +184,7 @@ namespace BorderSource.Common
             using (var db = new BetsyModel(ConnectionString))
             {
                 product result;
-                result = db.product.Where(product => product.article_id == aId && product.webshop_url.ToLower() == Record.Webshop.ToLower()).FirstOrDefault();
+                result = db.product.Where(product => product.article_id == aId && product.webshop_url.ToLower().Trim() == Record.Webshop.ToLower().Trim()).FirstOrDefault();
                 db.Database.Connection.Dispose();
                 db.Dispose();
                 return result;
@@ -195,7 +195,7 @@ namespace BorderSource.Common
         {
             using (var db = new BetsyModel(ConnectionString))
             {
-                int result = db.webshop.Where(w => w.url.ToLower() == webshop.ToLower()).FirstOrDefault().country_id;
+                int result = db.webshop.Where(w => w.url.ToLower().Trim() == webshop.ToLower().Trim()).FirstOrDefault().country_id;
                 db.Database.Connection.Dispose();
                 db.Dispose();
                 return result;
@@ -224,7 +224,9 @@ namespace BorderSource.Common
         {
             using (var db = new BetsyModel(ConnectionString))
             {
-                category cat = db.article.Where(a => a.id == articleId).FirstOrDefault().category.FirstOrDefault();
+                article art = db.article.Where(a => a.id == articleId).FirstOrDefault();
+                if (art == null) return -1;
+                category cat = art.category.FirstOrDefault();
                 int result = cat == default(category) ? -1 : cat.id;
                 db.Database.Connection.Dispose();
                 db.Dispose();
@@ -245,7 +247,7 @@ namespace BorderSource.Common
         {
             using (var db = new BetsyModel(ConnectionString))
             {
-                category_synonym catSyn = db.category_synonym.Where(cs => cs.web_url.ToLower() == webshop.ToLower() && cs.description.ToLower() == description.ToLower()).FirstOrDefault();
+                category_synonym catSyn = db.category_synonym.Where(cs => cs.web_url.ToLower().Trim() == webshop.ToLower().Trim() && cs.description.ToLower().Trim() == description.ToLower().Trim()).FirstOrDefault();
                 bool result = catSyn == default(category_synonym);
                 db.Database.Connection.Dispose();
                 db.Dispose();
@@ -261,7 +263,7 @@ namespace BorderSource.Common
                 db.webshop.ToList().ForEach(w => names.Add(new Webshop { CountryId = w.country_id, Id = w.id, Url = w.url }));
                 db.Database.Connection.Dispose();
                 db.Dispose();
-                return names.ToLookup(w => w.Url);
+                return names.ToLookup(w => w.Url.ToLower().Trim());
             }
         }
 
@@ -273,7 +275,7 @@ namespace BorderSource.Common
                 db.category.ToList().ForEach(c => categories.Add(new Category { Id = c.id, Description = c.description }));
                 db.Database.Connection.Dispose();
                 db.Dispose();
-                return categories.ToLookup(c => c.Description);
+                return categories.ToLookup(c => c.Description.ToLower().Trim());
             }
         }
 
@@ -282,10 +284,10 @@ namespace BorderSource.Common
             using (var db = new BetsyModel(ConnectionString))
             {
                 List<CategorySynonym> synonyms = new List<CategorySynonym>();
-                db.category_synonym.Where(cs => cs.web_url.ToLower() == webshop.ToLower()).ToList().ForEach(cs => synonyms.Add(new CategorySynonym { CategoryId = cs.category_id, Description = cs.description, WebshopUrl = cs.web_url }));
+                db.category_synonym.Where(cs => cs.web_url.ToLower().Trim() == webshop.ToLower().Trim()).ToList().ForEach(cs => synonyms.Add(new CategorySynonym { CategoryId = cs.category_id, Description = cs.description, WebshopUrl = cs.web_url }));
                 db.Database.Connection.Dispose();
                 db.Dispose();
-                return synonyms.ToLookup(c => c.Description);
+                return synonyms.ToLookup(c => c.Description.ToLower().Trim());
             }
         }
 

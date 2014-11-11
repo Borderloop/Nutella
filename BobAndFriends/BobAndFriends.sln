@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwkrsToBorderloopParser", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misc", "Misc\Misc.csproj", "{CEF2F598-CDFF-455F-A394-D0E00655BCF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Betric", "Betric\Betric.csproj", "{00DC7B5B-D29C-474C-9C58-F960F254DC7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{CEF2F598-CDFF-455F-A394-D0E00655BCF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEF2F598-CDFF-455F-A394-D0E00655BCF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEF2F598-CDFF-455F-A394-D0E00655BCF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00DC7B5B-D29C-474C-9C58-F960F254DC7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00DC7B5B-D29C-474C-9C58-F960F254DC7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00DC7B5B-D29C-474C-9C58-F960F254DC7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00DC7B5B-D29C-474C-9C58-F960F254DC7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

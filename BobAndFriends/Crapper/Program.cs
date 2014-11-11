@@ -60,14 +60,14 @@ namespace Crapper
 
                         //Set sku to correct article id
                         List<sku> skuList = new List<sku>();
-                        wrongArticle.sku.Where(s => !correctArticle.sku.Any(k => k.sku1.ToLower() == s.sku1.ToLower())).ToList().ForEach(s => skuList.Add(s));
+                        wrongArticle.sku.Where(s => !correctArticle.sku.Any(k => k.sku1.ToLower().Trim() == s.sku1.ToLower().Trim())).ToList().ForEach(s => skuList.Add(s));
 
                         //set ean to correct article id
                         List<ean> eanList = new List<ean>();
                         wrongArticle.ean.Where(e => !correctArticle.ean.Any(a => a.ean1 == e.ean1)).ToList().ForEach(e => eanList.Add(e));
 
                         List<title> titleList = new List<title>();
-                        wrongArticle.title.Where(t => !correctArticle.title.Any(tt => tt.title_synonym.Any(ts => ts.title.ToLower() == t.title1.ToLower()))).ToList().ForEach(t => titleList.Add(t));
+                        wrongArticle.title.Where(t => !correctArticle.title.Any(tt => tt.title_synonym.Any(ts => ts.title.ToLower().Trim() == t.title1.ToLower().Trim()))).ToList().ForEach(t => titleList.Add(t));
 
                         //Add titles of wrongArticle to synonyms of correctArticle.
                         //If correctArticle already has a title with the same country id, add it to the synonyms.
@@ -75,9 +75,9 @@ namespace Crapper
                         {
                             if (correctArticle.title.Any(t => t.country_id == title.country_id))
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == title.title1.ToLower())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim())))
                                 {
-                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.ToLower() == title.title1.ToLower()).FirstOrDefault().occurrences++);
+                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim()).FirstOrDefault().occurrences++);
                                 }
                                 else
                                 {
@@ -92,12 +92,12 @@ namespace Crapper
 
                             foreach(title_synonym syn in title.title_synonym)
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == syn.title.ToLower())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim())))
                                 {
                                     List<title> titles = correctArticle.title.ToList();
                                     foreach (title t in titles)
                                     {
-                                        title_synonym syn2 = t.title_synonym.Where(ts => ts.title.ToLower() == syn.title.ToLower()).FirstOrDefault();
+                                        title_synonym syn2 = t.title_synonym.Where(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim()).FirstOrDefault();
                                         if (syn2 == default(title_synonym)) continue;
                                         syn2.occurrences++;
                                         db.title_synonym.Attach(syn2);
@@ -178,13 +178,13 @@ namespace Crapper
                 {
                     Console.WriteLine("Getting wrong articles for title " + dupTitle);
                     List<article> wrongArticles = db.article
-                        .Where(a => a.title.Any(t => t.title1.ToLower() == dupTitle.ToLower()))
+                        .Where(a => a.title.Any(t => t.title1.ToLower().Trim() == dupTitle.ToLower().Trim()))
                         .Include(a => a.title.Select(t => t.title_synonym))
                         .Include(a => a.ean)
                         .Include(a => a.sku)
                         .ToList();
            
-                    article correctArticle = db.article.Where(a => a.title.Any(t => t.title1.ToLower() == dupTitle.ToLower())).FirstOrDefault();
+                    article correctArticle = db.article.Where(a => a.title.Any(t => t.title1.ToLower().Trim() == dupTitle.ToLower().Trim())).FirstOrDefault();
                     wrongArticles.Remove(correctArticle);
                     correctTitle = correctArticle.title.First().title1;
 
@@ -199,14 +199,14 @@ namespace Crapper
 
                         //Set sku to correct article id
                         List<sku> skuList = new List<sku>();
-                        wrongArticle.sku.Where(s => !correctArticle.sku.Any(k => k.sku1.ToLower() == s.sku1.ToLower())).ToList().ForEach(s => skuList.Add(s));
+                        wrongArticle.sku.Where(s => !correctArticle.sku.Any(k => k.sku1.ToLower().Trim() == s.sku1.ToLower().Trim())).ToList().ForEach(s => skuList.Add(s));
 
                         //set ean to correct article id
                         List<ean> eanList = new List<ean>();
                         wrongArticle.ean.Where(e => !correctArticle.ean.Any(a => a.ean1 == e.ean1)).ToList().ForEach(e => eanList.Add(e));
 
                         List<title> titleList = new List<title>();
-                        wrongArticle.title.Where(t => !correctArticle.title.Any(tt => tt.title_synonym.Any(ts => ts.title.ToLower() == t.title1.ToLower()))).ToList().ForEach(t => titleList.Add(t));
+                        wrongArticle.title.Where(t => !correctArticle.title.Any(tt => tt.title_synonym.Any(ts => ts.title.ToLower().Trim() == t.title1.ToLower().Trim()))).ToList().ForEach(t => titleList.Add(t));
 
                         //Add titles of wrongArticle to synonyms of correctArticle.
                         //If correctArticle already has a title with the same country id, add it to the synonyms.
@@ -214,9 +214,9 @@ namespace Crapper
                         {
                             if (correctArticle.title.Any(t => t.country_id == title.country_id))
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == title.title1.ToLower())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim())))
                                 {
-                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.ToLower() == title.title1.ToLower()).FirstOrDefault().occurrences++);
+                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim()).FirstOrDefault().occurrences++);
                                 }
                                 else
                                 {
@@ -231,12 +231,12 @@ namespace Crapper
 
                             foreach (title_synonym syn in title.title_synonym)
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == syn.title.ToLower())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim())))
                                 {
                                     List<title> titles = correctArticle.title.ToList();
                                     foreach(title t in titles)
                                     {
-                                        title_synonym syn2 = t.title_synonym.Where(ts => ts.title.ToLower() == syn.title.ToLower()).FirstOrDefault();                                      
+                                        title_synonym syn2 = t.title_synonym.Where(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim()).FirstOrDefault();                                      
                                         if (syn2 == default(title_synonym)) continue;
                                         syn2.occurrences++;
                                         db.title_synonym.Attach(syn2);

@@ -49,6 +49,8 @@ namespace BorderSource.Common
 
             ConnectionString = entityConnStrBuilder.ConnectionString;
             context = new BetsyModel(ConnectionString);
+            context.Configuration.AutoDetectChangesEnabled = false;
+            context.Configuration.ValidateOnSaveEnabled = false;
         }
 
         public void SaveMatch(Product Record, int matchedArticleID, int countryID)
@@ -79,7 +81,7 @@ namespace BorderSource.Common
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
             //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
             if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean });
-            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToLower() == Record.SKU.ToLower())) ) articleTable.sku.Add(new sku { sku1 = Record.SKU });
+            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToLower().Trim() == Record.SKU.ToLower().Trim())) ) articleTable.sku.Add(new sku { sku1 = Record.SKU });
 
             title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
 
@@ -92,10 +94,10 @@ namespace BorderSource.Common
             else
             {
                 //If any title synonym matches the title, up the occurences.
-                if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == Record.Title.ToLower())))
+                if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == Record.Title.ToLower().Trim())))
                 {
                     //Each article has at most one title for one countryId.
-                    title_synonym ts = articleTable.title.First(t => t.country_id == countryID).title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
+                    title_synonym ts = articleTable.title.First(t => t.country_id == countryID).title_synonym.Where(innerTs => innerTs.title.ToLower().Trim() == Record.Title.ToLower().Trim()).FirstOrDefault();
                     ts.occurrences++;
                     context.title_synonym.Attach(ts);
                     context.Entry(ts).Property(syn => syn.occurrences).IsModified = true;
@@ -147,7 +149,7 @@ namespace BorderSource.Common
         public void SaveNewArticle(Product Record, int countryId, int categoryId)
         {
             country cou = context.country.Where(c => c.id == countryId).FirstOrDefault();
-            webshop webshop = context.webshop.Where(w => w.url.ToLower() == Record.Webshop.ToLower()).FirstOrDefault();
+            webshop webshop = context.webshop.Where(w => w.url.ToLower().Trim() == Record.Webshop.ToLower().Trim()).FirstOrDefault();
             category cat = context.category.Where(c => c.id == categoryId).FirstOrDefault();
 
             if (webshop == default(webshop))
@@ -286,7 +288,7 @@ namespace BorderSource.Common
                 last_modified = System.DateTime.Now
             };
 
-            var original = context.product.Where(p => p.article_id == matchedArticleId && p.webshop_url == Record.Webshop).FirstOrDefault();          
+            var original = context.product.Where(p => p.article_id == matchedArticleId && p.webshop_url.ToLower().Trim() == Record.Webshop.ToLower().Trim()).FirstOrDefault();          
             if (original != null)
             {
                 UpdatedProduct.id = original.id;

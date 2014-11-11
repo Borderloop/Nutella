@@ -32,6 +32,8 @@ namespace BobAndFriends
 
         public static Thread consumer;
 
+        public static DateTime StartTime;
+
         #region Trap application termination
         [DllImport("Kernel32")]
         private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
@@ -81,6 +83,7 @@ namespace BobAndFriends
         [STAThread]
         static void Main(string[] args)
         {
+            StartTime = DateTime.Now;
             _handler += new EventHandler(Handler);
             SetConsoleCtrlHandler(_handler, true);
 
@@ -97,6 +100,9 @@ namespace BobAndFriends
             validator = new Thread(new ThreadStart(ProductDequeuer));
             consumer = new Thread(new ThreadStart(StartBobBoxManager));
 
+            producer.Priority = ThreadPriority.BelowNormal;
+            validator.Priority = ThreadPriority.BelowNormal;
+
             //Start threads
             producer.Start();
             validator.Start();
@@ -108,10 +114,13 @@ namespace BobAndFriends
             Package p = PackageQueue.Instance.Dequeue();
             List<Package> WebshopPackages = new List<Package>();
             string CurrentWebshop = p.Webshop;
+            DateTime StartRunning = new DateTime();
 
             while (p != null)
             {
-                CurrentWebshop = p.Webshop;                                      
+                CurrentWebshop = p.Webshop;  
+                StartRunning = DateTime.Now;
+                Console.WriteLine("Started reading packages from " + CurrentWebshop +  " at " + StartRunning.ToString("hh:mm:ss"));           
                 while(CurrentWebshop == p.Webshop)
                 {
                     WebshopPackages.Add(p);
@@ -126,12 +135,15 @@ namespace BobAndFriends
                 {
                     int copy = i;
                     Package package = WebshopPackages[i];
-                    actions[copy] = new Action(() => StartAnotherBob(copy, package));
+                    actions[copy] = new Action(() => StartAnotherBob(package));
                 }
 
                 TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
                 Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 7 }, actions);
                 TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
+
+                Console.WriteLine("Time spent reading packages from " + CurrentWebshop + ": " + (DateTime.Now - StartRunning));
+                Console.WriteLine("Total time since start: " + (DateTime.Now - StartTime));
               
                 WebshopPackages.Clear();
             }
@@ -149,12 +161,10 @@ namespace BobAndFriends
             Console.WriteLine("ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
         }
 
-        static void StartAnotherBob(int id, Package p)
+        static void StartAnotherBob(Package p)
         {
-            Console.WriteLine("Id " + id + ": Started processing a package from " + p.Webshop);
             BOB bob = new BOB();
             bob.Process(p);
-            Console.WriteLine("Id " + id + ": Finished processing a package from " + p.Webshop);
         }
 
         static void ProductFeedReader()

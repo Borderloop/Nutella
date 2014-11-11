@@ -29,8 +29,8 @@ namespace BobAndFriends.BobAndFriends
         public void Process(Package p)
         {
             int matchedArticleID;
-            int countryID = Lookup.WebshopLookup[p.Webshop].FirstOrDefault().CountryId;
-            Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(p.Webshop);
+            int countryID = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()].FirstOrDefault().CountryId;
+            Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(p.Webshop.ToLower().Trim());
             foreach (Product Record in p.products)
             {      
                 ProductValidation validation = new ProductValidation();
@@ -59,18 +59,20 @@ namespace BobAndFriends.BobAndFriends
                 validation.ArticleNumberOfEanMatch = EanMatched ? matchedArticleID : -1;
 
                 bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0;
-                bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category) || Lookup.CategorySynonymLookup.Contains(Record.Category);
+                bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category.ToLower().Trim()) || Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
 
                 validation.IsValidAsNewArticle = !(EanMatched || SkuMatched) && ProductIsValid && CategoryExists;
 
                 if(!(EanMatched || SkuMatched /*|| validation.IsValidAsNewArticle*/)) continue;
-            
-                validation.CategoryId = validation.IsValidAsNewArticle ? 
-                                                    Lookup.CategorySynonymLookup.Contains(Record.Category) ? 
-                                                    Lookup.CategorySynonymLookup[Record.Category].First().CategoryId : Lookup.CategoryLookup[Record.Category].First().Id 
+
+                validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
+
+                validation.CategoryId = validation.IsValidAsNewArticle ?
+                                                    validation.CategorySynonymExists ?
+                                                    Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].First().CategoryId : Lookup.CategoryLookup[Record.Category.ToLower().Trim()].First().Id 
                                             : GetCategoryId(matchedArticleID);
 
-                validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category);
+                
 
                 ProductValidationQueue.Instance.Enqueue(validation);
 

@@ -13,11 +13,13 @@ namespace BobAndFriends.BobAndFriends
     {
         private BobBox BobBox;
         private HashSet<string> AddedCategorySynonyms;
+        private int Count;
 
         public BobboxManager()
         {
             BobBox = new BobBox();
             AddedCategorySynonyms = new HashSet<string>();
+            Count = 0;
         }
 
         public void StartValidatingAndSaving()
@@ -25,13 +27,14 @@ namespace BobAndFriends.BobAndFriends
             ProductValidation validation = ProductValidationQueue.Instance.Dequeue();
             string CurrentWebshop = validation.Product.Webshop;
             while (validation != null)
-            {              
-                if(CurrentWebshop != validation.Product.Webshop)
+            {    
+                if((CurrentWebshop != validation.Product.Webshop) || (Count >= 1000))
                 {
                     Console.WriteLine("Saving changes for " + CurrentWebshop + " to database...");
-                    BobBox.Commit();
+                    BobBox.CommitAndCreate();
                     AddedCategorySynonyms.Clear();
                     Console.WriteLine("Done saving changes for " + CurrentWebshop);
+                    Count = 0;
                 }
 
                 CurrentWebshop = validation.Product.Webshop;
@@ -43,6 +46,8 @@ namespace BobAndFriends.BobAndFriends
                         logger.WriteLine("Ambiguous product matched " + validation.ArticleNumberOfEanMatch + " with " + validation.ArticleNumberOfSkuMatch + ".");
                     }
                 }
+
+                if (!validation.CategoryMatched) goto Next;
 
                 if (validation.ProductAlreadyExists)
                 {
@@ -81,7 +86,7 @@ namespace BobAndFriends.BobAndFriends
             Next:
                 {
                     validation = ProductValidationQueue.Instance.Dequeue();
-                    
+                    Count++;                  
                 }
             }
 
