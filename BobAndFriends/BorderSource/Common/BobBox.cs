@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Data.Entity.Core;
 using System.Diagnostics;
 using System.Data.Common;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
 using System.Data.Entity.Core.EntityClient;
+using System.Data.Entity.Infrastructure;
 using System.Globalization;
 using System.Reflection;
 using BorderSource.BetsyContext;
@@ -58,24 +60,24 @@ namespace BorderSource.Common
             //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
             article articleTable = context.article.Where(a => a.id == matchedArticleID).FirstOrDefault();
 
-            context.article.Attach(articleTable);
-            var articleEntry = context.Entry(articleTable);
+            //context.article.Attach(articleTable);
+            //var articleEntry = context.Entry(articleTable);
 
 
             if (articleTable.brand == "" || articleTable.brand == null)
             {
                 articleTable.brand = Record.Brand;
-                articleEntry.Property(a => a.brand).IsModified = true;
+                //articleEntry.Property(a => a.brand).IsModified = true;
             }
             if (articleTable.description == null)
             {
                 articleTable.description = Record.Description;
-                articleEntry.Property(a => a.description).IsModified = true;
+                //articleEntry.Property(a => a.description).IsModified = true;
             }
             if (articleTable.image_loc == null)
             {
                 articleTable.image_loc = Record.Image_Loc;
-                articleEntry.Property(a => a.image_loc).IsModified = true;
+                //articleEntry.Property(a => a.image_loc).IsModified = true;
             }
             long ean;
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
@@ -87,32 +89,37 @@ namespace BorderSource.Common
 
             if (title == default(title))
             {
-                title addedTitle = new title { title1 = Record.Title, country_id = (short)countryID};
+                title addedTitle = new title { title1 = Record.Title, country_id = (short)countryID };
+                addedTitle.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
                 articleTable.title.Add(addedTitle);
-                articleTable.title.Where(t => t.country_id == (short)countryID).FirstOrDefault().title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
             }
             else
             {
-                //If any title synonym matches the title, up the occurences.
-                if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == Record.Title.ToLower().Trim())))
+                title_synonym match = null;
+                foreach (title_synonym syn in title.title_synonym)
                 {
-                    //Each article has at most one title for one countryId.
-                    title_synonym ts = articleTable.title.First(t => t.country_id == countryID).title_synonym.Where(innerTs => innerTs.title.ToLower().Trim() == Record.Title.ToLower().Trim()).FirstOrDefault();
-                    ts.occurrences++;
-                    context.title_synonym.Attach(ts);
-                    context.Entry(ts).Property(syn => syn.occurrences).IsModified = true;
-                    /*if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
+                    if (syn.title.RemoveDiacriticAccents().ToLower().Trim() == Record.Title.RemoveDiacriticAccents().ToLower().Trim())
                     {
-                        title.title1 = ts.title;
-                        context.title.Attach(title);
-                        var titleEntry = context.Entry(title);
-                        titleEntry.Property(t => t.title1).IsModified = true;
-                    }*/
+                        match = syn;
+                        break;
+                    }
                 }
+                //If any title synonym matches the title, up the occurences.
+                if (match != null)
+                {
+                    match.occurrences++;
+                }
+                /*if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
+                {
+                    title.title1 = ts.title;
+                    context.title.Attach(title);
+                    var titleEntry = context.Entry(title);
+                    titleEntry.Property(t => t.title1).IsModified = true;
+                }*/
                 //else, add the title to the synonyms.
                 else
                 {
-                    articleTable.title.Where(t => t.country_id == (short)countryID).FirstOrDefault().title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
+                    title.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
                 }
             }
 
@@ -392,7 +399,13 @@ namespace BorderSource.Common
                     }
                 }
                 throw;
-
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine("Caught DbUpdateConcurrenryException, refreshing and moving on.");
+                var objContext = ((IObjectContextAdapter)context).ObjectContext;
+                objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
+                Commit();
             }
         }
 
@@ -420,6 +433,13 @@ namespace BorderSource.Common
                 throw;
 
             }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine("Caught DbUpdateConcurrenryException, refreshing and moving on.");
+                var objContext = ((IObjectContextAdapter)context).ObjectContext;
+                objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
+                Commit();
+            }
         }
 
         public void CommitAndCreate()
@@ -446,6 +466,13 @@ namespace BorderSource.Common
                 }
                 throw;
 
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine("Caught DbUpdateConcurrenryException, refreshing and moving on.");
+                var objContext = ((IObjectContextAdapter)context).ObjectContext;
+                objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
+                Commit();
             }
 
         }

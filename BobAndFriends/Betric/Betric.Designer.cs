@@ -29,6 +29,20 @@
         private void InitializeComponent()
         {
             this.MetricsPage = new System.Windows.Forms.TabPage();
+            this.PriceDifferencePercentageLabel = new System.Windows.Forms.Label();
+            this.PriceDifferenceLabel = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.NumberOneClickAmountTotalLabel = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.PositionClickAmountTotalLabel = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.TotalClickAmountLabel = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.DomesticNumberOneClickPercentageAmountLabel = new System.Windows.Forms.Label();
             this.ForeignNumberOneClickPercentageAmountLabel = new System.Windows.Forms.Label();
             this.ForeignNumerOneClickPercentageLabel = new System.Windows.Forms.Label();
@@ -73,53 +87,50 @@
             this.DomesticClicksLabel = new System.Windows.Forms.Label();
             this.OutboundClicksLabel = new System.Windows.Forms.Label();
             this.FilterTab = new System.Windows.Forms.TabPage();
-            this.DomesticCountryOnly = new System.Windows.Forms.RadioButton();
+            this.DeliveryCostsPanel = new System.Windows.Forms.Panel();
+            this.ForeignDeliveryCostsOnly = new System.Windows.Forms.RadioButton();
+            this.DomesticDeliveryCostsOnly = new System.Windows.Forms.RadioButton();
+            this.CountryPanel = new System.Windows.Forms.Panel();
             this.ForeignCountryOnly = new System.Windows.Forms.RadioButton();
-            this.CountryFilter = new System.Windows.Forms.CheckBox();
+            this.DomesticCountryOnly = new System.Windows.Forms.RadioButton();
+            this.PriceDifferencePanel = new System.Windows.Forms.Panel();
             this.RelativePriceDifference = new System.Windows.Forms.RadioButton();
             this.AbsolutePriceDifference = new System.Windows.Forms.RadioButton();
+            this.CategoryLevel5 = new System.Windows.Forms.ComboBox();
+            this.CategoryLevel4 = new System.Windows.Forms.ComboBox();
+            this.CategoryLevel3 = new System.Windows.Forms.ComboBox();
+            this.CategoryLevel2 = new System.Windows.Forms.ComboBox();
+            this.ExecuteButton = new System.Windows.Forms.Button();
+            this.MaximumPercentageSignLabel = new System.Windows.Forms.Label();
+            this.MinimumPercentageSignLabel = new System.Windows.Forms.Label();
+            this.CountryFilter = new System.Windows.Forms.CheckBox();
             this.MaximumDifferenceEuroSign = new System.Windows.Forms.Label();
             this.MinimumDifferenceEuroSign = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.MaximumPriceDifferenceText = new System.Windows.Forms.TextBox();
+            this.MinimumPriceDifferenceText = new System.Windows.Forms.TextBox();
+            this.MaximumPriceDifference = new System.Windows.Forms.CheckBox();
             this.MinimumPriceDifference = new System.Windows.Forms.CheckBox();
             this.PriceDifferenceFilter = new System.Windows.Forms.CheckBox();
             this.CategoryLevel1 = new System.Windows.Forms.ComboBox();
             this.MaxEuroSign = new System.Windows.Forms.Label();
             this.MinEuroSign = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.MaximumPriceText = new System.Windows.Forms.TextBox();
+            this.MinimumPriceText = new System.Windows.Forms.TextBox();
             this.MaximumPrice = new System.Windows.Forms.CheckBox();
             this.MinimumPrice = new System.Windows.Forms.CheckBox();
-            this.DomesticDeliveryCostsOnly = new System.Windows.Forms.RadioButton();
-            this.ForeignDeliveryCostsOnly = new System.Windows.Forms.RadioButton();
             this.DeliveryCostsFilter = new System.Windows.Forms.CheckBox();
             this.PriceFilter = new System.Windows.Forms.CheckBox();
             this.CategoryFilter = new System.Windows.Forms.CheckBox();
             this.To = new System.Windows.Forms.Label();
-            this.UntilTime = new System.Windows.Forms.ComboBox();
-            this.FromTime = new System.Windows.Forms.ComboBox();
             this.TimeFilter = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.MinimumPercentageSignLabel = new System.Windows.Forms.Label();
-            this.MaximumPercentageSignLabel = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.TotalClickAmountLabel = new System.Windows.Forms.Label();
-            this.PositionClickAmountTotalLabel = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.NumberOneClickAmountTotalLabel = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.PriceDifferenceLabel = new System.Windows.Forms.Label();
-            this.PriceDifferencePercentageLabel = new System.Windows.Forms.Label();
+            this.FromTime = new System.Windows.Forms.DateTimePicker();
+            this.UntilTime = new System.Windows.Forms.DateTimePicker();
             this.MetricsPage.SuspendLayout();
             this.FilterTab.SuspendLayout();
+            this.DeliveryCostsPanel.SuspendLayout();
+            this.CountryPanel.SuspendLayout();
+            this.PriceDifferencePanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -189,6 +200,130 @@
             this.MetricsPage.Size = new System.Drawing.Size(1445, 642);
             this.MetricsPage.TabIndex = 1;
             this.MetricsPage.Text = "Metrics";
+            // 
+            // PriceDifferencePercentageLabel
+            // 
+            this.PriceDifferencePercentageLabel.AutoSize = true;
+            this.PriceDifferencePercentageLabel.Location = new System.Drawing.Point(102, 383);
+            this.PriceDifferencePercentageLabel.Name = "PriceDifferencePercentageLabel";
+            this.PriceDifferencePercentageLabel.Size = new System.Drawing.Size(13, 13);
+            this.PriceDifferencePercentageLabel.TabIndex = 56;
+            this.PriceDifferencePercentageLabel.Text = "0";
+            // 
+            // PriceDifferenceLabel
+            // 
+            this.PriceDifferenceLabel.AutoSize = true;
+            this.PriceDifferenceLabel.Location = new System.Drawing.Point(102, 370);
+            this.PriceDifferenceLabel.Name = "PriceDifferenceLabel";
+            this.PriceDifferenceLabel.Size = new System.Drawing.Size(13, 13);
+            this.PriceDifferenceLabel.TabIndex = 55;
+            this.PriceDifferenceLabel.Text = "0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(29, 383);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(65, 13);
+            this.label9.TabIndex = 54;
+            this.label9.Text = "Percentage:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(29, 370);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(29, 13);
+            this.label8.TabIndex = 53;
+            this.label8.Text = "Prijs:";
+            // 
+            // NumberOneClickAmountTotalLabel
+            // 
+            this.NumberOneClickAmountTotalLabel.AutoSize = true;
+            this.NumberOneClickAmountTotalLabel.Location = new System.Drawing.Point(103, 311);
+            this.NumberOneClickAmountTotalLabel.Name = "NumberOneClickAmountTotalLabel";
+            this.NumberOneClickAmountTotalLabel.Size = new System.Drawing.Size(13, 13);
+            this.NumberOneClickAmountTotalLabel.TabIndex = 52;
+            this.NumberOneClickAmountTotalLabel.Text = "0";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(29, 311);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(43, 13);
+            this.label13.TabIndex = 51;
+            this.label13.Text = "Totaal: ";
+            // 
+            // label14
+            // 
+            this.label14.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label14.Location = new System.Drawing.Point(32, 309);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(131, 2);
+            this.label14.TabIndex = 50;
+            // 
+            // PositionClickAmountTotalLabel
+            // 
+            this.PositionClickAmountTotalLabel.AutoSize = true;
+            this.PositionClickAmountTotalLabel.Location = new System.Drawing.Point(99, 231);
+            this.PositionClickAmountTotalLabel.Name = "PositionClickAmountTotalLabel";
+            this.PositionClickAmountTotalLabel.Size = new System.Drawing.Size(13, 13);
+            this.PositionClickAmountTotalLabel.TabIndex = 49;
+            this.PositionClickAmountTotalLabel.Text = "0";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(25, 231);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(43, 13);
+            this.label10.TabIndex = 48;
+            this.label10.Text = "Totaal: ";
+            // 
+            // label11
+            // 
+            this.label11.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label11.Location = new System.Drawing.Point(28, 229);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(131, 2);
+            this.label11.TabIndex = 47;
+            // 
+            // TotalClickAmountLabel
+            // 
+            this.TotalClickAmountLabel.AutoSize = true;
+            this.TotalClickAmountLabel.Location = new System.Drawing.Point(103, 85);
+            this.TotalClickAmountLabel.Name = "TotalClickAmountLabel";
+            this.TotalClickAmountLabel.Size = new System.Drawing.Size(13, 13);
+            this.TotalClickAmountLabel.TabIndex = 46;
+            this.TotalClickAmountLabel.Text = "0";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(29, 85);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(43, 13);
+            this.label7.TabIndex = 45;
+            this.label7.Text = "Totaal: ";
+            // 
+            // label6
+            // 
+            this.label6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label6.Location = new System.Drawing.Point(28, 83);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(131, 2);
+            this.label6.TabIndex = 44;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(7, 346);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(241, 20);
+            this.label5.TabIndex = 43;
+            this.label5.Text = "Prijsvoordeel bij kopen in Europa:";
             // 
             // DomesticNumberOneClickPercentageAmountLabel
             // 
@@ -584,35 +719,37 @@
             // FilterTab
             // 
             this.FilterTab.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.FilterTab.Controls.Add(this.UntilTime);
+            this.FilterTab.Controls.Add(this.FromTime);
+            this.FilterTab.Controls.Add(this.DeliveryCostsPanel);
+            this.FilterTab.Controls.Add(this.CountryPanel);
+            this.FilterTab.Controls.Add(this.PriceDifferencePanel);
+            this.FilterTab.Controls.Add(this.CategoryLevel5);
+            this.FilterTab.Controls.Add(this.CategoryLevel4);
+            this.FilterTab.Controls.Add(this.CategoryLevel3);
+            this.FilterTab.Controls.Add(this.CategoryLevel2);
+            this.FilterTab.Controls.Add(this.ExecuteButton);
             this.FilterTab.Controls.Add(this.MaximumPercentageSignLabel);
             this.FilterTab.Controls.Add(this.MinimumPercentageSignLabel);
-            this.FilterTab.Controls.Add(this.DomesticCountryOnly);
-            this.FilterTab.Controls.Add(this.ForeignCountryOnly);
             this.FilterTab.Controls.Add(this.CountryFilter);
-            this.FilterTab.Controls.Add(this.RelativePriceDifference);
-            this.FilterTab.Controls.Add(this.AbsolutePriceDifference);
             this.FilterTab.Controls.Add(this.MaximumDifferenceEuroSign);
             this.FilterTab.Controls.Add(this.MinimumDifferenceEuroSign);
-            this.FilterTab.Controls.Add(this.textBox3);
-            this.FilterTab.Controls.Add(this.textBox4);
-            this.FilterTab.Controls.Add(this.checkBox1);
+            this.FilterTab.Controls.Add(this.MaximumPriceDifferenceText);
+            this.FilterTab.Controls.Add(this.MinimumPriceDifferenceText);
+            this.FilterTab.Controls.Add(this.MaximumPriceDifference);
             this.FilterTab.Controls.Add(this.MinimumPriceDifference);
             this.FilterTab.Controls.Add(this.PriceDifferenceFilter);
             this.FilterTab.Controls.Add(this.CategoryLevel1);
             this.FilterTab.Controls.Add(this.MaxEuroSign);
             this.FilterTab.Controls.Add(this.MinEuroSign);
-            this.FilterTab.Controls.Add(this.textBox2);
-            this.FilterTab.Controls.Add(this.textBox1);
+            this.FilterTab.Controls.Add(this.MaximumPriceText);
+            this.FilterTab.Controls.Add(this.MinimumPriceText);
             this.FilterTab.Controls.Add(this.MaximumPrice);
             this.FilterTab.Controls.Add(this.MinimumPrice);
-            this.FilterTab.Controls.Add(this.DomesticDeliveryCostsOnly);
-            this.FilterTab.Controls.Add(this.ForeignDeliveryCostsOnly);
             this.FilterTab.Controls.Add(this.DeliveryCostsFilter);
             this.FilterTab.Controls.Add(this.PriceFilter);
             this.FilterTab.Controls.Add(this.CategoryFilter);
             this.FilterTab.Controls.Add(this.To);
-            this.FilterTab.Controls.Add(this.UntilTime);
-            this.FilterTab.Controls.Add(this.FromTime);
             this.FilterTab.Controls.Add(this.TimeFilter);
             this.FilterTab.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FilterTab.Location = new System.Drawing.Point(4, 22);
@@ -622,22 +759,51 @@
             this.FilterTab.TabIndex = 0;
             this.FilterTab.Text = "Filters";
             // 
-            // DomesticCountryOnly
+            // DeliveryCostsPanel
             // 
-            this.DomesticCountryOnly.AccessibleName = "";
-            this.DomesticCountryOnly.AutoSize = true;
-            this.DomesticCountryOnly.Location = new System.Drawing.Point(44, 389);
-            this.DomesticCountryOnly.Name = "DomesticCountryOnly";
-            this.DomesticCountryOnly.Size = new System.Drawing.Size(109, 17);
-            this.DomesticCountryOnly.TabIndex = 28;
-            this.DomesticCountryOnly.TabStop = true;
-            this.DomesticCountryOnly.Text = "Alleen binnenland";
-            this.DomesticCountryOnly.UseVisualStyleBackColor = true;
+            this.DeliveryCostsPanel.Controls.Add(this.ForeignDeliveryCostsOnly);
+            this.DeliveryCostsPanel.Controls.Add(this.DomesticDeliveryCostsOnly);
+            this.DeliveryCostsPanel.Location = new System.Drawing.Point(48, 452);
+            this.DeliveryCostsPanel.Name = "DeliveryCostsPanel";
+            this.DeliveryCostsPanel.Size = new System.Drawing.Size(200, 50);
+            this.DeliveryCostsPanel.TabIndex = 38;
+            // 
+            // ForeignDeliveryCostsOnly
+            // 
+            this.ForeignDeliveryCostsOnly.AutoSize = true;
+            this.ForeignDeliveryCostsOnly.Location = new System.Drawing.Point(0, 0);
+            this.ForeignDeliveryCostsOnly.Name = "ForeignDeliveryCostsOnly";
+            this.ForeignDeliveryCostsOnly.Size = new System.Drawing.Size(106, 17);
+            this.ForeignDeliveryCostsOnly.TabIndex = 8;
+            this.ForeignDeliveryCostsOnly.TabStop = true;
+            this.ForeignDeliveryCostsOnly.Text = "Alleen buitenland";
+            this.ForeignDeliveryCostsOnly.UseVisualStyleBackColor = true;
+            // 
+            // DomesticDeliveryCostsOnly
+            // 
+            this.DomesticDeliveryCostsOnly.AccessibleName = "";
+            this.DomesticDeliveryCostsOnly.AutoSize = true;
+            this.DomesticDeliveryCostsOnly.Location = new System.Drawing.Point(0, 23);
+            this.DomesticDeliveryCostsOnly.Name = "DomesticDeliveryCostsOnly";
+            this.DomesticDeliveryCostsOnly.Size = new System.Drawing.Size(109, 17);
+            this.DomesticDeliveryCostsOnly.TabIndex = 9;
+            this.DomesticDeliveryCostsOnly.TabStop = true;
+            this.DomesticDeliveryCostsOnly.Text = "Alleen binnenland";
+            this.DomesticDeliveryCostsOnly.UseVisualStyleBackColor = true;
+            // 
+            // CountryPanel
+            // 
+            this.CountryPanel.Controls.Add(this.ForeignCountryOnly);
+            this.CountryPanel.Controls.Add(this.DomesticCountryOnly);
+            this.CountryPanel.Location = new System.Drawing.Point(7, 366);
+            this.CountryPanel.Name = "CountryPanel";
+            this.CountryPanel.Size = new System.Drawing.Size(200, 39);
+            this.CountryPanel.TabIndex = 37;
             // 
             // ForeignCountryOnly
             // 
             this.ForeignCountryOnly.AutoSize = true;
-            this.ForeignCountryOnly.Location = new System.Drawing.Point(44, 366);
+            this.ForeignCountryOnly.Location = new System.Drawing.Point(41, 0);
             this.ForeignCountryOnly.Name = "ForeignCountryOnly";
             this.ForeignCountryOnly.Size = new System.Drawing.Size(106, 17);
             this.ForeignCountryOnly.TabIndex = 27;
@@ -645,37 +811,133 @@
             this.ForeignCountryOnly.Text = "Alleen buitenland";
             this.ForeignCountryOnly.UseVisualStyleBackColor = true;
             // 
-            // CountryFilter
+            // DomesticCountryOnly
             // 
-            this.CountryFilter.AutoSize = true;
-            this.CountryFilter.Location = new System.Drawing.Point(21, 347);
-            this.CountryFilter.Name = "CountryFilter";
-            this.CountryFilter.Size = new System.Drawing.Size(69, 17);
-            this.CountryFilter.TabIndex = 26;
-            this.CountryFilter.Text = "Landfilter";
-            this.CountryFilter.UseVisualStyleBackColor = true;
+            this.DomesticCountryOnly.AccessibleName = "";
+            this.DomesticCountryOnly.AutoSize = true;
+            this.DomesticCountryOnly.Location = new System.Drawing.Point(41, 23);
+            this.DomesticCountryOnly.Name = "DomesticCountryOnly";
+            this.DomesticCountryOnly.Size = new System.Drawing.Size(109, 17);
+            this.DomesticCountryOnly.TabIndex = 28;
+            this.DomesticCountryOnly.TabStop = true;
+            this.DomesticCountryOnly.Text = "Alleen binnenland";
+            this.DomesticCountryOnly.UseVisualStyleBackColor = true;
+            // 
+            // PriceDifferencePanel
+            // 
+            this.PriceDifferencePanel.Controls.Add(this.RelativePriceDifference);
+            this.PriceDifferencePanel.Controls.Add(this.AbsolutePriceDifference);
+            this.PriceDifferencePanel.Location = new System.Drawing.Point(36, 259);
+            this.PriceDifferencePanel.Name = "PriceDifferencePanel";
+            this.PriceDifferencePanel.Size = new System.Drawing.Size(200, 17);
+            this.PriceDifferencePanel.TabIndex = 36;
             // 
             // RelativePriceDifference
             // 
             this.RelativePriceDifference.AutoSize = true;
-            this.RelativePriceDifference.Location = new System.Drawing.Point(126, 261);
+            this.RelativePriceDifference.Location = new System.Drawing.Point(90, 0);
             this.RelativePriceDifference.Name = "RelativePriceDifference";
             this.RelativePriceDifference.Size = new System.Drawing.Size(61, 17);
             this.RelativePriceDifference.TabIndex = 25;
             this.RelativePriceDifference.TabStop = true;
             this.RelativePriceDifference.Text = "Relatief";
             this.RelativePriceDifference.UseVisualStyleBackColor = true;
+            this.RelativePriceDifference.CheckedChanged += new System.EventHandler(this.RelativePriceDifference_CheckedChanged);
             // 
             // AbsolutePriceDifference
             // 
             this.AbsolutePriceDifference.AutoSize = true;
-            this.AbsolutePriceDifference.Location = new System.Drawing.Point(47, 261);
+            this.AbsolutePriceDifference.Location = new System.Drawing.Point(8, 0);
             this.AbsolutePriceDifference.Name = "AbsolutePriceDifference";
             this.AbsolutePriceDifference.Size = new System.Drawing.Size(66, 17);
             this.AbsolutePriceDifference.TabIndex = 24;
             this.AbsolutePriceDifference.TabStop = true;
             this.AbsolutePriceDifference.Text = "Absoluut";
             this.AbsolutePriceDifference.UseVisualStyleBackColor = true;
+            this.AbsolutePriceDifference.CheckedChanged += new System.EventHandler(this.AbsolutePriceDifference_CheckedChanged);
+            // 
+            // CategoryLevel5
+            // 
+            this.CategoryLevel5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CategoryLevel5.FormattingEnabled = true;
+            this.CategoryLevel5.Location = new System.Drawing.Point(577, 115);
+            this.CategoryLevel5.Name = "CategoryLevel5";
+            this.CategoryLevel5.Size = new System.Drawing.Size(121, 21);
+            this.CategoryLevel5.TabIndex = 35;
+            this.CategoryLevel5.Visible = false;
+            // 
+            // CategoryLevel4
+            // 
+            this.CategoryLevel4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CategoryLevel4.FormattingEnabled = true;
+            this.CategoryLevel4.Location = new System.Drawing.Point(450, 115);
+            this.CategoryLevel4.Name = "CategoryLevel4";
+            this.CategoryLevel4.Size = new System.Drawing.Size(121, 21);
+            this.CategoryLevel4.TabIndex = 34;
+            this.CategoryLevel4.Visible = false;
+            this.CategoryLevel4.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel4_SelectedIndexChanged);
+            // 
+            // CategoryLevel3
+            // 
+            this.CategoryLevel3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CategoryLevel3.FormattingEnabled = true;
+            this.CategoryLevel3.Location = new System.Drawing.Point(323, 115);
+            this.CategoryLevel3.Name = "CategoryLevel3";
+            this.CategoryLevel3.Size = new System.Drawing.Size(121, 21);
+            this.CategoryLevel3.TabIndex = 33;
+            this.CategoryLevel3.Visible = false;
+            this.CategoryLevel3.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel3_SelectedIndexChanged);
+            // 
+            // CategoryLevel2
+            // 
+            this.CategoryLevel2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CategoryLevel2.FormattingEnabled = true;
+            this.CategoryLevel2.Location = new System.Drawing.Point(196, 115);
+            this.CategoryLevel2.Name = "CategoryLevel2";
+            this.CategoryLevel2.Size = new System.Drawing.Size(121, 21);
+            this.CategoryLevel2.TabIndex = 32;
+            this.CategoryLevel2.Visible = false;
+            this.CategoryLevel2.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel2_SelectedIndexChanged);
+            // 
+            // ExecuteButton
+            // 
+            this.ExecuteButton.Location = new System.Drawing.Point(306, 452);
+            this.ExecuteButton.Name = "ExecuteButton";
+            this.ExecuteButton.Size = new System.Drawing.Size(103, 46);
+            this.ExecuteButton.TabIndex = 31;
+            this.ExecuteButton.Text = "Get stats";
+            this.ExecuteButton.UseVisualStyleBackColor = true;
+            this.ExecuteButton.Click += new System.EventHandler(this.ExecuteButton_Click);
+            // 
+            // MaximumPercentageSignLabel
+            // 
+            this.MaximumPercentageSignLabel.AutoSize = true;
+            this.MaximumPercentageSignLabel.Location = new System.Drawing.Point(242, 308);
+            this.MaximumPercentageSignLabel.Name = "MaximumPercentageSignLabel";
+            this.MaximumPercentageSignLabel.Size = new System.Drawing.Size(15, 13);
+            this.MaximumPercentageSignLabel.TabIndex = 30;
+            this.MaximumPercentageSignLabel.Text = "%";
+            this.MaximumPercentageSignLabel.Visible = false;
+            // 
+            // MinimumPercentageSignLabel
+            // 
+            this.MinimumPercentageSignLabel.AutoSize = true;
+            this.MinimumPercentageSignLabel.Location = new System.Drawing.Point(242, 285);
+            this.MinimumPercentageSignLabel.Name = "MinimumPercentageSignLabel";
+            this.MinimumPercentageSignLabel.Size = new System.Drawing.Size(15, 13);
+            this.MinimumPercentageSignLabel.TabIndex = 29;
+            this.MinimumPercentageSignLabel.Text = "%";
+            this.MinimumPercentageSignLabel.Visible = false;
+            // 
+            // CountryFilter
+            // 
+            this.CountryFilter.AutoSize = true;
+            this.CountryFilter.Location = new System.Drawing.Point(21, 343);
+            this.CountryFilter.Name = "CountryFilter";
+            this.CountryFilter.Size = new System.Drawing.Size(69, 17);
+            this.CountryFilter.TabIndex = 26;
+            this.CountryFilter.Text = "Landfilter";
+            this.CountryFilter.UseVisualStyleBackColor = true;
             // 
             // MaximumDifferenceEuroSign
             // 
@@ -685,6 +947,7 @@
             this.MaximumDifferenceEuroSign.Size = new System.Drawing.Size(13, 13);
             this.MaximumDifferenceEuroSign.TabIndex = 23;
             this.MaximumDifferenceEuroSign.Text = "€";
+            this.MaximumDifferenceEuroSign.Visible = false;
             // 
             // MinimumDifferenceEuroSign
             // 
@@ -694,30 +957,31 @@
             this.MinimumDifferenceEuroSign.Size = new System.Drawing.Size(13, 13);
             this.MinimumDifferenceEuroSign.TabIndex = 22;
             this.MinimumDifferenceEuroSign.Text = "€";
+            this.MinimumDifferenceEuroSign.Visible = false;
             // 
-            // textBox3
+            // MaximumPriceDifferenceText
             // 
-            this.textBox3.Location = new System.Drawing.Point(136, 308);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
-            this.textBox3.TabIndex = 21;
+            this.MaximumPriceDifferenceText.Location = new System.Drawing.Point(136, 308);
+            this.MaximumPriceDifferenceText.Name = "MaximumPriceDifferenceText";
+            this.MaximumPriceDifferenceText.Size = new System.Drawing.Size(100, 20);
+            this.MaximumPriceDifferenceText.TabIndex = 21;
             // 
-            // textBox4
+            // MinimumPriceDifferenceText
             // 
-            this.textBox4.Location = new System.Drawing.Point(136, 282);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
-            this.textBox4.TabIndex = 20;
+            this.MinimumPriceDifferenceText.Location = new System.Drawing.Point(136, 282);
+            this.MinimumPriceDifferenceText.Name = "MinimumPriceDifferenceText";
+            this.MinimumPriceDifferenceText.Size = new System.Drawing.Size(100, 20);
+            this.MinimumPriceDifferenceText.TabIndex = 20;
             // 
-            // checkBox1
+            // MaximumPriceDifference
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(47, 308);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(70, 17);
-            this.checkBox1.TabIndex = 19;
-            this.checkBox1.Text = "Maximum";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.MaximumPriceDifference.AutoSize = true;
+            this.MaximumPriceDifference.Location = new System.Drawing.Point(47, 308);
+            this.MaximumPriceDifference.Name = "MaximumPriceDifference";
+            this.MaximumPriceDifference.Size = new System.Drawing.Size(70, 17);
+            this.MaximumPriceDifference.TabIndex = 19;
+            this.MaximumPriceDifference.Text = "Maximum";
+            this.MaximumPriceDifference.UseVisualStyleBackColor = true;
             // 
             // MinimumPriceDifference
             // 
@@ -741,11 +1005,13 @@
             // 
             // CategoryLevel1
             // 
+            this.CategoryLevel1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CategoryLevel1.FormattingEnabled = true;
             this.CategoryLevel1.Location = new System.Drawing.Point(69, 115);
             this.CategoryLevel1.Name = "CategoryLevel1";
             this.CategoryLevel1.Size = new System.Drawing.Size(121, 21);
             this.CategoryLevel1.TabIndex = 16;
+            this.CategoryLevel1.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel1_SelectedIndexChanged);
             // 
             // MaxEuroSign
             // 
@@ -765,19 +1031,19 @@
             this.MinEuroSign.TabIndex = 14;
             this.MinEuroSign.Text = "€";
             // 
-            // textBox2
+            // MaximumPriceText
             // 
-            this.textBox2.Location = new System.Drawing.Point(136, 199);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 13;
+            this.MaximumPriceText.Location = new System.Drawing.Point(136, 199);
+            this.MaximumPriceText.Name = "MaximumPriceText";
+            this.MaximumPriceText.Size = new System.Drawing.Size(100, 20);
+            this.MaximumPriceText.TabIndex = 13;
             // 
-            // textBox1
+            // MinimumPriceText
             // 
-            this.textBox1.Location = new System.Drawing.Point(136, 173);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 12;
+            this.MinimumPriceText.Location = new System.Drawing.Point(136, 173);
+            this.MinimumPriceText.Name = "MinimumPriceText";
+            this.MinimumPriceText.Size = new System.Drawing.Size(100, 20);
+            this.MinimumPriceText.TabIndex = 12;
             // 
             // MaximumPrice
             // 
@@ -798,29 +1064,6 @@
             this.MinimumPrice.TabIndex = 10;
             this.MinimumPrice.Text = "Minimum";
             this.MinimumPrice.UseVisualStyleBackColor = true;
-            // 
-            // DomesticDeliveryCostsOnly
-            // 
-            this.DomesticDeliveryCostsOnly.AccessibleName = "";
-            this.DomesticDeliveryCostsOnly.AutoSize = true;
-            this.DomesticDeliveryCostsOnly.Location = new System.Drawing.Point(44, 481);
-            this.DomesticDeliveryCostsOnly.Name = "DomesticDeliveryCostsOnly";
-            this.DomesticDeliveryCostsOnly.Size = new System.Drawing.Size(109, 17);
-            this.DomesticDeliveryCostsOnly.TabIndex = 9;
-            this.DomesticDeliveryCostsOnly.TabStop = true;
-            this.DomesticDeliveryCostsOnly.Text = "Alleen binnenland";
-            this.DomesticDeliveryCostsOnly.UseVisualStyleBackColor = true;
-            // 
-            // ForeignDeliveryCostsOnly
-            // 
-            this.ForeignDeliveryCostsOnly.AutoSize = true;
-            this.ForeignDeliveryCostsOnly.Location = new System.Drawing.Point(44, 458);
-            this.ForeignDeliveryCostsOnly.Name = "ForeignDeliveryCostsOnly";
-            this.ForeignDeliveryCostsOnly.Size = new System.Drawing.Size(106, 17);
-            this.ForeignDeliveryCostsOnly.TabIndex = 8;
-            this.ForeignDeliveryCostsOnly.TabStop = true;
-            this.ForeignDeliveryCostsOnly.Text = "Alleen buitenland";
-            this.ForeignDeliveryCostsOnly.UseVisualStyleBackColor = true;
             // 
             // DeliveryCostsFilter
             // 
@@ -855,27 +1098,11 @@
             // To
             // 
             this.To.AutoSize = true;
-            this.To.Location = new System.Drawing.Point(196, 55);
+            this.To.Location = new System.Drawing.Point(275, 52);
             this.To.Name = "To";
             this.To.Size = new System.Drawing.Size(19, 13);
             this.To.TabIndex = 3;
             this.To.Text = "tot";
-            // 
-            // UntilTime
-            // 
-            this.UntilTime.FormattingEnabled = true;
-            this.UntilTime.Location = new System.Drawing.Point(221, 52);
-            this.UntilTime.Name = "UntilTime";
-            this.UntilTime.Size = new System.Drawing.Size(121, 21);
-            this.UntilTime.TabIndex = 2;
-            // 
-            // FromTime
-            // 
-            this.FromTime.FormattingEnabled = true;
-            this.FromTime.Location = new System.Drawing.Point(69, 52);
-            this.FromTime.Name = "FromTime";
-            this.FromTime.Size = new System.Drawing.Size(121, 21);
-            this.FromTime.TabIndex = 1;
             // 
             // TimeFilter
             // 
@@ -898,147 +1125,21 @@
             this.tabControl1.Size = new System.Drawing.Size(1453, 668);
             this.tabControl1.TabIndex = 0;
             // 
-            // MinimumPercentageSignLabel
+            // FromTime
             // 
-            this.MinimumPercentageSignLabel.AutoSize = true;
-            this.MinimumPercentageSignLabel.Location = new System.Drawing.Point(242, 285);
-            this.MinimumPercentageSignLabel.Name = "MinimumPercentageSignLabel";
-            this.MinimumPercentageSignLabel.Size = new System.Drawing.Size(15, 13);
-            this.MinimumPercentageSignLabel.TabIndex = 29;
-            this.MinimumPercentageSignLabel.Text = "%";
+            this.FromTime.Location = new System.Drawing.Point(69, 52);
+            this.FromTime.Name = "FromTime";
+            this.FromTime.Size = new System.Drawing.Size(200, 20);
+            this.FromTime.TabIndex = 39;
+            this.FromTime.ValueChanged += new System.EventHandler(this.FromTime_ValueChanged);
             // 
-            // MaximumPercentageSignLabel
+            // UntilTime
             // 
-            this.MaximumPercentageSignLabel.AutoSize = true;
-            this.MaximumPercentageSignLabel.Location = new System.Drawing.Point(242, 308);
-            this.MaximumPercentageSignLabel.Name = "MaximumPercentageSignLabel";
-            this.MaximumPercentageSignLabel.Size = new System.Drawing.Size(15, 13);
-            this.MaximumPercentageSignLabel.TabIndex = 30;
-            this.MaximumPercentageSignLabel.Text = "%";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 346);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(241, 20);
-            this.label5.TabIndex = 43;
-            this.label5.Text = "Prijsvoordeel bij kopen in Europa:";
-            // 
-            // label6
-            // 
-            this.label6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label6.Location = new System.Drawing.Point(28, 83);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(131, 2);
-            this.label6.TabIndex = 44;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(29, 85);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(43, 13);
-            this.label7.TabIndex = 45;
-            this.label7.Text = "Totaal: ";
-            // 
-            // TotalClickAmountLabel
-            // 
-            this.TotalClickAmountLabel.AutoSize = true;
-            this.TotalClickAmountLabel.Location = new System.Drawing.Point(103, 85);
-            this.TotalClickAmountLabel.Name = "TotalClickAmountLabel";
-            this.TotalClickAmountLabel.Size = new System.Drawing.Size(13, 13);
-            this.TotalClickAmountLabel.TabIndex = 46;
-            this.TotalClickAmountLabel.Text = "0";
-            // 
-            // PositionClickAmountTotalLabel
-            // 
-            this.PositionClickAmountTotalLabel.AutoSize = true;
-            this.PositionClickAmountTotalLabel.Location = new System.Drawing.Point(99, 231);
-            this.PositionClickAmountTotalLabel.Name = "PositionClickAmountTotalLabel";
-            this.PositionClickAmountTotalLabel.Size = new System.Drawing.Size(13, 13);
-            this.PositionClickAmountTotalLabel.TabIndex = 49;
-            this.PositionClickAmountTotalLabel.Text = "0";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(25, 231);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(43, 13);
-            this.label10.TabIndex = 48;
-            this.label10.Text = "Totaal: ";
-            // 
-            // label11
-            // 
-            this.label11.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label11.Location = new System.Drawing.Point(28, 229);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(131, 2);
-            this.label11.TabIndex = 47;
-            // 
-            // NumberOneClickAmountTotalLabel
-            // 
-            this.NumberOneClickAmountTotalLabel.AutoSize = true;
-            this.NumberOneClickAmountTotalLabel.Location = new System.Drawing.Point(103, 311);
-            this.NumberOneClickAmountTotalLabel.Name = "NumberOneClickAmountTotalLabel";
-            this.NumberOneClickAmountTotalLabel.Size = new System.Drawing.Size(13, 13);
-            this.NumberOneClickAmountTotalLabel.TabIndex = 52;
-            this.NumberOneClickAmountTotalLabel.Text = "0";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(29, 311);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(43, 13);
-            this.label13.TabIndex = 51;
-            this.label13.Text = "Totaal: ";
-            // 
-            // label14
-            // 
-            this.label14.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label14.Location = new System.Drawing.Point(32, 309);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(131, 2);
-            this.label14.TabIndex = 50;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(29, 370);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(29, 13);
-            this.label8.TabIndex = 53;
-            this.label8.Text = "Prijs:";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(29, 383);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(65, 13);
-            this.label9.TabIndex = 54;
-            this.label9.Text = "Percentage:";
-            // 
-            // PriceDifferenceLabel
-            // 
-            this.PriceDifferenceLabel.AutoSize = true;
-            this.PriceDifferenceLabel.Location = new System.Drawing.Point(102, 370);
-            this.PriceDifferenceLabel.Name = "PriceDifferenceLabel";
-            this.PriceDifferenceLabel.Size = new System.Drawing.Size(13, 13);
-            this.PriceDifferenceLabel.TabIndex = 55;
-            this.PriceDifferenceLabel.Text = "0";
-            // 
-            // PriceDifferencePercentageLabel
-            // 
-            this.PriceDifferencePercentageLabel.AutoSize = true;
-            this.PriceDifferencePercentageLabel.Location = new System.Drawing.Point(102, 383);
-            this.PriceDifferencePercentageLabel.Name = "PriceDifferencePercentageLabel";
-            this.PriceDifferencePercentageLabel.Size = new System.Drawing.Size(13, 13);
-            this.PriceDifferencePercentageLabel.TabIndex = 56;
-            this.PriceDifferencePercentageLabel.Text = "0";
+            this.UntilTime.Location = new System.Drawing.Point(300, 52);
+            this.UntilTime.Name = "UntilTime";
+            this.UntilTime.Size = new System.Drawing.Size(200, 20);
+            this.UntilTime.TabIndex = 40;
+            this.UntilTime.ValueChanged += new System.EventHandler(this.UntilTime_ValueChanged);
             // 
             // Betric
             // 
@@ -1052,6 +1153,12 @@
             this.MetricsPage.PerformLayout();
             this.FilterTab.ResumeLayout(false);
             this.FilterTab.PerformLayout();
+            this.DeliveryCostsPanel.ResumeLayout(false);
+            this.DeliveryCostsPanel.PerformLayout();
+            this.CountryPanel.ResumeLayout(false);
+            this.CountryPanel.PerformLayout();
+            this.PriceDifferencePanel.ResumeLayout(false);
+            this.PriceDifferencePanel.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -1077,16 +1184,16 @@
         private System.Windows.Forms.RadioButton AbsolutePriceDifference;
         private System.Windows.Forms.Label MaximumDifferenceEuroSign;
         private System.Windows.Forms.Label MinimumDifferenceEuroSign;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.TextBox MaximumPriceDifferenceText;
+        private System.Windows.Forms.TextBox MinimumPriceDifferenceText;
+        private System.Windows.Forms.CheckBox MaximumPriceDifference;
         private System.Windows.Forms.CheckBox MinimumPriceDifference;
         private System.Windows.Forms.CheckBox PriceDifferenceFilter;
         private System.Windows.Forms.ComboBox CategoryLevel1;
         private System.Windows.Forms.Label MaxEuroSign;
         private System.Windows.Forms.Label MinEuroSign;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox MaximumPriceText;
+        private System.Windows.Forms.TextBox MinimumPriceText;
         private System.Windows.Forms.CheckBox MaximumPrice;
         private System.Windows.Forms.CheckBox MinimumPrice;
         private System.Windows.Forms.RadioButton DomesticDeliveryCostsOnly;
@@ -1095,8 +1202,6 @@
         private System.Windows.Forms.CheckBox PriceFilter;
         private System.Windows.Forms.CheckBox CategoryFilter;
         private System.Windows.Forms.Label To;
-        private System.Windows.Forms.ComboBox UntilTime;
-        private System.Windows.Forms.ComboBox FromTime;
         private System.Windows.Forms.CheckBox TimeFilter;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.Label DomesticNumberOneClickPercentageAmountLabel;
@@ -1149,6 +1254,16 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label MaximumPercentageSignLabel;
         private System.Windows.Forms.Label MinimumPercentageSignLabel;
+        private System.Windows.Forms.Button ExecuteButton;
+        private System.Windows.Forms.ComboBox CategoryLevel5;
+        private System.Windows.Forms.ComboBox CategoryLevel4;
+        private System.Windows.Forms.ComboBox CategoryLevel3;
+        private System.Windows.Forms.ComboBox CategoryLevel2;
+        private System.Windows.Forms.Panel PriceDifferencePanel;
+        private System.Windows.Forms.Panel DeliveryCostsPanel;
+        private System.Windows.Forms.Panel CountryPanel;
+        private System.Windows.Forms.DateTimePicker UntilTime;
+        private System.Windows.Forms.DateTimePicker FromTime;
 
     }
 }

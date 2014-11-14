@@ -12,36 +12,13 @@ namespace Misc
     {
         static void Main(string[] args)
         {
-            RunSomeTasks();
+            string s = ">";
+            Console.WriteLine(s);
+            byte[] tempBytes;
+            tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(s);
+            string asciiStr = System.Text.Encoding.UTF8.GetString(tempBytes);
+            Console.WriteLine(asciiStr);
             Console.Read();
-        }
-
-        public static void RunSomeTasks()
-        {
-            var tasks = new Task[50];
-
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                int copy = i;
-                tasks[copy] = new Task(() => StartSomeMethod(copy));
-            }
-
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                if (tasks.Count(t => t.Status == TaskStatus.Running) >= 5)
-                {
-                    Task.WaitAny(tasks);
-                }
-                tasks[i].Start();
-            }
-        }
-
-        public static void StartSomeMethod(int id)
-        {
-            Console.WriteLine("Started {0}", id);
-            int i = 0;
-            while (i < Int32.MaxValue) i++;
-            Console.WriteLine("Ended {0}", id);
-        }
+        }     
     }
 }

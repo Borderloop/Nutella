@@ -14,6 +14,7 @@ namespace BobAndFriends.BobAndFriends
         private BobBox BobBox;
         private HashSet<string> AddedCategorySynonyms;
         private int Count;
+        private const int PackageSize = 1000;
 
         public BobboxManager()
         {
@@ -27,12 +28,12 @@ namespace BobAndFriends.BobAndFriends
             ProductValidation validation = ProductValidationQueue.Instance.Dequeue();
             string CurrentWebshop = validation.Product.Webshop;
             while (validation != null)
-            {    
-                if((CurrentWebshop != validation.Product.Webshop) || (Count >= 1000))
+            {
+                if ((CurrentWebshop != validation.Product.Webshop) || (Count >= PackageSize))
                 {
                     Console.WriteLine("Saving changes for " + CurrentWebshop + " to database...");
                     BobBox.CommitAndCreate();
-                    AddedCategorySynonyms.Clear();
+                    if (Count < PackageSize) AddedCategorySynonyms.Clear();
                     Console.WriteLine("Done saving changes for " + CurrentWebshop);
                     Count = 0;
                 }
