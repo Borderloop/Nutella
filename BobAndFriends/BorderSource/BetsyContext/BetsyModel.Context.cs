@@ -24,7 +24,6 @@ namespace BorderSource.BetsyContext
     
     	public BetsyModel(string conStr) : base(conStr) 
     	{
-            //ALSO EDIT IN TT FILE
     			//Database.Log = Statics.SqlLogger.Write;
     	 }
     

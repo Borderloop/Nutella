@@ -109,6 +109,35 @@ namespace Betric
             return _resultTable;
         }
 
+        public DataTable Read(string query, List<IParam> parameters)
+        {
+            if (query == "") return null;
+            DataTable _resultTable = new DataTable();
+
+            //Only procede if there is a connection. Return null otherwise.
+            if (_conn == null)
+            {
+                return null;
+            }
+
+            _cmd = new MySqlCommand(query, _conn);
+
+            foreach (var param in parameters)
+            {
+                _cmd.Parameters.AddWithValue(param.Name, param.Value);
+            }  
+
+            //We need MySqlDataAdapter to store all rows in the datatable
+            using (MySqlDataAdapter adapter = new MySqlDataAdapter(_cmd))
+            {
+                adapter.Fill(_resultTable);
+            }
+
+            //Return the result.
+            return _resultTable;
+        }
+
+
         /// <summary>
         /// This method will return all categories found in the database.
         /// </summary>

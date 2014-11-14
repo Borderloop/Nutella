@@ -149,11 +149,7 @@ namespace BobAndFriends
             }
 
             ProductValidationQueue.Instance.InputStopped = true;
-
-            using (Logger logger = new Logger(Statics.LoggerPath))
-            {
-                logger.WriteStatistics();
-            }
+            
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
             //bob.RerunResidue();
 
@@ -189,6 +185,14 @@ namespace BobAndFriends
             TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent validating and saving");
             Console.WriteLine("Done consuming.");
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
+
+            using (Logger logger = new Logger(Statics.LoggerPath))
+            {
+                logger.WriteStatistics();
+            }
+
+            Console.WriteLine("Press ENTER to exit.");
+            Console.Read();
         }
 
         static void Initialize()
@@ -203,6 +207,7 @@ namespace BobAndFriends
             #region Loggers
             Statics.LoggerPath = Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
             Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
+            Statics.AmiguousLogPath = Statics.settings["logpath"] + "\\ambiguous-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
             #endregion
 
             #region Values

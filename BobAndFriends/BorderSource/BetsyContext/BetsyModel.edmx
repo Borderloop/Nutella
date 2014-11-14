@@ -107,6 +107,7 @@
           <Property Name="difference" Type="decimal" Precision="12" Scale="2" Nullable="false" />
           <Property Name="last_updated" Type="timestamp" Precision="0" Nullable="false" />
           <Property Name="product_id" Type="int" Nullable="false" />
+          <Property Name="difference_percentage" Type="decimal" Precision="10" Scale="0" Nullable="false" />
         </EntityType>
         <EntityType Name="ean">
           <Key>
@@ -1148,6 +1149,7 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_country_price_differences_article" FromRole="country_price_differences" ToRole="article" />
           <NavigationProperty Name="country" Relationship="BetsyModel.Model.fk_country_price_differences_country" FromRole="country_price_differences" ToRole="country" />
           <NavigationProperty Name="product" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="country_price_differences" ToRole="product" />
+          <Property Name="difference_percentage" Type="Decimal" Nullable="false" />
         </EntityType>
         <EntityType Name="ean">
           <Key>
@@ -1709,6 +1711,7 @@ warning 6035: The relationship 'fk_product-webshop' has columns that are not par
           <EntitySetMapping Name="country_price_differences">
             <EntityTypeMapping TypeName="BetsyModel.Model.country_price_differences">
               <MappingFragment StoreEntitySet="country_price_differences">
+                <ScalarProperty Name="difference_percentage" ColumnName="difference_percentage" />
                 <ScalarProperty Name="product_id" ColumnName="product_id" />
                 <ScalarProperty Name="last_updated" ColumnName="last_updated" />
                 <ScalarProperty Name="difference" ColumnName="difference" />

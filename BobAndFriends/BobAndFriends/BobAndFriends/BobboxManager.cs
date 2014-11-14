@@ -42,7 +42,7 @@ namespace BobAndFriends.BobAndFriends
 
                 if (validation.IsAmbiguous())
                 {
-                    using (Logger logger = new Logger(Statics.settings["logpath"] + "\\ambiguous-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt"))
+                    using (Logger logger = new Logger(Statics.AmiguousLogPath))
                     {
                         logger.WriteLine("Ambiguous product matched " + validation.ArticleNumberOfEanMatch + " with " + validation.ArticleNumberOfSkuMatch + ".");
                     }

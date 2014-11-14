@@ -20,6 +20,7 @@ namespace BorderSource.BetsyContext
         public decimal difference { get; set; }
         public System.DateTime last_updated { get; set; }
         public int product_id { get; set; }
+        public decimal difference_percentage { get; set; }
     
         public virtual article article { get; set; }
         public virtual country country { get; set; }

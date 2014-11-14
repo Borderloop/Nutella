@@ -24,6 +24,8 @@ namespace BorderSource.Common
         /// </summary>
         public static string LoggerPath;
 
+        public static string AmiguousLogPath;
+
         public static QueryLogger SqlLogger;
 
         /// <summary>

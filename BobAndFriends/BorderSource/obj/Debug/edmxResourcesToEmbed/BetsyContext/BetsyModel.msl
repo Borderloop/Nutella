@@ -66,6 +66,7 @@
     <EntitySetMapping Name="country_price_differences">
       <EntityTypeMapping TypeName="BetsyModel.Model.country_price_differences">
         <MappingFragment StoreEntitySet="country_price_differences">
+          <ScalarProperty Name="difference_percentage" ColumnName="difference_percentage" />
           <ScalarProperty Name="product_id" ColumnName="product_id" />
           <ScalarProperty Name="last_updated" ColumnName="last_updated" />
           <ScalarProperty Name="difference" ColumnName="difference" />

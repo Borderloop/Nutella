@@ -102,6 +102,7 @@
     <Property Name="difference" Type="decimal" Precision="12" Scale="2" Nullable="false" />
     <Property Name="last_updated" Type="timestamp" Precision="0" Nullable="false" />
     <Property Name="product_id" Type="int" Nullable="false" />
+    <Property Name="difference_percentage" Type="decimal" Precision="10" Scale="0" Nullable="false" />
   </EntityType>
   <EntityType Name="ean">
     <Key>

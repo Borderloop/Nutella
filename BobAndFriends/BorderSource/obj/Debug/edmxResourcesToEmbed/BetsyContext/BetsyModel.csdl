@@ -227,6 +227,7 @@
     <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_country_price_differences_article" FromRole="country_price_differences" ToRole="article" />
     <NavigationProperty Name="country" Relationship="BetsyModel.Model.fk_country_price_differences_country" FromRole="country_price_differences" ToRole="country" />
     <NavigationProperty Name="product" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="country_price_differences" ToRole="product" />
+    <Property Name="difference_percentage" Type="Decimal" Nullable="false" />
   </EntityType>
   <EntityType Name="ean">
     <Key>
