@@ -12,12 +12,13 @@ using System.Data;
 using System.Data.Entity.Validation;
 using System.Runtime.InteropServices;
 using BorderSource.Common;
+using BorderSource.Queue;
+using BobAndFriends.BobAndFriends;
 
 namespace BobAndFriends
 {
     class Program
     {
-        static bool exitSystem = false;
 
         /// <summary>
         /// This thread is used by the productfeedreader, being the producer in this application.
@@ -27,7 +28,11 @@ namespace BobAndFriends
         /// <summary>
         /// This thread is used by BOB, being the consumer in the application.
         /// </summary>
+        public static Thread validator;
+
         public static Thread consumer;
+
+        public static DateTime StartTime;
 
         #region Trap application termination
         [DllImport("Kernel32")]
@@ -49,18 +54,18 @@ namespace BobAndFriends
         {
             Console.WriteLine("Exiting system due to external CTRL-C, or process kill, or shutdown");
 
-            using (Logger logger = new Logger(Statics.LoggerPath))
+            TimeStatisticsMapper.Instance.StopAll();
+
+            using (Logger logger = new Logger(Statics.LoggerPath, true))
             {
                 logger.WriteStatistics();
             }
-
+         
             producer.Abort();
+            validator.Abort();
             consumer.Abort();
 
             Console.WriteLine("Shutting down.");
-
-            //allow main to run off
-            exitSystem = true;
 
             //shutdown right away so there are no lingering threads
             Environment.Exit(-1);
@@ -78,6 +83,7 @@ namespace BobAndFriends
         [STAThread]
         static void Main(string[] args)
         {
+            StartTime = DateTime.Now;
             _handler += new EventHandler(Handler);
             SetConsoleCtrlHandler(_handler, true);
 
@@ -87,67 +93,74 @@ namespace BobAndFriends
             //DatabaseJanitor crapper = new DatabaseJanitor();
             //crapper.Cleanup();    
 
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
+
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
-            consumer = new Thread(new ThreadStart(ProductDequeuer));
+            validator = new Thread(new ThreadStart(ProductDequeuer));
+            consumer = new Thread(new ThreadStart(StartBobBoxManager));
+
+            producer.Priority = ThreadPriority.BelowNormal;
+            validator.Priority = ThreadPriority.BelowNormal;
 
             //Start threads
             producer.Start();
+            validator.Start();
             consumer.Start();
-            while (!exitSystem)
-            {
-                Thread.Sleep(100);
-            }
-
         }
 
         static void ProductDequeuer()
         {
-            //Create BOB and start dequeueing items.
-            BOB bob = new BOB();
+            Package p = PackageQueue.Instance.Dequeue();
+            List<Package> WebshopPackages = new List<Package>();
+            string CurrentWebshop = p.Webshop;
+            DateTime StartRunning = new DateTime();
 
-            int errorCount = 0;
-            //Remain alive while thread one isnt done
-            while (true)
+            while (p != null)
             {
-                //Take product from queue
-                Product p = ProductQueue.Dequeue();
+                CurrentWebshop = p.Webshop;  
+                StartRunning = DateTime.Now;
+                Console.WriteLine("Started reading packages from " + CurrentWebshop +  " at " + StartRunning.ToString("hh:mm:ss"));           
+                while(CurrentWebshop == p.Webshop)
+                {
+                    WebshopPackages.Add(p);
+                    p = PackageQueue.Instance.Dequeue();
+                    if (p == null) break;                   
+                }
 
-                //Break out of while loop when the queue gives null. This only happens when 
-                //productfeedreader is flagged as done.
-                if (p == null)
+                Console.WriteLine("Total amount of packages for " + WebshopPackages.First().Webshop + ": " + WebshopPackages.Count);
+                var actions = new Action[WebshopPackages.Count];
+
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    break;
+                    int copy = i;
+                    Package package = WebshopPackages[i];
+                    actions[copy] = new Action(() => StartAnotherBob(package));
                 }
-                //Process the product otherwise.
-                try
-                {
-                    TimeStatisticsMapper.StartTimeMeasure("Process product of " + p.Webshop);
-                    TimeStatisticsMapper.StartTimeMeasure("Process method general");
-                    bob.Process(p);
-                    TimeStatisticsMapper.StopTimeMeasure("Process method general");
-                    TimeStatisticsMapper.StopTimeMeasure("Process product of " + p.Webshop);
-                }
-                catch (ThreadAbortException)
-                {
-                    Console.WriteLine("From consumer: Thread was aborted. Shutting down.");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("THREW EXCEPTION {0}: " + e.ToString() + " FROM " + e.StackTrace, errorCount);
-                    using (Logger logger = new Logger(Statics.LoggerPath))
-                    {
-                        logger.WriteLine("ERROR#{0} " + e.ToString(), errorCount);
-                    }
-                    errorCount++;
-                }
+
+                TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
+                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 7 }, actions);
+                TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
+
+                Console.WriteLine("Time spent reading packages from " + CurrentWebshop + ": " + (DateTime.Now - StartRunning));
+                Console.WriteLine("Total time since start: " + (DateTime.Now - StartTime));
+              
+                WebshopPackages.Clear();
             }
 
-
+            ProductValidationQueue.Instance.InputStopped = true;
+            
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
             //bob.RerunResidue();
 
-            Console.WriteLine("Thread 2 is done.");
+            Console.WriteLine("Validation is done.");
+            Console.WriteLine("ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
+        }
+
+        static void StartAnotherBob(Package p)
+        {
+            BOB bob = new BOB();
+            bob.Process(p);
         }
 
         static void ProductFeedReader()
@@ -156,10 +169,30 @@ namespace BobAndFriends
             ProductFeedReader pfr = new ProductFeedReader();
 
             //Start it
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Time reading products");
             pfr.Start();
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Time reading products");
 
-            Console.WriteLine("Thread 1 is done.");
-            Console.WriteLine("Queue size: " + ProductQueue.queue.Count);
+            Console.WriteLine("Done producing.");
+            Console.WriteLine("PackageQueue size: " + PackageQueue.Instance.Queue.Count);
+        }
+
+        static void StartBobBoxManager()
+        {
+            BobboxManager bbm = new BobboxManager();
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent validating and saving");
+            bbm.StartValidatingAndSaving();
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent validating and saving");
+            Console.WriteLine("Done consuming.");
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
+
+            using (Logger logger = new Logger(Statics.LoggerPath))
+            {
+                logger.WriteStatistics();
+            }
+
+            Console.WriteLine("Press ENTER to exit.");
+            Console.Read();
         }
 
         static void Initialize()
@@ -174,6 +207,7 @@ namespace BobAndFriends
             #region Loggers
             Statics.LoggerPath = Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
             Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
+            Statics.AmiguousLogPath = Statics.settings["logpath"] + "\\ambiguous-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
             #endregion
 
             #region Values
@@ -218,9 +252,9 @@ namespace BobAndFriends
             Statics.TwoWayDBProductToBobProductMapping.Add("AffiliateProdID", "affiliate_unique_id");
             #endregion
 
-            #region Webshop names
-            Statics.webshopNames = Database.Instance.GetAllWebshopNames();
-            #endregion
+            BetsyDbContextReader reader = new BetsyDbContextReader();
+            Lookup.WebshopLookup = reader.GetAllWebshops();
+            Lookup.CategoryLookup = reader.GetAllCategories();
         }
     }
 }

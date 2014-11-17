@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace BorderSource.Common
 {
-    public class PropertyStatistics
+    public class PropertyStatistics : IStatistics
     {
         public int maxPropertyLength = 0;
         public double averagePropertyLength = 0;
         public int wrongPropertyCount = 0;
         public int[] occurences = new int[300];
+
+        private string _Description = "Statistics for measuring the length of the properties of a Product object.";
+        public string Description { get { return _Description; } }
+
 
         public void Add(string input)
         {

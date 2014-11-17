@@ -113,6 +113,27 @@
       <End Role="country" EntitySet="country" />
       <End Role="webshop" EntitySet="webshop" />
     </AssociationSet>
+    <EntitySet Name="articletemp" EntityType="BetsyModel.Model.articletemp" />
+    <EntitySet Name="categorytemp" EntityType="BetsyModel.Model.categorytemp" />
+    <EntitySet Name="eantemp" EntityType="BetsyModel.Model.eantemp" />
+    <EntitySet Name="skutemp" EntityType="BetsyModel.Model.skutemp" />
+    <EntitySet Name="titletemp" EntityType="BetsyModel.Model.titletemp" />
+    <AssociationSet Name="fk_ean_articletemp" Association="BetsyModel.Model.fk_ean_articletemp">
+      <End Role="articletemp" EntitySet="articletemp" />
+      <End Role="eantemp" EntitySet="eantemp" />
+    </AssociationSet>
+    <AssociationSet Name="fk_sku_articletemp" Association="BetsyModel.Model.fk_sku_articletemp">
+      <End Role="articletemp" EntitySet="articletemp" />
+      <End Role="skutemp" EntitySet="skutemp" />
+    </AssociationSet>
+    <AssociationSet Name="fk_title_articletemp" Association="BetsyModel.Model.fk_title_articletemp">
+      <End Role="articletemp" EntitySet="articletemp" />
+      <End Role="titletemp" EntitySet="titletemp" />
+    </AssociationSet>
+    <AssociationSet Name="cat_articletemp" Association="BetsyModel.Model.cat_articletemp">
+      <End Role="articletemp" EntitySet="articletemp" />
+      <End Role="categorytemp" EntitySet="categorytemp" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="affiliate">
     <Key>
@@ -132,7 +153,7 @@
     <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="brand" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
     <Property Name="description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
-    <Property Name="image_loc" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="image_loc" Type="String" MaxLength="350" FixedLength="false" Unicode="false" />
     <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_article" FromRole="article" ToRole="biggest_price_differences" />
     <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_article" FromRole="article" ToRole="country_price_differences" />
     <NavigationProperty Name="ean" Relationship="BetsyModel.Model.fk_ean_article" FromRole="article" ToRole="ean" />
@@ -206,13 +227,14 @@
     <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_country_price_differences_article" FromRole="country_price_differences" ToRole="article" />
     <NavigationProperty Name="country" Relationship="BetsyModel.Model.fk_country_price_differences_country" FromRole="country_price_differences" ToRole="country" />
     <NavigationProperty Name="product" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="country_price_differences" ToRole="product" />
+    <Property Name="difference_percentage" Type="Decimal" Nullable="false" />
   </EntityType>
   <EntityType Name="ean">
     <Key>
       <PropertyRef Name="ean1" />
       <PropertyRef Name="article_id" />
     </Key>
-    <Property Name="ean1" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="ean1" Type="Int64" Nullable="false" />
     <Property Name="article_id" Type="Int32" Nullable="false" />
     <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_ean_article" FromRole="ean" ToRole="article" />
   </EntityType>
@@ -249,11 +271,11 @@
     </Key>
     <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="article_id" Type="Int32" Nullable="false" />
-    <Property Name="ship_time" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ship_time" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
     <Property Name="ship_cost" Type="Decimal" />
     <Property Name="price" Type="Decimal" Nullable="false" />
     <Property Name="webshop_url" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-    <Property Name="direct_link" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+    <Property Name="direct_link" Type="String" Nullable="false" MaxLength="350" FixedLength="false" Unicode="false" />
     <Property Name="last_modified" Type="DateTime" Nullable="false" />
     <Property Name="valid_until" Type="DateTime" Nullable="false" />
     <Property Name="affiliate_name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -261,6 +283,7 @@
     <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_product_article" FromRole="product" ToRole="article" />
     <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_product" FromRole="product" ToRole="biggest_price_differences" />
     <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="product" ToRole="country_price_differences" />
+    <Property Name="popularity" Type="Int32" Nullable="false" />
   </EntityType>
   <EntityType Name="residue">
     <Key>
@@ -588,5 +611,94 @@
   <Association Name="web_sendingcountry">
     <End Type="BetsyModel.Model.country" Role="country" Multiplicity="*" />
     <End Type="BetsyModel.Model.webshop" Role="webshop" Multiplicity="*" />
+  </Association>
+  <EntityType Name="articletemp">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="brand" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="image_loc" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="eantemp" Relationship="BetsyModel.Model.fk_ean_articletemp" FromRole="articletemp" ToRole="eantemp" />
+    <NavigationProperty Name="skutemp" Relationship="BetsyModel.Model.fk_sku_articletemp" FromRole="articletemp" ToRole="skutemp" />
+    <NavigationProperty Name="titletemp" Relationship="BetsyModel.Model.fk_title_articletemp" FromRole="articletemp" ToRole="titletemp" />
+    <NavigationProperty Name="categorytemp" Relationship="BetsyModel.Model.cat_articletemp" FromRole="articletemp" ToRole="categorytemp" />
+  </EntityType>
+  <EntityType Name="categorytemp">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="called_by" Type="Int32" />
+    <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.cat_articletemp" FromRole="categorytemp" ToRole="articletemp" />
+  </EntityType>
+  <EntityType Name="eantemp">
+    <Key>
+      <PropertyRef Name="ean" />
+      <PropertyRef Name="article_id" />
+    </Key>
+    <Property Name="ean" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.fk_ean_articletemp" FromRole="eantemp" ToRole="articletemp" />
+  </EntityType>
+  <EntityType Name="skutemp">
+    <Key>
+      <PropertyRef Name="sku" />
+      <PropertyRef Name="article_id" />
+    </Key>
+    <Property Name="sku" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.fk_sku_articletemp" FromRole="skutemp" ToRole="articletemp" />
+  </EntityType>
+  <EntityType Name="titletemp">
+    <Key>
+      <PropertyRef Name="title" />
+      <PropertyRef Name="article_id" />
+    </Key>
+    <Property Name="title" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="article_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="articletemp" Relationship="BetsyModel.Model.fk_title_articletemp" FromRole="titletemp" ToRole="articletemp" />
+  </EntityType>
+  <Association Name="fk_ean_articletemp">
+    <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="1" />
+    <End Type="BetsyModel.Model.eantemp" Role="eantemp" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="articletemp">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="eantemp">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_sku_articletemp">
+    <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="1" />
+    <End Type="BetsyModel.Model.skutemp" Role="skutemp" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="articletemp">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="skutemp">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_title_articletemp">
+    <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="1" />
+    <End Type="BetsyModel.Model.titletemp" Role="titletemp" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="articletemp">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="titletemp">
+        <PropertyRef Name="article_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="cat_articletemp">
+    <End Type="BetsyModel.Model.articletemp" Role="articletemp" Multiplicity="*" />
+    <End Type="BetsyModel.Model.categorytemp" Role="categorytemp" Multiplicity="*" />
   </Association>
 </Schema>

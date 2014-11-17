@@ -96,8 +96,8 @@
     <Compile Include="Affiliates\CommissionJunction.cs" />
     <Compile Include="BobAndFriends\BOB.cs" />
     <Compile Include="Affiliates\Daisycon.cs" />
+    <Compile Include="BobAndFriends\BobboxManager.cs" />
     <Compile Include="BobAndFriends\ProductFeedReader.cs" />
-    <Compile Include="BobAndFriends\ProductQueue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Affiliates\TradeDoubler.cs" />
@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -133,7 +134,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="VisualBob\" />
+    <Folder Include="etc\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BorderSource\BorderSource.csproj">

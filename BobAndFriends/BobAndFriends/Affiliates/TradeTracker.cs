@@ -38,32 +38,38 @@ namespace BobAndFriends.Affiliates
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
                 // If the webshop is not found in the webshop list no further processing needed.
-                if (!Statics.webshopNames.Any(w => w == fileUrl))
+                if (!Lookup.WebshopLookup.Contains(fileUrl))
                 {
-                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    using (Logger logger = new Logger(Statics.LoggerPath, true))
                     {
-                        logger.WriteLine("Webshop not found in database: " + fileUrl);
+                        logger.WriteLine("Webshop not found in database: " + fileUrl + " from " + Name);
                     }
                     continue;
                 }
-                try
+
+                XmlReader _reader = XmlReader.Create(file);
+                Product p = null;
+                while (_reader.Read())
                 {
-                    XmlReader _reader = XmlReader.Create(file);
-                    Product p = null;
-                    while (_reader.Read())
+                    if (products.Count > PackageSize)
                     {
-                        //Increment the tickcount
-                        Statics.TickCount++;
+                        yield return products;
+                        products.Clear();
+                    }
 
-                        //Sleep everytime sleepcount is reached
-                        if (Statics.TickCount % Statics.TicksUntilSleep == 0)
-                        {
-                            Thread.Sleep(1);
+                    //Increment the tickcount
+                    Statics.TickCount++;
 
-                            //Set tickCount to 0 to save memory
-                            Statics.TickCount = 0;
-                        }
+                    //Sleep everytime sleepcount is reached
+                    if (Statics.TickCount % Statics.TicksUntilSleep == 0)
+                    {
+                        Thread.Sleep(1);
 
+                        //Set tickCount to 0 to save memory
+                        Statics.TickCount = 0;
+                    }
+                    try
+                    {
                         if (_reader.IsStartElement())
                         {
                             switch (_reader.Name)
@@ -184,23 +190,24 @@ namespace BobAndFriends.Affiliates
                             products.Add(p);
                         }
                     }
-                }
-                catch (ThreadAbortException threab)
-                {
-                    Console.WriteLine("From producer: Thread was aborted. Shutting down.");
-                }
-                catch (XmlException xmle)
-                {
-                    using (Logger logger = new Logger(Statics.LoggerPath))
+
+                    catch (ThreadAbortException)
                     {
-                        logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                        Console.WriteLine("From producer: Thread was aborted. Shutting down.");
                     }
-                }
-                catch (Exception e)
-                {
-                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    catch (XmlException xmle)
                     {
-                        logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                        using (Logger logger = new Logger(Statics.LoggerPath, true))
+                        {
+                            logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        using (Logger logger = new Logger(Statics.LoggerPath, true))
+                        {
+                            logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                        }
                     }
                 }
                 yield return products;

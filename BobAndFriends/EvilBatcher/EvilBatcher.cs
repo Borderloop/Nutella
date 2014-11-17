@@ -105,6 +105,8 @@ namespace EvilBatcher
             DataGridViewRow evilSelectedRow = evilGridView.SelectedCells.Cast<DataGridViewCell>().Select(c => c.OwningRow).FirstOrDefault();
             DataGridViewRow borderloopSelectedRow = borderGridView.SelectedCells.Cast<DataGridViewCell>().Select(c => c.OwningRow).FirstOrDefault();
 
+
+
             if (evilSelectedRow == null)
             {
                 MessageBox.Show("No EvilBoris category row selected. Please select a row.");

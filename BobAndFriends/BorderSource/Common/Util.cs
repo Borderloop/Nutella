@@ -213,5 +213,12 @@ namespace BorderSource.Common
             }
             return sum;
         }
+
+        public static string RemoveDiacriticAccents(this string s)
+        {
+            byte[] tempBytes;
+            tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(s);
+            return System.Text.Encoding.UTF8.GetString(tempBytes);
+        }
     }
 }

@@ -49,7 +49,7 @@ namespace BobAndFriends.Affiliates
             xvr.AddKeys("lastupdate", XmlNodeType.Element);
             xvr.AddKeys("shipping", XmlNodeType.Element);
             xvr.AddKeys("availabilty", XmlNodeType.Element);
-            xvr.AddKeys("belboonproductnumber", XmlNodeType.Element);
+            xvr.AddKeys("belboon_productnumber", XmlNodeType.Element);
 
             Product p = new Product();
 
@@ -58,11 +58,11 @@ namespace BobAndFriends.Affiliates
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
                 // If the webshop is not found in the webshop list no further processing needed.
-                if (!Statics.webshopNames.Any(w => w == fileUrl))
+                if (!Lookup.WebshopLookup.Contains(fileUrl))
                 {
-                    using (Logger logger = new Logger(Statics.LoggerPath))
+                    using (Logger logger = new Logger(Statics.LoggerPath, true))
                     {
-                        logger.WriteLine("Webshop not found in database: " + fileUrl);
+                        logger.WriteLine("Webshop not found in database: " + fileUrl + " from " + Name);
                     }
                     continue;
                 }
@@ -82,12 +82,18 @@ namespace BobAndFriends.Affiliates
                     p.LastModified = dkd["lastupdate"][XmlNodeType.Element];
                     p.DeliveryCost = dkd["shipping"][XmlNodeType.Element];
                     p.Stock = dkd["availabilty"][XmlNodeType.Element];
-                    p.AffiliateProdID = dkd["belboonproductnumber"][XmlNodeType.Element];
+                    p.AffiliateProdID = dkd["belboon_productnumber"][XmlNodeType.Element];
                     p.Affiliate = "Belboon";
                     p.FileName = file;
                     p.Webshop = fileUrl;
                     products.Add(p);
                     p = new Product();
+
+                    if (products.Count > PackageSize)
+                    {
+                        yield return products;
+                        products.Clear();
+                    }
                 }
                 yield return products;
                 products.Clear();

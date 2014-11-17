@@ -85,7 +85,7 @@ foreach (var entitySet in container.BaseEntitySets.OfType<EntitySet>())
 
 	public <#=code.Escape(container)#>(string conStr) : base(conStr) 
 	{
-			Database.Log = Statics.SqlLogger.Write;
+			//Database.Log = Statics.SqlLogger.Write;
 	 }
 
     protected override void OnModelCreating(DbModelBuilder modelBuilder)

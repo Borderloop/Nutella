@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace BorderSource.Common
 {
-    public class TimeStatistics
+    public class TimeStatistics : IStatistics
     {
         public TimeSpan maxTime = new TimeSpan();        
         public TimeSpan minTime = new TimeSpan();
@@ -15,6 +15,9 @@ namespace BorderSource.Common
 
         private Stopwatch _sw = new Stopwatch();
         private int timeSpanAmount = 0;
+
+        private string _Description = "Statistics for measuring the time that methods need to complete.";
+        public string Description { get { return _Description; } }
 
         public void StartStopwatch()
         {

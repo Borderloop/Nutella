@@ -45,7 +45,7 @@ namespace BorderSource.Common
                         _buffer.Replace(pair.Key, pair.Value);
                     }
                     _params.Clear();
-                    string buffer = _buffer.ToString().RemoveEscapedCharacters() + ";";
+                    string buffer = _buffer.ToString().RemoveEscapedCharacters() == "" ? _buffer.ToString().RemoveEscapedCharacters() : "";
                     _buffer.Clear();
                     _buffer.Append(buffer);
                 }
@@ -62,7 +62,7 @@ namespace BorderSource.Common
                 {
                     _buffer.Replace(pair.Key, pair.Value);
                 }
-                base.Write(_buffer.ToString().RemoveEscapedCharacters() + ";");
+                base.Write(_buffer.ToString().RemoveEscapedCharacters() == "" ? _buffer.ToString().RemoveEscapedCharacters() : "");
                 _buffer.Clear();
                 _params.Clear();
                 return;
@@ -70,7 +70,7 @@ namespace BorderSource.Common
 
             //Only procede if it is not a select query
             if (value.Contains("SELECT")) selectQuery = true;
-            else _buffer.Append(value);
+            else _buffer.Append(value + "; ");
         }
 
         public override void Close()

@@ -6,24 +6,44 @@ using System.Threading.Tasks;
 using System.Reflection;
 using BorderSource.BetsyContext;
 using BorderSource.Common;
+using System.Data.Common;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity;
+using System.Data.Entity.Core.EntityClient;
+using MySql.Data.MySqlClient;
 
 namespace Baximus
 {
     class Program
     {
         static List<article> articleList;
+        static string ConnectionString;
+        static decimal positiveAveragePrice;
+        static decimal positiveAveragePercentage;
+        static decimal negativeAveragePrice;
+        static decimal negativeAveragePercentage;
+        static decimal averagePrice;
+        static decimal averagePercentage;
 
         static void Main(string[] args)
         {
             Initialize();          
             CalculateBiggestDifferences();
-            CalculateBiggestDifferencesPerCountry();          
+            CalculateBiggestDifferencesPerCountry();
+
+            Console.WriteLine("Positive averege price difference: " + positiveAveragePrice);
+            Console.WriteLine("Positive average price percentage difference: " + positiveAveragePercentage);
+            Console.WriteLine("Negative averege price difference: " + negativeAveragePrice);
+            Console.WriteLine("Negative average price percentage difference: " + negativeAveragePercentage);
+            Console.WriteLine("Averege price difference: " + averagePrice);
+            Console.WriteLine("Average price percentage difference: " + averagePercentage);
+            Console.Read();
         }
 
         static void FillArticleList()
         {          
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
+            using (var db = new BetsyModel(ConnectionString))
             {
                 Console.Write(" Done\n");
                 Console.Write("Fetching foreign products...");
@@ -47,8 +67,8 @@ namespace Baximus
         {
             Console.WriteLine("----- STARTED COMPARING BIGGEST PRICE DIFFERENCE PER PRODUCT -----");
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
-            {
+            using (var db = new BetsyModel(ConnectionString))
+            {               
                 Console.Write(" Done\n");
 
                 Console.WriteLine("Started calculating biggest price differences...");
@@ -113,13 +133,15 @@ namespace Baximus
         {
             Console.WriteLine("----- STARTED COMPARING BIGGEST PRICE DIFFERENCE PER COUNTRY ------");
             Console.Write("Connecting to database...");
-            using (var db = new BetsyModel(Database.Instance.GetConnectionString()))
-            {              
+            using (var db = new BetsyModel(ConnectionString))
+            {
+                decimal count = 0;
                 Console.Write(" Done\n");
 
                 Console.WriteLine("Started calculating biggest price differences...");
                 foreach (article article in articleList)
                 {
+                    count++;
                     decimal dutchPrice = article.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id == 1).OrderByDescending(p => p.price).Reverse().FirstOrDefault().price;
 
                     foreach (product product in article.product)
@@ -130,6 +152,20 @@ namespace Baximus
                         if (country_id == 1) continue;
 
                         decimal difference = dutchPrice - product.price;
+                        decimal percentage = (decimal)100 - Math.Round((decimal.Divide(product.price, dutchPrice) * (decimal)100), 2);
+                        averagePrice = (averagePrice * (count - 1)) / count + difference / count;
+                        averagePercentage = (averagePercentage * (count - 1) / count) + percentage / count;
+                        if (difference > 0)
+                        {
+                            positiveAveragePrice = (positiveAveragePrice * (count - 1)) / count + difference / count;
+                            positiveAveragePercentage = (positiveAveragePercentage * (count - 1) / count) + percentage / count;
+                        }
+                        else if (difference < 0)
+                        {
+                            negativeAveragePrice = (negativeAveragePrice * (count - 1)) / count + difference / count;
+                            negativeAveragePercentage = (negativeAveragePercentage * (count - 1) / count) + percentage / count;
+                        }
+
                         if (db.country_price_differences.Any(c => c.article_id == article.id && c.country_id == country_id))
                         {
                             //There already exists a record for this country - check if the difference is bigger, if yes then add, else, just continue
@@ -141,6 +177,7 @@ namespace Baximus
                             }
 
                             entry.difference = difference;
+                            entry.difference_percentage = percentage;
                             entry.product_id = product.id;
                             entry.last_updated = System.DateTime.Now;
 
@@ -152,8 +189,9 @@ namespace Baximus
                             cpd.article_id = article.id;
                             cpd.country_id = country_id;
                             cpd.difference = difference;
+                            cpd.difference_percentage = percentage;
                             cpd.product_id = product.id;
-                            cpd.last_updated = System.DateTime.Now;
+                            cpd.last_updated = System.DateTime.Now;                            
 
                             db.country_price_differences.Add(cpd);
                             Console.WriteLine("Added article " + article.id + " with difference of " + difference);
@@ -178,12 +216,33 @@ namespace Baximus
 
             #region Loggers
             Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
-            #endregion 
+            #endregion           
+
+            #region ConnectionString
+            MySqlConnectionStringBuilder providerConnStrBuilder = new MySqlConnectionStringBuilder();
+            providerConnStrBuilder.AllowUserVariables = true;
+            providerConnStrBuilder.AllowZeroDateTime = true;
+            providerConnStrBuilder.ConvertZeroDateTime = true;
+            providerConnStrBuilder.MaximumPoolSize = 32767;
+            providerConnStrBuilder.Pooling = true;
+            providerConnStrBuilder.Database = Statics.settings["dbname"];
+            providerConnStrBuilder.Password = Statics.settings["dbpw"];
+            providerConnStrBuilder.Server = Statics.settings["dbsource"];
+            providerConnStrBuilder.UserID = Statics.settings["dbuid"];
+
+            EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
+            entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
+            entityConnStrBuilder.ProviderConnectionString = providerConnStrBuilder.ToString();
+            entityConnStrBuilder.Metadata = "res://*/BetsyContext.BetsyModel.csdl|res://*/BetsyContext.BetsyModel.ssdl|res://*/BetsyContext.BetsyModel.msl";
+
+            ConnectionString = entityConnStrBuilder.ConnectionString;
+            #endregion ConnectionString
 
             #region articleList
             articleList = new List<article>();
             FillArticleList();
             #endregion
+
         }
     }
 }

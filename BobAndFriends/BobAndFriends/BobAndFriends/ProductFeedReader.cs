@@ -11,8 +11,9 @@ using System.Threading;
 using System.Data;
 using System.Reflection;
 using BorderSource.Common;
+using BorderSource.Queue;
 
-namespace BobAndFriends
+namespace BobAndFriends.BobAndFriends
 {
     public class ProductFeedReader
     {
@@ -20,11 +21,6 @@ namespace BobAndFriends
         /// Standard path where productfeeds are stored.
         /// </summary>
         private string _productFeedPath;
-
-        /// <summary>
-        /// This flag is used to singal other threads that this thread is done.
-        /// </summary>
-        public static bool isDone;
 
         /// <summary>
         /// Constructor for creating ProductFeedReader object.
@@ -40,8 +36,7 @@ namespace BobAndFriends
         private void Initialize()
         {
             //Read settings
-            _productFeedPath = Statics.settings["productfeedpath"];
-            isDone = false;          
+            _productFeedPath = Statics.settings["productfeedpath"];         
         }
 
         /// <summary>
@@ -58,6 +53,8 @@ namespace BobAndFriends
             //To read all the data from the affiliates, we simply loop through all the classes which are a
             //subclass of AffiliateBase. These classes have references to their data file storage and contain
             //methods which contain the structure of the XML files.
+
+            List<Product> WrongProducts = new List<Product>();
 
             //Get all types in the assembly
             Type[] types = Assembly.GetExecutingAssembly().GetTypes();
@@ -77,27 +74,34 @@ namespace BobAndFriends
                         //Save some data to the logger for statistics.
                         //Statics.Logger.AddStats(products);
 
-                        //Push all the products to the queue so BOB can process them.
+                        //Push all the products to the Queue so BOB can process them.
                         foreach(Product p in products)
                         {
-                            while(ProductQueue.queue.Count > Statics.maxQueueSize)
+                            GeneralStatisticsMapper.Instance.Increment("Total read products");
+                            while(PackageQueue.Instance.Queue.Count > Statics.maxQueueSize)
                             {
-                                Thread.Sleep(10000);
+                                GeneralStatisticsMapper.Instance.Increment("FeedReader sleeptime (x5 minutes)");
+                                Thread.Sleep(300000);
                             }
                             if (!p.CleanupFields())
                             {
+                                GeneralStatisticsMapper.Instance.Increment("Products with wrong properties");
+                                WrongProducts.Add(p);
                                 continue;
                             }
-
-                            ProductQueue.Enqueue(p);
+                            GeneralStatisticsMapper.Instance.Increment("Enqueued products");                           
                         }
+                        foreach (Product wp in WrongProducts) products.Remove(wp);
+                        if (products.Count > 0) PackageQueue.Instance.Enqueue(Package.CreateNew(products));
+                        WrongProducts.Clear();
+                        products.Clear();
                     }
                 }
             }            
             Console.WriteLine("Done reading productfeeds.");
 
             //Flag the boolean to be true when finished.
-            isDone = true;
+            PackageQueue.Instance.InputStopped = true;
         }
     }
 }

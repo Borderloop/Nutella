@@ -78,9 +78,9 @@ namespace BetsyTest
             else
             {
                 //If any title synonym matches the title, up the occurences.
-                if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower() == Record.Title.ToLower())))
+                if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == Record.Title.ToLower().Trim())))
                 {
-                    title_synonym ts = _context.title_synonym.Where(innerTs => innerTs.title.ToLower() == Record.Title.ToLower()).FirstOrDefault();
+                    title_synonym ts = _context.title_synonym.Where(innerTs => innerTs.title.ToLower().Trim() == Record.Title.ToLower().Trim()).FirstOrDefault();
                     ts.occurrences++;
                     //_context.Entry(ts).State = EntityState.Modified;
                     if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
