@@ -28,6 +28,7 @@ namespace BorderSource.Common
             providerConnStrBuilder.ConvertZeroDateTime = true;
             providerConnStrBuilder.MaximumPoolSize = 32767;
             providerConnStrBuilder.Pooling = true;
+            providerConnStrBuilder.Port = 3306;
             providerConnStrBuilder.Database = Statics.settings["dbname"];
             providerConnStrBuilder.Password = Statics.settings["dbpw"];
             providerConnStrBuilder.Server = Statics.settings["dbsource"];

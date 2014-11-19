@@ -30,9 +30,9 @@ namespace BorderSource.Common
             foreach (KeyValuePair<string, IStatistics> pair in BorderSource.Common.TimeStatisticsMapper.Instance.map)
             {
                 base.WriteLine("Stats for \"" + pair.Key + "\":");
-                base.WriteLine("Average time: " + ((TimeStatistics)pair.Value).averageTime);
-                base.WriteLine("Max time: " + ((TimeStatistics)pair.Value).maxTime);
-                base.WriteLine("Min time: " + ((TimeStatistics)pair.Value).minTime);
+                base.Write("Average time: " + ((TimeStatistics)pair.Value).averageTime + "\t");
+                base.Write("Max time: " + ((TimeStatistics)pair.Value).maxTime + "\t");
+                base.Write("Min time: " + ((TimeStatistics)pair.Value).minTime + "\n");
                 base.WriteLine();
             }
             base.WriteLine();

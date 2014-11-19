@@ -32,7 +32,7 @@ namespace BobAndFriends.BobAndFriends
             int countryID = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()].FirstOrDefault().CountryId;
             Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(p.Webshop.ToLower().Trim());
             foreach (Product Record in p.products)
-            {      
+            {                
                 ProductValidation validation = new ProductValidation();
                 validation.Product = Record;
                 validation.CountryId = countryID;
@@ -48,7 +48,7 @@ namespace BobAndFriends.BobAndFriends
 
                 if (ProductExists)
                 {                                      
-                    ProductValidationQueue.Instance.Enqueue(validation);
+                    //ProductValidationQueue.Instance.Enqueue(validation);
                     continue;
                 }
                 
@@ -63,18 +63,16 @@ namespace BobAndFriends.BobAndFriends
 
                 validation.IsValidAsNewArticle = !(EanMatched || SkuMatched) && ProductIsValid && CategoryExists;
 
-                if(!(EanMatched || SkuMatched /*|| validation.IsValidAsNewArticle*/)) continue;
+                if(!(EanMatched || SkuMatched || validation.IsValidAsNewArticle)) continue;
 
                 validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
 
                 validation.CategoryId = validation.IsValidAsNewArticle ?
                                                     validation.CategorySynonymExists ?
                                                     Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].First().CategoryId : Lookup.CategoryLookup[Record.Category.ToLower().Trim()].First().Id 
-                                            : GetCategoryId(matchedArticleID);
+                                            : GetCategoryId(matchedArticleID);                
 
-                
-
-                ProductValidationQueue.Instance.Enqueue(validation);
+                //ProductValidationQueue.Instance.Enqueue(validation);
 
                 /*
                 int catId;
@@ -119,7 +117,102 @@ namespace BobAndFriends.BobAndFriends
                 GeneralStatisticsMapper.Instance.Increment("EAN matches founds");
              */
             }
-        }               
+        }
+
+        public void Process(Product Record)
+        {
+            int matchedArticleID;
+            int countryID = Lookup.WebshopLookup[Record.Webshop.ToLower().Trim()].FirstOrDefault().CountryId;            
+            ProductValidation validation = new ProductValidation();
+            validation.Product = Record;
+            validation.CountryId = countryID;
+
+            if (Record.Brand != "" && Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase))
+            {
+                string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
+                Record.Title = String.Concat(s).Trim();
+            }
+
+            bool ProductExists = (matchedArticleID = CheckIfProductExists(Record)) != -1;
+            validation.ArticleNumberOfExistingProduct = ProductExists ? matchedArticleID : -1;
+
+            if (ProductExists)
+            {
+                Console.WriteLine("Found existing product for: " + Record.Title.Truncate(10) + "...");               
+                //ProductValidationQueue.Instance.Enqueue(validation);
+                return;
+            }
+
+            bool SkuMatched = ((Record.SKU.Length >= 3) && (matchedArticleID = checkSKU(Record.SKU)) != -1);
+            validation.ArticleNumberOfSkuMatch = SkuMatched ? matchedArticleID : -1;
+
+            bool EanMatched = ((!Record.EAN.Equals("")) && (matchedArticleID = checkEAN(Record.EAN)) != -1);
+            validation.ArticleNumberOfEanMatch = EanMatched ? matchedArticleID : -1;
+
+            //bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0;
+            //bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category.ToLower().Trim()) || Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
+
+           // validation.IsValidAsNewArticle = !(EanMatched || SkuMatched) && ProductIsValid && CategoryExists;
+
+            if (!(EanMatched || SkuMatched /*|| validation.IsValidAsNewArticle*/)) return;
+
+            Console.WriteLine("Found SKU/EAN match or possible new product for: " + Record.Title.Truncate(5));
+
+            Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(Record.Webshop.ToLower().Trim());
+
+            validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
+
+            validation.CategoryId = validation.IsValidAsNewArticle ?
+                                                validation.CategorySynonymExists ?
+                                                Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].First().CategoryId : Lookup.CategoryLookup[Record.Category.ToLower().Trim()].First().Id
+                                        : GetCategoryId(matchedArticleID);
+
+            //ProductValidationQueue.Instance.Enqueue(validation);
+
+            /*
+            int catId;
+            bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0;
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Category lookup");
+            if(Lookup.CategoryLookup.Contains(Record.Category) && ProductIsValid)
+            {
+                TimeStatisticsMapper.Instance.StopTimeMeasure("Category lookup");
+                TimeStatisticsMapper.Instance.StartTimeMeasure("SaveNewArticle method");
+                SaveNewArticle(Record, Lookup.CategoryLookup[Record.Category].FirstOrDefault().Id);
+                TimeStatisticsMapper.Instance.StopTimeMeasure("SaveNewArticle method");
+                GeneralStatisticsMapper.Instance.Increment("New article saves from Borderloop categories");
+                return;
+            }
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Category lookup");
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Category synonym lookup");
+            if((catId = checkCategorySynonym(Record.Category, Record.Webshop)) != -1 && ProductIsValid)
+            {
+                TimeStatisticsMapper.Instance.StopTimeMeasure("Category synonym lookup");
+                TimeStatisticsMapper.Instance.StartTimeMeasure("SaveNewArticle method");
+                SaveNewArticle(Record, catId);
+                TimeStatisticsMapper.Instance.StopTimeMeasure("SaveNewArticle method");
+                GeneralStatisticsMapper.Instance.Increment("New article saves from category synonyms");
+                return;
+            }
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Category synonym lookup");
+            */
+
+            /*
+                TimeStatisticsMapper.Instance.StartTimeMeasure("Unique ID check");
+                TimeStatisticsMapper.Instance.StopTimeMeasure("Unique ID check");
+                GeneralStatisticsMapper.Instance.Increment("Existing products found");
+                Console.WriteLine(Record.Webshop + ": existing product for " + Record.Title.Truncate(10));
+                TimeStatisticsMapper.Instance.StartTimeMeasure("SKU check");
+                TimeStatisticsMapper.Instance.StopTimeMeasure("SKU check");
+                GeneralStatisticsMapper.Instance.Increment("Unmatched products");
+                GeneralStatisticsMapper.Instance.Increment("SKU matches found");
+                TimeStatisticsMapper.Instance.StartTimeMeasure("Category check");
+                TimeStatisticsMapper.Instance.StopTimeMeasure("Category check");
+                TimeStatisticsMapper.Instance.StopTimeMeasure("EAN check");
+                TimeStatisticsMapper.Instance.StartTimeMeasure("EAN check");
+                GeneralStatisticsMapper.Instance.Increment("EAN matches founds");
+             */
+
+        }        
 
         private int CheckIfProductExists(Product record)
         {

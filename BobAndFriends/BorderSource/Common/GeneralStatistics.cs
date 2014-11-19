@@ -8,7 +8,7 @@ namespace BorderSource.Common
 {
     public class GeneralStatistics : IStatistics
     {
-        public int count;
+        public volatile int count;
         private string _Description = "General statistics";
         public string Description { get { return _Description; } }
     }

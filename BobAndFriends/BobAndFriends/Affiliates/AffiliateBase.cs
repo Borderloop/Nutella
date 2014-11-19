@@ -10,7 +10,7 @@ namespace BobAndFriends
 {
     public abstract class AffiliateBase
     {
-        protected int PackageSize = 100;
+        protected int PackageSize = 25;
 
         /// <summary>
         /// The name of the affiliate

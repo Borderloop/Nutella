@@ -158,8 +158,10 @@
     <Compile Include="Common\Lookup.cs" />
     <Compile Include="Common\Package.cs" />
     <Compile Include="Common\Product.cs" />
+    <Compile Include="Common\ProductFilter.cs" />
+    <Compile Include="Common\SimpleThreadPool.cs" />
     <Compile Include="Queue\IQueue.cs" />
-    <Compile Include="Queue\ProductQueue.cs" />
+    <Compile Include="Queue\PackageQueue.cs" />
     <Compile Include="Common\ProductValidation.cs" />
     <Compile Include="Common\PropertyStatistics.cs" />
     <Compile Include="Common\PropertyStatisticsMapper.cs" />
@@ -171,6 +173,7 @@
     <Compile Include="Common\Util.cs" />
     <Compile Include="Common\XmlValueReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queue\ProductQueue.cs" />
     <Compile Include="Queue\ProductValidationQueue.cs" />
     <Compile Include="Queue\SingletonQueue.cs" />
   </ItemGroup>

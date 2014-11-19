@@ -80,12 +80,13 @@ namespace BobAndFriends.BobAndFriends
 
                 if(validation.IsValidAsNewArticle)
                 {
-                    //BobBox.SaveNewArticle(validation.Product, validation.CountryId, validation.CategoryId);
+                    BobBox.SaveNewArticle(validation.Product, validation.CountryId, validation.CategoryId);
                     goto Next;
                 }
 
             Next:
                 {
+                    GeneralStatisticsMapper.Instance.Increment("Products processed");
                     validation = ProductValidationQueue.Instance.Dequeue();
                     Count++;                  
                 }
