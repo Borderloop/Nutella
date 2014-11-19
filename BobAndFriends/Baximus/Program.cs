@@ -177,7 +177,7 @@ namespace Baximus
                             }
 
                             entry.difference = difference;
-                            entry.difference_percentage = percentage;
+                            //entry.difference_percentage = percentage;
                             entry.product_id = product.id;
                             entry.last_updated = System.DateTime.Now;
 
@@ -189,7 +189,7 @@ namespace Baximus
                             cpd.article_id = article.id;
                             cpd.country_id = country_id;
                             cpd.difference = difference;
-                            cpd.difference_percentage = percentage;
+                            //cpd.difference_percentage = percentage;
                             cpd.product_id = product.id;
                             cpd.last_updated = System.DateTime.Now;                            
 

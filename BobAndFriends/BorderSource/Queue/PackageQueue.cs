@@ -74,7 +74,8 @@ namespace BorderSource.Queue
                     {
                         return null;
                     }
-                    Monitor.Wait(QueueLock, 1000);
+                    //Console.WriteLine("PackageQueue starved.");
+                    Monitor.Wait(QueueLock, 3000);
                 }
                 return Queue.Dequeue();
             }

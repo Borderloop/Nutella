@@ -36,7 +36,7 @@ namespace BobAndFriends
 
         public static bool Done = false;
 
-        public const int MAX_THREADS = 7;
+        public const int MAX_THREADS = 400;
 
         #region Trap application termination
         [DllImport("Kernel32")]
@@ -103,7 +103,7 @@ namespace BobAndFriends
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
             validator = new Thread(new ThreadStart(ProductDequeuer));
-            //consumer = new Thread(new ThreadStart(StartBobBoxManager));
+            consumer = new Thread(new ThreadStart(StartBobBoxManager));
 
             //producer.Priority = ThreadPriority.BelowNormal;
             //consumer.Priority = ThreadPriority.BelowNormal;
@@ -111,7 +111,7 @@ namespace BobAndFriends
             //Start threads
             producer.Start();
             validator.Start();
-            //consumer.Start();
+            consumer.Start();
 
             /*
             while(!Done)
@@ -128,111 +128,74 @@ namespace BobAndFriends
 
         static void ProductDequeuer()
         {
-            BOB bob = new BOB();
-            Product p;
-
-            while (true)
-            {
-                p = ProductQueue.Instance.Dequeue();
-
-                if(ProductQueue.Instance.InputStopped && p == null)
-                {
-                    break;
-                }
-                bob.Process(p);               
-            }
-
-            using (Logger logger = new Logger(Statics.LoggerPath))
-            {
-                logger.WriteStatistics();
-            }
-            Done = true;
-            //pool.Dispose();
-            Console.WriteLine("Total time: " + (DateTime.Now - StartTime).ToString());
-            Console.WriteLine("Press ENTER to exit.");
-            Console.Read();
-
-            #region Bob 3.0
-            /*
+          
             Package p = PackageQueue.Instance.Dequeue();
-            List<Package> WebshopPackages = new List<Package>();
-            string CurrentWebshop = p.Webshop;
+            List<Package> Packages = new List<Package>();
             DateTime StartRunning = new DateTime();
-            //SimpleThreadPool pool = new SimpleThreadPool(MAX_THREADS);
+            List<Action> actions = new List<Action>();
+            int count = 0;
 
             while (p != null)
             {
-                CurrentWebshop = p.Webshop;  
-                StartRunning = DateTime.Now;
-                Console.WriteLine("Started reading packages from " + CurrentWebshop +  " at " + StartRunning.ToString("hh:mm:ss"));           
-                while(CurrentWebshop == p.Webshop)
+                count++;
+                
+                StartRunning = DateTime.Now;     
+                while(Packages.Count < MAX_THREADS)
                 {
-                    WebshopPackages.Add(p);
+                    Packages.Add(p);
                     GeneralStatisticsMapper.Instance.Increment("Total amount of products processed", p.products.Count);
                     p = PackageQueue.Instance.Dequeue();
                     if (p == null) break;                   
                 }
 
-                /*
-                var threads = new Thread[WebshopPackages.Count];
+                Console.WriteLine("Started processing group " + count + " consisting of " + Packages.Count + " packages");
 
-                for (int i = 0; i < threads.Length; i++)
-                {
-                    Package package = WebshopPackages[i];
-                    threads[i] = new Thread(new ThreadStart(() => StartAnotherBob(package)));
-                }
-                
-                
-                Console.WriteLine("Total amount of packages for " + WebshopPackages.First().Webshop + ": " + WebshopPackages.Count);
-                var actions = new Action[WebshopPackages.Count];
-
-                for (int i = 0; i < actions.Length; i++)
+                for (int i = 0; i < Packages.Count; i++)
                 {
                     int copy = i;
-                    Package package = WebshopPackages[i];
-                    actions[copy] = new Action(() => StartAnotherBob(package));
+                    Package package = Packages[i];
+                    actions.Add(new Action(() => StartAnotherBob(package)));
                 }
                  
-                /*
-                foreach(Action action in actions)
-                {
-                    pool.QueueTask(action);
-                }
+                
                 //TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
-                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS }, actions);
+                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS }, actions.ToArray());
                 //TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
                 
-                Console.WriteLine("Time spent reading packages from " + CurrentWebshop + ": " + (DateTime.Now - StartRunning));
+                Console.WriteLine("Time spent reading packages from group " + count + ": " + (DateTime.Now - StartRunning));
                 Console.WriteLine("Total time since start: " + (DateTime.Now - StartTime));
               
-                WebshopPackages.Clear();
+                Packages.Clear();
+                actions.Clear();
             }
             ProductValidationQueue.Instance.InputStopped = true;
-
-            TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
-            using (Logger logger = new Logger(Statics.LoggerPath))
-            {
-                logger.WriteStatistics();
-            }
-            Done = true;
-            //pool.Dispose();
-            Console.WriteLine("Press ENTER to exit.");
-            Console.Read();
 
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
             //bob.RerunResidue();
 
             //Console.WriteLine("Validation is done.");
             //Console.WriteLine("ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
-             */
-            #endregion
-
+            
         }
 
         static void StartAnotherBob(Package p)
         {
             BOB bob = new BOB();
-            bob.Process(p);
+            try
+            {
+                bob.Process(p);
+            }
+            catch (OutOfMemoryException)
+            {
+                Console.WriteLine("Caught OutOfMemoryException, trying GC.Collect()");
+                GC.Collect();
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("duplicate"))
+                    Console.WriteLine("Threw a duplicate error.");
+                else Console.WriteLine(e.ToString());
+            }
         }
 
         static void ProductFeedReader()
