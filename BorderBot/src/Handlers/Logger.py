@@ -28,8 +28,6 @@ def logRequest(websiteName, reqTime, url, httpResponse, respTime, contentType):
 
     requestLogger = logging.getLogger(websiteName)
     requestLogger.setLevel(logging.INFO)
-    #logging.basicConfig(level=logging.INFO)
-    #logging.getLogger("requests").setLevel(logging.WARNING)
 
     if not requestLogger.handlers:
         handler = logging.FileHandler(directory + websiteName + '.txt')
@@ -45,6 +43,27 @@ def logRequest(websiteName, reqTime, url, httpResponse, respTime, contentType):
     requestLogger.info('Response time: ' + str(respTime))
     requestLogger.info('Content-Type: ' + contentType)
     requestLogger.info('')
+
+
+def logError(websiteName, reqTime, url, httpResponse, error):
+    directory = checkDir()
+
+    errorLogger = logging.getLogger(websiteName + 'Error')
+    errorLogger.setLevel(logging.ERROR)
+
+    if not errorLogger.handlers:
+        handler = logging.FileHandler(directory + websiteName + 'Error.txt')
+        handler.setLevel(logging.ERROR)
+
+        formatter = logging.Formatter('%(message)s')
+        handler.setFormatter(formatter)
+        errorLogger.addHandler(handler)
+
+        errorLogger.error('Time of request: ' + str(reqTime))
+        errorLogger.error('Requested URL: ' + url)
+        errorLogger.error('HTTP Response: ' + str(httpResponse))
+        errorLogger.error('Error: ' + str(error))
+        errorLogger.error('')
 
 
 # This procedure is called to log an executed update or insert query.

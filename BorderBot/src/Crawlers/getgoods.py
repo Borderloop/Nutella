@@ -39,22 +39,16 @@ class Crawler():
         print 'Crawling ' + self.url
         self.start_time = time.time()
 
-        try:
-            reqTime = strftime("%H:%M:%S")
-            r = requests.get(self.url, headers=self.headers)
-        except (requests.ConnectionError, ChunkedEncodingError) as e:
-            print e
-            return [[self.url], (time.time() - self.start_time) * 2]
+        r = self.getRequest()
 
-        #Log the request details
-        Logger.logRequest(self.websiteName, reqTime, self.url, r.status_code, r.elapsed.total_seconds(), r.headers['content-type'])
+        # If the returned value is a list, something went wrong.
+        if isinstance(r, list):
+            return r
 
         data = r.text
 
         self.soup = BeautifulSoup(data, 'html.parser')
         self.checkPage()
-
-        print 'Total time: ' + str(time.time() - self.start_time)
 
         return [self.result, time.time() - self.start_time]
 
@@ -63,6 +57,28 @@ class Crawler():
         parser = SafeConfigParser()
         parser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
         self.agent = parser.get('General', 'agent')
+
+    # This procedure makes the request to the server and checks if it's a valid response.
+    def getRequest(self):
+        try:
+            reqTime = strftime("%H:%M:%S")
+            r = requests.get(self.url, headers=self.headers, timeout=7)
+
+            #Log the request details
+            Logger.logRequest(self.websiteName, reqTime, self.url, r.status_code, r.elapsed.total_seconds(), r.headers['content-type'])
+
+        except (requests.ConnectionError, ChunkedEncodingError, requests.exceptions.ReadTimeout) as e:
+            Logger.logError(self.websiteName, reqTime, self.url, r.status_code, e)
+            return [[self.url], (time.time() - self.start_time)]
+
+        # Check for bad response.
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            Logger.logError(self.websiteName, reqTime, self.url, r.status_code, e)
+            return [[self.url], (time.time() - self.start_time) * 5]
+
+        return r
 
     # Procedure to check which page of the website is being crawled
     def checkPage(self):
@@ -83,14 +99,11 @@ class Crawler():
                 if identifier == 'products' and self.url.find('?n=') == -1:
                     self.url += '?n=48'
 
-                    try:
-                        reqTime = strftime("%H:%M:%S")
-                        r = requests.get(self.url, headers=self.headers)
-                    except (requests.ConnectionError, ChunkedEncodingError):
-                        return [[self.url], (time.time() - self.start_time) * 2]
+                    r = self.getRequest()
 
-                    #Log the request details
-                    Logger.logRequest(self.websiteName, reqTime, self.url, r.status_code, r.elapsed.total_seconds(), r.headers['content-type'])
+                    # If the returned value is a list, something went wrong.
+                    if isinstance(r, list):
+                        return r
 
                     data = r.text
                     self.soup = BeautifulSoup(data, 'html.parser')
