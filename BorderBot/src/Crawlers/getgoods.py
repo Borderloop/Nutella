@@ -182,23 +182,7 @@ class Parser():
                     self.db.updateArticle(productId, self.website, price, availability)
                     self.db.closeConnection()
 
-        # Check if there's a next page and if so, add it to the urls.
-        totalProducts = self.soup.find('div', {'class': 'article_page_and_count'}).text
-        totalProducts = totalProducts[totalProducts.find('von')+3:totalProducts.find('Produkte')-1].strip()
-        totalPages = int(math.ceil(int(totalProducts) / 48.0))
-
-        try:
-            currentPage = self.soup.find('a', {'class': 'navi on'}).text
-
-            if self.url.find('p=') == -1:
-                self.urls.append(self.url + 'p=' + str(int(currentPage) + 1))
-            else:
-                currentPage = self.url[self.url.find('p=')+2:]
-                if int(currentPage) < int(totalPages):
-                    url = self.url[:self.url.rfind('=')+1] + str(int(currentPage) + 1)
-                    self.urls.append(url)
-        except AttributeError:  # Only one page for this category.
-            pass
+        self.checkForNextPage()
 
     # This procedure parses the product page. If it gets here it means it's a new product,
     # so it always saves the product which is parsed here to the database.
@@ -254,3 +238,22 @@ class Parser():
         price = price.strip().replace('.', '').replace(',', '.')
         non_decimal = re.compile(r'[^\d.]+')
         return non_decimal.sub('', price)
+
+    # Procedure to check if there's a next page and if so, add it to the urls.
+    def checkForNextPage(self):
+        totalProducts = self.soup.find('div', {'class': 'article_page_and_count'}).text
+        totalProducts = totalProducts[totalProducts.find('von')+3:totalProducts.find('Produkte')-1].strip()
+        totalPages = int(math.ceil(int(totalProducts) / 48.0))
+
+        try:
+            currentPage = self.soup.find('a', {'class': 'navi on'}).text
+
+            if self.url.find('p=') == -1:
+                self.urls.append(self.url + '&p=' + str(int(currentPage) + 1))
+            else:
+                currentPage = self.url[self.url.find('p=')+2:]
+                if int(currentPage) < int(totalPages):
+                    url = self.url[:self.url.rfind('=')+1] + str(int(currentPage) + 1)
+                    self.urls.append(url)
+        except AttributeError:  # Only one page for this category.
+            pass
