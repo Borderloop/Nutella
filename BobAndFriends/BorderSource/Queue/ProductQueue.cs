@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections;
 using System.Threading;
 using BorderSource.Common;
 
-
 namespace BorderSource.Queue
 {
-    public class PackageQueue 
+    public class ProductQueue
     {
         private static readonly object QueueLock = new object();
 
         private static readonly object InstanceLock = new object();
 
-        private static PackageQueue _Instance;
+        private static ProductQueue _Instance;
 
-        public static PackageQueue Instance
+        public static ProductQueue Instance
         {
             get
             {
@@ -28,7 +26,7 @@ namespace BorderSource.Queue
                     {
                         if (_Instance == null)
                         {
-                            _Instance = new PackageQueue();
+                            _Instance = new ProductQueue();
                         }
                     }
                 }
@@ -36,8 +34,8 @@ namespace BorderSource.Queue
             }
         }
 
-        private Queue<Package> _Queue = new Queue<Package>();
-        public Queue<Package> Queue
+        private Queue<Product> _Queue = new Queue<Product>();
+        public Queue<Product> Queue
         {
             get
             {
@@ -51,7 +49,7 @@ namespace BorderSource.Queue
         /// This method will put a product in the Queue.
         /// </summary>
         /// <param name="p">The product to be enqueued.</param>
-        public void Enqueue(Package t)
+        public void Enqueue(Product t)
         {
             lock (QueueLock)
             {
@@ -64,7 +62,7 @@ namespace BorderSource.Queue
         /// This method will take a product out of the Queue
         /// </summary>
         /// <returns></returns>
-        public Package Dequeue()
+        public Product Dequeue()
         {
             lock (QueueLock)
             {
@@ -74,7 +72,7 @@ namespace BorderSource.Queue
                     {
                         return null;
                     }
-                    Monitor.Wait(QueueLock, 200);
+                    Monitor.Wait(QueueLock, 1000);
                 }
                 return Queue.Dequeue();
             }

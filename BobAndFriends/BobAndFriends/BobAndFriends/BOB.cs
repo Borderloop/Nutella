@@ -32,7 +32,7 @@ namespace BobAndFriends.BobAndFriends
             int countryID = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()].FirstOrDefault().CountryId;
             Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(p.Webshop.ToLower().Trim());
             foreach (Product Record in p.products)
-            {      
+            {                
                 ProductValidation validation = new ProductValidation();
                 validation.Product = Record;
                 validation.CountryId = countryID;
@@ -63,16 +63,14 @@ namespace BobAndFriends.BobAndFriends
 
                 validation.IsValidAsNewArticle = !(EanMatched || SkuMatched) && ProductIsValid && CategoryExists;
 
-                if(!(EanMatched || SkuMatched /*|| validation.IsValidAsNewArticle*/)) continue;
+                if(!(EanMatched || SkuMatched || validation.IsValidAsNewArticle)) continue;
 
                 validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
 
                 validation.CategoryId = validation.IsValidAsNewArticle ?
                                                     validation.CategorySynonymExists ?
                                                     Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].First().CategoryId : Lookup.CategoryLookup[Record.Category.ToLower().Trim()].First().Id 
-                                            : GetCategoryId(matchedArticleID);
-
-                
+                                            : GetCategoryId(matchedArticleID);                
 
                 ProductValidationQueue.Instance.Enqueue(validation);
 
@@ -119,7 +117,7 @@ namespace BobAndFriends.BobAndFriends
                 GeneralStatisticsMapper.Instance.Increment("EAN matches founds");
              */
             }
-        }               
+        }       
 
         private int CheckIfProductExists(Product record)
         {

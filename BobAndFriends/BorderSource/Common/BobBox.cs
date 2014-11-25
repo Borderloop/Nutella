@@ -295,11 +295,10 @@ namespace BorderSource.Common
                 last_modified = System.DateTime.Now
             };
 
-            var original = context.product.Where(p => p.article_id == matchedArticleId && p.webshop_url.ToLower().Trim() == Record.Webshop.ToLower().Trim()).FirstOrDefault();          
+            var original = context.product.Where(p => p.article_id == matchedArticleId && p.webshop_url == Record.Webshop).FirstOrDefault();          
             if (original != null)
             {
                 UpdatedProduct.id = original.id;
-                UpdatedProduct.popularity = original.popularity;
                 context.product.Attach(original);
                 context.Entry(original).CurrentValues.SetValues(UpdatedProduct);
             }
@@ -307,53 +306,6 @@ namespace BorderSource.Common
             {
                 context.product.Add(UpdatedProduct);
             }
-        }
-
-        [Obsolete]
-        public void UpdateProductData(product productData, Product Record)
-        {
-            /*
-            //Alter updated product
-            foreach (PropertyInfo p in productData.GetType().GetProperties())
-            {
-                //Loop over things like "article_id", "id", etc.
-                if (!Statics.TwoWayDBProductToBobProductMapping.ContainsKey(p.Name)) continue;
-
-                object recordValue = GetPropValue(Record, Statics.TwoWayDBProductToBobProductMapping[p.Name]);
-
-                object dbValue = p.GetValue(productData, null);
-
-                if (dbValue.GetType().Equals(typeof(System.DateTime)))
-                {
-                    DateTime correctValue;
-                    if (!(DateTime.TryParse((string)recordValue, out correctValue))) { continue; }
-                    else if (!correctValue.Equals(dbValue))
-                    {
-                        p.SetValue(productData, correctValue);
-                        entry.Property(p.Name).IsModified = true;
-                    }
-
-                }
-                else if (dbValue.GetType().Equals(typeof(System.Decimal)))
-                {
-                    decimal correctValue;
-                    if (!(decimal.TryParse((string)recordValue, NumberStyles.Any, CultureInfo.InvariantCulture, out correctValue))) { continue; }
-                    else if (!correctValue.Equals(dbValue))
-                    {
-                        p.SetValue(productData, correctValue);
-                        entry.Property(p.Name).IsModified = true;
-                    }
-                }
-                else
-                {
-                    if (!recordValue.Equals(dbValue))
-                    {
-                        p.SetValue(productData, recordValue);
-                        entry.Property(p.Name).IsModified = true;
-                    }
-                }
-            }
-             */
         }
 
         /// <summary>
@@ -364,7 +316,11 @@ namespace BorderSource.Common
         /// <param name="web_url">Webshop</param>
         public void InsertIntoCatSynonyms(int catid, string description, string web_url)
         {
-            context.category_synonym.Add(new category_synonym { category_id = catid, description = description, web_url = web_url });
+            var original = context.category_synonym.Where(cs => cs.category_id == catid && cs.description == description && cs.web_url == web_url).FirstOrDefault();
+            if (original == null)
+            {
+                context.category_synonym.Add(new category_synonym { category_id = catid, description = description, web_url = web_url });
+            }
         }
 
         /// <summary>
@@ -450,6 +406,7 @@ namespace BorderSource.Common
                 context.Dispose();
                 context = new BetsyModel(ConnectionString);
             }
+                
             catch (DbEntityValidationException e)
             {
                 foreach (var eve in e.EntityValidationErrors)
@@ -473,6 +430,9 @@ namespace BorderSource.Common
                 var objContext = ((IObjectContextAdapter)context).ObjectContext;
                 objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
                 Commit();
+            }catch(Exception e)
+            {
+                if (e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
             }
 
         }

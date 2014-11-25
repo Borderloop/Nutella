@@ -76,7 +76,7 @@ namespace Betric
         public void Connect(string ip, string db, string uid, string pw)
         {
             //Make the connection
-            _conn = new MySqlConnection(@"Data Source=" + ip + ";Database=" + db + ";Uid=" + uid + ";Pwd=" + pw + ";Allow User Variables=True");
+            _conn = new MySqlConnection(@"Data Source=" + ip + ";Port=3307;Database=" + db + ";Uid=" + uid + ";Pwd=" + pw + ";Allow User Variables=True");
             //Open the connection
             _conn.Open();
         }

@@ -43,30 +43,30 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
-      <assemblyIdentity name="MySql.Data" version="6.8.3.0" publicKeyToken="C5687FC88969C44D" language="neutral" processorArchitecture="msil" />
+      <assemblyIdentity name="MySql.Data" version="6.9.3.0" publicKeyToken="C5687FC88969C44D" language="neutral" processorArchitecture="msil" />
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="45568">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="46592">
       <assemblyIdentity name="BobAndFriends" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>j83ik69Y76Lj/Gb3eGDHLomtmohuihaPqKecMj9z64c=</dsig:DigestValue>
+        <dsig:DigestValue>8QSLQ9+2yj6lmFb8He3nA/yfiDBn3K7vRDX6QKtFbyk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="185856">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="189440">
       <assemblyIdentity name="BorderSource" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>WWsZYzFbBEgUWqF0jvjaOtKEV0R9xjx341rKVkm1ZnA=</dsig:DigestValue>
+        <dsig:DigestValue>JivclUsOcMnMP5DtWAjxB6voprG3CnvFnp2Ajo7KxzU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -95,24 +95,24 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MySql.Data.Entity.EF6.dll" size="324608">
-      <assemblyIdentity name="MySql.Data.Entity.EF6" version="6.8.3.0" publicKeyToken="C5687FC88969C44D" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MySql.Data.Entity.EF6.dll" size="367104">
+      <assemblyIdentity name="MySql.Data.Entity.EF6" version="6.9.3.0" publicKeyToken="C5687FC88969C44D" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>27Zk1a9VxHLh+YikC5NcxmJ/M4YyEs1FQjfp3Z7csag=</dsig:DigestValue>
+        <dsig:DigestValue>drpwC/xbU3gR1WPx3PvU32mCBjOXdbmHmCat4OMZbx4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="BobAndFriends.exe.config" size="1982">
+  <file name="BobAndFriends.exe.config" size="2387">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>Lv+5QX0ZCh7CYghvksATwtMoQTFIZp3IhFl4ahlKMCQ=</dsig:DigestValue>
+      <dsig:DigestValue>6VGrjMLesbpiHhFF1GuV3yiyBQ9CN37VoEIh4nkEpEk=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

@@ -56,7 +56,7 @@ namespace Betric
             {
                 DateTime fromTime = FromTime.Value;
                 DateTime untilTime = UntilTime.Value;
-                queries.Add("SELECT product_id AS id FROM product_clicks WHERE datetime >= @FROMTIME AND datetime <= @UNTILTIME");
+                queries.Add("SELECT product_id AS id FROM product_clicks AS timefilter WHERE datetime >= @FROMTIME AND datetime <= @UNTILTIME");
                 parameters.Add(new Param<DateTime> { Name = "@FROMTIME", Value = fromTime });
                 parameters.Add(new Param<DateTime> { Name = "@UNTILTIME", Value = untilTime });
                 DateFilterLabel.Text = fromTime.ToShortDateString() + " tot " + untilTime.ToShortDateString();
@@ -82,7 +82,7 @@ namespace Betric
                     }
                 }
                 query += ")";
-                queries.Add("SELECT product_id AS id FROM product_clicks WHERE product_id IN (SELECT id FROM product WHERE article_id IN (" + query + "))");
+                queries.Add("SELECT product_id AS id FROM product_clicks AS categoryfilter WHERE product_id IN (SELECT id FROM product WHERE article_id IN (" + query + "))");
 
                 string categoryPath = cat1Text;
                 if (cat2Text != "") categoryPath += " > " + cat2Text;
@@ -109,7 +109,7 @@ namespace Betric
                     MaximumPriceText.Text = maxPrice.ToString();
                     Refresh();
                 }
-                queries.Add("SELECT product_id AS id FROM product_clicks WHERE price >= @MINPRICE AND price <= @MAXPRICE");
+                queries.Add("SELECT product_id AS id FROM product_clicks AS pricefilter WHERE price >= @MINPRICE AND price <= @MAXPRICE");
                 parameters.Add(new Param<decimal> { Name = "@MINPRICE", Value = minPrice });
                 parameters.Add(new Param<decimal> { Name = "@MAXPRICE", Value = maxPrice });
                 string priceFilterText = "";
@@ -137,7 +137,7 @@ namespace Betric
                         MaximumPriceDifferenceText.Text = maxPriceDif.ToString();
                         Refresh();
                     }
-                    queries.Add("SELECT product_id AS id FROM country_price_differences WHERE difference >= @MINDIFFERENCE AND difference <= @MAXDIFFERENCE");
+                    queries.Add("SELECT product_id AS id FROM product_clicks AS pricedifferencefilter WHERE difference >= @MINDIFFERENCE AND difference <= @MAXDIFFERENCE");
                     parameters.Add(new Param<decimal> { Name = "@MINDIFFERENCE", Value = minPriceDif });
                     parameters.Add(new Param<decimal> { Name = "@MAXDIFFERENCE", Value = maxPriceDif });
                     string priceDifFilterText = "";
@@ -161,7 +161,7 @@ namespace Betric
                         MaximumPriceDifferenceText.Text = maxPriceDif.ToString();
                         Refresh();
                     }
-                    queries.Add("SELECT product_id AS id FROM country_price_differences WHERE difference_percentage >= @MINDIFFERENCEPERC AND difference <= @MAXDIFFERENCEPERC");
+                    queries.Add("SELECT product_id AS id FROM product_clicks AS pricedifferencefilter WHERE difference_percentage >= @MINDIFFERENCEPERC AND difference <= @MAXDIFFERENCEPERC");
                     parameters.Add(new Param<decimal> { Name = "@MINDIFFERENCEPERC", Value = minPriceDif });
                     parameters.Add(new Param<decimal> { Name = "@MAXDIFFERENCEPERC", Value = maxPriceDif });
                     string priceDifFilterText = "";
@@ -183,7 +183,7 @@ namespace Betric
                     MessageBox.Show("Kies binnenland of buitenland of zet landenfilter uit.");
                     return;
                 }
-                queries.Add("SELECT product_id AS id FROM product_clicks " 
+                queries.Add("SELECT product_id AS id FROM product_clicks AS countryfilter " 
                             + "WHERE position = 1 AND product_id IN " 
                                 + "(SELECT product.id FROM product " 
                                 + "INNER JOIN webshop ON webshop.url = product.webshop_url " 
@@ -212,13 +212,12 @@ namespace Betric
                     productQueryBuilder.Append(" UNION ALL (" + query + ")");    
             }
 
-            string finalQuery = "SELECT product_clicks.clicks, product_clicks.position, country_price_differences.difference, country_price_differences.difference_percentage, webshop.country_id "
+            string finalQuery = "SELECT product_clicks.clicks, product_clicks.position, webshop.country_id, product_clicks.difference, product_clicks.difference_percentage "
                                 + "FROM product "
-                                + "INNER JOIN country_price_differences ON country_price_differences.product_id = product.id "
                                 + "INNER JOIN product_clicks ON product_clicks.product_id = product.id "
                                 + "INNER JOIN webshop ON webshop.url = product.webshop_url "
-                                + "WHERE product_clicks.product_id IN (" + productQueryBuilder.ToString() + ") " 
-                                + "GROUP BY product_clicks.product_id HAVING COUNT(*) > " + queries.Count;
+                                + "WHERE product_clicks.product_id IN (SELECT id FROM (" + productQueryBuilder.ToString() + ") AS filtered "
+                                + "GROUP BY id HAVING COUNT(*) >= " + queries.Count + ")";
             DataTable data = Database.Instance.Read(finalQuery, parameters);
             if (data == null || data.Rows.Count == 0)
             {
@@ -226,6 +225,7 @@ namespace Betric
                 return;
             }
             CalculateMetrics(data);
+            tabControl1.SelectedIndex = 1;
         }
 
         private void CategoryLevel1_SelectedIndexChanged(object sender, EventArgs e)
@@ -409,24 +409,40 @@ namespace Betric
         private void CalculateMetrics(DataTable data)
         {
             IEnumerable<DataRow> rowCollection = data.Rows.OfType<DataRow>();
-            int DomesticClickAmount = rowCollection.Where(d => (short)d["country_id"] == 1).ToList().Count;
-            int ForeignClickAmount = rowCollection.Where(d => (short)d["country_id"] != 1).ToList().Count;
+            int DomesticClickAmount =0;
+            foreach (DataRow row in rowCollection.Where(d => (short)d["country_id"] == 1)) DomesticClickAmount += (int)row["clicks"];
+            int ForeignClickAmount = 0;
+            foreach (DataRow row in rowCollection.Where(d => (short)d["country_id"] != 1)) ForeignClickAmount += (int)row["clicks"];
             int TotalClickAmount = DomesticClickAmount + ForeignClickAmount;
             DomesticClickAmountLabel.Text = DomesticClickAmount.ToString();
             ForeignClickAmountLabel.Text = ForeignClickAmount.ToString();
             TotalClickAmountLabel.Text = TotalClickAmount.ToString();
 
-            DomesticClickAmountPercentageLabel.Text = (((double)DomesticClickAmount / (double)TotalClickAmount) * (double)100).ToString();
-            ForeignClickAmountPercenageLabel.Text = (((double)ForeignClickAmount / (double)TotalClickAmount) * (double)100).ToString();
+            DomesticClickAmountPercentageLabel.Text = Math.Round((((double)DomesticClickAmount / (double)TotalClickAmount) * (double)100),2).ToString() + "%";
+            ForeignClickAmountPercenageLabel.Text = Math.Round((((double)ForeignClickAmount / (double)TotalClickAmount) * (double)100),2).ToString() + "%";
+            
+            int PositionOneClickAmount = 0;
+            int PositionTwoClickAmount = 0;
+            int PositionThreeClickAmount = 0;
+            int PositionFourClickAmount = 0;
+            int PositionFiveClickAmount = 0;
+            int RemainingClickAmount = 0;
 
-            int PositionOneClickAmount = rowCollection.Where(d => (int)d["position"] == 1).ToList().Count;
-            int PositionTwoClickAmount = rowCollection.Where(d => (int)d["position"] == 2).ToList().Count;
-            int PositionThreeClickAmount = rowCollection.Where(d => (int)d["position"] == 3).ToList().Count;
-            int PositionFourClickAmount = rowCollection.Where(d => (int)d["position"] == 4).ToList().Count;
-            int PositionFiveClickAmount = rowCollection.Where(d => (int)d["position"] == 5).ToList().Count;
-            int RemainingClickAmount = rowCollection.Where(d => (int)d["position"] != 1 && (int)d["position"] != 2 && (int)d["position"] != 3 && (int)d["position"] != 4 && (int)d["position"] != 5).ToList().Count;
+            foreach (DataRow row in rowCollection) 
+            {
+                switch((short)row["position"])
+                {
+                    case 1: PositionOneClickAmount += (int)row["clicks"]; break;
+                    case 2: PositionTwoClickAmount += (int)row["clicks"]; break;
+                    case 3: PositionThreeClickAmount += (int)row["clicks"]; break;
+                    case 4: PositionFourClickAmount += (int)row["clicks"]; break;
+                    case 5: PositionFiveClickAmount += (int)row["clicks"]; break;
+                    default: RemainingClickAmount += (int)row["clicks"]; break;
+                }
+            }
+            
 
-            int TotalPositionClickAmount = PositionOneClickAmount + PositionTwoClickAmount + PositionThreeClickAmount + PositionFourClickAmount + PositionFiveClickAmount;
+            int TotalPositionClickAmount = PositionOneClickAmount + PositionTwoClickAmount + PositionThreeClickAmount + PositionFourClickAmount + PositionFiveClickAmount + RemainingClickAmount;
 
             PositionOneClickAmountLabel.Text = PositionOneClickAmount.ToString();
             PositionTwoClickAmountLabel.Text = PositionTwoClickAmount.ToString();
@@ -436,24 +452,27 @@ namespace Betric
             PositionRemainingClickAmountLabel.Text = RemainingClickAmount.ToString();
             PositionClickAmountTotalLabel.Text = TotalPositionClickAmount.ToString();
 
-            PositionOnePercentageAmountLabel.Text = (((double)PositionOneClickAmount / (double)TotalPositionClickAmount) * (double)100).ToString();
-            PositionTwoPercentageAmountLabel.Text = (((double)PositionTwoClickAmount / (double)TotalPositionClickAmount) * (double)100).ToString();
-            PositionThreePercentageAmountLabel.Text = (((double)PositionThreeClickAmount / (double)TotalPositionClickAmount) * (double)100).ToString();
-            PositionFourPercentageAmountLabel.Text = (((double)PositionFourClickAmount / (double)TotalPositionClickAmount) * (double)100).ToString();
-            PositionFivePercentageAmountLabel.Text = (((double)PositionFiveClickAmount / (double)TotalPositionClickAmount) * (double)100).ToString();
-            PositionRemainingPercentageAmountLabel.Text = (((double)RemainingClickAmount / (double)TotalPositionClickAmount) * (double)100).ToString();
+            PositionOnePercentageAmountLabel.Text = Math.Round((((double)PositionOneClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
+            PositionTwoPercentageAmountLabel.Text = Math.Round((((double)PositionTwoClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
+            PositionThreePercentageAmountLabel.Text = Math.Round((((double)PositionThreeClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
+            PositionFourPercentageAmountLabel.Text = Math.Round((((double)PositionFourClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
+            PositionFivePercentageAmountLabel.Text = Math.Round((((double)PositionFiveClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
+            PositionRemainingPercentageAmountLabel.Text = Math.Round((((double)RemainingClickAmount / (double)TotalPositionClickAmount) * (double)100), 2).ToString() + "%";
 
-            int DomesticNumberOneClickAmount = rowCollection.Where(d => (int)d["position"] == 1 && (int)d["country"] == 1).ToList().Count;
-            int ForeignNumberOneClickAmount = rowCollection.Where(d => (int)d["position"] == 1 && (int)d["country"] != 1).ToList().Count;
+            int DomesticNumberOneClickAmount = 0;
+            foreach(DataRow row in rowCollection.Where(d => (short)d["position"] == 1 && (short)d["country_id"] == 1)) DomesticNumberOneClickAmount += (int)row["clicks"];
+            int ForeignNumberOneClickAmount = 0;
+            foreach(DataRow row in rowCollection.Where(d => (short)d["position"] == 1 && (short)d["country_id"] != 1)) ForeignNumberOneClickAmount += (int)row["clicks"];
             int TotalNumberOneClickAmount = DomesticNumberOneClickAmount + ForeignNumberOneClickAmount;
 
             DomesticNumberOneClickAmountLabel.Text = DomesticNumberOneClickAmount.ToString();
             ForeignNumberOneClickAmountLabel.Text = ForeignNumberOneClickAmount.ToString();
             NumberOneClickAmountTotalLabel.Text = TotalNumberOneClickAmount.ToString();
 
-            DomesticNumberOneClickPercentageAmountLabel.Text = (((double)DomesticNumberOneClickAmount / (double)TotalNumberOneClickAmount) * (double)100).ToString();
-            ForeignNumberOneClickPercentageAmountLabel.Text = (((double)ForeignNumberOneClickAmount / (double)TotalNumberOneClickAmount) * (double)100).ToString();
+            DomesticNumberOneClickPercentageAmountLabel.Text = Math.Round((((double)DomesticNumberOneClickAmount / (double)TotalNumberOneClickAmount) * (double)100), 2).ToString() + "%";
+            ForeignNumberOneClickPercentageAmountLabel.Text = Math.Round((((double)ForeignNumberOneClickAmount / (double)TotalNumberOneClickAmount) * (double)100), 2).ToString() + "%";
 
+            
             decimal AveragePriceDifference = 0;
             decimal AveragePriceDifferencePercentage = 0;
             int count = 0;
@@ -466,6 +485,7 @@ namespace Betric
 
             PriceDifferenceLabel.Text =  "€" + Math.Round(AveragePriceDifference, 2);
             PriceDifferencePercentageLabel.Text = Math.Round(AveragePriceDifferencePercentage, 2) + "%";
+             
         }
     }
 }

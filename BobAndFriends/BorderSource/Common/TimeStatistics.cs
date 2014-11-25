@@ -12,9 +12,9 @@ namespace BorderSource.Common
         public TimeSpan maxTime = new TimeSpan();        
         public TimeSpan minTime = new TimeSpan();
         public TimeSpan averageTime = new TimeSpan();
+        public int timeSpanAmount = 0;
 
-        private Stopwatch _sw = new Stopwatch();
-        private int timeSpanAmount = 0;
+        private Stopwatch _sw = new Stopwatch();       
 
         private string _Description = "Statistics for measuring the time that methods need to complete.";
         public string Description { get { return _Description; } }

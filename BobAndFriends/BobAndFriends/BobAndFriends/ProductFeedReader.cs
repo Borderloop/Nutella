@@ -22,6 +22,8 @@ namespace BobAndFriends.BobAndFriends
         /// </summary>
         private string _productFeedPath;
 
+        private ProductFilter _filter;
+
         /// <summary>
         /// Constructor for creating ProductFeedReader object.
         /// </summary>
@@ -36,7 +38,9 @@ namespace BobAndFriends.BobAndFriends
         private void Initialize()
         {
             //Read settings
-            _productFeedPath = Statics.settings["productfeedpath"];         
+            _productFeedPath = Statics.settings["productfeedpath"];
+            _filter = new ProductFilter();
+            _filter.LogProperties = false;
         }
 
         /// <summary>
@@ -50,15 +54,18 @@ namespace BobAndFriends.BobAndFriends
 
             Console.WriteLine("Started reading files...");
 
+            
+
             //To read all the data from the affiliates, we simply loop through all the classes which are a
             //subclass of AffiliateBase. These classes have references to their data file storage and contain
             //methods which contain the structure of the XML files.
 
-            List<Product> WrongProducts = new List<Product>();
+            
 
             //Get all types in the assembly
             Type[] types = Assembly.GetExecutingAssembly().GetTypes();
 
+            List<Action> actions = new List<Action>();
             //Loop through each type
             foreach(Type type in types)
             {
@@ -67,41 +74,59 @@ namespace BobAndFriends.BobAndFriends
                 {
                     //Create an instance of the subclass by invoking the constructor.
                     AffiliateBase af = (AffiliateBase)type.GetConstructor(Type.EmptyTypes).Invoke(null);
-
-                    //Invoke ReadFromDir() and read all products
-                    foreach (List<BorderSource.Common.Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
-                    {
-                        //Save some data to the logger for statistics.
-                        //Statics.Logger.AddStats(products);
-
-                        //Push all the products to the Queue so BOB can process them.
-                        foreach(Product p in products)
-                        {
-                            GeneralStatisticsMapper.Instance.Increment("Total read products");
-                            while(PackageQueue.Instance.Queue.Count > Statics.maxQueueSize)
-                            {
-                                GeneralStatisticsMapper.Instance.Increment("FeedReader sleeptime (x5 minutes)");
-                                Thread.Sleep(300000);
-                            }
-                            if (!p.CleanupFields())
-                            {
-                                GeneralStatisticsMapper.Instance.Increment("Products with wrong properties");
-                                WrongProducts.Add(p);
-                                continue;
-                            }
-                            GeneralStatisticsMapper.Instance.Increment("Enqueued products");                           
-                        }
-                        foreach (Product wp in WrongProducts) products.Remove(wp);
-                        if (products.Count > 0) PackageQueue.Instance.Enqueue(Package.CreateNew(products));
-                        WrongProducts.Clear();
-                        products.Clear();
-                    }
+                    actions.Add(new Action(() => ReadAffiliate(af)));                    
                 }
-            }            
+            }
+
+            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 8 }, actions.ToArray());
             Console.WriteLine("Done reading productfeeds.");
 
             //Flag the boolean to be true when finished.
-            PackageQueue.Instance.InputStopped = true;
+            //PackageQueue.Instance.InputStopped = true;
+            ProductQueue.Instance.InputStopped = true;
+        }
+
+        public void ReadAffiliate(AffiliateBase af)
+        {
+            HashSet<string> UniqueIDs = new HashSet<string>();
+            List<Product> WrongProducts = new List<Product>();
+
+            //Invoke ReadFromDir() and read all products
+            foreach (List<BorderSource.Common.Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
+            {
+                //Push all the products to the Queue so BOB can process them.
+                foreach (Product p in products)
+                {
+                    //GeneralStatisticsMapper.Instance.Increment("Products read");
+                    if (!_filter.CheckProperties(p))
+                    {
+                        //GeneralStatisticsMapper.Instance.Increment("Wrong products");
+                        //GeneralStatisticsMapper.Instance.Increment("Products with wrong properties");
+                        WrongProducts.Add(p);
+                        continue;
+                    }
+                    if (!UniqueIDs.Contains(p.AffiliateProdID)) UniqueIDs.Add(p.AffiliateProdID);
+                    else
+                    {
+                        //GeneralStatisticsMapper.Instance.Increment("Duplicate affiliate Id's");
+                        WrongProducts.Add(p);
+                        continue;
+                    }
+                }
+
+                foreach (Product wp in WrongProducts) products.Remove(wp);
+                while (PackageQueue.Instance.Queue.Count > Statics.maxQueueSize) Thread.Sleep(300000);
+                if (products.Count > 0)
+                {
+                    Package package = new Package();
+                    package.products = new List<Product>(products);
+                    package.Webshop = package.products.First().Webshop;
+                    PackageQueue.Instance.Enqueue(package);
+                }
+                WrongProducts.Clear();
+                products.Clear();
+                UniqueIDs.Clear();
+            }
         }
     }
 }

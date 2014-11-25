@@ -71,8 +71,9 @@ namespace BorderSource.Queue
                     if (InputStopped)
                     {
                         return null;
-                    }
-                    Monitor.Wait(QueueLock, 200);
+                    } 
+                    //Console.WriteLine("ProductValidationQueue starved.");
+                    Monitor.Wait(QueueLock, 3000);
                 }
                 return Queue.Dequeue();
             }

@@ -34,6 +34,10 @@ namespace BobAndFriends
 
         public static DateTime StartTime;
 
+        public static bool Done = false;
+
+        public const int MAX_THREADS = 400;
+
         #region Trap application termination
         [DllImport("Kernel32")]
         private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
@@ -52,6 +56,7 @@ namespace BobAndFriends
 
         private static bool Handler(CtrlType sig)
         {
+            Done = true;
             Console.WriteLine("Exiting system due to external CTRL-C, or process kill, or shutdown");
 
             TimeStatisticsMapper.Instance.StopAll();
@@ -93,74 +98,104 @@ namespace BobAndFriends
             //DatabaseJanitor crapper = new DatabaseJanitor();
             //crapper.Cleanup();    
 
-            TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
+            //TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
 
             //Create threads
             producer = new Thread(new ThreadStart(ProductFeedReader));
             validator = new Thread(new ThreadStart(ProductDequeuer));
             consumer = new Thread(new ThreadStart(StartBobBoxManager));
 
-            producer.Priority = ThreadPriority.BelowNormal;
-            validator.Priority = ThreadPriority.BelowNormal;
+            //producer.Priority = ThreadPriority.BelowNormal;
+            //consumer.Priority = ThreadPriority.BelowNormal;
 
             //Start threads
             producer.Start();
             validator.Start();
             consumer.Start();
+
+            /*
+            while(!Done)
+            {
+                Console.Clear();
+                Console.WriteLine("Amount of products read by Reader: " + GeneralStatisticsMapper.Instance.Get("Products read"));
+                Console.WriteLine("Amount of products validated by Bob: " + GeneralStatisticsMapper.Instance.Get("Products validated"));
+                Console.WriteLine("Amount of products processed by BobBoxManager: " + GeneralStatisticsMapper.Instance.Get("Products processed"));
+                Console.WriteLine("Current ProductQueue size: " + PackageQueue.Instance.Queue.Count);
+                Console.WriteLine("Current ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
+                Thread.Sleep(50);
+            }*/
         }
 
         static void ProductDequeuer()
         {
+          
             Package p = PackageQueue.Instance.Dequeue();
-            List<Package> WebshopPackages = new List<Package>();
-            string CurrentWebshop = p.Webshop;
+            List<Package> Packages = new List<Package>();
             DateTime StartRunning = new DateTime();
+            List<Action> actions = new List<Action>();
+            int count = 0;
 
             while (p != null)
             {
-                CurrentWebshop = p.Webshop;  
-                StartRunning = DateTime.Now;
-                Console.WriteLine("Started reading packages from " + CurrentWebshop +  " at " + StartRunning.ToString("hh:mm:ss"));           
-                while(CurrentWebshop == p.Webshop)
+                count++;
+                
+                StartRunning = DateTime.Now;     
+                while(Packages.Count < MAX_THREADS)
                 {
-                    WebshopPackages.Add(p);
+                    Packages.Add(p);
+                    GeneralStatisticsMapper.Instance.Increment("Total amount of products processed", p.products.Count);
                     p = PackageQueue.Instance.Dequeue();
                     if (p == null) break;                   
                 }
 
-                Console.WriteLine("Total amount of packages for " + WebshopPackages.First().Webshop + ": " + WebshopPackages.Count);
-                var actions = new Action[WebshopPackages.Count];
+                Console.WriteLine("Started processing group " + count + " consisting of " + Packages.Count + " packages");
 
-                for (int i = 0; i < actions.Length; i++)
+                for (int i = 0; i < Packages.Count; i++)
                 {
                     int copy = i;
-                    Package package = WebshopPackages[i];
-                    actions[copy] = new Action(() => StartAnotherBob(package));
+                    Package package = Packages[i];
+                    actions.Add(new Action(() => StartAnotherBob(package)));
                 }
-
-                TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
-                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 7 }, actions);
-                TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
-
-                Console.WriteLine("Time spent reading packages from " + CurrentWebshop + ": " + (DateTime.Now - StartRunning));
+                 
+                
+                //TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
+                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS }, actions.ToArray());
+                //TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
+                
+                Console.WriteLine("Time spent reading packages from group " + count + ": " + (DateTime.Now - StartRunning));
                 Console.WriteLine("Total time since start: " + (DateTime.Now - StartTime));
               
-                WebshopPackages.Clear();
+                Packages.Clear();
+                actions.Clear();
             }
-
             ProductValidationQueue.Instance.InputStopped = true;
-            
+
             //Rerun all the products in the residue. We do not need ProductFeedReader for this.
             //bob.RerunResidue();
 
-            Console.WriteLine("Validation is done.");
-            Console.WriteLine("ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
+            //Console.WriteLine("Validation is done.");
+            //Console.WriteLine("ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
+            
         }
 
         static void StartAnotherBob(Package p)
         {
             BOB bob = new BOB();
-            bob.Process(p);
+            try
+            {
+                bob.Process(p);
+            }
+            catch (OutOfMemoryException)
+            {
+                Console.WriteLine("Caught OutOfMemoryException, trying GC.Collect()");
+                GC.Collect();
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("duplicate"))
+                    Console.WriteLine("Threw a duplicate error.");
+                else Console.WriteLine(e.ToString());
+            }
         }
 
         static void ProductFeedReader()
@@ -169,12 +204,12 @@ namespace BobAndFriends
             ProductFeedReader pfr = new ProductFeedReader();
 
             //Start it
-            TimeStatisticsMapper.Instance.StartTimeMeasure("Time reading products");
+            //TimeStatisticsMapper.Instance.StartTimeMeasure("Time reading products");
             pfr.Start();
-            TimeStatisticsMapper.Instance.StopTimeMeasure("Time reading products");
+            //TimeStatisticsMapper.Instance.StopTimeMeasure("Time reading products");
 
-            Console.WriteLine("Done producing.");
-            Console.WriteLine("PackageQueue size: " + PackageQueue.Instance.Queue.Count);
+            //Console.WriteLine("Done producing.");
+            //Console.WriteLine("PackageQueue size: " + PackageQueue.Instance.Queue.Count);
         }
 
         static void StartBobBoxManager()
@@ -183,7 +218,7 @@ namespace BobAndFriends
             TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent validating and saving");
             bbm.StartValidatingAndSaving();
             TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent validating and saving");
-            Console.WriteLine("Done consuming.");
+            //Console.WriteLine("Done consuming.");
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
 
             using (Logger logger = new Logger(Statics.LoggerPath))
@@ -191,6 +226,8 @@ namespace BobAndFriends
                 logger.WriteStatistics();
             }
 
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
+            Done = true;
             Console.WriteLine("Press ENTER to exit.");
             Console.Read();
         }
@@ -255,6 +292,8 @@ namespace BobAndFriends
             BetsyDbContextReader reader = new BetsyDbContextReader();
             Lookup.WebshopLookup = reader.GetAllWebshops();
             Lookup.CategoryLookup = reader.GetAllCategories();
+
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
         }
     }
 }

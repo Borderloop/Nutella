@@ -12,40 +12,26 @@ namespace BobAndFriends.BobAndFriends
     public class BobboxManager
     {
         private BobBox BobBox;
-        private HashSet<string> AddedCategorySynonyms;
         private int Count;
-        private const int PackageSize = 1000;
+        private const int PackageSize = 10000;
 
         public BobboxManager()
         {
-            BobBox = new BobBox();
-            AddedCategorySynonyms = new HashSet<string>();
+            BobBox = new BobBox();          
             Count = 0;
         }
 
         public void StartValidatingAndSaving()
         {
             ProductValidation validation = ProductValidationQueue.Instance.Dequeue();
-            string CurrentWebshop = validation.Product.Webshop;
             while (validation != null)
             {
-                if ((CurrentWebshop != validation.Product.Webshop) || (Count >= PackageSize))
+                if ((Count >= PackageSize))
                 {
-                    Console.WriteLine("Saving changes for " + CurrentWebshop + " to database...");
+                    Console.WriteLine("Saving changes to database...");
                     BobBox.CommitAndCreate();
-                    if (Count < PackageSize) AddedCategorySynonyms.Clear();
-                    Console.WriteLine("Done saving changes for " + CurrentWebshop);
+                    Console.Write(" Done.\n");
                     Count = 0;
-                }
-
-                CurrentWebshop = validation.Product.Webshop;
-
-                if (validation.IsAmbiguous())
-                {
-                    using (Logger logger = new Logger(Statics.AmiguousLogPath))
-                    {
-                        logger.WriteLine("Ambiguous product matched " + validation.ArticleNumberOfEanMatch + " with " + validation.ArticleNumberOfSkuMatch + ".");
-                    }
                 }
 
                 if (!validation.CategoryMatched) goto Next;
@@ -58,10 +44,9 @@ namespace BobAndFriends.BobAndFriends
 
                 if (validation.EanMatched)
                 {
-                    if (!validation.CategorySynonymExists && !AddedCategorySynonyms.Contains(validation.Product.Category))
+                    if (!validation.CategorySynonymExists)
                     {
-                        AddedCategorySynonyms.Add(validation.Product.Category);
-                        BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category, validation.Product.Webshop);
+                        BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category.ToLower().Trim(), validation.Product.Webshop.ToLower().Trim());
                     }
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfEanMatch, validation.CountryId);
                     goto Next;
@@ -69,10 +54,9 @@ namespace BobAndFriends.BobAndFriends
 
                 if (validation.SkuMatched && !validation.EanMatched)
                 {
-                    if (!validation.CategorySynonymExists && !AddedCategorySynonyms.Contains(validation.Product.Category))
+                    if (!validation.CategorySynonymExists)
                     {
-                        AddedCategorySynonyms.Add(validation.Product.Category);
-                        BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category, validation.Product.Webshop);
+                        BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category.ToLower().Trim(), validation.Product.Webshop.ToLower().Trim());
                     }
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfSkuMatch, validation.CountryId);
                     goto Next;
@@ -80,12 +64,13 @@ namespace BobAndFriends.BobAndFriends
 
                 if(validation.IsValidAsNewArticle)
                 {
-                    //BobBox.SaveNewArticle(validation.Product, validation.CountryId, validation.CategoryId);
+                    BobBox.SaveNewArticle(validation.Product, validation.CountryId, validation.CategoryId);
                     goto Next;
                 }
 
             Next:
                 {
+                    GeneralStatisticsMapper.Instance.Increment("Products processed");
                     validation = ProductValidationQueue.Instance.Dequeue();
                     Count++;                  
                 }

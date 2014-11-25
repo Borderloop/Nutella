@@ -283,7 +283,7 @@
     <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_product_article" FromRole="product" ToRole="article" />
     <NavigationProperty Name="biggest_price_differences" Relationship="BetsyModel.Model.fk_biggest_price_differences_product" FromRole="product" ToRole="biggest_price_differences" />
     <NavigationProperty Name="country_price_differences" Relationship="BetsyModel.Model.fk_country_price_differences_product" FromRole="product" ToRole="country_price_differences" />
-    <Property Name="popularity" Type="Int32" Nullable="false" />
+    <Property Name="popularity" Nullable="false" Type="Int32" />
   </EntityType>
   <EntityType Name="residue">
     <Key>

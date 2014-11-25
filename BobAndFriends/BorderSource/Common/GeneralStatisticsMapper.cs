@@ -32,9 +32,20 @@ namespace BorderSource.Common
             ((GeneralStatistics)map[name]).count++;
         }
 
+        public void Increment(string name, int amount)
+        {
+            if (!map.ContainsKey(name)) Add(name, new GeneralStatistics());
+            ((GeneralStatistics)map[name]).count += amount;
+        }
+
         public void Add(string key, IStatistics statics)
         {
             map.Add(key, statics);
+        }
+
+        public int Get(string key)
+        {
+            return map.ContainsKey(key) ? ((GeneralStatistics)map[key]).count : 0;
         }
     }
 }
