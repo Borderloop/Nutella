@@ -16,6 +16,8 @@ using System.Globalization;
 using System.Reflection;
 using BorderSource.BetsyContext;
 using System.Data.Entity.Validation;
+using BorderSource.ProductAssociation;
+using BorderSource.Statistics;
 
 namespace BorderSource.Common
 {
@@ -37,8 +39,9 @@ namespace BorderSource.Common
             providerConnStrBuilder.AllowUserVariables = true;
             providerConnStrBuilder.AllowZeroDateTime = true;
             providerConnStrBuilder.ConvertZeroDateTime = true;
-            providerConnStrBuilder.MaximumPoolSize = 32767;
+            providerConnStrBuilder.MaximumPoolSize = 100;
             providerConnStrBuilder.Pooling = true;
+            providerConnStrBuilder.Port = 3306;
             providerConnStrBuilder.Database = Statics.settings["dbname"];
             providerConnStrBuilder.Password = Statics.settings["dbpw"];
             providerConnStrBuilder.Server = Statics.settings["dbsource"];
@@ -51,8 +54,9 @@ namespace BorderSource.Common
 
             ConnectionString = entityConnStrBuilder.ConnectionString;
             context = new BetsyModel(ConnectionString);
+            context.Configuration.LazyLoadingEnabled = true;
             context.Configuration.AutoDetectChangesEnabled = false;
-            context.Configuration.ValidateOnSaveEnabled = false;
+            //context.Configuration.ValidateOnSaveEnabled = false;
         }
 
         public void SaveMatch(Product Record, int matchedArticleID, int countryID)
@@ -60,31 +64,31 @@ namespace BorderSource.Common
             //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
             article articleTable = context.article.Where(a => a.id == matchedArticleID).FirstOrDefault();
 
-            //context.article.Attach(articleTable);
-            //var articleEntry = context.Entry(articleTable);
-
-
+            context.article.Attach(articleTable);
+            var articleEntry = context.Entry(articleTable);
+            
             if (articleTable.brand == "" || articleTable.brand == null)
             {
                 articleTable.brand = Record.Brand;
-                //articleEntry.Property(a => a.brand).IsModified = true;
+                articleEntry.Property(a => a.brand).IsModified = true;
             }
             if (articleTable.description == null)
             {
                 articleTable.description = Record.Description;
-                //articleEntry.Property(a => a.description).IsModified = true;
+                articleEntry.Property(a => a.description).IsModified = true;
             }
-            if (articleTable.image_loc == null)
+            if (articleTable.image_loc == null || articleTable.image_loc == "")
             {
                 articleTable.image_loc = Record.Image_Loc;
-                //articleEntry.Property(a => a.image_loc).IsModified = true;
+                articleEntry.Property(a => a.image_loc).IsModified = true;
             }
             long ean;
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
             //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
-            if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean });
-            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToLower().Trim() == Record.SKU.ToLower().Trim())) ) articleTable.sku.Add(new sku { sku1 = Record.SKU });
+            if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean, article_id = matchedArticleID });
+            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToLower().Trim() == Record.SKU.ToLower().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
+            
             title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
 
             if (title == default(title))
@@ -122,10 +126,27 @@ namespace BorderSource.Common
                     title.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
                 }
             }
+            
 
-            //Add the product to the match, or update if it exists (WHICH SHOULD NOT HAPPEN)
-            SaveProductData(Record, matchedArticleID);
+            decimal castedShipCost;
+            decimal castedPrice;
+            if (!(decimal.TryParse(Record.DeliveryCost, NumberStyles.Any, CultureInfo.InvariantCulture, out castedShipCost))) { }
+            if (!(decimal.TryParse(Record.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out castedPrice))) { }
 
+            product newProduct = new product
+            {
+                article_id = matchedArticleID,
+                ship_time = Record.DeliveryTime,
+                ship_cost = (decimal?)castedShipCost,
+                price = castedPrice,
+                webshop_url = Record.Webshop,
+                direct_link = Record.Url,
+                affiliate_name = Record.Affiliate,
+                affiliate_unique_id = Record.AffiliateProdID,
+                last_modified = System.DateTime.Now
+            };
+
+            articleTable.product.Add(newProduct);
         }
 
         /// This method will send a product to the residu.
@@ -156,7 +177,7 @@ namespace BorderSource.Common
         public void SaveNewArticle(Product Record, int countryId, int categoryId)
         {
             country cou = context.country.Where(c => c.id == countryId).FirstOrDefault();
-            webshop webshop = context.webshop.Where(w => w.url.ToLower().Trim() == Record.Webshop.ToLower().Trim()).FirstOrDefault();
+            webshop webshop = context.webshop.Where(w => w.url == Record.Webshop).FirstOrDefault();
             category cat = context.category.Where(c => c.id == categoryId).FirstOrDefault();
 
             if (webshop == default(webshop))
@@ -184,7 +205,7 @@ namespace BorderSource.Common
             };
             art.category.Add(cat);
             //Do not modify this as this is neccessary to get the last id.
-            context.article.Add(art);
+            
 
             long eanVal;
             bool eanIsParsable = long.TryParse(Record.EAN, out eanVal);
@@ -239,6 +260,7 @@ namespace BorderSource.Common
             };
             art.product.Add(product);
 
+            context.article.Add(art);
         }
 
         public void DeleteFromVbobData(int id)
@@ -298,12 +320,17 @@ namespace BorderSource.Common
             var original = context.product.Where(p => p.article_id == matchedArticleId && p.webshop_url == Record.Webshop).FirstOrDefault();          
             if (original != null)
             {
-                UpdatedProduct.id = original.id;
-                context.product.Attach(original);
-                context.Entry(original).CurrentValues.SetValues(UpdatedProduct);
+                original.ship_cost = UpdatedProduct.ship_cost;
+                original.ship_time = UpdatedProduct.ship_time;
+                original.price = UpdatedProduct.price;
+                original.direct_link = UpdatedProduct.direct_link;
+                original.affiliate_name = UpdatedProduct.affiliate_name;
+                original.affiliate_unique_id = UpdatedProduct.affiliate_unique_id;
+                original.last_modified = UpdatedProduct.last_modified;
             }
             else
             {
+                Console.WriteLine("Trying to save product where it should've been updated!");
                 context.product.Add(UpdatedProduct);
             }
         }
@@ -316,7 +343,7 @@ namespace BorderSource.Common
         /// <param name="web_url">Webshop</param>
         public void InsertIntoCatSynonyms(int catid, string description, string web_url)
         {
-            var original = context.category_synonym.Where(cs => cs.category_id == catid && cs.description == description && cs.web_url == web_url).FirstOrDefault();
+            var original = context.category_synonym.Where(cs => cs.description == description && cs.web_url == web_url).FirstOrDefault();
             if (original == null)
             {
                 context.category_synonym.Add(new category_synonym { category_id = catid, description = description, web_url = web_url });
@@ -358,10 +385,17 @@ namespace BorderSource.Common
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                Console.WriteLine("Caught DbUpdateConcurrenryException, refreshing and moving on.");
+                Console.WriteLine("Caught DbUpdateConcurrenryException, trying refresh.");
                 var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
-                Commit();
+                try
+                {
+                    objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    Console.WriteLine("Refresh didn't work, lost 500 products. Error: " + ioe.Message);
+                    Console.WriteLine("Moving on.");
+                }
             }
         }
 
@@ -369,8 +403,7 @@ namespace BorderSource.Common
         {
             try
             {
-                context.SaveChanges();
-                context.Dispose();
+                context.SaveChanges();               
             }
             catch (DbEntityValidationException e)
             {
@@ -391,10 +424,29 @@ namespace BorderSource.Common
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                Console.WriteLine("Caught DbUpdateConcurrenryException, refreshing and moving on.");
+                Console.WriteLine("Caught DbUpdateConcurrenryException, trying refresh.");
                 var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
-                Commit();
+                try
+                {
+                    objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    Console.WriteLine("Refresh didn't work, lost 500 products. Error: " + ioe.Message);
+                    Console.WriteLine("Moving on.");
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
+                else
+                {
+                    Console.WriteLine(e.ToString());
+                }
+            }
+            finally
+            {
+                context.Dispose();
             }
         }
 
@@ -403,10 +455,8 @@ namespace BorderSource.Common
             try
             {
                 context.SaveChanges();
-                context.Dispose();
-                context = new BetsyModel(ConnectionString);
             }
-                
+
             catch (DbEntityValidationException e)
             {
                 foreach (var eve in e.EntityValidationErrors)
@@ -426,13 +476,31 @@ namespace BorderSource.Common
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                Console.WriteLine("Caught DbUpdateConcurrenryException, refreshing and moving on.");
+                Console.WriteLine("Caught DbUpdateConcurrenryException, trying refresh.");
                 var objContext = ((IObjectContextAdapter)context).ObjectContext;
-                objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
-                Commit();
-            }catch(Exception e)
+                try
+                {
+                    objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
+                }
+                catch(InvalidOperationException ioe)
+                {
+                    Console.WriteLine("Refresh didn't work, lost 500 products. Error: " + ioe.Message);
+                    Console.WriteLine("Moving on.");
+                }
+            }
+            catch (Exception e)
             {
                 if (e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
+                else
+                {
+                    Console.WriteLine("Lost 500 products due to an error; " + e.Message);
+                    GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
+                }
+            }
+            finally
+            {
+                context.Dispose();
+                context = new BetsyModel(ConnectionString);
             }
 
         }

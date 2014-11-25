@@ -90,28 +90,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Affiliates\AffiliateBase.cs" />
-    <Compile Include="Affiliates\Affilinet.cs" />
-    <Compile Include="Affiliates\Belboon.cs" />
-    <Compile Include="Affiliates\CommissionJunction.cs" />
     <Compile Include="BobAndFriends\BOB.cs" />
-    <Compile Include="Affiliates\Daisycon.cs" />
     <Compile Include="BobAndFriends\BobboxManager.cs" />
     <Compile Include="BobAndFriends\ProductFeedReader.cs" />
+    <Compile Include="Crapper\Crapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Affiliates\TradeDoubler.cs" />
-    <Compile Include="Affiliates\TradeTracker.cs" />
-    <Compile Include="Affiliates\Webgains.cs" />
-    <Compile Include="Affiliates\Zanox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="BobAndFriends_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -133,9 +121,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="etc\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\BorderSource\BorderSource.csproj">
       <Project>{915d82b0-59bd-441f-bff4-5d5898b6391d}</Project>

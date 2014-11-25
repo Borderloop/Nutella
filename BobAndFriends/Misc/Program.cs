@@ -10,15 +10,46 @@ namespace Misc
 {
     class Program
     {
+        static bool Done = false;
+        static Thread producer = new Thread(new ThreadStart(FillQueue));
+        static Thread consumer = new Thread(new ThreadStart(EmptyQueue));
+
+
         static void Main(string[] args)
         {
-            string s = ">";
-            Console.WriteLine(s);
-            byte[] tempBytes;
-            tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(s);
-            string asciiStr = System.Text.Encoding.UTF8.GetString(tempBytes);
-            Console.WriteLine(asciiStr);
+            producer.Start();
+            consumer.Start();
+
+            while(!Done)
+            {
+                Console.Clear();
+                Console.WriteLine("Queue size: " + SingletonQueue<int?>.Instance.Queue.Count);
+                Thread.Sleep(20);
+                GC.Collect();
+            }
+            Console.WriteLine("Done");
             Console.Read();
-        }     
+        }
+
+        static void FillQueue()
+        {
+            int count = 0;
+            while (count < 100000)
+            {
+                count++;
+                SingletonQueue<int?>.Instance.Enqueue(new Random().Next());
+                Thread.Sleep(10);
+            }
+        }
+
+        static void EmptyQueue()
+        {
+            int? output;
+            while ((output = SingletonQueue<int?>.Instance.Dequeue()) != null)
+            {
+                Thread.Sleep(20);
+            }
+            Done = true;
+        }
     }
 }

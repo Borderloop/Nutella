@@ -220,5 +220,10 @@ namespace BorderSource.Common
             tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(s);
             return System.Text.Encoding.UTF8.GetString(tempBytes);
         }
+
+        public static T Clone<T>(this T t)
+        {
+            return (T)t.GetType().GetConstructor(new Type[]{}).Invoke(null);
+        }
     }
 }

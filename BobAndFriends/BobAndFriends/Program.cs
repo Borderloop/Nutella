@@ -14,6 +14,9 @@ using System.Runtime.InteropServices;
 using BorderSource.Common;
 using BorderSource.Queue;
 using BobAndFriends.BobAndFriends;
+using BorderSource.ProductAssociation;
+using BorderSource.Statistics;
+using BorderSource.Loggers;
 
 namespace BobAndFriends
 {
@@ -105,30 +108,17 @@ namespace BobAndFriends
             validator = new Thread(new ThreadStart(ProductDequeuer));
             consumer = new Thread(new ThreadStart(StartBobBoxManager));
 
-            //producer.Priority = ThreadPriority.BelowNormal;
-            //consumer.Priority = ThreadPriority.BelowNormal;
-
             //Start threads
             producer.Start();
             validator.Start();
             consumer.Start();
-
-            /*
-            while(!Done)
-            {
-                Console.Clear();
-                Console.WriteLine("Amount of products read by Reader: " + GeneralStatisticsMapper.Instance.Get("Products read"));
-                Console.WriteLine("Amount of products validated by Bob: " + GeneralStatisticsMapper.Instance.Get("Products validated"));
-                Console.WriteLine("Amount of products processed by BobBoxManager: " + GeneralStatisticsMapper.Instance.Get("Products processed"));
-                Console.WriteLine("Current ProductQueue size: " + PackageQueue.Instance.Queue.Count);
-                Console.WriteLine("Current ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
-                Thread.Sleep(50);
-            }*/
         }
 
         static void ProductDequeuer()
         {
-          
+            //Sleep a bit to create some time for the reader to do it's job
+            Console.WriteLine("Started BOB.");
+            Thread.Sleep(5000);
             Package p = PackageQueue.Instance.Dequeue();
             List<Package> Packages = new List<Package>();
             DateTime StartRunning = new DateTime();
@@ -138,51 +128,56 @@ namespace BobAndFriends
             while (p != null)
             {
                 count++;
-                
-                StartRunning = DateTime.Now;     
-                while(Packages.Count < MAX_THREADS)
+
+                StartRunning = DateTime.Now;
+                /*
+                while (Packages.Count < MAX_THREADS)
                 {
                     Packages.Add(p);
                     GeneralStatisticsMapper.Instance.Increment("Total amount of products processed", p.products.Count);
+                    totalAmountOfProducts += p.products.Count;
                     p = PackageQueue.Instance.Dequeue();
-                    if (p == null) break;                   
-                }
+                    if (p == null) break;
+                }*/
 
-                Console.WriteLine("Started processing group " + count + " consisting of " + Packages.Count + " packages");
+                Packages = PackageQueue.Instance.DequeuePackageByAmount(MAX_THREADS);               
+                if (Packages == null) break;
+
+                int totalAmount = Packages.Sum(pack => pack.products.Count);
+
+                Console.WriteLine("Started processing group " + count + " consisting of " + Packages.Count + " packages and " + totalAmount + " products");
+
+               
 
                 for (int i = 0; i < Packages.Count; i++)
                 {
                     int copy = i;
-                    Package package = Packages[i];
-                    actions.Add(new Action(() => StartAnotherBob(package)));
+                    actions.Add(new Action(() => StartAnotherBob(Packages[copy], copy)));
                 }
-                 
-                
+
+
                 //TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
                 Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS }, actions.ToArray());
                 //TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
-                
+
+                GeneralStatisticsMapper.Instance.Increment("Total amount of products processed", totalAmount);
+
                 Console.WriteLine("Time spent reading packages from group " + count + ": " + (DateTime.Now - StartRunning));
-                Console.WriteLine("Total time since start: " + (DateTime.Now - StartTime));
-              
+                //Console.WriteLine("Total time since start: " + (DateTime.Now - StartTime));
                 Packages.Clear();
                 actions.Clear();
             }
             ProductValidationQueue.Instance.InputStopped = true;
 
-            //Rerun all the products in the residue. We do not need ProductFeedReader for this.
-            //bob.RerunResidue();
 
-            //Console.WriteLine("Validation is done.");
-            //Console.WriteLine("ProductValidationQueue size: " + ProductValidationQueue.Instance.Queue.Count);
-            
+            Console.WriteLine("Validation is done.");
         }
 
-        static void StartAnotherBob(Package p)
+        static void StartAnotherBob(Package p, int id)
         {
             BOB bob = new BOB();
             try
-            {
+            {             
                 bob.Process(p);
             }
             catch (OutOfMemoryException)
@@ -191,10 +186,13 @@ namespace BobAndFriends
                 GC.Collect();
             }
             catch (Exception e)
+            { 
+                Console.WriteLine("A Bob threw an error: " + e.Message);
+                Console.WriteLine("Continuing with another Bob.");
+            }
+            finally
             {
-                if (e.Message.Contains("duplicate"))
-                    Console.WriteLine("Threw a duplicate error.");
-                else Console.WriteLine(e.ToString());
+                bob.Dispose();
             }
         }
 
@@ -214,11 +212,13 @@ namespace BobAndFriends
 
         static void StartBobBoxManager()
         {
+            //Sleep a bit to create some time for the reader and bob to do it's job
+            Console.WriteLine("Started BobBoxManager.");
             BobboxManager bbm = new BobboxManager();
             TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent validating and saving");
             bbm.StartValidatingAndSaving();
             TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent validating and saving");
-            //Console.WriteLine("Done consuming.");
+            Console.WriteLine("Done consuming.");
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
 
             using (Logger logger = new Logger(Statics.LoggerPath))
@@ -226,6 +226,7 @@ namespace BobAndFriends
                 logger.WriteStatistics();
             }
 
+            //Crapper.Crapper.CleanUp(StartTime);
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
             Done = true;
             Console.WriteLine("Press ENTER to exit.");

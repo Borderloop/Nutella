@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Collections.Generic;
 using BorderSource.Common;
+using BorderSource.ProductAssociation;
 
 namespace BetsyTest
 {

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using BorderSource.Common;
 using BorderSource.BetsyContext;
 using BorderSource.Queue;
+using BorderSource.ProductAssociation;
+using BorderSource.Statistics;
 
 namespace BobAndFriends.BobAndFriends
 {
@@ -13,7 +15,8 @@ namespace BobAndFriends.BobAndFriends
     {
         private BobBox BobBox;
         private int Count;
-        private const int PackageSize = 10000;
+        private const int PackageSize = 500;
+        private int ExistingProducts, EanMatches, SkuMatches = 0;
 
         public BobboxManager()
         {
@@ -26,11 +29,17 @@ namespace BobAndFriends.BobAndFriends
             ProductValidation validation = ProductValidationQueue.Instance.Dequeue();
             while (validation != null)
             {
+                if(validation.Product == null)
+                {
+                    Console.WriteLine("Found null product.");
+                    goto Next;
+                }
                 if ((Count >= PackageSize))
                 {
-                    Console.WriteLine("Saving changes to database...");
+                    Console.WriteLine("Saving changes for " + PackageSize + " INSERTS/UPDATES to database.");
+                    Console.WriteLine("Totals; Existing products: {0}, EanMatches: {1}, SkuMatches: {2}", ExistingProducts, EanMatches, SkuMatches);
                     BobBox.CommitAndCreate();
-                    Console.Write(" Done.\n");
+                    Console.WriteLine("Done saving changes.");
                     Count = 0;
                 }
 
@@ -38,6 +47,7 @@ namespace BobAndFriends.BobAndFriends
 
                 if (validation.ProductAlreadyExists)
                 {
+                    ExistingProducts++;
                     BobBox.SaveProductData(validation.Product, validation.ArticleNumberOfExistingProduct);
                     goto Next;
                 }
@@ -48,6 +58,7 @@ namespace BobAndFriends.BobAndFriends
                     {
                         BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category.ToLower().Trim(), validation.Product.Webshop.ToLower().Trim());
                     }
+                    EanMatches++;
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfEanMatch, validation.CountryId);
                     goto Next;
                 }
@@ -58,15 +69,16 @@ namespace BobAndFriends.BobAndFriends
                     {
                         BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category.ToLower().Trim(), validation.Product.Webshop.ToLower().Trim());
                     }
+                    SkuMatches++;
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfSkuMatch, validation.CountryId);
                     goto Next;
                 }
 
-                if(validation.IsValidAsNewArticle)
+                /*if(validation.IsValidAsNewArticle)
                 {
                     BobBox.SaveNewArticle(validation.Product, validation.CountryId, validation.CategoryId);
                     goto Next;
-                }
+                }*/
 
             Next:
                 {
@@ -74,9 +86,9 @@ namespace BobAndFriends.BobAndFriends
                     validation = ProductValidationQueue.Instance.Dequeue();
                     Count++;                  
                 }
-            }
-
+            }           
             BobBox.CommitAndDispose();
+            Console.WriteLine("Done saving to database.");
         }
     }
 }
