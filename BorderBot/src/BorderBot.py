@@ -2,9 +2,8 @@ import Statics
 
 from threading import Thread
 import time
-import importlib
 
-from Crawlers import getgoods
+import Crawler
 
 
 class BorderBot():
@@ -22,14 +21,15 @@ class BorderBot():
 
         if Statics.robots[name].can_fetch(Statics.agentName, url) is True:  # Don't crawl if the website blocked our bot.
 
-            crawler = importlib.import_module('Crawlers.' + name)
-            result = crawler.Crawler(website, url).main()
+            start_time = time.time()
+            result = Crawler.Crawler(website, url, Statics.identifiers[name]).main()
+            iterationTime = time.time() - start_time
 
             # URLs are returned if the result does not equal None, add them to the queue.
-            if result[0] is not None:
-                websiteItem = self.addToQueue(result[0], websiteItem)
+            if result is not None:
+                websiteItem = self.addToQueue(result, websiteItem)
 
-            timeResult = self.calculateAvgTime(result[1], websiteItem[2])
+            timeResult = self.calculateAvgTime(iterationTime, websiteItem[2])
             timeInterval = timeResult[0]
             websiteItem[2] = timeResult[1]
             print 'Timeinterval: ' + str(timeInterval)
@@ -78,6 +78,7 @@ class T(Thread):
     def run(self):
         BorderBot().runThread()
 
+start_time = time.time()
 # Check the penalty list for expired items once each second
 while True:
     for item in Statics.penaltyList:
@@ -96,4 +97,8 @@ while True:
             Statics.robots[robot].read()
             Statics.robots[robot].modified()
 
-    time.sleep(1)
+    if time.time() - start_time > 10:
+        Statics.multiplier = Statics.parseMultiplier()
+        start_time = time.time()
+
+    time.sleep(0.5)

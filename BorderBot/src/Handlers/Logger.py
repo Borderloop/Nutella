@@ -45,7 +45,7 @@ def logRequest(websiteName, reqTime, url, httpResponse, respTime, contentType):
     requestLogger.info('')
 
 
-def logError(websiteName, reqTime, url, httpResponse, error):
+def logError(websiteName, reqTime, url, error):
     directory = checkDir()
 
     errorLogger = logging.getLogger(websiteName + 'Error')
@@ -61,7 +61,6 @@ def logError(websiteName, reqTime, url, httpResponse, error):
 
         errorLogger.error('Time of request: ' + str(reqTime))
         errorLogger.error('Requested URL: ' + url)
-        errorLogger.error('HTTP Response: ' + str(httpResponse))
         errorLogger.error('Error: ' + str(error))
         errorLogger.error('')
 

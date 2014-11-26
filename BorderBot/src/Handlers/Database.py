@@ -10,7 +10,7 @@ class Connection:
     password = "border1!LOOP"
     database = "borderbot"
 
-    con = (mdb.connect(host, user, password, database))
+    con = (mdb.connect(host, user, password, database, charset='utf8'))
 
     cur = ''
 

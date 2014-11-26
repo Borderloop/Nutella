@@ -2,20 +2,23 @@ import Queue
 from ConfigParser import SafeConfigParser
 import robotexclusionrulesparser
 import urlparse
+import cPickle as pickle
 
 websiteQueue = Queue.Queue()
 penaltyList = []
 websites = ''
+identifiers = dict()
+robots = dict()
 
 # Parse the config file for all websites
-parser = SafeConfigParser()
-parser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
-websites = parser.get('General', 'websites')
-multiplier = float(parser.get('General', 'multiplier'))
-agentName = parser.get('General', 'agentname')
-robotsRefreshRate = int(parser.get('General', 'robotsrefreshrate'))
+configParser = SafeConfigParser()
+configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
+websites = configParser.get('General', 'websites')
+multiplier = float(configParser.get('General', 'multiplier'))
+agentName = configParser.get('General', 'agentname')
+robotsRefreshRate = int(configParser.get('General', 'robotsrefreshrate'))
+identifiersPath = configParser.get('General', 'identifierspath')
 
-robots = dict()
 
 # Fill the queues before the start of the program
 websites = websites.split(';')
@@ -26,8 +29,17 @@ for website in websites:  # We need all homepages in the url queues at the start
 
     # Parse robots file
     name = website[website.find('.')+1:website.rfind('.')]
-    parser = robotexclusionrulesparser.RobotFileParserLookalike()
-    parser.set_url(urlparse.urljoin(website, 'robots.txt'))
-    parser.read()
-    parser.modified()
-    robots[name] = parser
+    robotParser = robotexclusionrulesparser.RobotFileParserLookalike()
+    robotParser.set_url(urlparse.urljoin(website, 'robots.txt'))
+    robotParser.read()
+    robotParser.modified()
+    robots[name] = robotParser
+
+    # Get identifiers dictionary file
+    identifier = pickle.load(open(identifiersPath + name + ".p", "rb"))
+    identifiers[name] = identifier
+
+
+def parseMultiplier():
+    configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
+    return float(configParser.get('General', 'multiplier'))
