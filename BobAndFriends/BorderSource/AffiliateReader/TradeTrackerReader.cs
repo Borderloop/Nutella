@@ -221,18 +221,6 @@ namespace BorderSource.AffiliateReader
                         yield return products;
                         products.Clear();
                     }
-
-                    //Increment the tickcount
-                    Statics.TickCount++;
-
-                    //Sleep everytime sleepcount is reached
-                    if (Statics.TickCount % Statics.TicksUntilSleep == 0)
-                    {
-                        Thread.Sleep(1);
-
-                        //Set tickCount to 0 to save memory
-                        Statics.TickCount = 0;
-                    }
                     try
                     {
                         if (_reader.IsStartElement())

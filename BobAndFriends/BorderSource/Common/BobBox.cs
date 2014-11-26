@@ -41,7 +41,7 @@ namespace BorderSource.Common
             providerConnStrBuilder.ConvertZeroDateTime = true;
             providerConnStrBuilder.MaximumPoolSize = 100;
             providerConnStrBuilder.Pooling = true;
-            providerConnStrBuilder.Port = 3306;
+            providerConnStrBuilder.Port = 3307;
             providerConnStrBuilder.Database = Statics.settings["dbname"];
             providerConnStrBuilder.Password = Statics.settings["dbpw"];
             providerConnStrBuilder.Server = Statics.settings["dbsource"];
@@ -441,7 +441,10 @@ namespace BorderSource.Common
                 if (e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
                 else
                 {
-                    Console.WriteLine(e.ToString());
+                    Console.WriteLine("Lost 500 products due to an error; " + e.Message);
+                    Console.WriteLine("Inner: " + e.InnerException.Message);
+                    Console.WriteLine("InnerInner: " + e.InnerException.InnerException.Message);
+                    GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
             }
             finally
@@ -494,6 +497,8 @@ namespace BorderSource.Common
                 else
                 {
                     Console.WriteLine("Lost 500 products due to an error; " + e.Message);
+                    Console.WriteLine("Inner: " + e.InnerException.Message);
+                    Console.WriteLine("InnerInner: " + e.InnerException.InnerException.Message);
                     GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
             }

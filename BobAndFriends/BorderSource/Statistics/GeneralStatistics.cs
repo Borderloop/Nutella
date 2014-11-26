@@ -11,5 +11,12 @@ namespace BorderSource.Statistics
         public volatile int count;
         private string _Description = "General statistics";
         public string Description { get { return _Description; } }
+
+        public string Name { get; set; }
+
+        public GeneralStatistics(string name)
+        {
+            Name = name;
+        }
     }
 }

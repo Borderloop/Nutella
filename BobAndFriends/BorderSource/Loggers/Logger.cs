@@ -51,12 +51,30 @@ namespace BorderSource.Loggers
 
         public void WriteStatistics()
         {
+            RatioStatisticsMapper.Instance.Add("Ratio between read and filtered products", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["Wrong products"]);
+            RatioStatisticsMapper.Instance.Add("Ratio between validated and saved products", GeneralStatisticsMapper.Instance.map["Total amount of products processed"], GeneralStatisticsMapper.Instance.map["Products saved"]);
+            RatioStatisticsMapper.Instance.Add("Ratio between read and saved products", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["Products saved"]);
+            RatioStatisticsMapper.Instance.Add("Ratios between saved products", GeneralStatisticsMapper.Instance.map["Products saved"], GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
+            RatioStatisticsMapper.Instance.Add("Ratios between saved products and total", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
+            
             base.WriteLine("Started writing statistics...");
             base.WriteLine();
             base.WriteLine("----------------------- GENERAL STATISTICS -----------------------");
             foreach(KeyValuePair<string, IStatistics> pair in GeneralStatisticsMapper.Instance.map)
             {
                 base.WriteLine(pair.Key + ": " + ((GeneralStatistics)pair.Value).count);
+            }
+            base.WriteLine();
+            base.WriteLine("----------------------- RATIO STATISTICS -----------------------");
+            foreach (KeyValuePair<string, IStatistics> pair in RatioStatisticsMapper.Instance.map)
+            {
+                base.WriteLine(pair.Key + ":");
+                float[] ratios = ((RatioStatistics)pair.Value).CalculateRatios();
+                int i = 0;
+                foreach(IStatistics statistics in (((RatioStatistics)pair.Value).Statistics))
+                {
+                    base.WriteLine(((GeneralStatistics)statistics).Name + ": " + Math.Round(ratios[i] * (100), 2) + "%");
+                }
             }
             base.WriteLine();
             base.WriteLine("----------------------- TIME MEASURE STATISTICS -----------------------");

@@ -15,6 +15,9 @@ using BorderSource.Queue;
 using BorderSource.AffiliateReader;
 using BorderSource.AffiliateFile;
 using BorderSource.ProductAssociation;
+using BorderSource.Statistics;
+using BobAndFriends.Global;
+
 
 namespace BobAndFriends.BobAndFriends
 {
@@ -28,7 +31,7 @@ namespace BobAndFriends.BobAndFriends
         private ProductFilter _filter;
 
         /// <summary>
-        /// Constructor for creating ProductFeedReader object.
+        /// Constructor for creating FeedReaderController object.
         /// </summary>
         public ProductFeedReader()
         {
@@ -49,7 +52,7 @@ namespace BobAndFriends.BobAndFriends
         /// <summary>
         /// Start method to start reading and processing productfeeds.
         /// </summary>
-        public void Start()
+        public void Start(int max_readers)
         {              
             //Get all the directories in the productfeed folder.
             string[] dirs = Directory.GetDirectories(_productFeedPath);
@@ -83,17 +86,15 @@ namespace BobAndFriends.BobAndFriends
                 actions.Add(new Action(() => ReadFile(sortedBySize[copy])));
             }
 
-            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 5 }, actions.ToArray());
+            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = max_readers }, actions.ToArray());
             Console.WriteLine("Done reading productfeeds.");
 
             //Flag the boolean to be true when finished.
-            //PackageQueue.Instance.InputStopped = true;
-            ProductQueue.Instance.InputStopped = true;
+            PackageQueue.Instance.InputStopped = true;
         }
 
         public void ReadFile(AffiliateFileBase file)
         {
-            HashSet<string> UniqueIDs = new HashSet<string>();
             List<Product> WrongProducts = new List<Product>();
             AffiliateReaderBase reader = file.GetReader();
             if(reader == null)
@@ -111,7 +112,7 @@ namespace BobAndFriends.BobAndFriends
                         WrongProducts.Add(p);
                         continue;
                     }
-                    if (!UniqueIDs.Contains(p.AffiliateProdID)) UniqueIDs.Add(p.AffiliateProdID);
+                    if (!GlobalVariables.UniqueIds.Contains(p.AffiliateProdID)) GlobalVariables.UniqueIds.Add(p.AffiliateProdID);
                     else
                     {
                         WrongProducts.Add(p);
@@ -120,7 +121,7 @@ namespace BobAndFriends.BobAndFriends
                 }
 
                 foreach (Product wp in WrongProducts) products.Remove(wp);
-                while (PackageQueue.Instance.Queue.Count > Statics.maxQueueSize) Thread.Sleep(1000);
+                while (PackageQueue.Instance.Queue.Count > Statics.maxSizes["max_queue_size"]) Thread.Sleep(1000);
                 if (products.Count > 0)
                 {
                     Package package = new Package();
@@ -131,12 +132,10 @@ namespace BobAndFriends.BobAndFriends
                 WrongProducts.Clear();
                 products.Clear();
             }
-            UniqueIDs.Clear();
         }
 
         public void ReadAffiliate(AffiliateReaderBase af)
         {
-            HashSet<string> UniqueIDs = new HashSet<string>();
             List<Product> WrongProducts = new List<Product>();
 
             //Invoke ReadFromDir() and read all products
@@ -145,25 +144,22 @@ namespace BobAndFriends.BobAndFriends
                 //Push all the products to the Queue so BOB can process them.
                 foreach (Product p in products)
                 {
-                    //GeneralStatisticsMapper.Instance.Increment("Products read");
+                    GeneralStatisticsMapper.Instance.Increment("Products read");
                     if (!_filter.CheckProperties(p))
                     {
-                        //GeneralStatisticsMapper.Instance.Increment("Wrong products");
-                        //GeneralStatisticsMapper.Instance.Increment("Products with wrong properties");
                         WrongProducts.Add(p);
                         continue;
                     }
-                    if (!UniqueIDs.Contains(p.AffiliateProdID)) UniqueIDs.Add(p.AffiliateProdID);
+                    if (!GlobalVariables.UniqueIds.Contains(p.AffiliateProdID)) GlobalVariables.UniqueIds.Add(p.AffiliateProdID);
                     else
                     {
-                        //GeneralStatisticsMapper.Instance.Increment("Duplicate affiliate Id's");
                         WrongProducts.Add(p);
                         continue;
                     }
                 }
-
+                GeneralStatisticsMapper.Instance.Increment("Wrong products", WrongProducts.Count);
                 foreach (Product wp in WrongProducts) products.Remove(wp);
-                while (PackageQueue.Instance.Queue.Count > Statics.maxQueueSize) Thread.Sleep(300000);
+                while (PackageQueue.Instance.Queue.Count > Statics.maxSizes["max_queue_size"]) Thread.Sleep(300000);
                 if (products.Count > 0)
                 {
                     Package package = new Package();
@@ -173,7 +169,6 @@ namespace BobAndFriends.BobAndFriends
                 }
                 WrongProducts.Clear();
                 products.Clear();
-                UniqueIDs.Clear();
             }
         }
     }

@@ -63,7 +63,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Title":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxTitleSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_title_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -81,7 +81,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Brand":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxBrandSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_brand_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -99,7 +99,7 @@ namespace BorderSource.ProductAssociation
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             return false;
                         }
-                        if ((prop.GetValue(p) as string).Length > Statics.maxSkuSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_sku_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -112,7 +112,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Image_Loc":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxImageUrlSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_imageurl_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -125,7 +125,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Category":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxCategorySize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_category_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -138,7 +138,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "DeliveryTime":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxShipTimeSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_shiptime_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -152,7 +152,7 @@ namespace BorderSource.ProductAssociation
 
                     case "Webshop":
                         if ((prop.GetValue(p) as string) == "www.hardware.nl") p.GetType().GetProperty("SKU").SetValue(p, "");
-                        if ((prop.GetValue(p) as string).Length > Statics.maxWebShopUrlSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_webshopurl_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -165,7 +165,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Url":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxDirectLinkSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_directlink_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -178,7 +178,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Affiliate":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxAffiliateNameSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_affiliatename_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
@@ -191,7 +191,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "AffiliateProdID":
-                        if ((prop.GetValue(p) as string).Length > Statics.maxAffiliateProductIdSize)
+                        if ((prop.GetValue(p) as string).Length > Statics.maxSizes["max_affiliateproductid_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");

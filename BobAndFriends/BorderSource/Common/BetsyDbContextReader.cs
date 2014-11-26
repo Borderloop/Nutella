@@ -31,7 +31,7 @@ namespace BorderSource.Common
             providerConnStrBuilder.ConvertZeroDateTime = true;
             providerConnStrBuilder.MaximumPoolSize = 100;
             providerConnStrBuilder.Pooling = true;
-            providerConnStrBuilder.Port = 3306;
+            providerConnStrBuilder.Port = 3307;
             providerConnStrBuilder.Database = Statics.settings["dbname"];
             providerConnStrBuilder.Password = Statics.settings["dbpw"];
             providerConnStrBuilder.Server = Statics.settings["dbsource"];
@@ -47,32 +47,34 @@ namespace BorderSource.Common
         }
 
       
-        public Dictionary<Product, int> GetExistingProductIds(ICollection<Product> products, string webshop)
+        public IEnumerable<KeyValuePair<Product, int>> GetExistingProductIds(ICollection<Product> products, string webshop)
         {
-            Dictionary<Product, int> dic = new Dictionary<Product, int>();
-            foreach(Product prod in products)
+            List<string> ids = products.Select(p => p.AffiliateProdID).ToList();
+            var query = db.product.Where(p => p.webshop_url == webshop && ids.Contains(p.affiliate_unique_id));
+            foreach(var prod in query)
             {
-                var product = db.product.Where(p => p.webshop_url == webshop && p.affiliate_unique_id == prod.AffiliateProdID).FirstOrDefault();
-                if (product == null) continue;
-                dic.Add(prod, product.article_id);
+                Product key = products.Where(p => p.AffiliateProdID == prod.affiliate_unique_id).FirstOrDefault();
+                int value = prod.article_id;
+                if(key == null || value == 0) continue;
+                KeyValuePair<Product, int> pair = new KeyValuePair<Product,int>(key, value);        
+                yield return pair;
             }
-            return dic;
         }
 
-        public Dictionary<Product, int> GetEanMatches(ICollection<Product> products)
+        public IEnumerable<KeyValuePair<Product, int>> GetEanMatches(ICollection<Product> products)
         {
-            Dictionary<Product, int> dic = new Dictionary<Product, int>();
-            foreach(Product prod in products)
+            long temp;
+            List<long> eans = products.Select(p => long.Parse(p.EAN)).ToList();
+            var query = db.ean.Where(e => eans.Contains(e.ean1));
+            if (query == null) yield break;
+            foreach (var prod in query)
             {
-                long actualEan;
-                if(long.TryParse(prod.EAN, out actualEan))
-                {
-                    var ean = db.ean.Where(e => e.ean1 == actualEan).FirstOrDefault();
-                    if (ean == null) continue;
-                    dic.Add(prod, ean.article_id);
-                }             
+                Product key = products.Where(p => long.TryParse(p.EAN, out temp)).Where(p => long.Parse(p.EAN) == prod.ean1).FirstOrDefault();
+                int value = prod.article_id;
+                if (key == null || value == 0) continue;
+                KeyValuePair<Product, int> pair = new KeyValuePair<Product, int>(key, value);
+                yield return pair;
             }
-            return dic;
         }           
 
         public Dictionary<Product, int> GetSkuMatches(ICollection<Product> products)

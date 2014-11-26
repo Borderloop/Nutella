@@ -8,12 +8,24 @@ namespace BorderSource.Statistics
 {
     public class GeneralStatisticsMapper : IStatisticsMapper
     {
+        private readonly object MapLock = new object();
+        private static readonly object InstanceLock = new object();
+
         private static GeneralStatisticsMapper _instance;
         public static GeneralStatisticsMapper Instance
         {
             get
             {
-                if (_instance == null) _instance = new GeneralStatisticsMapper();
+                if (_instance == null)
+                {
+                    lock (InstanceLock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new GeneralStatisticsMapper();
+                        }
+                    }
+                }
                 return _instance;
             }
         }
@@ -28,14 +40,20 @@ namespace BorderSource.Statistics
         }
         public void Increment(string name) 
         {
-            if (!map.ContainsKey(name)) Add(name, new GeneralStatistics());
-            ((GeneralStatistics)map[name]).count++;
+            lock (MapLock)
+            {
+                if (!map.ContainsKey(name)) Add(name, new GeneralStatistics(name));
+                ((GeneralStatistics)map[name]).count++;
+            }
         }
 
         public void Increment(string name, int amount)
         {
-            if (!map.ContainsKey(name)) Add(name, new GeneralStatistics());
-            ((GeneralStatistics)map[name]).count += amount;
+            lock (MapLock)
+            {
+                if (!map.ContainsKey(name)) Add(name, new GeneralStatistics(name));
+                ((GeneralStatistics)map[name]).count += amount;
+            }
         }
 
         public void Add(string key, IStatistics statics)

@@ -162,6 +162,7 @@
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Common\BetsyDbContextReader.cs" />
+    <Compile Include="Common\ConcurrentHashSet.cs" />
     <Compile Include="Statistics\GeneralStatistics.cs" />
     <Compile Include="Statistics\GeneralStatisticsMapper.cs" />
     <Compile Include="Statistics\IStatistics.cs" />
@@ -182,6 +183,8 @@
     <Compile Include="Statistics\PropertyStatisticsMapper.cs" />
     <Compile Include="Loggers\QueryLogger.cs" />
     <Compile Include="Common\Statics.cs" />
+    <Compile Include="Statistics\RatioStatistics.cs" />
+    <Compile Include="Statistics\RatioStatisticsMapper.cs" />
     <Compile Include="Statistics\TimeStatisticsMapper.cs" />
     <Compile Include="Statistics\TimeStatistics.cs" />
     <Compile Include="Common\TypeSwitch.cs" />

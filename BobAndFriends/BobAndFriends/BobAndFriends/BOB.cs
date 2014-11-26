@@ -54,7 +54,7 @@ namespace BobAndFriends.BobAndFriends
                 ProductValidationQueue.Instance.Enqueue(validation);
                 pair.Key.IsValidated = true;
             }
-
+            
             if (p.products.All(prod => prod.IsValidated)) return;
 
             foreach(KeyValuePair<Product, int> pair in db.GetEanMatches(p.products.Where(prod => !prod.IsValidated).ToList()))

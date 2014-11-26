@@ -8,6 +8,7 @@ using BorderSource.BetsyContext;
 using BorderSource.Queue;
 using BorderSource.ProductAssociation;
 using BorderSource.Statistics;
+using BobAndFriends.Global;
 
 namespace BobAndFriends.BobAndFriends
 {
@@ -16,12 +17,15 @@ namespace BobAndFriends.BobAndFriends
         private BobBox BobBox;
         private int Count;
         private const int PackageSize = 500;
+        private int MaxCountryId;
         private int ExistingProducts, EanMatches, SkuMatches = 0;
 
         public BobboxManager()
         {
             BobBox = new BobBox();          
             Count = 0;
+            MaxCountryId = Lookup.WebshopLookup.Max(m => m.Max(n => n.CountryId));
+            Console.WriteLine("Found max country id: " + MaxCountryId);
         }
 
         public void StartValidatingAndSaving()
@@ -34,6 +38,7 @@ namespace BobAndFriends.BobAndFriends
                     Console.WriteLine("Found null product.");
                     goto Next;
                 }
+                
                 if ((Count >= PackageSize))
                 {
                     Console.WriteLine("Saving changes for " + PackageSize + " INSERTS/UPDATES to database.");
@@ -43,10 +48,12 @@ namespace BobAndFriends.BobAndFriends
                     Count = 0;
                 }
 
+                if (validation.CountryId < 1 || validation.CountryId > MaxCountryId) goto Next;
                 if (!validation.CategoryMatched) goto Next;
 
                 if (validation.ProductAlreadyExists)
                 {
+                    GeneralStatisticsMapper.Instance.Increment("Existing products");
                     ExistingProducts++;
                     BobBox.SaveProductData(validation.Product, validation.ArticleNumberOfExistingProduct);
                     goto Next;
@@ -54,10 +61,12 @@ namespace BobAndFriends.BobAndFriends
 
                 if (validation.EanMatched)
                 {
-                    if (!validation.CategorySynonymExists)
+                    if (!validation.CategorySynonymExists && !GlobalVariables.AddedCategorySynonyms.Contains(validation.Product.Category))
                     {
+                        GlobalVariables.AddedCategorySynonyms.Add(validation.Product.Category);
                         BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category.ToLower().Trim(), validation.Product.Webshop.ToLower().Trim());
                     }
+                    GeneralStatisticsMapper.Instance.Increment("EAN matches");
                     EanMatches++;
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfEanMatch, validation.CountryId);
                     goto Next;
@@ -65,10 +74,12 @@ namespace BobAndFriends.BobAndFriends
 
                 if (validation.SkuMatched && !validation.EanMatched)
                 {
-                    if (!validation.CategorySynonymExists)
+                    if (!validation.CategorySynonymExists && !GlobalVariables.AddedCategorySynonyms.Contains(validation.Product.Category))
                     {
+                        GlobalVariables.AddedCategorySynonyms.Add(validation.Product.Category);
                         BobBox.InsertIntoCatSynonyms(validation.CategoryId, validation.Product.Category.ToLower().Trim(), validation.Product.Webshop.ToLower().Trim());
                     }
+                    GeneralStatisticsMapper.Instance.Increment("SKU matches");
                     SkuMatches++;
                     BobBox.SaveMatch(validation.Product, validation.ArticleNumberOfSkuMatch, validation.CountryId);
                     goto Next;
@@ -82,7 +93,7 @@ namespace BobAndFriends.BobAndFriends
 
             Next:
                 {
-                    GeneralStatisticsMapper.Instance.Increment("Products processed");
+                    GeneralStatisticsMapper.Instance.Increment("Products saved");
                     validation = ProductValidationQueue.Instance.Dequeue();
                     Count++;                  
                 }

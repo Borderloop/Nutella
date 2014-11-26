@@ -39,7 +39,11 @@ namespace BobAndFriends
 
         public static bool Done = false;
 
-        public const int MAX_THREADS = 400;
+        public const int MAX_BOBS = 1;
+
+        public const int MAX_BOBBOXMANAGERS = 3;
+
+        public const int MAX_READERS = 3;
 
         #region Trap application termination
         [DllImport("Kernel32")]
@@ -85,7 +89,7 @@ namespace BobAndFriends
 
 
         /// <summary>
-        /// Main method will only start the ProductFeedReader
+        /// Main method will only start the FeedReaderController
         /// </summary>
         /// <param name="args"></param>
         [STAThread]
@@ -104,8 +108,8 @@ namespace BobAndFriends
             //TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
 
             //Create threads
-            producer = new Thread(new ThreadStart(ProductFeedReader));
-            validator = new Thread(new ThreadStart(ProductDequeuer));
+            producer = new Thread(new ThreadStart(FeedReaderController));
+            validator = new Thread(new ThreadStart(BobController));
             consumer = new Thread(new ThreadStart(StartBobBoxManager));
 
             //Start threads
@@ -114,40 +118,26 @@ namespace BobAndFriends
             consumer.Start();
         }
 
-        static void ProductDequeuer()
+        static void BobController()
         {
-            //Sleep a bit to create some time for the reader to do it's job
             Console.WriteLine("Started BOB.");
-            Thread.Sleep(5000);
-            Package p = PackageQueue.Instance.Dequeue();
+
             List<Package> Packages = new List<Package>();
             DateTime StartRunning = new DateTime();
             List<Action> actions = new List<Action>();
             int count = 0;
 
-            while (p != null)
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent validating");
+            while (true)
             {
+                //Break if no packages are found
+                if ((Packages = PackageQueue.Instance.DequeuePackageByAmount(MAX_BOBS)) == null) break;
+
                 count++;
-
-                StartRunning = DateTime.Now;
-                /*
-                while (Packages.Count < MAX_THREADS)
-                {
-                    Packages.Add(p);
-                    GeneralStatisticsMapper.Instance.Increment("Total amount of products processed", p.products.Count);
-                    totalAmountOfProducts += p.products.Count;
-                    p = PackageQueue.Instance.Dequeue();
-                    if (p == null) break;
-                }*/
-
-                Packages = PackageQueue.Instance.DequeuePackageByAmount(MAX_THREADS);               
-                if (Packages == null) break;
-
+                StartRunning = DateTime.Now;                                       
                 int totalAmount = Packages.Sum(pack => pack.products.Count);
 
-                Console.WriteLine("Started processing group " + count + " consisting of " + Packages.Count + " packages and " + totalAmount + " products");
-
-               
+                Console.WriteLine("Started processing group " + count + " consisting of " + Packages.Count + " packages and " + totalAmount + " products");               
 
                 for (int i = 0; i < Packages.Count; i++)
                 {
@@ -155,20 +145,16 @@ namespace BobAndFriends
                     actions.Add(new Action(() => StartAnotherBob(Packages[copy], copy)));
                 }
 
-
-                //TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
-                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS }, actions.ToArray());
-                //TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading packages from " + WebshopPackages.First().Webshop);
+                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_BOBS }, actions.ToArray());
 
                 GeneralStatisticsMapper.Instance.Increment("Total amount of products processed", totalAmount);
 
                 Console.WriteLine("Time spent reading packages from group " + count + ": " + (DateTime.Now - StartRunning));
-                //Console.WriteLine("Total time since start: " + (DateTime.Now - StartTime));
                 Packages.Clear();
                 actions.Clear();
             }
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent validating");
             ProductValidationQueue.Instance.InputStopped = true;
-
 
             Console.WriteLine("Validation is done.");
         }
@@ -185,40 +171,41 @@ namespace BobAndFriends
                 Console.WriteLine("Caught OutOfMemoryException, trying GC.Collect()");
                 GC.Collect();
             }
-            catch (Exception e)
-            { 
-                Console.WriteLine("A Bob threw an error: " + e.Message);
-                Console.WriteLine("Continuing with another Bob.");
-            }
+            //catch (Exception e)
+            //{ 
+            //    Console.WriteLine("A Bob threw an error: " + e.Message);
+            //    Console.WriteLine("Continuing with another Bob.");
+            //}
             finally
             {
                 bob.Dispose();
             }
         }
 
-        static void ProductFeedReader()
+        static void FeedReaderController()
         {
             //Create productfeedreader object.
             ProductFeedReader pfr = new ProductFeedReader();
 
-            //Start it
-            //TimeStatisticsMapper.Instance.StartTimeMeasure("Time reading products");
-            pfr.Start();
-            //TimeStatisticsMapper.Instance.StopTimeMeasure("Time reading products");
-
-            //Console.WriteLine("Done producing.");
-            //Console.WriteLine("PackageQueue size: " + PackageQueue.Instance.Queue.Count);
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading");
+            pfr.Start(MAX_READERS);
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading");
         }
 
-        static void StartBobBoxManager()
+        static void BobBoxManagerController()
         {
-            //Sleep a bit to create some time for the reader and bob to do it's job
-            Console.WriteLine("Started BobBoxManager.");
-            BobboxManager bbm = new BobboxManager();
-            TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent validating and saving");
-            bbm.StartValidatingAndSaving();
-            TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent validating and saving");
+            List<Action> managers = new List<Action>();
+            for(int i = 0; i < MAX_BOBBOXMANAGERS; i++)
+            {
+                managers.Add(new Action(() => StartBobBoxManager()));
+            }
+
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent saving");
+            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_BOBBOXMANAGERS }, managers.ToArray());
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent saving");
+
             Console.WriteLine("Done consuming.");
+
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
 
             using (Logger logger = new Logger(Statics.LoggerPath))
@@ -226,11 +213,18 @@ namespace BobAndFriends
                 logger.WriteStatistics();
             }
 
-            //Crapper.Crapper.CleanUp(StartTime);
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
             Done = true;
             Console.WriteLine("Press ENTER to exit.");
             Console.Read();
+        }
+
+        static void StartBobBoxManager()
+        {
+            Console.WriteLine("Started a BobBoxManager.");
+
+            BobboxManager bbm = new BobboxManager();          
+            bbm.StartValidatingAndSaving();                     
         }
 
         static void Initialize()
@@ -249,20 +243,18 @@ namespace BobAndFriends
             #endregion
 
             #region Values
-            Statics.TickCount = 0;
-            Statics.TicksUntilSleep = Int32.Parse(Statics.settings["ticksuntilsleep"]);
-            Statics.maxQueueSize = Int32.Parse(Statics.settings["maxqueuesize"]);
-            Statics.maxSkuSize = Int32.Parse(Statics.settings["maxskusize"]);
-            Statics.maxBrandSize = Int32.Parse(Statics.settings["maxbrandsize"]);
-            Statics.maxTitleSize = Int32.Parse(Statics.settings["maxtitlesize"]);
-            Statics.maxImageUrlSize = Int32.Parse(Statics.settings["maximageurlsize"]);
-            Statics.maxCategorySize = Int32.Parse(Statics.settings["maxcategorysize"]);
-            Statics.maxShipTimeSize = Int32.Parse(Statics.settings["maxshiptimesize"]);
-            Statics.maxWebShopUrlSize = Int32.Parse(Statics.settings["maxwebshopurlsize"]);
-            Statics.maxDirectLinkSize = Int32.Parse(Statics.settings["maxdirectlinksize"]);
-            Statics.maxAffiliateNameSize = Int32.Parse(Statics.settings["maxaffiliatenamesize"]);
-            Statics.maxAffiliateProductIdSize = Int32.Parse(Statics.settings["maxaffiliateproductidsize"]);
-            Statics.maxResidueListSize = Int32.Parse(Statics.settings["maxresiduelistsize"]);
+            Statics.maxSizes = new Dictionary<string, int>();
+            Statics.maxSizes.Add("max_queue_size", Int32.Parse(Statics.settings["maxqueuesize"]));
+            Statics.maxSizes.Add("max_sku_size", Int32.Parse(Statics.settings["maxskusize"]));
+            Statics.maxSizes.Add("max_brand_size", Int32.Parse(Statics.settings["maxbrandsize"]));
+            Statics.maxSizes.Add("max_title_size", Int32.Parse(Statics.settings["maxtitlesize"]));
+            Statics.maxSizes.Add("max_imageurl_size", Int32.Parse(Statics.settings["maximageurlsize"]));
+            Statics.maxSizes.Add("max_category_size", Int32.Parse(Statics.settings["maxcategorysize"]));
+            Statics.maxSizes.Add("max_shiptime_size", Int32.Parse(Statics.settings["maxshiptimesize"]));
+            Statics.maxSizes.Add("max_webshopurl_size", Int32.Parse(Statics.settings["maxwebshopurlsize"]));
+            Statics.maxSizes.Add("max_directlink_size", Int32.Parse(Statics.settings["maxdirectlinksize"]));
+            Statics.maxSizes.Add("max_affiliatename_size", Int32.Parse(Statics.settings["maxaffiliatenamesize"]));
+            Statics.maxSizes.Add("max_affiliateproductid_size", Int32.Parse(Statics.settings["maxaffiliateproductidsize"]));
             #endregion
 
             #region Mapping of DBProduct to BobProduct

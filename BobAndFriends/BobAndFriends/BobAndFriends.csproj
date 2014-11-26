@@ -94,6 +94,7 @@
     <Compile Include="BobAndFriends\BobboxManager.cs" />
     <Compile Include="BobAndFriends\ProductFeedReader.cs" />
     <Compile Include="Crapper\Crapper.cs" />
+    <Compile Include="Global\GlobalVariables.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
