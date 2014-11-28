@@ -1,112 +1,111 @@
-import time
+import re
+import math
 from ConfigParser import SafeConfigParser
-from time import strftime
-
-import requests
-from requests.exceptions import ChunkedEncodingError
-from bs4 import BeautifulSoup
 
 from Handlers import Database
-from Handlers import Logger
 
 
-class Crawler():
-    def __init__(self, website, url):
+class Parser():
+    def __init__(self, soup, page, website, url):
         self.parseConfigFile()
+        self.soup = soup
+        self.page = page
         self.website = website
         self.url = url
 
-        self.headers = {
-            'User-Agent': self.agent,
-            'Connection': 'close'
-        }
+    db = Database.Queries()
+    urls = []
+    disallowedCategories = []
 
-        self.websiteName = website[website.find('.')+1:website.rfind('.')]
-
-    start_time = 0
-
-    agent = ''
-    headers = {}
-
-    soup = ''
-
-    result = ''
-
-    # Procedure to control the main flow of the crawler
+    # Procedure that controls the main flow of the parser.
     def main(self):
-        print 'Crawling ' + self.url
-        self.start_time = time.time()
+        self.urls = []
 
-        r = self.getRequest()
+        if self.page == 'home':
+            self.parseHomePage()
+        elif self.page == 'subCategory':
+            self.parseSubCategoryPage()
+        elif self.page == 'products':
+            self.parseProductsPage()
+        elif self.page == 'product':
+            self.parseProductPage()
 
-        # If the returned value is a list, something went wrong.
-        if isinstance(r, list):
-            return r
+        return self.urls
 
-        data = r.text
-
-        self.soup = BeautifulSoup(data, 'html.parser')
-        self.checkPage()
-
-        return [self.result, time.time() - self.start_time]
-
-    # Parse the config file
+    # Procedure to parse the config file
     def parseConfigFile(self):
         parser = SafeConfigParser()
         parser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
-        self.agent = parser.get('General', 'agent')
 
-    # This procedure makes the request to the server and checks if it's a valid response.
-    def getRequest(self):
+    # This procedure parses the home page
+    def parseHomePage(self):
+        mainCategories = self.soup.find('ul', {'id': 'menu-sidebar-drop'}).find_all('li', recursive=False)
+        for category in mainCategories:
+            subCategories = category.find('ul').find_all('li')
+
+            for subCategory in subCategories:
+                if subCategory != subCategories[0] and subCategory != subCategories[1] and subCategory != subCategories[2]:
+                    self.urls.append(self.url + subCategory.find('a')['href'])
+
+
+    # This procedure parses the subcategory page
+    def parseSubCategoryPage(self):
+        categories = self.soup.find('ul', {'id': 'menu-sidebar-drop'}).find_all('li')
+        for category in categories:
+            self.urls.append(self.website + category.find('a')['href'])
+
+    # This procedure parses the products page, the page which enlists multiple products.
+    def parseProductsPage(self):
+        products = self.soup.find('div', {'id': 'vmMainPage'}).find_all('div', {'class': 'box-content float-left'})
+        for product in products:
+            self.urls.append(self.website + product.find('a')['href'])
+
+        self.checkForNextPage()
+
+    # This procedure parses the product page. If it gets here it means it's a new product,
+    # so it always saves the product which is parsed here to the database.
+    def parseProductPage(self):
+        title = self.soup.find('h1', {'class': 'title'}).text.strip()
+        title = " ".join(title.split())
+        price = self.soup.find('span', {'class': 'productPrice'}).text
+        price = self.cleanPrice(price)
+
+        category = self.soup.find('div', {'class': 'breadcrumbs'}).find('strong').text
+        ean = self.soup.find('b', text='EAN').parent.text
+        ean = ean[3:].strip()
+        productID = self.soup.find('div', {'id': 'vmMainPage'}).find('span').text
+        productID = productID[productID.find(':')+1:].strip()
+
+        if self.checkIfParsedBefore(productID, self.website) == ():  # Product hasn't been parsed before, insert it.
+            self.db.openConnection()
+            self.db.insertNewArticle(title, self.website, price, self.url, ean=ean, productID=productID, category=category)
+            self.db.closeConnection()
+        else:  # Known product, update only
+            self.db.openConnection()
+            self.db.updateArticle(productID, self.website, price)
+            self.db.closeConnection()
+
+
+    # This procedure checks if a product has been parsed before.
+    def checkIfParsedBefore(self, productID, website):
+        self.db.openConnection()
+        result = self.db.selectProduct(productID, website)
+        self.db.closeConnection()
+
+        return result
+
+    # This method gets rid of all other characters in a price.
+    def cleanPrice(self, price):
+        price = price.strip().replace('.', '').replace(',', '.')
+        non_decimal = re.compile(r'[^\d.]+')
+        return non_decimal.sub('', price)
+
+    # Procedure to check if there's a next page and if so, add it to the urls.
+    def checkForNextPage(self):
+        pagination = self.soup.find('div', {'class': 'pagination'})
+        currentPage = int(pagination.find('strong').text)
+
         try:
-            reqTime = strftime("%H:%M:%S")
-            r = requests.get(self.url, headers=self.headers, timeout=7)
-
-            #Log the request details
-            Logger.logRequest(self.websiteName, reqTime, self.url, r.status_code, r.elapsed.total_seconds(), r.headers['content-type'])
-
-        except (requests.ConnectionError, ChunkedEncodingError, requests.exceptions.ReadTimeout) as e:
-            Logger.logError(self.websiteName, reqTime, self.url, r.status_code, e)
-            return [[self.url], (time.time() - self.start_time)]
-
-        # Check for bad response.
-        try:
-            r.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            Logger.logError(self.websiteName, reqTime, self.url, r.status_code, e)
-            return [[self.url], (time.time() - self.start_time) * 5]
-
-        return r
-
-    # Procedure to check which page of the website is being crawled
-    def checkPage(self):
-
-        if self.url == self.website:  # Home page
-            #self.result = Parser(self.soup, 'home', self.website, self.url).main()
-            return
-
-        # Identifiers contain tags, elements and contents.
-        identifiers = dict(products=['div', 'class', 'box-content float-left'],
-                           category=['div', 'class', 'module mod-black'],
-                           subCategory=['div', 'class', 'module mod-box mod-box-header deepest'],
-                           product=['table', 'id', 'item_specification'])
-
-        for identifier in identifiers:
-            if self.soup.find(identifiers[identifier][0], {identifiers[identifier][1]: identifiers[identifier][2]}) is not None:
-                print "It's the " + identifier + " page!"
-                # If it's the product page, add extension to the url for more products per page.
-                # Then crawl the site again.
-                if identifier == 'products' and self.url.find('?n=') == -1:
-                    self.url += '?n=48'
-
-                    r = self.getRequest()
-
-                    # If the returned value is a list, something went wrong.
-                    if isinstance(r, list):
-                        return r
-
-                    data = r.text
-                    self.soup = BeautifulSoup(data, 'html.parser')
-
-                #self.result = Parser(self.soup, identifier, self.website, self.url).main()
-                break
+            self.urls.append(self.website + pagination.find('a', text=str(currentPage+1))['href'])
+        except TypeError:  # Reached last page
+            pass

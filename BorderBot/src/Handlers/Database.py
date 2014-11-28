@@ -53,12 +53,12 @@ class Queries():
         vals = [productID, website]
         return self.db.select(com, vals)
 
-    def insertNewArticle(self, title, website, brand, price, availability, deeplink, category=None, ean=None, sku=None, imageLocation=None, productID=None):
+    def insertNewArticle(self, title, website, price, deeplink, brand=None, availability=None, category=None, ean=None, sku=None, imageLocation=None, productID=None):
         com = "INSERT INTO product VALUES ((%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s))"
         vals = [title, website, brand, category, ean, sku, price, availability, deeplink, imageLocation, productID]
         self.db.insert(com, vals)
 
-    def updateArticle(self, productID, website, price, availability):
+    def updateArticle(self, productID, website, price, availability=None):
         com = "UPDATE product SET price = (%s), availability = (%s) WHERE product_id = (%s) AND website_url = (%s)"
         vals = [price, availability, productID, website]
         self.db.insert(com, vals)

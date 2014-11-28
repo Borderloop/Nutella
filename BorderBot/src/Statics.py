@@ -9,10 +9,11 @@ penaltyList = []
 websites = ''
 identifiers = dict()
 robots = dict()
+javascriptCrawler = dict()
 
 # Parse the config file for all websites
 configParser = SafeConfigParser()
-configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
+configParser.read('C:/BorderSoftware/BorderBot/settings/borderbottemp.ini')
 websites = configParser.get('General', 'websites')
 multiplier = float(configParser.get('General', 'multiplier'))
 agentName = configParser.get('General', 'agentname')
@@ -20,7 +21,7 @@ robotsRefreshRate = int(configParser.get('General', 'robotsrefreshrate'))
 identifiersPath = configParser.get('General', 'identifierspath')
 
 
-# Fill the queues before the start of the program
+# Fill the queues before the start of the program.
 websites = websites.split(';')
 for website in websites:  # We need all homepages in the url queues at the start.
     urlQueue = Queue.Queue()
@@ -39,7 +40,10 @@ for website in websites:  # We need all homepages in the url queues at the start
     identifier = pickle.load(open(identifiersPath + name + ".p", "rb"))
     identifiers[name] = identifier
 
+    # Get the javascript crawler value. Either True or False
+    javascriptCrawler[name] = bool(configParser.get(name, 'javascriptcrawler'))
+
 
 def parseMultiplier():
-    configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
+    configParser.read('C:/BorderSoftware/BorderBot/settings/borderbottemp.ini')
     return float(configParser.get('General', 'multiplier'))

@@ -120,7 +120,7 @@ class Parser():
             imageLocation = None
 
         self.db.openConnection()
-        self.db.insertNewArticle(title, self.website, brand, price, availability, self.url, ean=ean, sku=sku, imageLocation=imageLocation, productID=productID)
+        self.db.insertNewArticle(title, self.website, price, self.url, brand=brand, availability=availability, ean=ean, sku=sku, imageLocation=imageLocation, productID=productID)
         self.db.closeConnection()
 
 

@@ -22,7 +22,7 @@ class BorderBot():
         if Statics.robots[name].can_fetch(Statics.agentName, url) is True:  # Don't crawl if the website blocked our bot.
 
             start_time = time.time()
-            result = Crawler.Crawler(website, url, Statics.identifiers[name]).main()
+            result = Crawler.Crawler(website, url, Statics.identifiers[name], Statics.javascriptCrawler[name]).main()
             iterationTime = time.time() - start_time
 
             # URLs are returned if the result does not equal None, add them to the queue.
