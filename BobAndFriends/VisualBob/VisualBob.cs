@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Data.Common;
 using BorderSource.BetsyContext;
 using BorderSource.Common;
+using BorderSource.ProductAssociation;
 
 namespace VisualBob
 {

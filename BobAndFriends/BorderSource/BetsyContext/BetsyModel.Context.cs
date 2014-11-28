@@ -25,7 +25,7 @@ namespace BorderSource.BetsyContext
     	public BetsyModel(string conStr) : base(conStr) 
     	{
     			//Database.Log = Statics.SqlLogger.Write;
-    	 }
+    	}
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

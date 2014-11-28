@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace BorderSource.Common
 {
-    public class XmlValueReader
+    public class XmlValueReader : IDisposable
     {
         public XmlReader _reader;
         public DualKeyDictionary<string, XmlNodeType, string> dkd;
@@ -42,18 +42,6 @@ namespace BorderSource.Common
 
             while(_reader.Read())
             {
-                //Increment the tickcount
-                Statics.TickCount++;
-
-                //Sleep everytime sleepcount is reached
-                if (Statics.TickCount % Statics.TicksUntilSleep == 0)
-                {
-                    Thread.Sleep(1);
-
-                    //Set tickCount to 0 to save memory
-                    Statics.TickCount = 0;
-                }
-
                 if (dkd.ContainsKey(_reader.Name, _reader.NodeType))
                 {
                     string key1 = _reader.Name;
@@ -69,6 +57,13 @@ namespace BorderSource.Common
                     dkd.ClearValues();
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _reader.Close();
+            _reader.Dispose();
+            GC.SuppressFinalize(this);
         }
 
     }

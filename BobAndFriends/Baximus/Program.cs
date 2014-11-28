@@ -11,6 +11,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
 using System.Data.Entity.Core.EntityClient;
 using MySql.Data.MySqlClient;
+using BorderSource.Loggers;
 
 namespace Baximus
 {

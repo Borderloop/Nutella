@@ -11,6 +11,8 @@ namespace BorderSource.Queue
     {
         private static readonly object QueueLock = new object();
 
+        private static readonly object InputLock = new object();
+
         private static readonly object InstanceLock = new object();
 
         private static SingletonQueue<T> _Instance;
@@ -42,7 +44,24 @@ namespace BorderSource.Queue
             }
         }
 
-        public bool InputStopped { get; set; }
+        private bool _InputStopped = false;
+        public bool InputStopped
+        {
+            get
+            {
+                lock (InputLock)
+                {
+                    return _InputStopped;
+                }
+            }
+            set
+            {
+                lock (InputLock)
+                {
+                    _InputStopped = value;
+                }
+            }
+        }
 
         /// <summary>
         /// This method will put a product in the Queue.

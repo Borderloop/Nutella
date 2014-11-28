@@ -47,26 +47,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="46592">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="43520">
       <assemblyIdentity name="BobAndFriends" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>8QSLQ9+2yj6lmFb8He3nA/yfiDBn3K7vRDX6QKtFbyk=</dsig:DigestValue>
+        <dsig:DigestValue>TFqzg7x4HbqU+v4GpqSKUAhL6Oo53K6/sOuEL2VmJI0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="189440">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="247296">
       <assemblyIdentity name="BorderSource" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>JivclUsOcMnMP5DtWAjxB6voprG3CnvFnp2Ajo7KxzU=</dsig:DigestValue>
+        <dsig:DigestValue>VMor+CITQ09cAOZmxOW5iJCY9otkX9W22ExOTSemlKE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -106,13 +106,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="BobAndFriends.exe.config" size="2387">
+  <file name="BobAndFriends.exe.config" size="1732">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>6VGrjMLesbpiHhFF1GuV3yiyBQ9CN37VoEIh4nkEpEk=</dsig:DigestValue>
+      <dsig:DigestValue>s4Y9e9EVRT6A1OwWAo1FXsuHLJy/RSWaoyh1hckb3aQ=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

@@ -36,13 +36,17 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data, Version=6.9.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\Connector NET 6.8.3\Assemblies\v4.5\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.3\Assemblies\v4.5\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data.Entity.EF6, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\Connector NET 6.8.3\Assemblies\v4.5\MySql.Data.Entity.EF6.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.3\Assemblies\v4.5\MySql.Data.Entity.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Web, Version=6.9.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.3\Assemblies\v4.5\MySql.Web.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -56,6 +60,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AffiliateFile\AffiliateFileBase.cs" />
+    <Compile Include="AffiliateFile\AffiliateXmlFile.cs" />
+    <Compile Include="AffiliateReader\AffiliateReaderBase.cs" />
+    <Compile Include="AffiliateReader\AffilinetReader.cs" />
+    <Compile Include="AffiliateReader\BelboonReader.cs" />
+    <Compile Include="AffiliateReader\CommissionJunctionReader.cs" />
+    <Compile Include="AffiliateReader\DaisyconReader.cs" />
+    <Compile Include="AffiliateReader\TradeDoublerReader.cs" />
+    <Compile Include="AffiliateReader\TradeTrackerReader.cs" />
+    <Compile Include="AffiliateReader\WebgainsReader.cs" />
+    <Compile Include="AffiliateReader\ZanoxReader.cs" />
     <Compile Include="BetsyContext\affiliate.cs">
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
@@ -147,28 +162,31 @@
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Common\BetsyDbContextReader.cs" />
-    <Compile Include="Common\GeneralStatistics.cs" />
-    <Compile Include="Common\GeneralStatisticsMapper.cs" />
-    <Compile Include="Common\IStatistics.cs" />
-    <Compile Include="Common\IStatisticsMapper.cs" />
+    <Compile Include="Common\ConcurrentHashSet.cs" />
+    <Compile Include="Statistics\GeneralStatistics.cs" />
+    <Compile Include="Statistics\GeneralStatisticsMapper.cs" />
+    <Compile Include="Statistics\IStatistics.cs" />
+    <Compile Include="Statistics\IStatisticsMapper.cs" />
     <Compile Include="Common\BobBox.cs" />
     <Compile Include="Common\DualKeyDictionary.cs" />
     <Compile Include="Common\INIFile.cs" />
-    <Compile Include="Common\Logger.cs" />
+    <Compile Include="Loggers\Logger.cs" />
     <Compile Include="Common\Lookup.cs" />
-    <Compile Include="Common\Package.cs" />
-    <Compile Include="Common\Product.cs" />
-    <Compile Include="Common\ProductFilter.cs" />
+    <Compile Include="ProductAssociation\Package.cs" />
+    <Compile Include="ProductAssociation\Product.cs" />
+    <Compile Include="ProductAssociation\ProductFilter.cs" />
     <Compile Include="Common\SimpleThreadPool.cs" />
     <Compile Include="Queue\IQueue.cs" />
     <Compile Include="Queue\PackageQueue.cs" />
-    <Compile Include="Common\ProductValidation.cs" />
-    <Compile Include="Common\PropertyStatistics.cs" />
-    <Compile Include="Common\PropertyStatisticsMapper.cs" />
-    <Compile Include="Common\QueryLogger.cs" />
+    <Compile Include="ProductAssociation\ProductValidation.cs" />
+    <Compile Include="Statistics\PropertyStatistics.cs" />
+    <Compile Include="Statistics\PropertyStatisticsMapper.cs" />
+    <Compile Include="Loggers\QueryLogger.cs" />
     <Compile Include="Common\Statics.cs" />
-    <Compile Include="Common\TimeStatisticsMapper.cs" />
-    <Compile Include="Common\TimeStatistics.cs" />
+    <Compile Include="Statistics\RatioStatistics.cs" />
+    <Compile Include="Statistics\RatioStatisticsMapper.cs" />
+    <Compile Include="Statistics\TimeStatisticsMapper.cs" />
+    <Compile Include="Statistics\TimeStatistics.cs" />
     <Compile Include="Common\TypeSwitch.cs" />
     <Compile Include="Common\Util.cs" />
     <Compile Include="Common\XmlValueReader.cs" />
@@ -198,12 +216,12 @@
       <DependentUpon>BetsyModel.edmx</DependentUpon>
       <LastGenOutput>BetsyModel.cs</LastGenOutput>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

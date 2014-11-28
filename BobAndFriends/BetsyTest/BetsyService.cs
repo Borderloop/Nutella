@@ -13,6 +13,7 @@ using System.Data.Entity.Core.EntityClient;
 using System.Globalization;
 using System.Reflection;
 using BorderSource.Common;
+using BorderSource.ProductAssociation;
 
 namespace BetsyTest
 {
