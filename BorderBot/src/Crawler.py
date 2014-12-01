@@ -113,7 +113,10 @@ class Crawler():
         contentTypeIndex = message.find('Content-Type')
         contentType = message[contentTypeIndex:].find(':') + contentTypeIndex + 2
 
-        responseStatus = int(message[statusIndex:message[statusIndex:].find(',') + statusIndex])
+        try:
+            responseStatus = int(message[statusIndex:message[statusIndex:].find(',') + statusIndex])
+        except ValueError:
+            responseStatus = None
         contentType = message[contentType:message[contentType:].find('}') + contentType - 1]
 
         if responseStatus != 200:  # Something went wrong
