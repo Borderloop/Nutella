@@ -95,7 +95,6 @@ class Parser():
             return
 
         title = self.soup.find('div', {'class': 'detailheader'}).find('h1').text
-        brand = self.soup.find('div', {'class': 'PageHeader'}).text
 
         data = self.soup.find('div', {'class': 'ordernumber_data'}).find_all('p')
         for item in data:
@@ -120,7 +119,7 @@ class Parser():
             imageLocation = None
 
         self.db.openConnection()
-        self.db.insertNewArticle(title, self.website, price, self.url, brand=brand, availability=availability, ean=ean, sku=sku, imageLocation=imageLocation, productID=productID)
+        self.db.insertNewArticle(title, self.website, price, self.url, availability=availability, ean=ean, sku=sku, imageLocation=imageLocation, productID=productID)
         self.db.closeConnection()
 
 

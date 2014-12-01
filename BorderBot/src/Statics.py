@@ -13,7 +13,7 @@ javascriptCrawler = dict()
 
 # Parse the config file for all websites
 configParser = SafeConfigParser()
-configParser.read('C:/BorderSoftware/BorderBot/settings/borderbottemp.ini')
+configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
 websites = configParser.get('General', 'websites')
 multiplier = float(configParser.get('General', 'multiplier'))
 agentName = configParser.get('General', 'agentname')
@@ -45,5 +45,5 @@ for website in websites:  # We need all homepages in the url queues at the start
 
 
 def parseMultiplier():
-    configParser.read('C:/BorderSoftware/BorderBot/settings/borderbottemp.ini')
+    configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
     return float(configParser.get('General', 'multiplier'))

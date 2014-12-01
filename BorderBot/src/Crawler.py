@@ -55,8 +55,11 @@ class Crawler():
 
             self.soup = BeautifulSoup(data, 'html.parser')
         elif self.javascriptCrawler is True:
-            driver = self.getJavascriptRequest()
-            self.soup = BeautifulSoup(driver.page_source)
+            self.soup = self.getJavascriptRequest()
+
+            # If the returned value is a list, something went wrong.
+            if isinstance(self.soup, list):
+                return self.soup
 
         self.checkPage()
 
@@ -79,24 +82,52 @@ class Crawler():
             Logger.logRequest(self.websiteName, reqTime, self.url, r.status_code, r.elapsed.total_seconds(), r.headers['content-type'])
 
         except (requests.ConnectionError, ChunkedEncodingError, requests.exceptions.ReadTimeout) as e:
-            Logger.logError(self.websiteName, reqTime, self.url, e)
+            Logger.logError(self.websiteName, reqTime, self.url, error=e)
             return [self.url]
 
         # Check for bad response.
         try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            Logger.logError(self.websiteName, reqTime, self.url, e, r.status_code)
+            Logger.logError(self.websiteName, reqTime, self.url, error=e, httpResponse=r.status_code)
             return [self.url]
 
         return r
 
     # This procedure gets a request from a site which requires execution of javascript code.
     def getJavascriptRequest(self):
+        webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.User-Agent'] = self.agent
+        webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.Connection'] = 'close'
         driver = webdriver.PhantomJS(executable_path=self.phantomJSPath)
-        driver.get(self.url)
 
-        return driver
+        reqTime = strftime("%H:%M:%S")
+        start_time = time.time()
+        driver.get(self.url)
+        reqDuration = time.time() - start_time
+
+        # Get the HTTP response and content-type.
+        log = driver.get_log("har")
+        message = log[0]['message']
+
+        statusIndex = message.find('status') + 8
+        contentTypeIndex = message.find('Content-Type')
+        contentType = message[contentTypeIndex:].find(':') + contentTypeIndex + 2
+
+        responseStatus = int(message[statusIndex:message[statusIndex:].find(',') + statusIndex])
+        contentType = message[contentType:message[contentType:].find('}') + contentType - 1]
+
+        if responseStatus != 200:  # Something went wrong
+            Logger.logError(self.websiteName, reqTime, self.url, httpResponse=responseStatus)
+            driver.quit()
+            return [self.url]
+        else:
+            #Log the request details
+            Logger.logRequest(self.websiteName, reqTime, self.url, responseStatus, reqDuration, contentType)
+
+            soup = BeautifulSoup(driver.page_source)
+            driver.quit()
+
+            return soup
 
     # Procedure to check which page of the website is being crawled
     def checkPage(self):

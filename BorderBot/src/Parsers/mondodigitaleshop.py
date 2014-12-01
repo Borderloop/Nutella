@@ -52,7 +52,10 @@ class Parser():
     def parseSubCategoryPage(self):
         categories = self.soup.find('ul', {'id': 'menu-sidebar-drop'}).find_all('li')
         for category in categories:
-            self.urls.append(self.website + category.find('a')['href'])
+            try:
+                self.urls.append(self.website + category.find('a')['href'])
+            except TypeError:
+                pass
 
     # This procedure parses the products page, the page which enlists multiple products.
     def parseProductsPage(self):
@@ -103,7 +106,10 @@ class Parser():
     # Procedure to check if there's a next page and if so, add it to the urls.
     def checkForNextPage(self):
         pagination = self.soup.find('div', {'class': 'pagination'})
-        currentPage = int(pagination.find('strong').text)
+        try:
+            currentPage = int(pagination.find('strong').text)
+        except AttributeError:  # Only one page
+            return
 
         try:
             self.urls.append(self.website + pagination.find('a', text=str(currentPage+1))['href'])
