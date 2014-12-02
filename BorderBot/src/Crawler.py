@@ -44,7 +44,7 @@ class Crawler():
         print 'Crawling ' + self.url
         self.start_time = time.time()
 
-        if self.javascriptCrawler is False:
+        if self.javascriptCrawler == 'False':
             r = self.getRequest()
 
             # If the returned value is a list, something went wrong.
@@ -54,7 +54,7 @@ class Crawler():
             data = r.text
 
             self.soup = BeautifulSoup(data, 'html.parser')
-        elif self.javascriptCrawler is True:
+        elif self.javascriptCrawler == 'True':
             self.soup = self.getJavascriptRequest()
 
             # If the returned value is a list, something went wrong.
@@ -139,7 +139,6 @@ class Crawler():
         if self.url == self.website:  # Home page
             self.result = parser.Parser(self.soup, 'home', self.website, self.url).main()
             return
-
         for identifier in self.identifiers:
             if self.soup.find(self.identifiers[identifier][0], {self.identifiers[identifier][1]: self.identifiers[identifier][2]}) is not None:
 

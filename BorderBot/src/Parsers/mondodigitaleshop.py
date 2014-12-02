@@ -73,15 +73,20 @@ class Parser():
         price = self.soup.find('span', {'class': 'productPrice'}).text
         price = self.cleanPrice(price)
 
+
+        try:
+            ean = self.soup.find('b', text='EAN').parent.text
+            ean = ean[3:].strip()
+        except AttributeError:  # No EAN present
+            ean = None
+
         category = self.soup.find('div', {'class': 'breadcrumbs'}).find('strong').text
-        ean = self.soup.find('b', text='EAN').parent.text
-        ean = ean[3:].strip()
         productID = self.soup.find('div', {'id': 'vmMainPage'}).find('span').text
         productID = productID[productID.find(':')+1:].strip()
 
         if self.checkIfParsedBefore(productID, self.website) == ():  # Product hasn't been parsed before, insert it.
             self.db.openConnection()
-            self.db.insertNewArticle(title, self.website, price, self.url, ean=ean, productID=productID, category=category)
+            self.db.insertNewArticle(self.website, productID, title, price, self.url, ean=ean, category=category)
             self.db.closeConnection()
         else:  # Known product, update only
             self.db.openConnection()
