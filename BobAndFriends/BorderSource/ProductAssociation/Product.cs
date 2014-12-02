@@ -10,7 +10,7 @@ namespace BorderSource.ProductAssociation
     /// <summary>
     /// Default product class for storing data.
     /// </summary>
-    public class Product
+    public class Product : IEquatable<Product>
     {
         
         //All the data will be read as a String. Therefore, we store them in String objects.
@@ -75,6 +75,25 @@ namespace BorderSource.ProductAssociation
                 sb.AppendLine(prop.Name + ": " + prop.GetValue(this));
             }
             return sb.ToString();
+        }
+
+        public bool Equals(Product other)
+        {
+            if (other == null) return false;
+            return this.Affiliate == other.Affiliate && this.AffiliateProdID == other.AffiliateProdID;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            Product productObj = obj as Product;
+            if (productObj == null) return false;
+            return Equals(productObj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

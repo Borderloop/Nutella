@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using System.Data;
 using System.Diagnostics;
 using System.Data.Common;
@@ -364,54 +363,6 @@ namespace BetsyTest
         public int GetCountryId(string webshop)
         {
             return _context.webshop.Where(w => w.url == webshop).FirstOrDefault().country_id;
-        }
-
-        public void UpdateProductData(product productData, Product Record)
-        {
-            _context.product.Attach(productData);
-            var entry = _context.Entry(productData);
-
-            //Alter updated product
-            foreach (PropertyInfo p in productData.GetType().GetProperties())
-            {
-                //Loop over things like "article_id", "id", etc.
-                if (!Statics.TwoWayDBProductToBobProductMapping.ContainsKey(p.Name)) continue;
-
-                object recordValue = GetPropValue(Record, Statics.TwoWayDBProductToBobProductMapping[p.Name]);
-
-                object dbValue = p.GetValue(productData, null);
-
-                if (dbValue.GetType().Equals(typeof(System.DateTime)))
-                {
-                    DateTime correctValue;
-                    if (!(DateTime.TryParse((string)recordValue, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
-                    else if (!correctValue.Equals(dbValue))
-                    {
-                        p.SetValue(productData, correctValue);
-                        entry.Property(p.Name).IsModified = true;
-                    }
-
-                }
-                else if (dbValue.GetType().Equals(typeof(System.Decimal)))
-                {
-                    decimal correctValue;
-                    if (!(decimal.TryParse((string)recordValue, NumberStyles.Any, CultureInfo.InvariantCulture, out correctValue))) { Console.WriteLine("Cannot convert " + recordValue + " to " + dbValue.GetType()); continue; }
-                    else if (!correctValue.Equals(dbValue))
-                    {
-                        p.SetValue(productData, correctValue);
-                        entry.Property(p.Name).IsModified = true;
-                    }
-                }
-                else
-                {
-                    if (!recordValue.Equals(dbValue))
-                    {
-                        p.SetValue(productData, recordValue);
-                        entry.Property(p.Name).IsModified = true;
-                    }
-                }
-            }
-            _context.SaveChanges();
         }
 
         private static object GetPropValue(Product record, string propName)

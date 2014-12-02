@@ -12,14 +12,14 @@ namespace BorderSource.Loggers
 {
     public class Logger : StreamWriter
     {
-        /*
-        private readonly object Lock = new object();
+        
+        private static readonly object Lock = new object();
 
-        public string LogPath { get; set; }
+        public static string LogPath { get; set; }
 
-        private Logger _Instance;
+        private static  Logger _Instance;
 
-        public Logger Instance
+        public static Logger Instance
         {
             get
             {
@@ -29,7 +29,7 @@ namespace BorderSource.Loggers
                     {
                         if(_Instance == null)
                         {
-                            _Instance = new Logger(LogPath, true);
+                            _Instance = new Logger(LogPath + @"\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt", true);
                         }
                     }
                 }
@@ -44,75 +44,95 @@ namespace BorderSource.Loggers
                 base.Write(value);
             }
         }
-        */
-        public Logger(string logPath) : base(logPath) { }
+        
+        private Logger(string logPath) : base(logPath) { }
 
-        public Logger(string logPath, bool append) : base(logPath, append) { }
+        private Logger(string logPath, bool append) : base(logPath, append) { }
 
         public void WriteStatistics()
         {
-            RatioStatisticsMapper.Instance.Add("Ratio between read and filtered products", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["Wrong products"]);
-            RatioStatisticsMapper.Instance.Add("Ratio between validated and saved products", GeneralStatisticsMapper.Instance.map["Total amount of products processed"], GeneralStatisticsMapper.Instance.map["Products saved"]);
-            RatioStatisticsMapper.Instance.Add("Ratio between read and saved products", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["Products saved"]);
-            RatioStatisticsMapper.Instance.Add("Ratios between saved products", GeneralStatisticsMapper.Instance.map["Products saved"], GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
-            RatioStatisticsMapper.Instance.Add("Ratios between saved products and total", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
-            
-            base.WriteLine("Started writing statistics...");
-            base.WriteLine();
-            base.WriteLine("----------------------- GENERAL STATISTICS -----------------------");
-            foreach(KeyValuePair<string, IStatistics> pair in GeneralStatisticsMapper.Instance.map)
+            lock (Lock)
             {
-                base.WriteLine(pair.Key + ": " + ((GeneralStatistics)pair.Value).count);
-            }
-            base.WriteLine();
-            base.WriteLine("----------------------- RATIO STATISTICS -----------------------");
-            foreach (KeyValuePair<string, IStatistics> pair in RatioStatisticsMapper.Instance.map)
-            {
-                base.WriteLine(pair.Key + ":");
-                float[] ratios = ((RatioStatistics)pair.Value).CalculateRatios();
-                int i = 0;
-                foreach(IStatistics statistics in (((RatioStatistics)pair.Value).Statistics))
+                try
                 {
-                    base.WriteLine(((GeneralStatistics)statistics).Name + ": " + Math.Round(ratios[i] * (100), 2) + "%");
+                    RatioStatisticsMapper.Instance.Add("Ratio between read and filtered products", GeneralStatisticsMapper.Instance.map["Correct products"], GeneralStatisticsMapper.Instance.map["Wrong products"]);
+                    RatioStatisticsMapper.Instance.Add("Ratio between validated and saved products", GeneralStatisticsMapper.Instance.map["Total amount of products processed"], GeneralStatisticsMapper.Instance.map["Products saved"]);
+                    RatioStatisticsMapper.Instance.Add("Ratio between read and saved products", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["Products saved"]);
+                    RatioStatisticsMapper.Instance.Add("Ratios between saved products", GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
+                    RatioStatisticsMapper.Instance.Add("Ratios between saved products and total", GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
+                }
+                catch (KeyNotFoundException knfe)
+                {
+                    base.WriteLine("ERROR: Could not write ratios because one or more keys were not present. Message: " + knfe.Message);
+                }
+                finally
+                {
+                    base.WriteLine("Started writing statistics...");
+                    base.WriteLine();
+                    base.WriteLine("----------------------- GENERAL STATISTICS -----------------------");
+                    base.WriteLine();
+                    foreach (KeyValuePair<string, IStatistics> pair in GeneralStatisticsMapper.Instance.map)
+                    {
+                        base.WriteLine(pair.Key + ": " + ((GeneralStatistics)pair.Value).count);
+                    }
+                    base.WriteLine();
+                    base.WriteLine("----------------------- RATIO STATISTICS -----------------------");
+                    base.WriteLine();
+                    foreach (KeyValuePair<string, IStatistics> pair in RatioStatisticsMapper.Instance.map)
+                    {
+                        base.WriteLine(pair.Key + ":");
+                        float[] ratios = ((RatioStatistics)pair.Value).CalculateRatios();
+                        int i = 0;
+                        foreach (IStatistics statistics in (((RatioStatistics)pair.Value).Statistics))
+                        {
+                            base.WriteLine(((GeneralStatistics)statistics).Name + ": " + Math.Round(ratios[i] * (100), 2) + "%");
+                            i++;
+                        }
+                        base.WriteLine();
+                    }
+                    base.WriteLine();
+                    base.WriteLine("----------------------- TIME MEASURE STATISTICS -----------------------");
+                    base.WriteLine();
+                    foreach (KeyValuePair<string, IStatistics> pair in TimeStatisticsMapper.Instance.map)
+                    {
+                        base.Write(pair.Key + ":");
+                        for (int i = (pair.Key.Length / 4); i <= 7; i++)
+                        {
+                            base.Write("\t");
+                        }
+                        base.Write("Average: " + ((TimeStatistics)pair.Value).averageTime + "\t");
+                        base.Write("Max: " + ((TimeStatistics)pair.Value).maxTime + "\t");
+                        base.Write("Min: " + ((TimeStatistics)pair.Value).minTime + "\n");
+                        base.WriteLine();
+                    }
+                    base.WriteLine();
+                    base.WriteLine("----------------------- PROPERTY STATISTICS -----------------------");
+                    base.WriteLine();
+                    foreach (KeyValuePair<string, IStatistics> pair in PropertyStatisticsMapper.Instance.map)
+                    {
+                        base.WriteLine("Stats for \"" + pair.Key + "\":");
+                        base.WriteLine("Amount of roducts failed on this property: " + ((PropertyStatistics)pair.Value).wrongPropertyCount);
+                        base.WriteLine("Average length: " + ((PropertyStatistics)pair.Value).averagePropertyLength);
+                        base.WriteLine("Max length: " + ((PropertyStatistics)pair.Value).maxPropertyLength);
+                        base.WriteLine("Distribution of lengths by range;");
+                        int sum;
+                        for (int i = 0; i <= 10; i++)
+                        {
+                            sum = ((PropertyStatistics)pair.Value).occurences.GetCumulativeValuesFromRange(i * 10, ((i + 1) * 10) - 1);
+                            if (sum == 0) continue;
+                            base.WriteLine("Range " + i * 10 + " - " + (((i + 1) * 10) - 1) + ": " + sum);
+                        }
+                        for (int i = 10; i < 30; i += 5)
+                        {
+                            sum = ((PropertyStatistics)pair.Value).occurences.GetCumulativeValuesFromRange(i * 10, ((i + 5) * 10) - 1);
+                            if (sum == 0) continue;
+                            base.WriteLine("Range " + i * 10 + " - " + (((i + 5) * 10) - 1) + ": " + sum);
+                        }
+                        base.WriteLine();
+                    }
+                    base.WriteLine("----------------------- END OF STATISTICS -----------------------");
                 }
             }
-            base.WriteLine();
-            base.WriteLine("----------------------- TIME MEASURE STATISTICS -----------------------");
-            base.WriteLine();
-            foreach (KeyValuePair<string, IStatistics> pair in TimeStatisticsMapper.Instance.map)
-            {
-                base.WriteLine("Stats for \"" + pair.Key + "\":");
-                base.Write("Average time: " + ((TimeStatistics)pair.Value).averageTime + "\t");
-                base.Write("Max time: " + ((TimeStatistics)pair.Value).maxTime + "\t");
-                base.Write("Min time: " + ((TimeStatistics)pair.Value).minTime + "\n");
-                base.WriteLine();
-            }
-            base.WriteLine();
-            base.WriteLine("----------------------- PROPERTY STATISTICS -----------------------");
-            base.WriteLine();
-            foreach (KeyValuePair<string, IStatistics> pair in PropertyStatisticsMapper.Instance.map)
-            {
-                base.WriteLine("Stats for \"" + pair.Key + "\":");
-                base.WriteLine("Amount of roducts failed on this property: " + ((PropertyStatistics)pair.Value).wrongPropertyCount);
-                base.WriteLine("Average length: " + ((PropertyStatistics)pair.Value).averagePropertyLength);
-                base.WriteLine("Max length: " + ((PropertyStatistics)pair.Value).maxPropertyLength);
-                base.WriteLine("Distribution of lengths by range;");
-                int sum;
-                for (int i = 0; i <= 10; i++)
-                {
-                    sum = ((PropertyStatistics)pair.Value).occurences.GetCumulativeValuesFromRange(i * 10, ((i + 1) * 10) - 1);
-                    if(sum == 0) continue;
-                    base.WriteLine("Range " + i * 10 + " - " + (((i + 1) * 10) - 1) + ": " + sum);
-                }
-                for (int i = 10; i < 30; i += 5)
-                {
-                    sum = ((PropertyStatistics)pair.Value).occurences.GetCumulativeValuesFromRange(i * 10, ((i + 5) * 10) - 1);
-                    if (sum == 0) continue;
-                    base.WriteLine("Range " + i * 10 + " - " + (((i + 5) * 10) - 1) + ": " + sum);
-                }
-                base.WriteLine();
-            }
-            base.WriteLine("----------------------- END OF STATISTICS -----------------------");
         }
     }
 }

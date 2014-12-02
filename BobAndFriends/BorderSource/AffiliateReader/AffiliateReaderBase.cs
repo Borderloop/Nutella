@@ -10,7 +10,7 @@ namespace BorderSource.AffiliateReader
 {
     public abstract class AffiliateReaderBase
     {
-        protected int PackageSize = 10;
+        public int PackageSize { get; set; }
 
         /// <summary>
         /// The name of the affiliate

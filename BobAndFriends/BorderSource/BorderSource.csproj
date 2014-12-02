@@ -36,13 +36,13 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.9.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.3\Assemblies\v4.5\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.5\Assemblies\v4.5\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.3\Assemblies\v4.5\MySql.Data.Entity.EF6.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.5\Assemblies\v4.5\MySql.Data.Entity.EF6.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Web, Version=6.9.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -65,6 +65,7 @@
     <Compile Include="AffiliateReader\AffiliateReaderBase.cs" />
     <Compile Include="AffiliateReader\AffilinetReader.cs" />
     <Compile Include="AffiliateReader\BelboonReader.cs" />
+    <Compile Include="AffiliateReader\BorderBotReader.cs" />
     <Compile Include="AffiliateReader\CommissionJunctionReader.cs" />
     <Compile Include="AffiliateReader\DaisyconReader.cs" />
     <Compile Include="AffiliateReader\TradeDoublerReader.cs" />
@@ -163,13 +164,16 @@
     </Compile>
     <Compile Include="Common\BetsyDbContextReader.cs" />
     <Compile Include="Common\ConcurrentHashSet.cs" />
+    <Compile Include="Property\INIFile.cs" />
+    <Compile Include="Property\IProperty.cs" />
+    <Compile Include="Property\Property.cs" />
+    <Compile Include="Property\PropertyFactory.cs" />
     <Compile Include="Statistics\GeneralStatistics.cs" />
     <Compile Include="Statistics\GeneralStatisticsMapper.cs" />
     <Compile Include="Statistics\IStatistics.cs" />
     <Compile Include="Statistics\IStatisticsMapper.cs" />
     <Compile Include="Common\BobBox.cs" />
     <Compile Include="Common\DualKeyDictionary.cs" />
-    <Compile Include="Common\INIFile.cs" />
     <Compile Include="Loggers\Logger.cs" />
     <Compile Include="Common\Lookup.cs" />
     <Compile Include="ProductAssociation\Package.cs" />

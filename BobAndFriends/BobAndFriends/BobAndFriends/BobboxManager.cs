@@ -18,14 +18,19 @@ namespace BobAndFriends.BobAndFriends
         private int Count;
         private const int PackageSize = 500;
         private int MaxCountryId;
-        private int ExistingProducts, EanMatches, SkuMatches = 0;
+        private int ExistingProducts, EanMatches, SkuMatches, NewProducts = 0;
 
         public BobboxManager()
         {
-            BobBox = new BobBox();          
+            string dbName = Properties.PropertyList["db_name"].GetValue<string>();
+            string dbPassword = Properties.PropertyList["db_password"].GetValue<string>();
+            string dbSource = Properties.PropertyList["db_source"].GetValue<string>();
+            string dbUserId = Properties.PropertyList["db_userid"].GetValue<string>();
+            int dbPort = Properties.PropertyList["db_port"].GetValue<int>();
+            int maxPoolSize = Properties.PropertyList["db_max_pool_size"].GetValue<int>();
+            BobBox = new BobBox(dbName, dbPassword, dbSource, dbUserId, dbPort, maxPoolSize);       
             Count = 0;
             MaxCountryId = Lookup.WebshopLookup.Max(m => m.Max(n => n.CountryId));
-            Console.WriteLine("Found max country id: " + MaxCountryId);
         }
 
         public void StartValidatingAndSaving()
@@ -42,7 +47,7 @@ namespace BobAndFriends.BobAndFriends
                 if ((Count >= PackageSize))
                 {
                     Console.WriteLine("Saving changes for " + PackageSize + " INSERTS/UPDATES to database.");
-                    Console.WriteLine("Totals; Existing products: {0}, EanMatches: {1}, SkuMatches: {2}", ExistingProducts, EanMatches, SkuMatches);
+                    Console.WriteLine("Totals; Existing products: {0}, EanMatches: {1}, SkuMatches: {2}, New: {3}", ExistingProducts, EanMatches, SkuMatches, NewProducts);
                     BobBox.CommitAndCreate();
                     Console.WriteLine("Done saving changes.");
                     Count = 0;
@@ -85,11 +90,13 @@ namespace BobAndFriends.BobAndFriends
                     goto Next;
                 }
 
-                /*if(validation.IsValidAsNewArticle)
+                if(validation.IsValidAsNewArticle)
                 {
+                    GeneralStatisticsMapper.Instance.Increment("New products");
+                    NewProducts++;
                     BobBox.SaveNewArticle(validation.Product, validation.CountryId, validation.CategoryId);
                     goto Next;
-                }*/
+                }
 
             Next:
                 {

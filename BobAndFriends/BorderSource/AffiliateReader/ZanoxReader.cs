@@ -32,129 +32,127 @@ namespace BorderSource.AffiliateReader
                 Product p = null;
                 string lastUpdated = null;
                 string currency = null;
-                while (_reader.Read())
+                bool isDone = false;
+                bool nextLoop = false;
+                while (!isDone)
                 {
-                    if (products.Count > PackageSize)
-                    {
-                        yield return products;
-                        products.Clear();
-                    }
                     try
                     {
-                        if (_reader.IsStartElement())
+                        while (_reader.Read() && !nextLoop)
                         {
-                            switch (_reader.Name)
+                            if (_reader.IsStartElement())
                             {
-                                case "streamCurrency":
-                                    _reader.Read();
-                                    currency = _reader.Value;
-                                    break;
+                                switch (_reader.Name)
+                                {
+                                    case "streamCurrency":
+                                        _reader.Read();
+                                        currency = _reader.Value;
+                                        break;
 
-                                case "lastUpdated":
-                                    _reader.Read();
-                                    lastUpdated = _reader.Value;
-                                    break;
+                                    case "lastUpdated":
+                                        _reader.Read();
+                                        lastUpdated = _reader.Value;
+                                        break;
 
-                                case "record":
-                                    p = new Product();
-                                    break;
+                                    case "record":
+                                        p = new Product();
+                                        break;
 
-                                case "column":
-                                    if (_reader.HasAttributes) { _reader.MoveToNextAttribute(); }
-                                    switch (_reader.Value)
-                                    {
-                                        case "url":
-                                            _reader.Read();
-                                            p.Url = _reader.Value;
-                                            break;
+                                    case "column":
+                                        if (_reader.HasAttributes) { _reader.MoveToNextAttribute(); }
+                                        switch (_reader.Value)
+                                        {
+                                            case "url":
+                                                _reader.Read();
+                                                p.Url = _reader.Value;
+                                                break;
 
-                                        case "title":
-                                            _reader.Read();
-                                            p.Title = _reader.Value;
-                                            break;
+                                            case "title":
+                                                _reader.Read();
+                                                p.Title = _reader.Value;
+                                                break;
 
-                                        case "ean":
-                                            _reader.Read();
-                                            p.EAN = _reader.Value;
-                                            break;
+                                            case "ean":
+                                                _reader.Read();
+                                                p.EAN = _reader.Value;
+                                                break;
 
-                                        case "price":
-                                            _reader.Read();
-                                            p.Price = _reader.Value;
-                                            break;
+                                            case "price":
+                                                _reader.Read();
+                                                p.Price = _reader.Value;
+                                                break;
 
-                                        case "image":
-                                            _reader.Read();
-                                            p.Image_Loc = _reader.Value;
-                                            break;
+                                            case "image":
+                                                _reader.Read();
+                                                p.Image_Loc = _reader.Value;
+                                                break;
 
-                                        case "category":
-                                            _reader.Read();
-                                            p.Category = _reader.Value;
-                                            break;
+                                            case "category":
+                                                _reader.Read();
+                                                p.Category = _reader.Value;
+                                                break;
 
-                                        case "description":
-                                            _reader.Read();
-                                            p.Description = _reader.Value;
-                                            break;
+                                            case "description":
+                                                _reader.Read();
+                                                p.Description = _reader.Value;
+                                                break;
 
-                                        case "price_shipping":
-                                            _reader.Read();
-                                            p.DeliveryCost = _reader.Value;
-                                            break;
+                                            case "price_shipping":
+                                                _reader.Read();
+                                                p.DeliveryCost = _reader.Value;
+                                                break;
 
-                                        case "stock":
-                                            _reader.Read();
-                                            p.Stock = _reader.Value;
-                                            break;
+                                            case "stock":
+                                                _reader.Read();
+                                                p.Stock = _reader.Value;
+                                                break;
 
-                                        case "timetoship":
-                                            _reader.Read();
-                                            p.DeliveryTime = _reader.Value;
-                                            break;
+                                            case "timetoship":
+                                                _reader.Read();
+                                                p.DeliveryTime = _reader.Value;
+                                                break;
 
-                                        case "zupid":
-                                            _reader.Read();
-                                            p.AffiliateProdID = _reader.Value;
-                                            break;
-                                    }
-                                    _reader.MoveToElement();
-                                    break;
+                                            case "zupid":
+                                                _reader.Read();
+                                                p.AffiliateProdID = _reader.Value;
+                                                break;
+                                        }
+                                        _reader.MoveToElement();
+                                        break;
+                                }
                             }
-                        }
 
-                        if (_reader.Name.Equals("record") && _reader.NodeType == XmlNodeType.EndElement)
-                        {
-                            p.Currency = currency;
-                            p.LastModified = lastUpdated;
-                            p.Affiliate = "Zanox";
-                            p.FileName = file;
-                            p.Webshop = fileUrl;
-                            products.Add(p);
+                            if (_reader.Name.Equals("record") && _reader.NodeType == XmlNodeType.EndElement)
+                            {
+                                p.Currency = currency;
+                                p.LastModified = lastUpdated;
+                                p.Affiliate = "Zanox";
+                                p.FileName = file;
+                                p.Webshop = fileUrl;
+                                products.Add(p);
+                            }
+
+                            nextLoop = products.Count >= PackageSize;
                         }
                     }
-
                     catch (ThreadAbortException)
                     {
                         Console.WriteLine("From producer: Thread was aborted. Shutting down.");
                     }
                     catch (XmlException xmle)
                     {
-                        using (Logger logger = new Logger(Statics.LoggerPath, true))
-                        {
-                            logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                        }
+                        Logger.Instance.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
                     }
                     catch (Exception e)
                     {
-                        using (Logger logger = new Logger(Statics.LoggerPath, true))
-                        {
-                            logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
-                        }
+                        Logger.Instance.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                     }
+                    isDone = !nextLoop;
+                    nextLoop = false;
+                    yield return products;
+                    products.Clear();
                 }
                 yield return products;
-                products.Clear();
             }
         }
 
@@ -297,17 +295,11 @@ namespace BorderSource.AffiliateReader
                     }
                     catch (XmlException xmle)
                     {
-                        using (Logger logger = new Logger(Statics.LoggerPath, true))
-                        {
-                            logger.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                        }
+                        Logger.Instance.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
                     }
                     catch (Exception e)
                     {
-                        using (Logger logger = new Logger(Statics.LoggerPath, true))
-                        {
-                            logger.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
-                        }
+                        Logger.Instance.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
                     }
                 }
                 yield return products;

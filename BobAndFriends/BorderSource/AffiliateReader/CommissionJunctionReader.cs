@@ -69,14 +69,13 @@ namespace BorderSource.AffiliateReader
                     products.Add(p);
                     p = new Product();
 
-                    if (products.Count > PackageSize)
+                    if (products.Count >= PackageSize)
                     {
                         yield return products;
                         products.Clear();
                     }
                 }
                 yield return products;
-                products.Clear();
             }                      
         }
 

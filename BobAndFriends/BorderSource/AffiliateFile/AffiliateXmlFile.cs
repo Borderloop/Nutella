@@ -22,6 +22,7 @@ namespace BorderSource.AffiliateFile
                 case "Tradetracker": reader = new TradeTrackerReader(); break;
                 case "Webgains": reader = new WebgainsReader(); break;
                 case "Zanox": reader = new ZanoxReader(); break;
+                case "BorderBot": reader = new BorderBotReader(); break;
                 default: reader = null; break;
             }
             return reader;
