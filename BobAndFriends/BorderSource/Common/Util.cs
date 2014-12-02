@@ -225,5 +225,17 @@ namespace BorderSource.Common
         {
             return (T)t.GetType().GetConstructor(new Type[]{}).Invoke(null);
         }
+
+        public static string Swap(this string input, char firstChar, char secondChar)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach(char c in input)
+            {
+                if (c == firstChar) builder.Append(secondChar);
+                else if (c == secondChar) builder.Append(firstChar);
+                else builder.Append(c);
+            }
+            return builder.ToString();
+        }
     }
 }

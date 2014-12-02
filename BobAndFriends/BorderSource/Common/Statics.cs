@@ -17,18 +17,5 @@ namespace BorderSource.Common
         public static string AmiguousLogPath;
 
         public static QueryLogger SqlLogger;
-
-        /// <summary>
-        /// The settings used in the program.
-        /// </summary>
-        public static Dictionary<string,string> settings;
-
-        public static Dictionary<string, int> DbPropertySizes;
-
-        public static Dictionary<string, int> maxSizes;
-
-        public static Dictionary<string, string> TwoWayDBProductToBobProductMapping;
-
-        public static List<string> webshopNames;
     }
 }

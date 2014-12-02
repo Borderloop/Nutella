@@ -17,6 +17,7 @@ using BobAndFriends.BobAndFriends;
 using BorderSource.ProductAssociation;
 using BorderSource.Statistics;
 using BorderSource.Loggers;
+using BobAndFriends.Global;
 
 namespace BobAndFriends
 {
@@ -39,11 +40,11 @@ namespace BobAndFriends
 
         public static bool Done = false;
 
-        public const int MAX_BOBS = 1;
+        public static int MAX_BOBS;
 
-        public const int MAX_BOBBOXMANAGERS = 3;
+        public static int MAX_BOBBOXMANAGERS;
 
-        public const int MAX_READERS = 3;
+        public static int MAX_READERS;
 
         #region Trap application termination
         [DllImport("Kernel32")]
@@ -68,11 +69,10 @@ namespace BobAndFriends
 
             TimeStatisticsMapper.Instance.StopAll();
 
-            using (Logger logger = new Logger(Statics.LoggerPath, true))
-            {
-                logger.WriteStatistics();
-            }
-         
+            Logger.Instance.WriteStatistics();
+
+            Thread.Sleep(500);
+
             producer.Abort();
             validator.Abort();
             consumer.Abort();
@@ -102,20 +102,16 @@ namespace BobAndFriends
             //Initialize
             Initialize();
 
-            //DatabaseJanitor crapper = new DatabaseJanitor();
-            //crapper.Cleanup();    
-
-            //TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
-
             //Create threads
             producer = new Thread(new ThreadStart(FeedReaderController));
             validator = new Thread(new ThreadStart(BobController));
-            consumer = new Thread(new ThreadStart(StartBobBoxManager));
+            consumer = new Thread(new ThreadStart(BobBoxManagerController));
 
             //Start threads
             producer.Start();
             validator.Start();
             consumer.Start();
+
         }
 
         static void BobController()
@@ -171,11 +167,11 @@ namespace BobAndFriends
                 Console.WriteLine("Caught OutOfMemoryException, trying GC.Collect()");
                 GC.Collect();
             }
-            //catch (Exception e)
-            //{ 
-            //    Console.WriteLine("A Bob threw an error: " + e.Message);
-            //    Console.WriteLine("Continuing with another Bob.");
-            //}
+            catch (Exception e)
+            { 
+                Console.WriteLine("A Bob threw an error: " + e.Message);
+                Console.WriteLine("Continuing with another Bob.");
+            }
             finally
             {
                 bob.Dispose();
@@ -208,12 +204,10 @@ namespace BobAndFriends
 
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
 
-            using (Logger logger = new Logger(Statics.LoggerPath))
-            {
-                logger.WriteStatistics();
-            }
+            Logger.Instance.WriteStatistics();
 
-            TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
+            Crapper.Crapper.CleanUp(StartTime);
+
             Done = true;
             Console.WriteLine("Press ENTER to exit.");
             Console.Read();
@@ -222,9 +216,15 @@ namespace BobAndFriends
         static void StartBobBoxManager()
         {
             Console.WriteLine("Started a BobBoxManager.");
-
-            BobboxManager bbm = new BobboxManager();          
-            bbm.StartValidatingAndSaving();                     
+            BobboxManager bbm = new BobboxManager();
+            try
+            {
+                bbm.StartValidatingAndSaving();
+            }
+            catch (Exception)
+            {
+                bbm.StartValidatingAndSaving();
+            }            
         }
 
         static void Initialize()
@@ -232,59 +232,22 @@ namespace BobAndFriends
             //Initialize all the values for the static variables in the Statics class. These
             //variables are used throughout the whole program.
 
-            #region Settings
-            Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
-            #endregion
+            MAX_BOBS = Properties.PropertyList["max_bob_threads"].GetValue<int>();
+            MAX_BOBBOXMANAGERS = Properties.PropertyList["max_bobbox_threads"].GetValue<int>();
+            MAX_READERS = Properties.PropertyList["max_reader_threads"].GetValue<int>();
 
-            #region Loggers
-            Statics.LoggerPath = Statics.settings["logpath"] + "\\log-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
-            Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
-            Statics.AmiguousLogPath = Statics.settings["logpath"] + "\\ambiguous-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
-            #endregion
 
-            #region Values
-            Statics.maxSizes = new Dictionary<string, int>();
-            Statics.maxSizes.Add("max_queue_size", Int32.Parse(Statics.settings["maxqueuesize"]));
-            Statics.maxSizes.Add("max_sku_size", Int32.Parse(Statics.settings["maxskusize"]));
-            Statics.maxSizes.Add("max_brand_size", Int32.Parse(Statics.settings["maxbrandsize"]));
-            Statics.maxSizes.Add("max_title_size", Int32.Parse(Statics.settings["maxtitlesize"]));
-            Statics.maxSizes.Add("max_imageurl_size", Int32.Parse(Statics.settings["maximageurlsize"]));
-            Statics.maxSizes.Add("max_category_size", Int32.Parse(Statics.settings["maxcategorysize"]));
-            Statics.maxSizes.Add("max_shiptime_size", Int32.Parse(Statics.settings["maxshiptimesize"]));
-            Statics.maxSizes.Add("max_webshopurl_size", Int32.Parse(Statics.settings["maxwebshopurlsize"]));
-            Statics.maxSizes.Add("max_directlink_size", Int32.Parse(Statics.settings["maxdirectlinksize"]));
-            Statics.maxSizes.Add("max_affiliatename_size", Int32.Parse(Statics.settings["maxaffiliatenamesize"]));
-            Statics.maxSizes.Add("max_affiliateproductid_size", Int32.Parse(Statics.settings["maxaffiliateproductidsize"]));
-            #endregion
-
-            #region Mapping of DBProduct to BobProduct
-            Statics.TwoWayDBProductToBobProductMapping = new Dictionary<string, string>();
-            Statics.TwoWayDBProductToBobProductMapping.Add("ship_time", "DeliveryTime");
-            Statics.TwoWayDBProductToBobProductMapping.Add("ship_cost", "DeliveryCost");
-            Statics.TwoWayDBProductToBobProductMapping.Add("price", "Price");
-            Statics.TwoWayDBProductToBobProductMapping.Add("webshop_url", "Webshop");
-            Statics.TwoWayDBProductToBobProductMapping.Add("direct_link", "Url");
-            Statics.TwoWayDBProductToBobProductMapping.Add("last_modified", "LastModified");
-            Statics.TwoWayDBProductToBobProductMapping.Add("valid_until", "ValidUntil");
-            Statics.TwoWayDBProductToBobProductMapping.Add("affiliate_name", "Affiliate");
-            Statics.TwoWayDBProductToBobProductMapping.Add("affiliate_unique_id", "AffiliateProdID");
-            #endregion
-
-            #region Mapping of BobProduct to DBProduct
-            Statics.TwoWayDBProductToBobProductMapping.Add("DeliveryTime", "ship_time");
-            Statics.TwoWayDBProductToBobProductMapping.Add("DeliveryCost", "ship_cost");
-            Statics.TwoWayDBProductToBobProductMapping.Add("Price", "price");
-            Statics.TwoWayDBProductToBobProductMapping.Add("Webshop", "webshop_url");
-            Statics.TwoWayDBProductToBobProductMapping.Add("Url", "direct_link");
-            Statics.TwoWayDBProductToBobProductMapping.Add("LastModified", "last_modified");
-            Statics.TwoWayDBProductToBobProductMapping.Add("ValidUntil", "valid_until");
-            Statics.TwoWayDBProductToBobProductMapping.Add("Affiliate", "affiliate_name");
-            Statics.TwoWayDBProductToBobProductMapping.Add("AffiliateProdID", "affiliate_unique_id");
-            #endregion
-
-            BetsyDbContextReader reader = new BetsyDbContextReader();
+            string dbName = Properties.PropertyList["db_name"].GetValue<string>();
+            string dbPassword = Properties.PropertyList["db_password"].GetValue<string>();
+            string dbSource = Properties.PropertyList["db_source"].GetValue<string>();
+            string dbUserId = Properties.PropertyList["db_userid"].GetValue<string>();
+            int dbPort = Properties.PropertyList["db_port"].GetValue<int>();
+            int maxPoolSize = Properties.PropertyList["db_max_pool_size"].GetValue<int>();
+            BetsyDbContextReader reader =  new BetsyDbContextReader(dbName, dbPassword, dbSource, dbUserId, dbPort, maxPoolSize);
             Lookup.WebshopLookup = reader.GetAllWebshops();
             Lookup.CategoryLookup = reader.GetAllCategories();
+
+            Logger.LogPath = Properties.PropertyList["log_path"].GetValue<string>();
 
             TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
         }

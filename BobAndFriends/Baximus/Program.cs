@@ -12,6 +12,7 @@ using System.Data.Entity;
 using System.Data.Entity.Core.EntityClient;
 using MySql.Data.MySqlClient;
 using BorderSource.Loggers;
+using BorderSource.Property;
 
 namespace Baximus
 {
@@ -212,24 +213,21 @@ namespace Baximus
         static void Initialize()
         {
             #region Settings
-            Statics.settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
-            #endregion
-
-            #region Loggers
-            Statics.SqlLogger = new QueryLogger(Statics.settings["logpath"] + "\\querydump" + DateTime.Now.ToString("MMddHHmm") + ".txt");
-            #endregion           
+            Dictionary<string, string> settings = new INIFile("C:\\BorderSoftware\\BobAndFriends\\settings\\baf.ini").GetAllValues();
+            #endregion  
 
             #region ConnectionString
             MySqlConnectionStringBuilder providerConnStrBuilder = new MySqlConnectionStringBuilder();
             providerConnStrBuilder.AllowUserVariables = true;
             providerConnStrBuilder.AllowZeroDateTime = true;
             providerConnStrBuilder.ConvertZeroDateTime = true;
-            providerConnStrBuilder.MaximumPoolSize = 32767;
+            providerConnStrBuilder.MaximumPoolSize = 125;
             providerConnStrBuilder.Pooling = true;
-            providerConnStrBuilder.Database = Statics.settings["dbname"];
-            providerConnStrBuilder.Password = Statics.settings["dbpw"];
-            providerConnStrBuilder.Server = Statics.settings["dbsource"];
-            providerConnStrBuilder.UserID = Statics.settings["dbuid"];
+            providerConnStrBuilder.Database = settings["db_name"];
+            providerConnStrBuilder.Password = settings["db_password"];
+            providerConnStrBuilder.Server = settings["db_source"];
+            providerConnStrBuilder.UserID = settings["db_userid"];
+            providerConnStrBuilder.Port = (uint)Int32.Parse(settings["db_port"]);
 
             EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
             entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";

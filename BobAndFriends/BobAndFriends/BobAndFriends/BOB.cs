@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Diagnostics;
 using System.Data;
 using System.Reflection;
@@ -11,6 +12,7 @@ using BorderSource.BetsyContext;
 using BorderSource.Common;
 using BorderSource.Queue;
 using BorderSource.ProductAssociation;
+using BobAndFriends.Global;
 
 namespace BobAndFriends.BobAndFriends
 {
@@ -18,9 +20,18 @@ namespace BobAndFriends.BobAndFriends
     {
         private BetsyDbContextReader db;
 
+        private int _maxValidationQueueSize;
+
         public BOB()
         {
-            db = new BetsyDbContextReader();
+            string dbName = Properties.PropertyList["db_name"].GetValue<string>();
+            string dbPassword = Properties.PropertyList["db_password"].GetValue<string>();
+            string dbSource = Properties.PropertyList["db_source"].GetValue<string>();
+            string dbUserId = Properties.PropertyList["db_userid"].GetValue<string>();
+            int dbPort = Properties.PropertyList["db_port"].GetValue<int>();
+            int maxPoolSize = Properties.PropertyList["db_max_pool_size"].GetValue<int>();
+            db = new BetsyDbContextReader(dbName, dbPassword, dbSource, dbUserId, dbPort, maxPoolSize);
+            _maxValidationQueueSize = Properties.PropertyList["max_validationqueue_size"].GetValue<int>();
         }
 
         /// <summary>
@@ -29,7 +40,11 @@ namespace BobAndFriends.BobAndFriends
         /// </summary>
         public void Process(Package p)
         {
-            int countryID = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()].FirstOrDefault().CountryId;
+            while (_maxValidationQueueSize == 0 ? false : ProductValidationQueue.Instance.Queue.Count > _maxValidationQueueSize) Thread.Sleep(1000);
+            Webshop ws = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()].FirstOrDefault();
+            if (ws.Equals(null)) return;
+            int countryID = ws.CountryId;
+
             Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(p.Webshop.ToLower().Trim());
 
             //Cleanup titles
@@ -42,35 +57,44 @@ namespace BobAndFriends.BobAndFriends
                 }
             }
 
-            //Filter existing products
-            foreach(KeyValuePair<Product, int> pair in db.GetExistingProductIds(p.products, p.Webshop))
+            if (Properties.PropertyList["update_enabled"].GetValue<bool>())
             {
-                if (pair.Key == null) continue;
-                ProductValidation validation = new ProductValidation();
-                validation.Product = pair.Key;
-                validation.CountryId = countryID;
-                validation.ArticleNumberOfExistingProduct = pair.Value;
-                validation.CategoryId = db.GetCategoryNumber(pair.Value);
-                ProductValidationQueue.Instance.Enqueue(validation);
-                pair.Key.IsValidated = true;
+                //Filter existing products
+                foreach (KeyValuePair<Product, int> pair in db.GetExistingProductIds(p.products, p.Webshop))
+                {
+                    if (pair.Key == null) continue;
+                    ProductValidation validation = new ProductValidation();
+                    validation.Product = pair.Key;
+                    validation.CountryId = countryID;
+                    validation.ArticleNumberOfExistingProduct = pair.Value;
+                    validation.CategoryId = db.GetCategoryNumber(pair.Value);
+                    ProductValidationQueue.Instance.Enqueue(validation);
+                    pair.Key.IsValidated = true;
+                }
             }
             
             if (p.products.All(prod => prod.IsValidated)) return;
 
-            foreach(KeyValuePair<Product, int> pair in db.GetEanMatches(p.products.Where(prod => !prod.IsValidated).ToList()))
+            if (Properties.PropertyList["insert_match_enabled"].GetValue<bool>())
             {
-                if (pair.Key == null) continue;
-                ProductValidation validation = new ProductValidation();
-                validation.Product = pair.Key;
-                validation.CountryId = countryID;
-                validation.ArticleNumberOfEanMatch = pair.Value;
-                validation.CategoryId = db.GetCategoryNumber(pair.Value);
-                ProductValidationQueue.Instance.Enqueue(validation);
-                pair.Key.IsValidated = true;
+                foreach (KeyValuePair<Product, int> pair in db.GetEanMatches(p.products.Where(prod => !prod.IsValidated).ToList()))
+                {
+                    if (pair.Key == null) continue;
+                    ProductValidation validation = new ProductValidation();
+                    validation.Product = pair.Key;
+                    validation.CountryId = countryID;
+                    validation.ArticleNumberOfEanMatch = pair.Value;
+                    validation.CategoryId = db.GetCategoryNumber(pair.Value);
+                    ProductValidationQueue.Instance.Enqueue(validation);
+                    pair.Key.IsValidated = true;
+                }
             }
 
             if (p.products.All(prod => prod.IsValidated)) return;
 
+            /*
+            if (Properties.PropertyList["insert_match_enabled"].GetValue<bool>()) 
+            {
             foreach (KeyValuePair<Product, int> pair in db.GetSkuMatches(p.products.Where(prod => !prod.IsValidated).ToList()))
             {
                 if (pair.Key == null) continue;
@@ -82,30 +106,67 @@ namespace BobAndFriends.BobAndFriends
                 ProductValidationQueue.Instance.Enqueue(validation);
                 pair.Key.IsValidated = true;
             }
-
+            }
+            
             if (p.products.All(prod => prod.IsValidated)) return;
-            /*
-            foreach (Product Record in p.products.Where(prod => !prod.IsValidated).ToList())
+            */
+
+            if (Properties.PropertyList["insert_new_enabled"].GetValue<bool>())
             {
-                bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0;
-                bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category.ToLower().Trim()) || Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
-                if (ProductIsValid && CategoryExists)
+                foreach (Product Record in p.products.Where(prod => !prod.IsValidated).ToList())
                 {
-                    ProductValidation validation = new ProductValidation();
-                    validation.Product = Record;
-                    validation.IsValidAsNewArticle = ProductIsValid && CategoryExists;
-                    validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
+                    bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0;
+                    bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category.ToLower().Trim()) || Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
 
-                    validation.CategoryId = validation.CategorySynonymExists ? Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].First().CategoryId : Lookup.CategoryLookup[Record.Category.ToLower().Trim()].First().Id;
+                    int catId = -1;
+                    CategorySynonym catSyn = Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].FirstOrDefault();
+                    if (catSyn == null)
+                    {
+                        Category cat = Lookup.CategoryLookup[Record.Category.ToLower().Trim()].FirstOrDefault();
+                        if (cat == null) continue;
+                        catId = cat.Id;
+                    }
+                    else
+                    {
+                        catId = catSyn.CategoryId;
+                    }
 
-                    ProductValidationQueue.Instance.Enqueue(validation);
-                }               
-            } */                                          
+                    if (ProductIsValid && CategoryExists)
+                    {
+                        ProductValidation validation = new ProductValidation();
+                        validation.Product = Record;
+                        validation.CountryId = countryID;
+                        validation.IsValidAsNewArticle = ProductIsValid && CategoryExists;
+                        validation.CategorySynonymExists = Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
+
+                        validation.CategoryId = catId;
+                        ProductValidationQueue.Instance.Enqueue(validation);
+                    }
+                }
+            }                          
         }       
 
         public void Dispose()
         {
-            db.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                if(db != null)
+                {
+                    db.Dispose();
+                    db = null;
+                }
+            }
+        }
+
+        ~BOB()
+        {
+            Dispose(false);
         }
     }
 }

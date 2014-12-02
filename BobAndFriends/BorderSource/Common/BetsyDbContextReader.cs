@@ -23,19 +23,19 @@ namespace BorderSource.Common
 
         private BetsyModel db;
 
-        public BetsyDbContextReader()
+        public BetsyDbContextReader(string dbname, string dbpw, string dbsource, string dbuid, int port, int maxpoolsize = 120)
         {
             MySqlConnectionStringBuilder providerConnStrBuilder = new MySqlConnectionStringBuilder();
             providerConnStrBuilder.AllowUserVariables = true;
             providerConnStrBuilder.AllowZeroDateTime = true;
             providerConnStrBuilder.ConvertZeroDateTime = true;
-            providerConnStrBuilder.MaximumPoolSize = 100;
+            providerConnStrBuilder.MaximumPoolSize = (uint)maxpoolsize;
             providerConnStrBuilder.Pooling = true;
-            providerConnStrBuilder.Port = 3307;
-            providerConnStrBuilder.Database = Statics.settings["dbname"];
-            providerConnStrBuilder.Password = Statics.settings["dbpw"];
-            providerConnStrBuilder.Server = Statics.settings["dbsource"];
-            providerConnStrBuilder.UserID = Statics.settings["dbuid"];
+            providerConnStrBuilder.Port = (uint)port;
+            providerConnStrBuilder.Database = dbname;
+            providerConnStrBuilder.Password = dbpw;
+            providerConnStrBuilder.Server = dbsource;
+            providerConnStrBuilder.UserID = dbuid;
 
             EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
             entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
@@ -47,8 +47,9 @@ namespace BorderSource.Common
         }
 
       
-        public IEnumerable<KeyValuePair<Product, int>> GetExistingProductIds(ICollection<Product> products, string webshop)
+        public Dictionary<Product, int> GetExistingProductIds(ICollection<Product> products, string webshop)
         {
+            Dictionary<Product, int> dic = new Dictionary<Product, int>();
             List<string> ids = products.Select(p => p.AffiliateProdID).ToList();
             var query = db.product.Where(p => p.webshop_url == webshop && ids.Contains(p.affiliate_unique_id));
             foreach(var prod in query)
@@ -56,35 +57,38 @@ namespace BorderSource.Common
                 Product key = products.Where(p => p.AffiliateProdID == prod.affiliate_unique_id).FirstOrDefault();
                 int value = prod.article_id;
                 if(key == null || value == 0) continue;
-                KeyValuePair<Product, int> pair = new KeyValuePair<Product,int>(key, value);        
-                yield return pair;
+                if(!dic.ContainsKey(key)) dic.Add(key, value);
             }
+            return dic;
         }
 
-        public IEnumerable<KeyValuePair<Product, int>> GetEanMatches(ICollection<Product> products)
+        public Dictionary<Product, int> GetEanMatches(ICollection<Product> products)
         {
+            Dictionary<Product, int> dic = new Dictionary<Product, int>();
             long temp;
-            List<long> eans = products.Select(p => long.Parse(p.EAN)).ToList();
+            List<long> eans = products.Where(p => long.TryParse(p.EAN, out temp)).Select(p => long.Parse(p.EAN)).ToList();
             var query = db.ean.Where(e => eans.Contains(e.ean1));
-            if (query == null) yield break;
             foreach (var prod in query)
             {
                 Product key = products.Where(p => long.TryParse(p.EAN, out temp)).Where(p => long.Parse(p.EAN) == prod.ean1).FirstOrDefault();
                 int value = prod.article_id;
                 if (key == null || value == 0) continue;
-                KeyValuePair<Product, int> pair = new KeyValuePair<Product, int>(key, value);
-                yield return pair;
+                if (!dic.ContainsKey(key)) dic.Add(key, value);
             }
+            return dic;
         }           
 
         public Dictionary<Product, int> GetSkuMatches(ICollection<Product> products)
         {
             Dictionary<Product, int> dic = new Dictionary<Product, int>();
-            foreach (Product prod in products)
+            List<string> skus = products.Select(p => p.SKU).ToList();
+            var query = db.sku.Where(s => skus.Contains(s.sku1));
+            foreach (var prod in query)
             {
-                var sku = db.sku.Where(s => s.sku1 == prod.SKU).FirstOrDefault();
-                if (sku == null) continue;
-                dic.Add(prod, sku.article_id);
+                Product key = products.Where(p => p.SKU.ToUpper() == prod.sku1.ToUpper()).FirstOrDefault();
+                int value = prod.article_id;
+                if (key == null || value == 0) continue;
+                if (!dic.ContainsKey(key)) dic.Add(key, value);
             }
             return dic;
         }
@@ -264,8 +268,25 @@ namespace BorderSource.Common
 
         public void Dispose()
         {
-            db.Database.Connection.Dispose();
-            db.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                if(db != null)
+                {
+                    db.Dispose();
+                    db = null;
+                }
+            }
+        }
+
+        ~BetsyDbContextReader()
+        {
+            Dispose(false);
         }
 
     }

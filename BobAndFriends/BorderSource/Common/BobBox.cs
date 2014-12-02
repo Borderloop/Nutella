@@ -33,19 +33,19 @@ namespace BorderSource.Common
         /// <summary>
         /// The constructor
         /// </summary>
-        public BobBox()
+        public BobBox(string dbname, string dbpw, string dbsource, string dbuid, int port, int maxpoolsize = 120)
         {
             MySqlConnectionStringBuilder providerConnStrBuilder = new MySqlConnectionStringBuilder();
             providerConnStrBuilder.AllowUserVariables = true;
             providerConnStrBuilder.AllowZeroDateTime = true;
             providerConnStrBuilder.ConvertZeroDateTime = true;
-            providerConnStrBuilder.MaximumPoolSize = 100;
+            providerConnStrBuilder.MaximumPoolSize = (uint)maxpoolsize;
             providerConnStrBuilder.Pooling = true;
-            providerConnStrBuilder.Port = 3307;
-            providerConnStrBuilder.Database = Statics.settings["dbname"];
-            providerConnStrBuilder.Password = Statics.settings["dbpw"];
-            providerConnStrBuilder.Server = Statics.settings["dbsource"];
-            providerConnStrBuilder.UserID = Statics.settings["dbuid"];
+            providerConnStrBuilder.Port = (uint)port;
+            providerConnStrBuilder.Database = dbname;
+            providerConnStrBuilder.Password = dbpw;
+            providerConnStrBuilder.Server = dbsource;
+            providerConnStrBuilder.UserID = dbuid;
 
             EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
             entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
@@ -86,7 +86,7 @@ namespace BorderSource.Common
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
             //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
             if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean, article_id = matchedArticleID });
-            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToLower().Trim() == Record.SKU.ToLower().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
+            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToUpper().Trim() == Record.SKU.ToUpper().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
             
             title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
@@ -123,7 +123,7 @@ namespace BorderSource.Common
                 //else, add the title to the synonyms.
                 else
                 {
-                    title.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
+                    //title.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
                 }
             }
             
@@ -176,21 +176,7 @@ namespace BorderSource.Common
         /// <param name="Record">The article to be saved</param>
         public void SaveNewArticle(Product Record, int countryId, int categoryId)
         {
-            country cou = context.country.Where(c => c.id == countryId).FirstOrDefault();
-            webshop webshop = context.webshop.Where(w => w.url == Record.Webshop).FirstOrDefault();
             category cat = context.category.Where(c => c.id == categoryId).FirstOrDefault();
-
-            if (webshop == default(webshop))
-            {
-                Console.WriteLine("Could not find webshop {0}, aborting the save.", Record.Webshop);
-                return;
-            }
-
-            if (cou == default(country))
-            {
-                Console.WriteLine("Could not find country id {0}, aborting the save.", countryId);
-                return;
-            }
 
             if (cat == default(category))
             {
@@ -252,7 +238,7 @@ namespace BorderSource.Common
                 ship_cost = castedShipCost,
                 ship_time = Record.DeliveryTime,
                 price = castedPrice,
-                webshop_url = webshop.url,
+                webshop_url = Record.Webshop,
                 direct_link = Record.Url,
                 affiliate_name = Record.Affiliate,
                 affiliate_unique_id = Record.AffiliateProdID,
@@ -317,7 +303,7 @@ namespace BorderSource.Common
                 last_modified = System.DateTime.Now
             };
 
-            var original = context.product.Where(p => p.article_id == matchedArticleId && p.webshop_url == Record.Webshop).FirstOrDefault();          
+            var original = context.product.Where(p => p.article_id == matchedArticleId && p.affiliate_unique_id == Record.AffiliateProdID).FirstOrDefault();          
             if (original != null)
             {
                 original.ship_cost = UpdatedProduct.ship_cost;

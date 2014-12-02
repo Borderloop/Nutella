@@ -23,9 +23,7 @@ namespace BorderSource.AffiliateReader
         public override string Name { get { return "TradeDoubler"; } }
 
         public override IEnumerable<List<Product>> ReadFromFile(string file)
-        {
-            
-
+        {         
             //Initialize XmlValueReader and its keys
             using (XmlValueReader xvr = new XmlValueReader())
             {
@@ -73,14 +71,13 @@ namespace BorderSource.AffiliateReader
                     products.Add(p);
                     p = new Product();
 
-                    if (products.Count > PackageSize)
+                    if (products.Count >= PackageSize)
                     {
                         yield return products;
                         products.Clear();
                     }
                 }
                 yield return products;
-                products.Clear();
             }       
         }
 
