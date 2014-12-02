@@ -4,3 +4,4 @@
 *.pdb
 *.FileListAbsolute.txt
 *.cache
+.\BobAndFriends\packages\EntityFramework.6.1.2-beta2
