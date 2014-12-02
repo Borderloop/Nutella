@@ -42,7 +42,7 @@ def logRequest(websiteName, reqTime, url, httpResponse, respTime, contentType):
         requestLogger.addHandler(handler)
 
     if newHandler is True:
-        requestLogger.removeHandler(handler)
+        requestLogger.removeHandler(requestLogger.handlers[0])
 
         handler = logging.FileHandler(directory + websiteName + '.txt')
         handler.setLevel(logging.INFO)
@@ -77,7 +77,7 @@ def logError(websiteName, reqTime, url, error=None, httpResponse=None):
         errorLogger.addHandler(handler)
 
     if newHandler is True:
-        errorLogger.removeHandler(handler)
+        errorLogger.removeHandler(errorLogger.handlers[0])
 
         handler = logging.FileHandler(directory + websiteName + 'Error.txt')
         handler.setLevel(logging.ERROR)
@@ -113,7 +113,7 @@ def logQuery(com, vals, queryTime):
         queryLogger.addHandler(handler)
 
     if newHandler is True:
-        queryLogger.removeHandler(handler)
+        queryLogger.removeHandler(queryLogger.handlers[0])
 
         handler = logging.FileHandler(directory + 'queries.txt')
         handler.setLevel(logging.INFO)
