@@ -69,7 +69,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_title_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -87,7 +86,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_brand_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -105,7 +103,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_sku_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -118,7 +115,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_imageurl_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -131,7 +127,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_category_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -144,7 +139,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_shiptime_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -158,7 +152,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_webshopurl_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -171,7 +164,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_directlink_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -184,7 +176,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_affiliatename_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
@@ -197,7 +188,6 @@ namespace BorderSource.ProductAssociation
                         if ((prop.GetValue(p) as string).Length > Maximums["max_affiliateproductid_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
-                            prop.SetValue(p, "--!--" + prop.GetValue(p) + "--!--");
                             return false;
                         }
                         else
