@@ -24,7 +24,7 @@ namespace BobAndFriends.Crapper
         public static void CleanUp(DateTime time)
         {          
             Initialize();
-            CleanupEanDupes();
+            //CleanupEanDupes();
             //CleanupTitleDupes(); -- Timeout           
             CleanupUniqueIdDupes();
             CleanupUrlDupes();
@@ -129,7 +129,7 @@ namespace BobAndFriends.Crapper
                         foreach (title wTitle in wrongArticle.title.ToList()) db.title.Remove(wTitle);
 
                         //db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested)
-                        foreach (category wCat in wrongArticle.category) db.category.Remove(wCat);
+                        foreach (category wCat in wrongArticle.category.ToList()) db.category.Remove(wCat);
 
                         db.article.Remove(wrongArticle);
 

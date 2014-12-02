@@ -103,16 +103,15 @@ namespace BobAndFriends
             Initialize();
 
             //Create threads
-            //producer = new Thread(new ThreadStart(FeedReaderController));
-            //validator = new Thread(new ThreadStart(BobController));
-            //consumer = new Thread(new ThreadStart(BobBoxManagerController));
+            producer = new Thread(new ThreadStart(FeedReaderController));
+            validator = new Thread(new ThreadStart(BobController));
+            consumer = new Thread(new ThreadStart(BobBoxManagerController));
 
             //Start threads
-            //producer.Start();
-            //validator.Start();
-            //consumer.Start();
+            producer.Start();
+            validator.Start();
+            consumer.Start();
 
-            Crapper.Crapper.CleanUp(StartTime);
         }
 
         static void BobController()
