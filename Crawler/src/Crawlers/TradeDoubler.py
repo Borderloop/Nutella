@@ -1,25 +1,36 @@
 import urllib2
 import urllib
-from CrawlerHelpScripts import logger
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    import xml.etree.ElementTree as ET
 import time
 import traceback
 import re
 from openpyxl import load_workbook
 from ConfigParser import SafeConfigParser
 
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+
+from CrawlerHelpScripts import logger
+
+
 class Crawler():
-    
-    token = ""
+    def __init__(self):
+        self.parseConfigFile()
+
+    token = ''
+    nameUrlsPath = ''
+    feedPath = ''
     
     log = logger.createLogger("TradeDoublerLogger", "TradeDoubler")
     
-    prevName = ""
+    prevName = ''
     x = 2
-    found = True #Keep track if the name is found. Default is true so names that are by default correct urls will get saved.
+    name = ''
+
+    # Keep track if the name is found. Default is true so names that are by default correct urls will get saved.
+    found = True
     
     def main(self):
         start_time = time.time()
@@ -33,17 +44,27 @@ class Crawler():
         #Add token to the url. This url links to a xml file that contains program data
         url = "http://api.tradedoubler.com/1.0/productFeeds.xml?token=%s" % self.token
         xmlfile = urllib2.urlopen(url)
+
         #Create a string from the data
         data = xmlfile.read()
         xmlfile.close()
         root = ET.fromstring(data)
+
         #Each child is an affiliate, so for each one get feedID and na
         for record in root:
             for child in record:
                 self.gatherData(child)
         
         self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Finished crawling TradeDoubler in: " + str((time.time() - start_time)))
-    
+
+    # This procedure parses the config file
+    def parseConfigFile(self):
+        parser = SafeConfigParser()
+        parser.read('C:/BorderSoftware/Boris/settings/boris.ini')
+        self.token = parser.get('TradeDoubler', 'token')
+        self.feedPath = parser.get('TradeDoubler', 'feedpath')
+        self.nameUrlsPath = parser.get('General', 'nameurlspath')
+
     #Gathers the data needed for downloading and correct file name            
     def gatherData(self, child):
         #Extract feedId, name and numberOfProducts from xml file
@@ -57,35 +78,32 @@ class Crawler():
             if regexp.search(self.name) is None:
                 self.changeNameInURL()
             
-            #If the previous name equals the current name, this is a nth file of the same company. Add a number to the end to make
-            #the filename unique and so it doesnt get overwritten.
+            #If the previous name equals the current name, this is a nth file of the same company.
+            # Add a number to the end to make the filename unique and so it doesnt get overwritten.
             if self.prevName == self.name:
                 self.log.info("nth child for: " + self.name)
                 self.name = self.name + " " + str(self.x)
-                self.x = self.x+1
+                self.x += 1
             else:
-                self.x = 2 #Always reset x if a new company is found 
-            
-        if child.tag == "{urn:com:tradedoubler:pf:model:xml:common}numberOfProducts":
-            numberOfProducts = child.text
-            
-            #If the numberOfProducts is not equal to 0 and the name is a correct url, start downloading and saving file.
-            if numberOfProducts != '0' and self.found == True: 
-                self.save()
+                self.x = 2  # Always reset x if a new company is found
+
+                # If the name is a correct url, start downloading and saving file.
+                if self.found is True:
+                    self.save()
 
     #Downloads and saves the xml file under the correct name      
     def save(self):
-        self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saving:      C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
+        print 'Saving ' + self.name
         feedURL = "http://api.tradedoubler.com/1.0/productsUnlimited.xml;fid=%s?token=%s" % (self.feedId, self.token)
 
-        #If the save failes, something is wrong with the file or directory name. Catch this error
+        #If the save fails, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
             xmlFile.retrieve(feedURL, "C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Saved:       C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
-        except:
-            self.log.error(str(time.asctime( time.localtime(time.time()) ))+ ": " + traceback.format_exc())
-            self.log.info(str(time.asctime( time.localtime(time.time()) ))+": Failed:       C:\BorderSoftware\Boris\ProductFeeds\TradeDoubler" + self.name + ".xml")
+            print 'Done saving ' + self.name
+        except Exception as e:
+            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
+            self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + str(e))
         
         self.prevName = self.name    
         
@@ -94,19 +112,21 @@ class Crawler():
         self.found = False
         
         #Import the excel file with names and associated urls
-        wb=load_workbook(r'C:\BorderSoftware\Boris\nameurls.xlsx', use_iterators = True)
-        ws=wb.get_sheet_by_name('Sheet1')
+        wb = load_workbook(filename=self.nameUrlsPath, use_iterators=True)
+        ws = wb.get_sheet_by_name('Replace')
         
         #Iterate trough all rows
         for row in ws.iter_rows(row_offset=1):
             for cell in row:
-                if cell.column == 'A':# #Column A contains the name as given by TradeDoubler
-                    #If the cell contains the given name, change it to the value stored in the column after (B), which is the correct url
+                if cell.column == 'A':  # Column A contains the name as given by TradeDoubler
+
+                    # If the cell contains the given name, change it to the value stored in the column after (B),
+                    # which is the correct url.
                     if cell.value == self.name: 
                         self.name = ws['B' + str(cell.row)].value
                         self.found = True
         
-        #If the name is not found, the name is not yet inserted in the nameurls.xlsx file. This needs to be added. Log this so 
-        #this will be visually represented
-        if self.found == False:
-            self.log.error(str(time.asctime( time.localtime(time.time()) ))+ ": NAME NOT FOUND!!! Didn't find the name "+ self.name +" in the nameurls file. Add this")
+        # If the name is not found, the name is not yet inserted in the nameurls.xlsx file.
+        # This needs to be added. Log this so it's easily traced.
+        if self.found is False:
+            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": NAME NOT FOUND!!! Didn't find the name '"+ self.name +"' in the nameurls file. Add this")

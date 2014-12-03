@@ -5,7 +5,7 @@ from threading import Thread
 
 from Crawlers import TradeTracker
 from Crawlers import FeedCrawler
-#from Crawlers import TradeDoubler
+from Crawlers import TradeDoubler
 from Crawlers import Belboon
 from Crawlers import Daisycon
 from Crawlers import Bol
@@ -58,6 +58,9 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=Wehkamp.Crawler().main)
+    t.start()
+
+    t = Thread(target=TradeDoubler.Crawler().main)
     t.start()
 
 main()
