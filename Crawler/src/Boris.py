@@ -9,6 +9,7 @@ from Crawlers import FeedCrawler
 from Crawlers import Belboon
 from Crawlers import Daisycon
 from Crawlers import Bol
+from Crawlers import Wehkamp
 
 global productFeedsPath
 
@@ -54,6 +55,9 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=Bol.Crawler().main)
+    t.start()
+
+    t = Thread(target=Wehkamp.Crawler().main)
     t.start()
 
 main()
