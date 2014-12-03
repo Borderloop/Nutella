@@ -3,6 +3,7 @@ from ConfigParser import SafeConfigParser
 from time import strftime
 import importlib
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 
 import requests
 from requests.exceptions import ChunkedEncodingError
@@ -99,10 +100,17 @@ class Crawler():
         webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.User-Agent'] = self.agent
         webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.Connection'] = 'close'
         driver = webdriver.PhantomJS(executable_path=self.phantomJSPath)
+        driver.set_page_load_timeout(30)
 
         reqTime = strftime("%H:%M:%S")
         start_time = time.time()
-        driver.get(self.url)
+
+        try:
+            driver.get(self.url)
+        except TimeoutException as e:
+            Logger.logError(self.websiteName, reqTime, self.url, error=e)
+            return [self.url]
+
         reqDuration = time.time() - start_time
 
         # Get the HTTP response and content-type.
