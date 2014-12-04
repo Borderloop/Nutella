@@ -10,7 +10,7 @@ namespace BorderMaster
     {
         static void Main(string[] args)
         {
-            INIFile ini = new INIFile(@"C:/BorderSource/BorderMaster/settings/master.ini");
+            INIFile ini = new INIFile(@"C:/BorderSoftware/BorderMaster/settings/master.ini");
             ProcessManager manager = new ProcessManager();
             manager.ContinuousProcessPool = ini.GetAllValuesFromSection("Continuous");
             manager.AsyncProcessPool = ini.GetAllValuesFromSection("Async");

@@ -118,15 +118,6 @@ namespace BorderSource.Affiliate.Reader
             {
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
-                // If the webshop is not found in the webshop list no further processing needed.
-                if (!Lookup.WebshopLookup.Contains(fileUrl))
-                {
-                    /*using (Logger logger = new Logger(Statics.LoggerPath, true))
-                    {
-                        logger.WriteLine("Webshop not found in database: " + fileUrl + " from " + Name);
-                    }*/
-                    continue;
-                }
                 xvr.CreateReader(file);
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
