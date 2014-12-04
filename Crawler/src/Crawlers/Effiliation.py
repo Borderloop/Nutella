@@ -71,5 +71,3 @@ class Crawler():
             print 'Done saving ' + websiteURL
         except Exception as e:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
-
-Crawler().main()

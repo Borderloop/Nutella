@@ -53,7 +53,9 @@ class Crawler():
                     affiliate = cell.value
                 if cell.column == 'B':  # Column B contains the name of the website.
                     website = cell.value
-                elif cell.column == 'C':  # Else if column is C, it contains the product feed download url.
+                if cell.column == 'C':  # Column C contains the file type (xml or csv)
+                    fileType = cell.value
+                if cell.column == 'D':  # Else if column is D, it contains the product feed download url.
                     url = cell.value
 
                     # If there's a semicolon, there are multiple product feeds for this company,
@@ -64,24 +66,24 @@ class Crawler():
                         for url in urls:
                             websiteWithNumber = website + " " + str(x)
                             print 'Crawling ' +websiteWithNumber
-                            self.save(affiliate, url, websiteWithNumber)
+                            self.save(affiliate, url, websiteWithNumber, fileType)
                             x = x+1
                     else:  # Else it's just one url, save this
                         print 'Crawling ' +website
-                        self.save(affiliate, url, website)
+                        self.save(affiliate, url, website, fileType)
 
     # Downloads and saves the xml file under the correct name
-    def save(self, affiliate, url, website):
+    def save(self, affiliate, url, website, fileType):
         website = website.replace('/', '$')
         # Download xml file and write it to a file
         # If the save fails, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
-            xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + ".xml")
-            self.log.info(str(time.asctime(time.localtime(time.time())))+": Done saving xml file for: " +
+            xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + '.' + fileType)
+            self.log.info(str(time.asctime(time.localtime(time.time())))+": Done saving file for: " +
                           affiliate + " - " + website)
         except:
             self.log.error(str(time.asctime(time.localtime(time.time()))) +
                            ": " + traceback.format_exc())
-            self.log.info(str(time.asctime(time.localtime(time.time()) ))+": Failed saving xml file for: " + affiliate +
+            self.log.info(str(time.asctime(time.localtime(time.time()) ))+": Failed saving file for: " + affiliate +
                           " - " + website + ". See error log for more details")
