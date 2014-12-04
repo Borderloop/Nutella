@@ -9,10 +9,7 @@ namespace BorderSource.Property
 {
     public class INIFile
     {
-        /// <summary>
-        /// The StreamReader which reads the .ini file
-        /// </summary>
-        private StreamReader _sr;
+        private string _path;
 
         /// <summary>
         /// The constructor which opens the StreamReader to read a .ini file from a given path.
@@ -20,8 +17,7 @@ namespace BorderSource.Property
         /// <param name="path">The path where the .ini file is located.</param>
         public INIFile(string path)
         {
-            //Create the StreamReader
-            _sr = new StreamReader(path);
+            _path = path;
         }
 
         /// <summary>
@@ -32,21 +28,19 @@ namespace BorderSource.Property
         /// <returns>The value of the property name if it exists, null otherwise/</returns>
         public string GetValue(string name, string section)
         {
-            //Create an empty string
-            string s;
+            string str;
 
-            //Search for the given section.
-            while(!(s =_sr.ReadLine()).Equals("[" + section + "]"))
+            using (StreamReader reader = new StreamReader(_path))
             {
-                //Section found - search for the given propertyname
-                while(!(s = _sr.ReadLine()).Contains(name))
+                while (!(str = reader.ReadLine()).Equals("[" + section + "]"))
                 {
-                    //Return the value of the property
-                    return s.Split('=')[1];
+                    while (!(str = reader.ReadLine()).Contains(name))
+                    {
+                        return str.Split('=')[1];
+                    }
                 }
             }
 
-            //Didn't find any, therefore return null
             return null;
         }
 
@@ -57,34 +51,29 @@ namespace BorderSource.Property
         /// <returns>A dictionary containing propertynames and values.</returns>
         public Dictionary<string, string> GetAllValuesFromSection(string section)
         {
-            //Create an empty string for reading, value and name.
-            string s;
+            string str;
             string name;
             string val;
 
-            //Create a dictionary
             Dictionary<string, string> map = new Dictionary<string, string>();
 
-            //Start reading
-            while (!_sr.EndOfStream)
+            using (StreamReader reader = new StreamReader(_path))
             {
-                //Check if the section is found
-                if ((s = _sr.ReadLine()).Equals(@"[" + section + "]"))
+                while (!reader.EndOfStream)
                 {
-                    //Section is found - read all the values
-                    while ((s = _sr.ReadLine() ?? "").Contains("="))
+                    if ((str = reader.ReadLine()).Equals(@"[" + section + "]"))
                     {
-                        //Store values in strings
-                        name = s.Split('=')[0];
-                        val = s.Split('=')[1];
+                        while ((str = reader.ReadLine() ?? "").Contains("="))
+                        {
+                            name = str.Split('=')[0];
+                            val = str.Split('=')[1];
 
-                        //Save values in the dictionary
-                        map.Add(name, val);
+                            map.Add(name, val);
+                        }
                     }
                 }
             }
 
-            //Return the dictionary
             return map;
         }
 
@@ -94,36 +83,29 @@ namespace BorderSource.Property
         /// <returns>A dictionary containing all properties and their values.</returns>
         public Dictionary<string, string> GetAllValues()
         {
-            //Create an empty string for reading, value and name.
-            string s;
+            string str;
             string name;
             string val;
 
-            //Create a dictionary
             Dictionary<string, string> map = new Dictionary<string, string>();
 
-            //Start reading
-            while (!_sr.EndOfStream)
+            using (StreamReader reader = new StreamReader(_path))
             {
-                //Save values for every property found
-                while ((s = _sr.ReadLine() ?? "").Contains("="))
+                while (!reader.EndOfStream)
                 {
-                    //However, do not read comments
-                    if(s.Contains("#"))
+                    while ((str = reader.ReadLine() ?? "").Contains("="))
                     {
-                        continue;
+                        //Skip comments
+                        if (str.Contains("#")) continue;
+                        
+                        name = str.Split('=')[0];
+                        val = str.Split('=')[1];
+
+                        map.Add(name, val);
                     }
-
-                    //Store values in strings
-                    name = s.Split('=')[0];
-                    val = s.Split('=')[1];
-
-                    //Save values in dictionary
-                    map.Add(name, val);
                 }
             }
 
-            //Return the dictionary
             return map;
         }
     }

@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -35,6 +35,10 @@
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="LumenWorks.Framework.IO, Version=3.8.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -60,18 +64,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AffiliateFile\AffiliateFileBase.cs" />
-    <Compile Include="AffiliateFile\AffiliateXmlFile.cs" />
-    <Compile Include="AffiliateReader\AffiliateReaderBase.cs" />
-    <Compile Include="AffiliateReader\AffilinetReader.cs" />
-    <Compile Include="AffiliateReader\BelboonReader.cs" />
-    <Compile Include="AffiliateReader\BorderBotReader.cs" />
-    <Compile Include="AffiliateReader\CommissionJunctionReader.cs" />
-    <Compile Include="AffiliateReader\DaisyconReader.cs" />
-    <Compile Include="AffiliateReader\TradeDoublerReader.cs" />
-    <Compile Include="AffiliateReader\TradeTrackerReader.cs" />
-    <Compile Include="AffiliateReader\WebgainsReader.cs" />
-    <Compile Include="AffiliateReader\ZanoxReader.cs" />
+    <Compile Include="Affiliate\File\AffiliateFile.cs" />
+    <Compile Include="Affiliate\Reader\AffiliateReaderFactory.cs" />
+    <Compile Include="Affiliate\Reader\AffiliateReaderBase.cs" />
+    <Compile Include="Affiliate\Reader\AffilinetReader.cs" />
+    <Compile Include="Affiliate\Reader\BelboonReader.cs" />
+    <Compile Include="Affiliate\Reader\BolReader.cs" />
+    <Compile Include="Affiliate\Reader\BorderBotReader.cs" />
+    <Compile Include="Affiliate\Reader\CommissionJunctionReader.cs" />
+    <Compile Include="Affiliate\Reader\DaisyconReader.cs" />
+    <Compile Include="Affiliate\Reader\TradeDoublerReader.cs" />
+    <Compile Include="Affiliate\Reader\TradeTrackerReader.cs" />
+    <Compile Include="Affiliate\Reader\WebgainsReader.cs" />
+    <Compile Include="Affiliate\Reader\ZanoxReader.cs" />
     <Compile Include="BetsyContext\affiliate.cs">
       <DependentUpon>BetsyModel.tt</DependentUpon>
     </Compile>

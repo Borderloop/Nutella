@@ -279,7 +279,7 @@ namespace BetsyTest
         public bool GetRelevantMatches(Product Record, int lastInserted)
         {
 
-            //Get the most relevant matches for the given product and return their article id's.
+            //Get the most relevant matches for the given product and return their article id'str.
             string query = "SELECT * FROM article " +
                            "INNER JOIN title ON title.article_id = article.id " +
                            "WHERE title.id IN (SELECT title_id FROM title_synonym as ts " +

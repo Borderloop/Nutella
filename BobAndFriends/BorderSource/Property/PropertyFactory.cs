@@ -13,6 +13,7 @@ namespace BorderSource.Property
         {
             Dictionary<string, IProperty> dic = new Dictionary<string, IProperty>();
             List<IProperty> propList = new List<IProperty>();
+
             #region String properties
             propList.Add(new Property<string>(){ DefaultValue = @"C:\BorderSoftware\BobAndFriends\log", PropertyName = "log_path"});
             propList.Add(new Property<string>() { DefaultValue = @"C:\BorderSoftware\Boris\ProductFeeds" , PropertyName = "feed_path"});
@@ -41,6 +42,8 @@ namespace BorderSource.Property
             propList.Add(new Property<int>() { DefaultValue = 3, PropertyName = "max_reader_threads" });
             propList.Add(new Property<int>() { DefaultValue = 3, PropertyName = "max_bobbox_threads" });
             propList.Add(new Property<int>() { DefaultValue = 25, PropertyName = "package_size" });
+            propList.Add(new Property<int>() { DefaultValue = 500, PropertyName = "packages_per_validation" });
+            propList.Add(new Property<int>() { DefaultValue = 500, PropertyName = "validations_per_save" });
             #endregion
 
             #region Boolean properties
@@ -58,7 +61,7 @@ namespace BorderSource.Property
 
             return dic;
         }
-        public static ConcurrentDictionary<string, IProperty> CreateFromFile(string path)
+        public static Dictionary<string, IProperty> CreateFromFile(string path)
         {
             Console.WriteLine("Initializing properties...");
             Dictionary<string, IProperty> dic = CreateDefaults();
@@ -73,13 +76,11 @@ namespace BorderSource.Property
                         int value;
                         if (!int.TryParse(pair.Value, out value)) continue;
                         ((Property<int>)dic[pair.Key]).CurrentValue = value;
-                        dic[pair.Key].IsSet = true;
                     }
 
                     if (dic[pair.Key] is Property<string>)
                     {
                         ((Property<string>)dic[pair.Key]).CurrentValue = pair.Value;
-                        dic[pair.Key].IsSet = true;
                     }
 
                     if (dic[pair.Key] is Property<bool>)
@@ -87,12 +88,10 @@ namespace BorderSource.Property
                         bool valueIsValid = (pair.Value == "true" || pair.Value == "false");
                         if (!valueIsValid) continue;
                         ((Property<bool>)dic[pair.Key]).CurrentValue = (pair.Value == "true");
-                        dic[pair.Key].IsSet = true;
                     }
                 }
             }
-            ConcurrentDictionary<string, IProperty> cdic = new ConcurrentDictionary<string, IProperty>(dic);
-            return cdic;
+            return dic;
         }
     }
 }
