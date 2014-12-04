@@ -3,13 +3,14 @@ import glob
 from ConfigParser import SafeConfigParser
 from threading import Thread
 
-from Crawlers import TradeTracker
+from Crawlers import TradeTracker, Effiliation
 from Crawlers import FeedCrawler
 from Crawlers import TradeDoubler
 from Crawlers import Belboon
 from Crawlers import Daisycon
 from Crawlers import Bol
 from Crawlers import Wehkamp
+
 
 global productFeedsPath
 
@@ -61,6 +62,9 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=TradeDoubler.Crawler().main)
+    t.start()
+
+    t = Thread(target=Effiliation.Crawler().main)
     t.start()
 
 main()

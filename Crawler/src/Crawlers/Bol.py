@@ -42,4 +42,4 @@ class Crawler():
 
         self.host = parser.get('Bol', 'host')
         self.user = parser.get('Bol', 'user')
-        self.password = parser.get('Bol', 'password')
+        self.password = parser.get('Bol', 'password').replace('"', '')
