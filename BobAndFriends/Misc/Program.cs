@@ -5,51 +5,83 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Threading;
+using BorderSource.ProductAssociation;
+using LumenWorks.Framework.IO.Csv;
+using System.IO;
 
 namespace Misc
 {
     class Program
     {
-        static bool Done = false;
-        static Thread producer = new Thread(new ThreadStart(FillQueue));
-        static Thread consumer = new Thread(new ThreadStart(EmptyQueue));
-
 
         static void Main(string[] args)
         {
-            producer.Start();
-            consumer.Start();
-
-            while(!Done)
+            foreach(List<Product> products in ReadFromFile(@"C:\Product Feeds\Bol\bolcom_elektronica.csv"))
             {
-                Console.Clear();
-                Console.WriteLine("Queue size: " + SingletonQueue<int?>.Instance.Queue.Count);
-                Thread.Sleep(20);
-                GC.Collect();
+
             }
-            Console.WriteLine("Done");
-            Console.Read();
         }
 
-        static void FillQueue()
+        public static IEnumerable<List<Product>> ReadFromFile(string file)
         {
-            int count = 0;
-            while (count < 100000)
+            using(var sr = new StreamReader(file))
             {
-                count++;
-                SingletonQueue<int?>.Instance.Enqueue(new Random().Next());
-                Thread.Sleep(10);
+                sr.ReadLine();
+                using (CsvReader reader = new CsvReader(sr, false, '|'))
+                {
+                    List<Product> products = new List<Product>();
+                    string[] headers;
+                    switch (Path.GetFileNameWithoutExtension(file).Split('_')[1])
+                    {
+                        case "games":
+                            headers = new string[]{
+                                    "Unit", "Cat1", "Cat2", "Cat3", 
+                                    "TypeCode", "Title", "Subtitle", 
+                                    "FreeGift", "Publisher", "Price", 
+                                    "Shipping", "DeliveryTime", "Deliverable", 
+                                    "Stock", "MPN", "EAN", "ID", "Image", "Url" };
+                            break;
+                        case "elektronica":
+                            headers = new string[]{
+                                    "Unit", "Cat1", "Cat2", "Cat3", 
+                                    "TypeCode", "Title", "Subtitle", 
+                                    "FreeGift", "Brand", "Colour", "Price", 
+                                    "Shipping", "DeliveryTime", "Deliverable", 
+                                    "Stock", "MPN", "EAN", "ID", "Image", "Url" };
+                            while (reader.ReadNextRecord())
+                            {
+
+                                int fc = reader.FieldCount;
+                                Product p = new Product();
+                                p.Affiliate = "Bol";
+                                p.AffiliateProdID = reader[17];
+                                p.Brand = reader[8];
+                                p.Category = reader[1] + " -> " + reader[2] + " -> " + reader[3];
+                                p.Currency = "EUR";
+                                p.DeliveryCost = reader[11];
+                                p.DeliveryTime = reader[12];
+                                p.EAN = reader[16];
+                                p.FileName = file;
+                                p.Image_Loc = reader[18];
+                                p.Price = reader[10];
+                                p.Stock = reader[14];
+                                p.Title = reader[5];
+                                p.Url = reader[19];
+                                p.Webshop = "www.bol.com";
+
+                                products.Add(p);
+                                if (products.Count >= 10)
+                                {
+                                    yield return products;
+                                    products.Clear();
+                                }
+                            }
+                            yield return products;
+                            break;
+                    }
+                }
             }
         }
 
-        static void EmptyQueue()
-        {
-            int? output;
-            while ((output = SingletonQueue<int?>.Instance.Dequeue()) != null)
-            {
-                Thread.Sleep(20);
-            }
-            Done = true;
-        }
     }
 }

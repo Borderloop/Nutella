@@ -86,7 +86,7 @@ namespace BorderSource.Common
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
             //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
             if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean, article_id = matchedArticleID });
-            if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToUpper().Trim() == Record.SKU.ToUpper().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
+            //if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToUpper().Trim() == Record.SKU.ToUpper().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
             
             title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
@@ -140,7 +140,7 @@ namespace BorderSource.Common
                 ship_cost = (decimal?)castedShipCost,
                 price = castedPrice,
                 webshop_url = Record.Webshop,
-                direct_link = Record.Url,
+                direct_link = Record.Url.Length >= 350 ? "" : Record.Url,
                 affiliate_name = Record.Affiliate,
                 affiliate_unique_id = Record.AffiliateProdID,
                 last_modified = System.DateTime.Now
@@ -239,7 +239,7 @@ namespace BorderSource.Common
                 ship_time = Record.DeliveryTime,
                 price = castedPrice,
                 webshop_url = Record.Webshop,
-                direct_link = Record.Url,
+                direct_link = Record.Url.Length >= 350 ? "" : Record.Url,
                 affiliate_name = Record.Affiliate,
                 affiliate_unique_id = Record.AffiliateProdID,
                 last_modified = System.DateTime.Now
@@ -297,7 +297,7 @@ namespace BorderSource.Common
                 ship_cost = (decimal?)castedShipCost,
                 price = castedPrice,
                 webshop_url = Record.Webshop,
-                direct_link = Record.Url,
+                direct_link = Record.Url.Length >= 350 ? "" : Record.Url,
                 affiliate_name = Record.Affiliate,
                 affiliate_unique_id = Record.AffiliateProdID,
                 last_modified = System.DateTime.Now

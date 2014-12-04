@@ -115,7 +115,7 @@ namespace BobAndFriends.BobAndFriends
             {
                 foreach (Product Record in p.products.Where(prod => !prod.IsValidated).ToList())
                 {
-                    bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0;
+                    bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0 && Record.Category.Length > 0;
                     bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category.ToLower().Trim()) || Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
 
                     int catId = -1;

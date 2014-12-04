@@ -24,11 +24,19 @@ namespace BobAndFriends.Crapper
         public static void CleanUp(DateTime time)
         {          
             Initialize();
-            //CleanupEanDupes();
-            //CleanupTitleDupes(); -- Timeout           
-            CleanupUniqueIdDupes();
-            CleanupUrlDupes();
-            CleanupOldProducts(time);
+            try
+            {
+                CleanupOldProducts(time);               
+                CleanupUrlDupes();              
+                CleanupEanDupes();
+                CleanupTitleDupes();
+                CleanupUniqueIdDupes();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Crapper threw an exception: " + e.Message);
+                Console.WriteLine("StackTrace: " + e.StackTrace);               
+            }
         }
 
         private static void CleanupEanDupes()
@@ -85,7 +93,7 @@ namespace BobAndFriends.Crapper
                                 else
                                 {
                                     title title1 = correctArticle.title.Where(t => t.country_id == title.country_id).FirstOrDefault();
-                                    title1.title_synonym.Add(new title_synonym { title = title.title1, occurrences = 1, title_id = title1.id });
+                                    title1.title_synonym.Add(new title_synonym { title = title.title1, occurrences = 1, title_id = title1.id, title1 = title1 });
                                 }
                             }
                             else
@@ -100,12 +108,11 @@ namespace BobAndFriends.Crapper
                                     List<title> titles = correctArticle.title.ToList();
                                     foreach (title t in titles)
                                     {
+                                        
                                         title_synonym syn2 = t.title_synonym.Where(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim()).FirstOrDefault();
                                         if (syn2 == default(title_synonym)) continue;
                                         syn2.occurrences++;
-                                        db.title_synonym.Attach(syn2);
-                                        var entry = db.Entry(syn2);
-                                        entry.Property(ts => ts.occurrences).IsModified = true;
+                                        
                                     }
                                 }
                                 else
@@ -129,7 +136,6 @@ namespace BobAndFriends.Crapper
                         foreach (title wTitle in wrongArticle.title.ToList()) db.title.Remove(wTitle);
 
                         //db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested)
-                        foreach (category wCat in wrongArticle.category.ToList()) db.category.Remove(wCat);
 
                         db.article.Remove(wrongArticle);
 
@@ -180,12 +186,11 @@ namespace BobAndFriends.Crapper
                 Console.WriteLine("Started cleaning up... ");  
                 foreach (var dupTitle in duplicateTitles)
                 {
+                    if (String.IsNullOrWhiteSpace(dupTitle)) continue;
+
                     Console.WriteLine("Getting wrong articles for title " + dupTitle);
                     List<article> wrongArticles = db.article
-                        .Where(a => a.title.Any(t => t.title1.ToLower().Trim() == dupTitle.ToLower().Trim()))
-                        .Include(a => a.title.Select(t => t.title_synonym))
-                        .Include(a => a.ean)
-                        .Include(a => a.sku)
+                        .Where(a => a.title.Any(t => t.title1 == dupTitle))
                         .ToList();
            
                     article correctArticle = db.article.Where(a => a.title.Any(t => t.title1.ToLower().Trim() == dupTitle.ToLower().Trim())).FirstOrDefault();
@@ -225,7 +230,7 @@ namespace BobAndFriends.Crapper
                                 else
                                 {
                                     title title1 = correctArticle.title.Where(t => t.country_id == title.country_id).FirstOrDefault();
-                                    title1.title_synonym.Add(new title_synonym { title = title.title1, occurrences = 1, title_id = title1.id });
+                                    title1.title_synonym.Add(new title_synonym { title = title.title1, occurrences = 1, title_id = title1.id, title1 = title1 });
                                 }
                             }
                             else
@@ -243,43 +248,39 @@ namespace BobAndFriends.Crapper
                                         title_synonym syn2 = t.title_synonym.Where(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim()).FirstOrDefault();                                      
                                         if (syn2 == default(title_synonym)) continue;
                                         syn2.occurrences++;
-                                        db.title_synonym.Attach(syn2);
-                                        var entry = db.Entry(syn2);
-                                        entry.Property(ts => ts.occurrences).IsModified = true;
                                     }
                                 }
                                 else
                                 {
                                     title title1 = correctArticle.title.Where(t => t.country_id == title.country_id).FirstOrDefault();
-                                    title1.title_synonym.Add(new title_synonym { title = syn.title, occurrences = 1, title_id = title1.id });
+                                    title1.title_synonym.Add(new title_synonym { title = syn.title, occurrences = 1, title_id = title1.id, title1 = title1 });
                                 }
                             }
                         }
 
-                        db.ean.RemoveRange(wrongArticle.ean);
-                        db.sku.RemoveRange(wrongArticle.sku);
-                        db.product.RemoveRange(wrongArticle.product);
-                        db.biggest_price_differences.RemoveRange(wrongArticle.biggest_price_differences);
-                        db.country_price_differences.RemoveRange(wrongArticle.country_price_differences);
+                        foreach (ean wrongEan in wrongArticle.ean.ToList()) db.ean.Remove(wrongEan);
+                        foreach (sku wrongSku in wrongArticle.sku.ToList()) db.sku.Remove(wrongSku);
+                        foreach (product wrongProduct in wrongArticle.product.ToList()) db.product.Remove(wrongProduct);
+                        //db.biggest_price_differences.RemoveRange(wrongArticle.biggest_price_differences);
+                        //db.country_price_differences.RemoveRange(wrongArticle.country_price_differences);
 
                         List<title_synonym> syns = new List<title_synonym>();
                         wrongArticle.title.ToList().ForEach(t => t.title_synonym.ToList().ForEach(ts => syns.Add(ts)));
 
-                        db.title_synonym.RemoveRange(syns);
-                        db.title.RemoveRange(wrongArticle.title);
+                        foreach (title_synonym wTs in syns) db.title_synonym.Remove(wTs);
+                        foreach (title wTitle in wrongArticle.title.ToList()) db.title.Remove(wTitle);
 
-                        db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested);
-                        db.category.RemoveRange(wrongArticle.category);
+                        //db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested)
 
                         db.article.Remove(wrongArticle);
 
                         foreach (ean ean1 in eanList)
                         {
-                            correctArticle.ean.Add(new ean { ean1 = ean1.ean1, article_id = correctArticle.id });
+                            correctArticle.ean.Add(new ean { ean1 = ean1.ean1, article_id = correctArticle.id, article = correctArticle });
                         }
                         foreach (sku sku1 in skuList)
                         {
-                            correctArticle.sku.Add(new sku { sku1 = sku1.sku1, article_id = correctArticle.id });
+                            correctArticle.sku.Add(new sku { sku1 = sku1.sku1, article_id = correctArticle.id, article = correctArticle });
                         }
                         foreach (product product1 in productList)
                         {
@@ -292,28 +293,12 @@ namespace BobAndFriends.Crapper
                                 ship_cost = product1.ship_cost,
                                 ship_time = product1.ship_time,
                                 webshop_url = product1.webshop_url,
-                                article_id = correctArticle.id
+                                article_id = correctArticle.id,
+                                article = correctArticle
                             });
                         }
 
-                        try
-                        {
-                            db.SaveChanges();
-                        }
-                        catch (DbUpdateConcurrencyException ex)
-                        {
-                            Console.WriteLine("Caught DbUpdateConcurrenryException, trying refresh.");
-                            var objContext = ((IObjectContextAdapter)db).ObjectContext;
-                            try
-                            {
-                                objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
-                            }
-                            catch (InvalidOperationException ioe)
-                            {
-                                Console.WriteLine("Refresh didn't work. Error: " + ioe.Message);
-                                Console.WriteLine("Moving on.");
-                            }
-                        }
+                        if (db.ChangeTracker.HasChanges()) db.SaveChanges();
 
                         Console.WriteLine("Redirected " + wrongTitle + " to " + correctTitle + ".");
                     }
@@ -340,8 +325,8 @@ namespace BobAndFriends.Crapper
             Console.WriteLine("Started with removing duplicate unique ids.");
             using(var db = new BetsyModel(ConnectionString))
             {
-                var duplicateUniqueIds = db.product.GroupBy(p => new { uid = p.affiliate_unique_id, aff = p.affiliate_name }).Where(x => x.Count() > 1).Select(val => val.Key).ToList();
-                Console.WriteLine("Found " + duplicateUniqueIds.Count + " dupes. Removing now, this can take a whie.");
+                var duplicateUniqueIds = db.product.GroupBy(p => new { uid = p.affiliate_unique_id, aff = p.affiliate_name }).Where(x => x.Count() > 1).Select(val => val.Key);
+                Console.WriteLine("Removing unique Id's now, this can take a while...");
                 foreach(var dupe in duplicateUniqueIds)
                 {
                     var products = db.product.Where(p => p.affiliate_unique_id == dupe.uid && p.affiliate_name == dupe.aff).ToList();
@@ -354,19 +339,24 @@ namespace BobAndFriends.Crapper
 
         private static void CleanupUrlDupes()
         {
-            Console.WriteLine("Started with removing duplicate urls.");
             using (var db = new BetsyModel(ConnectionString))
             {
-                var duplicateUrls = db.product.GroupBy(p => p.direct_link).Where(x => x.Count() > 1).Select(val => val.Key).ToList();
-                Console.WriteLine("Found " + duplicateUrls.Count + " dupes. Removing now, this can take a whie.");
+                Console.WriteLine("Started with removing empty urls...");
+                var emptyUrls = db.product.Where(p => p.direct_link == "");
+                db.product.RemoveRange(emptyUrls);
+                db.SaveChanges();
+                Console.WriteLine("Done with removing empty urls.");
+                /*Console.WriteLine("Started with looking up duplicate urls...");
+                var duplicateUrls = db.product.GroupBy(p => p.direct_link).Where(x => x.Count() > 1).Select(val => val.Key);
+                Console.WriteLine("Removing now, this can take a while.");
                 foreach (string dupe in duplicateUrls)
                 {
                     var products = db.product.Where(p => p.direct_link == dupe).ToList();
                     if (products != null) db.product.RemoveRange(products.Skip(1));
                 }
                 db.SaveChanges();
-            }
-            Console.WriteLine("Done with removing duplicate urls.");
+                Console.WriteLine("Done with removing duplicate urls.");*/
+            }         
         }
 
         private static void Initialize()

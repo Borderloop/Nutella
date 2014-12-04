@@ -134,7 +134,7 @@ namespace BorderSource.Common
         public bool GetRelevantMatches(Product Record, int lastInserted)
         {
 
-            //Get the most relevant matches for the given product and return their article id's.
+            //Get the most relevant matches for the given product and return their article id'str.
             string query = "SELECT * FROM article " +
                            "INNER JOIN title ON title.article_id = article.id " +
                            "WHERE title.id IN (SELECT title_id FROM title_synonym as ts " +
@@ -204,7 +204,11 @@ namespace BorderSource.Common
         public int GetCategoryNumber(int articleId)
         {
             article art = db.article.Where(a => a.id == articleId).FirstOrDefault();
-            if (art == null) return -1;
+            if (art == null)
+            {
+                Console.WriteLine("Did not find article ID " + articleId);
+                return -1;
+            }
             category cat = art.category.FirstOrDefault();
             int result = cat == default(category) ? -1 : cat.id;
             return result;

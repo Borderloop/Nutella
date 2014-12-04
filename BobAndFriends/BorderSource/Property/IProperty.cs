@@ -8,7 +8,6 @@ namespace BorderSource.Property
 {
     public interface IProperty
     {
-        bool IsSet { get; set; }
         string PropertyName { get; set; }
         T GetValue<T>();
     }

@@ -99,6 +99,8 @@ namespace BobAndFriends
             _handler += new EventHandler(Handler);
             SetConsoleCtrlHandler(_handler, true);
 
+            Console.SetWindowPosition(0, 0);
+
             //Initialize
             Initialize();
 
@@ -111,7 +113,6 @@ namespace BobAndFriends
             producer.Start();
             validator.Start();
             consumer.Start();
-
         }
 
         static void BobController()
@@ -127,7 +128,7 @@ namespace BobAndFriends
             while (true)
             {
                 //Break if no packages are found
-                if ((Packages = PackageQueue.Instance.DequeuePackageByAmount(MAX_BOBS)) == null) break;
+                if ((Packages = PackageQueue.Instance.DequeuePackageByAmount(Properties.PropertyList["packages_per_validation"].GetValue<int>())) == null) break;
 
                 count++;
                 StartRunning = DateTime.Now;                                       
@@ -193,7 +194,8 @@ namespace BobAndFriends
             List<Action> managers = new List<Action>();
             for(int i = 0; i < MAX_BOBBOXMANAGERS; i++)
             {
-                managers.Add(new Action(() => StartBobBoxManager()));
+                int copy = i;
+                managers.Add(new Action(() => StartBobBoxManager(copy)));
             }
 
             TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent saving");
@@ -204,26 +206,28 @@ namespace BobAndFriends
 
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total time");
 
-            Logger.Instance.WriteStatistics();
-
+            TimeStatisticsMapper.Instance.StartTimeMeasure("Total Crapper time");
             Crapper.Crapper.CleanUp(StartTime);
+            TimeStatisticsMapper.Instance.StopTimeMeasure("Total Crapper time");
+
+            Logger.Instance.WriteStatistics();
 
             Done = true;
             Console.WriteLine("Press ENTER to exit.");
-            Console.Read();
+            Console.Read();           
         }
 
-        static void StartBobBoxManager()
+        static void StartBobBoxManager(int id)
         {
             Console.WriteLine("Started a BobBoxManager.");
             BobboxManager bbm = new BobboxManager();
             try
             {
-                bbm.StartValidatingAndSaving();
+                bbm.StartValidatingAndSaving(id);
             }
             catch (Exception)
             {
-                bbm.StartValidatingAndSaving();
+                bbm.StartValidatingAndSaving(id);
             }            
         }
 

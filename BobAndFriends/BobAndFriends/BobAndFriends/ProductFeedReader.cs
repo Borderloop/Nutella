@@ -12,8 +12,8 @@ using System.Data;
 using System.Reflection;
 using BorderSource.Common;
 using BorderSource.Queue;
-using BorderSource.AffiliateReader;
-using BorderSource.AffiliateFile;
+using BorderSource.Affiliate.Reader;
+using BorderSource.Affiliate.File;
 using BorderSource.ProductAssociation;
 using BorderSource.Statistics;
 using BobAndFriends.Global;
@@ -76,7 +76,7 @@ namespace BobAndFriends.BobAndFriends
 
             Console.WriteLine("Started retrieving files.");
 
-            List<AffiliateFileBase> files = new List<AffiliateFileBase>();
+            List<AffiliateFile> files = new List<AffiliateFile>();
 
             foreach(string dir in dirs)
             {
@@ -84,19 +84,22 @@ namespace BobAndFriends.BobAndFriends
                 foreach(string file in dirfiles)
                 {
                     string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                    if (!Lookup.WebshopLookup.Contains(fileUrl))
+                    if (dir.Split(Path.DirectorySeparatorChar).Last() != "Bol")
                     {
-                        Logger.Instance.WriteLine("Could not find webshop " + fileUrl + " from " + dir);
-                        continue;
+                        if (!Lookup.WebshopLookup.Contains(fileUrl))
+                        {
+                            Logger.Instance.WriteLine("Could not find webshop " + fileUrl + " from " + dir.Split(Path.DirectorySeparatorChar).Last());
+                            continue;
+                        }
                     }
-                    AffiliateFileBase afFile = new AffiliateXmlFile();
+                    AffiliateFile afFile = new AffiliateFile();
                     afFile.Name = dir.Split(Path.DirectorySeparatorChar).Last();
                     afFile.FileLocation = file;
                     files.Add(afFile);
                 }
             }
 
-            var sortedBySize = (from file in files orderby new FileInfo(file.FileLocation).Length descending select file).ToArray<AffiliateFileBase>();
+            var sortedBySize = (from file in files orderby new FileInfo(file.FileLocation).Length descending select file).ToArray<AffiliateFile>();
 
             Console.WriteLine("Creating readers for " + files.Count + " webshops.");
             List<Action> actions = new List<Action>();
@@ -114,10 +117,10 @@ namespace BobAndFriends.BobAndFriends
             PackageQueue.Instance.InputStopped = true;
         }
 
-        public void ReadFile(AffiliateFileBase file)
+        public void ReadFile(AffiliateFile file)
         {
             List<Product> WrongProducts = new List<Product>();
-            AffiliateReaderBase reader = file.GetReader();            
+            AffiliateReaderBase reader = AffiliateReaderFactory.GetAppropriateReader(file);        
 
             if(reader == null)
             {

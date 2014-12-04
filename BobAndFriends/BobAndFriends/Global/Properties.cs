@@ -10,6 +10,6 @@ namespace BobAndFriends.Global
 {
     public static class Properties
     {
-        public static ConcurrentDictionary<string, IProperty> PropertyList = PropertyFactory.CreateFromFile(@"C:\BorderSoftware\BobAndFriends\settings\baf.ini");
+        public static ConcurrentDictionary<string, IProperty> PropertyList = new ConcurrentDictionary<string,IProperty>(PropertyFactory.CreateFromFile(@"C:\BorderSoftware\BobAndFriends\settings\baf.ini"));
     }
 }

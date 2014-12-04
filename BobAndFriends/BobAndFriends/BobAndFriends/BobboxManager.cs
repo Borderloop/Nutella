@@ -16,9 +16,9 @@ namespace BobAndFriends.BobAndFriends
     {
         private BobBox BobBox;
         private int Count;
-        private const int PackageSize = 500;
+        private int PackageSize;
         private int MaxCountryId;
-        private int ExistingProducts, EanMatches, SkuMatches, NewProducts = 0;
+        private int ExistingProducts, EanMatches, SkuMatches, NewProducts, NoCategory, WrongCountry = 0;
 
         public BobboxManager()
         {
@@ -31,9 +31,10 @@ namespace BobAndFriends.BobAndFriends
             BobBox = new BobBox(dbName, dbPassword, dbSource, dbUserId, dbPort, maxPoolSize);       
             Count = 0;
             MaxCountryId = Lookup.WebshopLookup.Max(m => m.Max(n => n.CountryId));
+            PackageSize = Properties.PropertyList["validations_per_save"].GetValue<int>();
         }
 
-        public void StartValidatingAndSaving()
+        public void StartValidatingAndSaving(int id)
         {
             ProductValidation validation = ProductValidationQueue.Instance.Dequeue();
             while (validation != null)
@@ -46,15 +47,23 @@ namespace BobAndFriends.BobAndFriends
                 
                 if ((Count >= PackageSize))
                 {
-                    Console.WriteLine("Saving changes for " + PackageSize + " INSERTS/UPDATES to database.");
-                    Console.WriteLine("Totals; Existing products: {0}, EanMatches: {1}, SkuMatches: {2}, New: {3}", ExistingProducts, EanMatches, SkuMatches, NewProducts);
+                    Console.WriteLine(id + ": Saving changes for " + Count + " INSERTS/UPDATES to database.");
+                    Console.WriteLine(id + ": Totals; EP: {0}, EM: {1}, New: {2}, NC: {3}, WC: {4}", ExistingProducts, EanMatches, NewProducts, NoCategory, WrongCountry);
                     BobBox.CommitAndCreate();
-                    Console.WriteLine("Done saving changes.");
+                    Console.WriteLine(id + ": Done saving changes.");
                     Count = 0;
                 }
 
-                if (validation.CountryId < 1 || validation.CountryId > MaxCountryId) goto Next;
-                if (!validation.CategoryMatched) goto Next;
+                if (validation.CountryId < 1 || validation.CountryId > MaxCountryId)
+                {
+                    WrongCountry++;
+                    goto Next;
+                }
+                if (!validation.CategoryMatched)
+                {
+                    NoCategory++;
+                    goto Next;
+                }
 
                 if (validation.ProductAlreadyExists)
                 {
@@ -106,7 +115,7 @@ namespace BobAndFriends.BobAndFriends
                 }
             }           
             BobBox.CommitAndDispose();
-            Console.WriteLine("Done saving to database.");
+            Console.WriteLine(id + ": Done saving last changes to database.");
         }
     }
 }
