@@ -18,10 +18,11 @@ namespace BorderSource.Affiliate.Reader
         public abstract string Name { get; }
 
         /// <summary>
-        /// This methoed will read all products from all datafiles in the given directory.
+        /// This methoed will read all produits from all datafiles in the given directory.
         /// </summary>
         /// <param name="dir">The directory</param>
-        /// <returns>An enumerable list of lists of products.</returns>
+        /// <returns>An enumerable list of lists of produits.</returns>
+        [Obsolete]
         public abstract IEnumerable<List<Product>> ReadFromDir(string dir);
 
         public abstract IEnumerable<List<Product>> ReadFromFile(string file);

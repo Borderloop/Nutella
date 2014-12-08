@@ -34,8 +34,8 @@ namespace BobAndFriends.Crapper
             }
             catch(Exception e)
             {
-                Console.WriteLine("Crapper threw an exception: " + e.Message);
-                Console.WriteLine("StackTrace: " + e.StackTrace);               
+                Logger.Instance.WriteLine("Crapper threw an exception: " + e.Message);
+                Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);               
             }
         }
 
@@ -192,8 +192,8 @@ namespace BobAndFriends.Crapper
                     List<article> wrongArticles = db.article
                         .Where(a => a.title.Any(t => t.title1 == dupTitle))
                         .ToList();
-           
-                    article correctArticle = db.article.Where(a => a.title.Any(t => t.title1.ToLower().Trim() == dupTitle.ToLower().Trim())).FirstOrDefault();
+
+                    article correctArticle = db.article.Where(a => a.title.Any(t => t.title1.RemoveDiacriticAccents().ToLower().Trim() == dupTitle.RemoveDiacriticAccents().ToLower().Trim())).FirstOrDefault();
                     wrongArticles.Remove(correctArticle);
                     correctTitle = correctArticle.title.First().title1;
 
@@ -223,9 +223,9 @@ namespace BobAndFriends.Crapper
                         {
                             if (correctArticle.title.Any(t => t.country_id == title.country_id))
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.RemoveDiacriticAccents().ToLower().Trim() == title.title1.RemoveDiacriticAccents().ToLower().Trim())))
                                 {
-                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim()).FirstOrDefault().occurrences++);
+                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.RemoveDiacriticAccents().ToLower().Trim() == title.title1.RemoveDiacriticAccents().ToLower().Trim()).FirstOrDefault().occurrences++);
                                 }
                                 else
                                 {
@@ -240,12 +240,12 @@ namespace BobAndFriends.Crapper
 
                             foreach (title_synonym syn in title.title_synonym)
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.RemoveDiacriticAccents().ToLower().Trim() == syn.title.RemoveDiacriticAccents().ToLower().Trim())))
                                 {
                                     List<title> titles = correctArticle.title.ToList();
                                     foreach(title t in titles)
                                     {
-                                        title_synonym syn2 = t.title_synonym.Where(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim()).FirstOrDefault();                                      
+                                        title_synonym syn2 = t.title_synonym.Where(ts => ts.title.RemoveDiacriticAccents().ToLower().Trim() == syn.title.RemoveDiacriticAccents().ToLower().Trim()).FirstOrDefault();                                      
                                         if (syn2 == default(title_synonym)) continue;
                                         syn2.occurrences++;
                                     }
@@ -347,12 +347,12 @@ namespace BobAndFriends.Crapper
                 db.SaveChanges();
                 Console.WriteLine("Done with removing empty urls.");
                 /*Console.WriteLine("Started with looking up duplicate urls...");
-                var duplicateUrls = db.product.GroupBy(p => p.direct_link).Where(x => x.Count() > 1).Select(val => val.Key);
+                var duplicateUrls = db.product.GroupBy(produit => produit.direct_link).Where(x => x.Count() > 1).Select(val => val.Key);
                 Console.WriteLine("Removing now, this can take a while.");
                 foreach (string dupe in duplicateUrls)
                 {
-                    var products = db.product.Where(p => p.direct_link == dupe).ToList();
-                    if (products != null) db.product.RemoveRange(products.Skip(1));
+                    var produits = db.product.Where(produit => produit.direct_link == dupe).ToList();
+                    if (produits != null) db.product.RemoveRange(produits.Skip(1));
                 }
                 db.SaveChanges();
                 Console.WriteLine("Done with removing duplicate urls.");*/

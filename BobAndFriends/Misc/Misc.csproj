@@ -49,11 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database.cs" />
+    <Compile Include="DualKeyDictionary.cs" />
     <Compile Include="IParam.cs" />
     <Compile Include="Param.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingletonQueue.cs" />
+    <Compile Include="XmlValueReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

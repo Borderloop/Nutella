@@ -71,6 +71,7 @@ namespace BorderSource.Affiliate.Reader
             }
         }
 
+        [Obsolete]
         public override IEnumerable<List<Product>> ReadFromDir(string dir)
         {
             if (!Directory.Exists(dir))

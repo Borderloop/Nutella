@@ -163,15 +163,16 @@ namespace BobAndFriends
             {             
                 bob.Process(p);
             }
-            catch (OutOfMemoryException)
+            catch (OutOfMemoryException oome)
             {
                 Console.WriteLine("Caught OutOfMemoryException, trying GC.Collect()");
+                Logger.Instance.WriteLine("Caught OutOfMemoryException, StackTrace: " + oome.StackTrace);
                 GC.Collect();
             }
             catch (Exception e)
-            { 
-                Console.WriteLine("A Bob threw an error: " + e.Message);
-                Console.WriteLine("Continuing with another Bob.");
+            {
+                Logger.Instance.WriteLine("A Bob threw an error: " + e.Message);
+                Logger.Instance.WriteLine("Continuing with another Bob.");
             }
             finally
             {
@@ -185,7 +186,18 @@ namespace BobAndFriends
             ProductFeedReader pfr = new ProductFeedReader();
 
             TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading");
-            pfr.Start(MAX_READERS);
+            try
+            {
+                pfr.Start(MAX_READERS);
+            }catch(Exception e)
+            {
+                Logger.Instance.WriteLine("Reader threw an exception: " + e.Message);
+                Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);
+            }
+            finally
+            {
+                PackageQueue.Instance.InputStopped = true;
+            }
             TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading");
         }
 
@@ -210,11 +222,7 @@ namespace BobAndFriends
             Crapper.Crapper.CleanUp(StartTime);
             TimeStatisticsMapper.Instance.StopTimeMeasure("Total Crapper time");
 
-            Logger.Instance.WriteStatistics();
-
-            Done = true;
-            Console.WriteLine("Press ENTER to exit.");
-            Console.Read();           
+            Logger.Instance.WriteStatistics();       
         }
 
         static void StartBobBoxManager(int id)

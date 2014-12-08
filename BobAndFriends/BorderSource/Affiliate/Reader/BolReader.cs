@@ -12,13 +12,14 @@ namespace BorderSource.Affiliate.Reader
     public class BolReader : AffiliateReaderBase
     {
         private string SiteId = "31102";
-        private string SubId = "";
-        private string BolName = "";
+        private string SubId = DateTime.Today.ToString("yyyyMMdd");
+        private string BolName = "Borderloop";
         public override string Name
         {
             get { return "Bol"; }
         }
 
+        [Obsolete]
         public override IEnumerable<List<Product>> ReadFromDir(string dir)
         {
             Console.WriteLine("Tried to access BolReader from ReadFromDir(). This is not implemented because it's obsolete.");
@@ -36,6 +37,7 @@ namespace BorderSource.Affiliate.Reader
                     switch (Path.GetFileNameWithoutExtension(file).Split('_')[1])
                     {
                         case "muziek":
+                            yield break;
                             while (reader.ReadNextRecord())
                             {
                                 Product p = new Product()
@@ -66,7 +68,8 @@ namespace BorderSource.Affiliate.Reader
                             }
                             yield return products;
                             break;                      
-                        case "baby": 
+                        case "baby":
+                            yield break;
                             while (reader.ReadNextRecord())
                             {
                                 Product p = new Product()
@@ -98,6 +101,7 @@ namespace BorderSource.Affiliate.Reader
                             yield return products;
                             break;
                         case "dvd":
+                            yield break;
                             while (reader.ReadNextRecord())
                             {
                                 Product p = new Product()
@@ -130,6 +134,7 @@ namespace BorderSource.Affiliate.Reader
                             break;
                         case "boeken-engels":
                         case "boeken":
+                            yield break;
                             while (reader.ReadNextRecord())
                             {
                                 Product p = new Product()

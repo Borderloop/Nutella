@@ -220,7 +220,7 @@ namespace BorderSource.Common
         /// <param name="table">Table</param>
         /// <param name="description">Description</param>
         /// <param name="web_url">Webshop</param>
-        /// <param name="p">Value description</param>
+        /// <param name="produit">Value description</param>
         /// <param name="webshop">Value webshop</param>
         /// <returns></returns>
         public bool CheckCategorySynonym(string description, string webshop)

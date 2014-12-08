@@ -47,7 +47,7 @@ namespace Misc
         /// <summary>
         /// This method will put a product in the Queue.
         /// </summary>
-        /// <param name="p">The product to be enqueued.</param>
+        /// <param name="produit">The product to be enqueued.</param>
         public void Enqueue(T t)
         {
             lock (QueueLock)
