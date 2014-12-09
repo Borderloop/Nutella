@@ -27,10 +27,11 @@ namespace BorderSource.Statistics
             }
         }
 
-        public void Add(string key, params IStatistics[] statistics)
+        public void Add(string key, bool firstIsTotal = false, params IStatistics[] statistics)
         {
             if (!map.ContainsKey(key)) map.Add(key, new RatioStatistics());
             ((RatioStatistics)map[key]).Statistics = statistics;
+            ((RatioStatistics)map[key]).FirstIsTotal = firstIsTotal;
         }
 
         public void Add(string key, IStatistics statistics)

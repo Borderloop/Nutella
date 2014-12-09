@@ -184,6 +184,7 @@ namespace BorderSource.Affiliate.Reader
             }
         }
 
+        [Obsolete]
         public override IEnumerable<List<Product>> ReadFromDir(string dir)
         {
             if (!Directory.Exists(dir))
@@ -206,7 +207,7 @@ namespace BorderSource.Affiliate.Reader
                 {
                     /*using (Logger logger = new Logger(Statics.LoggerPath, true))
                     {
-                        logger.WriteLine("Webshop not found in database: " + fileUrl + " from " + Name);
+                        logger.WriteLine("Webshop not found in database: " + fichierUrl + " from " + Name);
                     }*/
                     continue;
                 }

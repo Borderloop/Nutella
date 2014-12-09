@@ -59,7 +59,7 @@ namespace BobAndFriends.BobAndFriends
 
             if (Properties.PropertyList["update_enabled"].GetValue<bool>())
             {
-                //Filter existing products
+                //Filter existing produits
                 foreach (KeyValuePair<Product, int> pair in db.GetExistingProductIds(p.products, p.Webshop))
                 {
                     if (pair.Key == null) continue;
@@ -95,7 +95,7 @@ namespace BobAndFriends.BobAndFriends
             /*
             if (Properties.PropertyList["insert_match_enabled"].GetValue<bool>()) 
             {
-            foreach (KeyValuePair<Product, int> pair in db.GetSkuMatches(p.products.Where(prod => !prod.IsValidated).ToList()))
+            foreach (KeyValuePair<Product, int> pair in db.GetSkuMatches(produit.produits.Where(prod => !prod.IsValidated).ToList()))
             {
                 if (pair.Key == null) continue;
                 ProductValidation validation = new ProductValidation();
@@ -108,7 +108,7 @@ namespace BobAndFriends.BobAndFriends
             }
             }
             
-            if (p.products.All(prod => prod.IsValidated)) return;
+            if (produit.produits.All(prod => prod.IsValidated)) return;
             */
 
             if (Properties.PropertyList["insert_new_enabled"].GetValue<bool>())

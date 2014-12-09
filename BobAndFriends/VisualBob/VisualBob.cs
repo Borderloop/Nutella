@@ -17,7 +17,7 @@ namespace VisualBob
     public partial class VisualBob : Form
     {
         /// <summary>
-        /// This List contains all suggested products for the selected product. It will
+        /// This List contains all suggested produits for the selected product. It will
         /// be updated regularly.
         /// </summary>
         private IEnumerable<DbDataRecord> suggestedProducts;

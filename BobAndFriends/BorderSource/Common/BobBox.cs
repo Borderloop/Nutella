@@ -151,7 +151,7 @@ namespace BorderSource.Common
 
         /// This method will send a product to the residu.
         /// </summary>
-        /// <param name="p">The product to be send to the residu.</param>
+        /// <param name="produit">The product to be send to the residu.</param>
         public int SendToVBobData(Product p)
         {
             vbobdata res = new vbobdata

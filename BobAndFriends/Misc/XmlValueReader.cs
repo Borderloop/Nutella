@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Threading;
-using BorderSource.Loggers;
 
-namespace BorderSource.Common
+namespace Misc
 {
     public class XmlValueReader : IDisposable
     {
@@ -46,7 +45,7 @@ namespace BorderSource.Common
             {
                 try
                 {
-                    while (_reader.Read() && !nextProduct)
+                    while (_reader.Read() || nextProduct)
                     {
                         if (dkd.ContainsKey(_reader.Name, _reader.NodeType))
                         {
@@ -65,13 +64,13 @@ namespace BorderSource.Common
                 }
                 catch (Exception e)
                 {
-                    Logger.Instance.WriteLine("Exception caught: " + e.Message);
-                    Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);
+                    Console.WriteLine("Exception caught: " + e.Message);
+                    Console.WriteLine("StackTrace: " + e.StackTrace);
                 }
                 isDone = !nextProduct;
-                nextProduct = false;
                 yield return dkd;
                 dkd.ClearValues();
+                nextProduct = false;
             }
         }
 

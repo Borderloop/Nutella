@@ -12,6 +12,7 @@ namespace BorderSource.Statistics
         public string Description { get { return _Description; } }
 
         public ICollection<IStatistics> Statistics { get; set; }
+        public bool FirstIsTotal { get; set; }
 
         /// <summary>
         /// Currently only has an implementation for GeneralStatistics. All other statistics will be ignored.
@@ -23,7 +24,11 @@ namespace BorderSource.Statistics
             else
             {
                 float[] resultSet = new float[Statistics.Count];
-                float total = Statistics.Sum(s => (float)((GeneralStatistics)s).count);
+                float total;
+                if (FirstIsTotal)
+                    total = ((GeneralStatistics)Statistics.First()).count;
+                else
+                    total = Statistics.Sum(s => (float)((GeneralStatistics)s).count);
                 for(int i = 0; i < Statistics.Count; i++)
                 {
                     resultSet[i] = ((GeneralStatistics)Statistics.ElementAt(i)).count / total;

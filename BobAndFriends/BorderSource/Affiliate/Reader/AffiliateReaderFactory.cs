@@ -25,6 +25,9 @@ namespace BorderSource.Affiliate.Reader
                 case "Webgains": reader = new WebgainsReader(); break;
                 case "Zanox": reader = new ZanoxReader(); break;
                 case "BorderBot": reader = new BorderBotReader(); break;
+                case "Wehkamp": reader = new WehkampReader(); break;
+                case "AffiliateWindow": reader = new AffiliateWindowReader(); break;
+                case "Effliation": reader = new EffiliationLecteur(); break;
                 default: reader = null; break;
             }
             return reader;

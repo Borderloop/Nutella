@@ -12,9 +12,9 @@ namespace BorderSource.Property
         private string _path;
 
         /// <summary>
-        /// The constructor which opens the StreamReader to read a .ini file from a given path.
+        /// The constructor which opens the StreamReader to read a .ini fichier from a given path.
         /// </summary>
-        /// <param name="path">The path where the .ini file is located.</param>
+        /// <param name="path">The path where the .ini fichier is located.</param>
         public INIFile(string path)
         {
             _path = path;

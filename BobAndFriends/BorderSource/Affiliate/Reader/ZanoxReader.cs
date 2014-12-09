@@ -138,14 +138,17 @@ namespace BorderSource.Affiliate.Reader
                     catch (ThreadAbortException)
                     {
                         Console.WriteLine("From producer: Thread was aborted. Shutting down.");
+                        yield break;
                     }
                     catch (XmlException xmle)
                     {
                         Logger.Instance.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
+                        yield break;
                     }
                     catch (Exception e)
                     {
                         Logger.Instance.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                        yield break;
                     }
                     isDone = !nextLoop;
                     nextLoop = false;
@@ -156,6 +159,7 @@ namespace BorderSource.Affiliate.Reader
             }
         }
 
+        [Obsolete]
         public override System.Collections.Generic.IEnumerable<List<Product>> ReadFromDir(string dir)
         {
             if (!Directory.Exists(dir))
@@ -178,7 +182,7 @@ namespace BorderSource.Affiliate.Reader
                 {
                     /*using (Logger logger = new Logger(Statics.LoggerPath, true))
                     {
-                        logger.WriteLine("Webshop not found in database: " + fileUrl + " from " + Name);
+                        logger.WriteLine("Webshop not found in database: " + fichierUrl + " from " + Name);
                     }*/
                     continue;
                 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.IO;
 
 namespace BorderMaster
 {
@@ -35,8 +36,8 @@ namespace BorderMaster
                 Console.Clear();
                 Console.WriteLine("---------- BorderMaster console application ----------");
                 Console.WriteLine("Started running at " + StartTime);
-                Console.WriteLine("Busy with: " + currentProcessInfo.FileName);
-                Console.WriteLine("Next up: " + processQueue.Peek().FileName);
+                Console.WriteLine("Busy with: " + Path.GetFileNameWithoutExtension(currentProcessInfo.FileName));
+                Console.WriteLine("Next up: " + Path.GetFileNameWithoutExtension(processQueue.Peek().FileName));
                 currentProcess = Process.Start(currentProcessInfo);
                 currentProcess.WaitForExit();
                 processQueue.Enqueue(currentProcessInfo);

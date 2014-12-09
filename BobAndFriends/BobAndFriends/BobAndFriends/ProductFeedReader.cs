@@ -84,7 +84,7 @@ namespace BobAndFriends.BobAndFriends
                 foreach(string file in dirfiles)
                 {
                     string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                    if (dir.Split(Path.DirectorySeparatorChar).Last() != "Bol")
+                    if (dir.Split(Path.DirectorySeparatorChar).Last() != "Bol" && dir.Split(Path.DirectorySeparatorChar).Last() != "Wehkamp")
                     {
                         if (!Lookup.WebshopLookup.Contains(fileUrl))
                         {
@@ -112,9 +112,6 @@ namespace BobAndFriends.BobAndFriends
 
             Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = max_readers }, actions.ToArray());
             Console.WriteLine("Done reading productfeeds.");
-
-            //Flag the boolean to be true when finished.
-            PackageQueue.Instance.InputStopped = true;
         }
 
         public void ReadFile(AffiliateFile file)
@@ -130,52 +127,60 @@ namespace BobAndFriends.BobAndFriends
 
             reader.PackageSize = Properties.PropertyList["package_size"].GetValue<int>();
             Console.WriteLine("Started reading " + Path.GetFileNameWithoutExtension(file.FileLocation).Split(null)[0].Replace('$', '/'));
-            foreach(List<Product> products in reader.ReadFromFile(file.FileLocation))
+            try
             {
-                foreach (Product p in products)
+                foreach (List<Product> products in reader.ReadFromFile(file.FileLocation))
                 {
-                    GeneralStatisticsMapper.Instance.Increment("Products read");
-                    if (!_filter.CheckProperties(p))
+                    foreach (Product p in products)
                     {
-                        WrongProducts.Add(p);
-                        continue;
+                        GeneralStatisticsMapper.Instance.Increment("Products read");
+                        if (!_filter.CheckProperties(p))
+                        {
+                            WrongProducts.Add(p);
+                            continue;
+                        }
+                        if (!GlobalVariables.UniqueIds.Contains(p.AffiliateProdID)) GlobalVariables.UniqueIds.Add(p.AffiliateProdID);
+                        else
+                        {
+                            WrongProducts.Add(p);
+                            continue;
+                        }
                     }
-                    if (!GlobalVariables.UniqueIds.Contains(p.AffiliateProdID)) GlobalVariables.UniqueIds.Add(p.AffiliateProdID);
-                    else
+                    GeneralStatisticsMapper.Instance.Increment("Wrong products", WrongProducts.Count);
+
+                    foreach (Product wp in WrongProducts)
                     {
-                        WrongProducts.Add(p);
-                        continue;
+                        products.Remove(wp);
                     }
-                }
-                GeneralStatisticsMapper.Instance.Increment("Wrong products", WrongProducts.Count);
 
-                foreach (Product wp in WrongProducts)
-                {
-                    products.Remove(wp);
+                    GeneralStatisticsMapper.Instance.Increment("Correct products", products.Count);
+                    while (_maxQueueSize == 0 ? false : PackageQueue.Instance.Queue.Count > _maxQueueSize) Thread.Sleep(1000);
+                    if (products.Count > 0)
+                    {
+                        Package package = new Package();
+                        package.products = new List<Product>(products);
+                        package.Webshop = package.products.First().Webshop;
+                        PackageQueue.Instance.Enqueue(package);
+                    }
+                    WrongProducts.Clear();
+                    products.Clear();
                 }
-
-                GeneralStatisticsMapper.Instance.Increment("Correct products", products.Count);
-                while (_maxQueueSize == 0 ? false : PackageQueue.Instance.Queue.Count >  _maxQueueSize) Thread.Sleep(1000);
-                if (products.Count > 0)
-                {
-                    Package package = new Package();
-                    package.products = new List<Product>(products);
-                    package.Webshop = package.products.First().Webshop;
-                    PackageQueue.Instance.Enqueue(package);
-                }
-                WrongProducts.Clear();
-                products.Clear();
+            }catch(Exception e)
+            {
+                Logger.Instance.WriteLine("A reader threw an exception: " + e.Message);
+                Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);
             }
         }
 
+        [Obsolete]
         public void ReadAffiliate(AffiliateReaderBase af)
         {
             List<Product> WrongProducts = new List<Product>();
 
-            //Invoke ReadFromDir() and read all products
+            //Invoke ReadFromDir() and read all produits
             foreach (List<Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
             {
-                //Push all the products to the Queue so BOB can process them.
+                //Push all the produits to the Queue so BOB can process them.
                 foreach (Product p in products)
                 {
                     GeneralStatisticsMapper.Instance.Increment("Products read");

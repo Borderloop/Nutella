@@ -67,15 +67,18 @@
     <Compile Include="Affiliate\File\AffiliateFile.cs" />
     <Compile Include="Affiliate\Reader\AffiliateReaderFactory.cs" />
     <Compile Include="Affiliate\Reader\AffiliateReaderBase.cs" />
+    <Compile Include="Affiliate\Reader\AffiliateWindowReader.cs" />
     <Compile Include="Affiliate\Reader\AffilinetReader.cs" />
     <Compile Include="Affiliate\Reader\BelboonReader.cs" />
     <Compile Include="Affiliate\Reader\BolReader.cs" />
     <Compile Include="Affiliate\Reader\BorderBotReader.cs" />
     <Compile Include="Affiliate\Reader\CommissionJunctionReader.cs" />
     <Compile Include="Affiliate\Reader\DaisyconReader.cs" />
+    <Compile Include="Affiliate\Reader\EffiliationLecteur.cs" />
     <Compile Include="Affiliate\Reader\TradeDoublerReader.cs" />
     <Compile Include="Affiliate\Reader\TradeTrackerReader.cs" />
     <Compile Include="Affiliate\Reader\WebgainsReader.cs" />
+    <Compile Include="Affiliate\Reader\WehkampReader.cs" />
     <Compile Include="Affiliate\Reader\ZanoxReader.cs" />
     <Compile Include="BetsyContext\affiliate.cs">
       <DependentUpon>BetsyModel.tt</DependentUpon>
