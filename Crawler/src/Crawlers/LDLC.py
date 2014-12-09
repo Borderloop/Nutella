@@ -43,5 +43,3 @@ class Crawler():
         self.host = parser.get('LDLC', 'host')
         self.user = parser.get('LDLC', 'user')
         self.password = parser.get('LDLC', 'password').replace('"', '')
-
-Crawler().main()
