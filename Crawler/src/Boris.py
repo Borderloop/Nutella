@@ -10,6 +10,7 @@ from Crawlers import Belboon
 from Crawlers import Daisycon
 from Crawlers import Bol
 from Crawlers import Wehkamp
+from Crawlers import LDLC
 
 
 global productFeedsPath
@@ -65,6 +66,9 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=Effiliation.Crawler().main)
+    t.start()
+
+    t = Thread(target=LDLC.Crawler().main)
     t.start()
 
 main()
