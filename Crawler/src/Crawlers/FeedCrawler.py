@@ -1,11 +1,14 @@
 # This module crawls multiple affiliates, stored in the feed_urls.xlsx file
 
+from CrawlerHelpScripts import logger
+
 from openpyxl import load_workbook
 import urllib
-from CrawlerHelpScripts import logger
 import time
 import traceback
 from ConfigParser import SafeConfigParser
+import zipfile
+import os
 
 
 class Crawler():
@@ -53,7 +56,7 @@ class Crawler():
                     affiliate = cell.value
                 if cell.column == 'B':  # Column B contains the name of the website.
                     website = cell.value
-                if cell.column == 'C':  # Column C contains the file type (xml or csv)
+                if cell.column == 'C':  # Column C contains the file type (xml or zip)
                     fileType = cell.value
                 if cell.column == 'D':  # Else if column is D, it contains the product feed download url.
                     url = cell.value
@@ -80,10 +83,27 @@ class Crawler():
         try:
             xmlFile = urllib.URLopener()
             xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + '.' + fileType)
+
+            if fileType == 'zip':
+                self.readZipFile(website, affiliate)
+
             self.log.info(str(time.asctime(time.localtime(time.time())))+": Done saving file for: " +
                           affiliate + " - " + website)
         except:
             self.log.error(str(time.asctime(time.localtime(time.time()))) +
                            ": " + traceback.format_exc())
-            self.log.info(str(time.asctime(time.localtime(time.time()) ))+": Failed saving file for: " + affiliate +
+            self.log.info(str(time.asctime(time.localtime(time.time())))+": Failed saving file for: " + affiliate +
                           " - " + website + ". See error log for more details")
+
+    # This procedure is used to read zip files and extract their contents.
+    def readZipFile(self, website, affiliate):
+        zf = zipfile.ZipFile(self.feedPath + affiliate + '/' + website + '.zip')
+        nameList = zf.namelist()
+        data = zf.read(nameList[0])
+        zf.close()
+
+        f = open(self.feedPath + affiliate + '/' + website + '.csv', 'w')
+        f.write(data)
+        f.close()
+
+        os.remove(self.feedPath + affiliate + '/' + website + '.zip')
