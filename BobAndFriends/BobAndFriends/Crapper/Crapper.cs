@@ -87,9 +87,9 @@ namespace BobAndFriends.Crapper
                         {
                             if (correctArticle.title.Any(t => t.country_id == title.country_id))
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().RemoveDiacriticAccents().Trim() == title.title1.ToLower().RemoveDiacriticAccents().Trim())))
                                 {
-                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.ToLower().Trim() == title.title1.ToLower().Trim()).FirstOrDefault().occurrences++);
+                                    correctArticle.title.ToList().ForEach(t => t.title_synonym.Where(ts => ts.title.ToLower().RemoveDiacriticAccents().Trim() == title.title1.ToLower().RemoveDiacriticAccents().Trim()).FirstOrDefault().occurrences++);
                                 }
                                 else
                                 {
@@ -104,7 +104,7 @@ namespace BobAndFriends.Crapper
 
                             foreach (title_synonym syn in title.title_synonym)
                             {
-                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == syn.title.ToLower().Trim())))
+                                if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().RemoveDiacriticAccents().Trim() == syn.title.ToLower().RemoveDiacriticAccents().Trim())))
                                 {
                                     List<title> titles = correctArticle.title.ToList();
                                     foreach (title t in titles)

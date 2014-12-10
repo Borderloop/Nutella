@@ -51,7 +51,7 @@ namespace BorderSource.Affiliate.Reader
                             Stock = reader[14],
                             Title = reader[7],
                             Url = reader[12],
-                            Webshop = fileUrl
+                            Webshop = "www.ldlc.com"
                         };
 
                         p.Url.Replace("[identifiant-Affilie]", LDLCID);

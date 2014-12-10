@@ -67,7 +67,8 @@ namespace BobAndFriends.BobAndFriends
                 foreach (string file in dirfiles)
                 {
                     string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                    if (dir.Split(Path.DirectorySeparatorChar).Last() != "Bol" && dir.Split(Path.DirectorySeparatorChar).Last() != "Wehkamp")
+                    string currentDir = dir.Split(Path.DirectorySeparatorChar).Last();
+                    if (currentDir != "Bol" && currentDir != "Wehkamp" && currentDir != "LDLC")
                     {
                         if (!Lookup.WebshopLookup.Contains(fileUrl))
                         {

@@ -113,6 +113,7 @@ namespace BobAndFriends
             producer.Start();
             validator.Start();
             consumer.Start();
+
         }
 
         static void BobController()
