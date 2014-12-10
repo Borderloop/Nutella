@@ -57,6 +57,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,6 +76,7 @@
     <Compile Include="Affiliate\Reader\CommissionJunctionReader.cs" />
     <Compile Include="Affiliate\Reader\DaisyconReader.cs" />
     <Compile Include="Affiliate\Reader\EffiliationLecteur.cs" />
+    <Compile Include="Affiliate\Reader\LDLCReader.cs" />
     <Compile Include="Affiliate\Reader\TradeDoublerReader.cs" />
     <Compile Include="Affiliate\Reader\TradeTrackerReader.cs" />
     <Compile Include="Affiliate\Reader\WebgainsReader.cs" />
@@ -206,6 +208,8 @@
     <Compile Include="Queue\ProductQueue.cs" />
     <Compile Include="Queue\ProductValidationQueue.cs" />
     <Compile Include="Queue\SingletonQueue.cs" />
+    <Compile Include="Web\CurrencyConverter\LiveCurrencyConverter.cs" />
+    <Compile Include="Web\CurrencyConverter\CurrencyRate.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="BetsyContext\BetsyModel.edmx">

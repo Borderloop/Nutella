@@ -33,9 +33,9 @@ namespace Baximus
             CalculateBiggestDifferences();
             CalculateBiggestDifferencesPerCountry();
 
-            Console.WriteLine("Positive averege price difference: " + positiveAveragePrice);
+            Console.WriteLine("Positive average price difference: " + positiveAveragePrice);
             Console.WriteLine("Positive average price percentage difference: " + positiveAveragePercentage);
-            Console.WriteLine("Negative averege price difference: " + negativeAveragePrice);
+            Console.WriteLine("Negative average price difference: " + negativeAveragePrice);
             Console.WriteLine("Negative average price percentage difference: " + negativeAveragePercentage);
             Console.WriteLine("Averege price difference: " + averagePrice);
             Console.WriteLine("Average price percentage difference: " + averagePercentage);
@@ -47,9 +47,22 @@ namespace Baximus
             Console.Write("Connecting to database...");
             using (var db = new BetsyModel(ConnectionString))
             {
-                Console.Write(" Done\n");
-                Console.Write("Fetching foreign products...");
-                var foreignProductList = db.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id != 1).ToList();
+                Console.Write(" Done\n");               
+                var foreignProductQuery = db.product.Where(p => db.webshop.Where(w => w.url == p.webshop_url).FirstOrDefault().country_id != 1);
+                int count = foreignProductQuery.Count();
+                List<product> foreignProductList = new List<product>();
+                int pageSize = 100;
+                int perc = 10;
+                Console.WriteLine("Fetching " + count + " foreign products, this may take a while...");
+                for (int i = 0; i <= count; i += pageSize)
+                {
+                    foreignProductList.AddRange(foreignProductQuery.OrderBy(p => p.id).Skip(i).Take(pageSize));
+                    if((int)(((double)foreignProductList.Count /(double)count)*100) >= perc)
+                    {
+                        Console.Write(perc + "% ");
+                        perc += 10;
+                    }
+                }
 
                 Console.Write(" Done\n");
 
@@ -74,9 +87,12 @@ namespace Baximus
                 Console.Write(" Done\n");
 
                 Console.WriteLine("Started calculating biggest price differences...");
+                int count = 0;
+                int perc = 10;
                 //Calculate biggest price differences
                 foreach (article article in articleList)
                 {
+                    count++;
                     biggest_price_differences bpd = new biggest_price_differences();
                     bpd.highest_price = Int32.MaxValue;
                     bpd.lowest_price = Int32.MaxValue;
@@ -114,13 +130,19 @@ namespace Baximus
                                 entry.GetType().GetProperty(p.Name).SetValue(entry, bpdValue);
                             }
                         }
-                        Console.WriteLine("Updated article " + entry.article_id + " with difference of " + entry.difference);
                     }
                     else
                     {
                         db.biggest_price_differences.Add(bpd);
-                        Console.WriteLine("Added article " + bpd.article_id + " with difference of " + bpd.difference);
+                        if ((int)(((double)count / (double)articleList.Count) * 100) >= perc)
+                        {
+                            Console.Write(perc + "% ");
+                            perc += 10;
+                        }
                     }
+
+                    if (count % 1000 == 0)
+                        db.SaveChanges();
 
                 }
                 Console.Write("Saving changes to database...");
@@ -139,7 +161,7 @@ namespace Baximus
             {
                 decimal count = 0;
                 Console.Write(" Done\n");
-
+                int perc = 10;
                 Console.WriteLine("Started calculating biggest price differences...");
                 foreach (article article in articleList)
                 {
@@ -174,7 +196,6 @@ namespace Baximus
                             country_price_differences entry;
                             if ((entry = db.country_price_differences.Where(c => c.article_id == article.id && c.country_id == country_id).FirstOrDefault()).difference >= difference)
                             {
-                                Console.WriteLine("Did not update article " + article.id + " (bigger/equal difference already in database)");
                                 continue;
                             }
 
@@ -183,7 +204,6 @@ namespace Baximus
                             entry.product_id = product.id;
                             entry.last_updated = System.DateTime.Now;
 
-                            Console.WriteLine("Updated article " + article.id + " with difference of " + difference);
                         }
                         else
                         {
@@ -193,13 +213,21 @@ namespace Baximus
                             cpd.difference = difference;
                             //cpd.difference_percentage = percentage;
                             cpd.product_id = product.id;
-                            cpd.last_updated = System.DateTime.Now;                            
+                            cpd.last_updated = System.DateTime.Now;
 
                             db.country_price_differences.Add(cpd);
-                            Console.WriteLine("Added article " + article.id + " with difference of " + difference);
+                            if ((int)(((double)count / (double)articleList.Count) * 100) >= perc)
+                            {
+                                Console.Write(perc + "% ");
+                                perc += 10;
+                            }
                         }
+
+                        if (count % 1000 == 0)
+                            db.SaveChanges();
                     }
                 }
+
 
                 Console.Write("Saving changes to database...");
                 db.SaveChanges();

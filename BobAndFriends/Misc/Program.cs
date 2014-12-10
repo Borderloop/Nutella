@@ -16,8 +16,8 @@ namespace Misc
     {
 
         static void Main(string[] args)
-        {
-        }
-
+        {           
+        }      
     }
 }
+

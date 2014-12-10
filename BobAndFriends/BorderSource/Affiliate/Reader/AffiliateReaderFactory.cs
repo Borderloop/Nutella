@@ -27,7 +27,8 @@ namespace BorderSource.Affiliate.Reader
                 case "BorderBot": reader = new BorderBotReader(); break;
                 case "Wehkamp": reader = new WehkampReader(); break;
                 case "AffiliateWindow": reader = new AffiliateWindowReader(); break;
-                case "Effliation": reader = new EffiliationLecteur(); break;
+                case "Effiliation": reader = new EffiliationLecteur(); break;
+                case "LDLC": reader = new LDLCReader(); break;
                 default: reader = null; break;
             }
             return reader;
