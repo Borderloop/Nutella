@@ -62,7 +62,7 @@ namespace BorderSource.ProductAssociation
                             return false;
                         }
                         decimal rate = CurrencyRates.ContainsKey(p.Currency.ToUpper()) ? CurrencyRates[p.Currency.ToUpper()] : 1;
-                        prop.SetValue(p, (parsedPrice * rate).ToString());
+                        prop.SetValue(p, (parsedPrice * rate).ToString().Replace(',', '.'));
                         break;
 
                     case "DeliveryCost":

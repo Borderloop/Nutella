@@ -16,9 +16,8 @@ namespace Misc
     {
 
         static void Main(string[] args)
-        {
-            Dictionary<string, decimal> dic = BorderSource.Web.CurrencyConverter.LiveCurrencyConverter.GetCurrencyRatesToEUR();
-        }        
+        {           
+        }      
     }
 }
 
