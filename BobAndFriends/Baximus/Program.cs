@@ -31,15 +31,7 @@ namespace Baximus
         {
             Initialize();          
             CalculateBiggestDifferences();
-            CalculateBiggestDifferencesPerCountry();
-
-            Console.WriteLine("Positive average price difference: " + positiveAveragePrice);
-            Console.WriteLine("Positive average price percentage difference: " + positiveAveragePercentage);
-            Console.WriteLine("Negative average price difference: " + negativeAveragePrice);
-            Console.WriteLine("Negative average price percentage difference: " + negativeAveragePercentage);
-            Console.WriteLine("Averege price difference: " + averagePrice);
-            Console.WriteLine("Average price percentage difference: " + averagePercentage);
-            Console.Read();
+            CalculateBiggestDifferencesPerCountry();                      
         }
 
         static void FillArticleList()

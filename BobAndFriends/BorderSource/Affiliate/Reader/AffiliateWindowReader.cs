@@ -32,8 +32,9 @@ namespace BorderSource.Affiliate.Reader
                 using (CsvReader reader = new CsvReader(sr, false, '|'))
                 {
                     List<Product> products = new List<Product>();
-                    while(reader.ReadNextRecord())
+                    while (reader.ReadNextRecord())
                     {
+
                         Product p = new Product()
                         {
                             Affiliate = "AffiliateWindow",
@@ -54,7 +55,7 @@ namespace BorderSource.Affiliate.Reader
 
                         p.Price.Trim(p.Currency.ToCharArray());
                         products.Add(p);
-                        if(products.Count >= PackageSize)
+                        if (products.Count >= PackageSize)
                         {
                             yield return products;
                             products.Clear();
