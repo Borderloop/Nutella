@@ -95,7 +95,7 @@ class Crawler():
             self.log.info(str(time.asctime(time.localtime(time.time())))+": Failed saving file for: " + affiliate +
                           " - " + website + ". See error log for more details")
 
-    # This procedure is used to read zip files and extract their contents.
+    # This procedure is used to read zip files and extract their contents and afterwards delete the zip file.
     def readZipFile(self, website, affiliate):
         zf = zipfile.ZipFile(self.feedPath + affiliate + '/' + website + '.zip')
         nameList = zf.namelist()

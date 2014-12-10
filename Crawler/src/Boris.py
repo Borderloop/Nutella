@@ -11,6 +11,7 @@ from Crawlers import Daisycon
 from Crawlers import Bol
 from Crawlers import Wehkamp
 from Crawlers import LDLC
+from Crawlers import Linkshare
 
 
 global productFeedsPath
@@ -69,6 +70,9 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=LDLC.Crawler().main)
+    t.start()
+
+    t = Thread(target=Linkshare.Crawler().main)
     t.start()
 
 main()
