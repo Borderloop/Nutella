@@ -37,7 +37,7 @@ namespace BorderSource.Affiliate.Reader
                 valeurLecteur.AddKeys("description", XmlNodeType.Element);
                 valeurLecteur.AddKeys("delivery_time", XmlNodeType.Element);
                 valeurLecteur.AddKeys("in_stock", XmlNodeType.Element);
-                valeurLecteur.AddKeys("in_stock", XmlNodeType.Element);
+                valeurLecteur.AddKeys("shipping_cost", XmlNodeType.Element);
                 valeurLecteur.AddKeys("sku", XmlNodeType.Element);
 
                 Product produit = new Product();

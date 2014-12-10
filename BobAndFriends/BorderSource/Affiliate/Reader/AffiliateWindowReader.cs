@@ -34,7 +34,6 @@ namespace BorderSource.Affiliate.Reader
                     List<Product> products = new List<Product>();
                     while(reader.ReadNextRecord())
                     {
-                        yield break;
                         Product p = new Product()
                         {
                             Affiliate = "AffiliateWindow",

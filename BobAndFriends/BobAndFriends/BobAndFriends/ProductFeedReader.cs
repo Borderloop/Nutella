@@ -30,8 +30,6 @@ namespace BobAndFriends.BobAndFriends
         /// </summary>
         private string _productFeedPath;
 
-        private ProductFilter _filter;
-
         private int _maxQueueSize;
 
         /// <summary>
@@ -49,28 +47,13 @@ namespace BobAndFriends.BobAndFriends
         {
             //Read settings
             _productFeedPath = Properties.PropertyList["feed_path"].GetValue<string>();
-            _filter = new ProductFilter();
-            _filter.LogProperties = false;
-            Dictionary<string, int> maximums = new Dictionary<string, int>();
-            foreach(var pair in Properties.PropertyList.Where(p => p.Value is Property<int>))
-            {
-                maximums.Add(pair.Key, pair.Value.GetValue<int>());
-            }
-            _filter.Maximums = maximums;
-            _maxQueueSize = Properties.PropertyList["max_packagequeue_size"].GetValue<int>();
-
-            HashSet<string> taxExclusiveWebshops = new HashSet<string>();
-            taxExclusiveWebshops.Add("www.hardware.nl");
-            taxExclusiveWebshops.Add("www.salland.eu");
-            taxExclusiveWebshops.Add("www.maxict.nl");
-            _filter.TaxExclusiveWebshops = taxExclusiveWebshops;
         }
 
         /// <summary>
         /// Start method to start reading and processing productfeeds.
         /// </summary>
         public void Start(int max_readers)
-        {              
+        {
             //Get all the directories in the productfeed folder.
             string[] dirs = Directory.GetDirectories(_productFeedPath);
 
@@ -78,10 +61,10 @@ namespace BobAndFriends.BobAndFriends
 
             List<AffiliateFile> files = new List<AffiliateFile>();
 
-            foreach(string dir in dirs)
+            foreach (string dir in dirs)
             {
                 string[] dirfiles = Directory.GetFiles(dir);
-                foreach(string file in dirfiles)
+                foreach (string file in dirfiles)
                 {
                     string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
                     if (dir.Split(Path.DirectorySeparatorChar).Last() != "Bol" && dir.Split(Path.DirectorySeparatorChar).Last() != "Wehkamp")
@@ -104,8 +87,8 @@ namespace BobAndFriends.BobAndFriends
             Console.WriteLine("Creating readers for " + files.Count + " webshops.");
             List<Action> actions = new List<Action>();
 
-            for(int i = 0; i < files.Count; i++)
-            {                
+            for (int i = 0; i < files.Count; i++)
+            {
                 int copy = i;
                 actions.Add(new Action(() => ReadFile(sortedBySize[copy])));
             }
@@ -116,10 +99,26 @@ namespace BobAndFriends.BobAndFriends
 
         public void ReadFile(AffiliateFile file)
         {
-            List<Product> WrongProducts = new List<Product>();
-            AffiliateReaderBase reader = AffiliateReaderFactory.GetAppropriateReader(file);        
+            ProductFilter filter = new ProductFilter();
+            filter.LogProperties = false;
+            Dictionary<string, int> maximums = new Dictionary<string, int>();
+            foreach (var pair in Properties.PropertyList.Where(p => p.Value is Property<int>))
+            {
+                maximums.Add(pair.Key, pair.Value.GetValue<int>());
+            }
+            filter.Maximums = maximums;
+            _maxQueueSize = Properties.PropertyList["max_packagequeue_size"].GetValue<int>();
 
-            if(reader == null)
+            HashSet<string> taxExclusiveWebshops = new HashSet<string>();
+            taxExclusiveWebshops.Add("www.hardware.nl");
+            taxExclusiveWebshops.Add("www.salland.eu");
+            taxExclusiveWebshops.Add("www.maxict.nl");
+            filter.TaxExclusiveWebshops = taxExclusiveWebshops;
+            filter.CurrencyRates = GlobalVariables.CurrencyRates;
+            List<Product> WrongProducts = new List<Product>();
+            AffiliateReaderBase reader = AffiliateReaderFactory.GetAppropriateReader(file);
+
+            if (reader == null)
             {
                 Console.WriteLine("Didn't find suitable reader for " + Path.GetFileNameWithoutExtension(file.FileLocation).Split(null)[0].Replace('$', '/') + " which should be in " + file.Name);
                 return;
@@ -134,7 +133,7 @@ namespace BobAndFriends.BobAndFriends
                     foreach (Product p in products)
                     {
                         GeneralStatisticsMapper.Instance.Increment("Products read");
-                        if (!_filter.CheckProperties(p))
+                        if (!filter.CheckProperties(p))
                         {
                             WrongProducts.Add(p);
                             continue;
@@ -165,50 +164,13 @@ namespace BobAndFriends.BobAndFriends
                     WrongProducts.Clear();
                     products.Clear();
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.Instance.WriteLine("A reader threw an exception: " + e.Message);
                 Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);
             }
         }
 
-        [Obsolete]
-        public void ReadAffiliate(AffiliateReaderBase af)
-        {
-            List<Product> WrongProducts = new List<Product>();
-
-            //Invoke ReadFromDir() and read all produits
-            foreach (List<Product> products in af.ReadFromDir(_productFeedPath + @"\\" + af.Name))
-            {
-                //Push all the produits to the Queue so BOB can process them.
-                foreach (Product p in products)
-                {
-                    GeneralStatisticsMapper.Instance.Increment("Products read");
-                    if (!_filter.CheckProperties(p))
-                    {
-                        WrongProducts.Add(p);
-                        continue;
-                    }
-                    if (!GlobalVariables.UniqueIds.Contains(p.AffiliateProdID)) GlobalVariables.UniqueIds.Add(p.AffiliateProdID);
-                    else
-                    {
-                        WrongProducts.Add(p);
-                        continue;
-                    }
-                }
-                GeneralStatisticsMapper.Instance.Increment("Wrong products", WrongProducts.Count);
-                foreach (Product wp in WrongProducts) products.Remove(wp);
-                while (PackageQueue.Instance.Queue.Count > Properties.PropertyList["max_queue_size"].GetValue<int>()) Thread.Sleep(300000);
-                if (products.Count > 0)
-                {
-                    Package package = new Package();
-                    package.products = new List<Product>(products);
-                    package.Webshop = package.products.First().Webshop;
-                    PackageQueue.Instance.Enqueue(package);
-                }
-                WrongProducts.Clear();
-                products.Clear();
-            }
-        }
     }
 }

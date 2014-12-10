@@ -35,6 +35,7 @@ namespace BobAndFriends.Crapper
             catch(Exception e)
             {
                 Logger.Instance.WriteLine("Crapper threw an exception: " + e.Message);
+                Logger.Instance.WriteLine("InnerException: " + e.InnerException);
                 Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);               
             }
         }

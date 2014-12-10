@@ -33,6 +33,7 @@ namespace BorderSource.Common
         public void AddKeys(string key1, XmlNodeType key2)
         {
             //Add the keys to the dictionary with an empty value. This will be filled later.
+            if (dkd.ContainsKey(key1, key2)) return;
             dkd.Add(key1, key2, "");
         }
 

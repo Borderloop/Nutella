@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using BorderSource.Statistics;
 using BorderSource.Common;
+using BorderSource.Loggers;
 using System.Globalization;
 
 namespace BorderSource.ProductAssociation
@@ -17,6 +18,8 @@ namespace BorderSource.ProductAssociation
         public Dictionary<string, int> Maximums { get; set; }
 
         public HashSet<string> TaxExclusiveWebshops { get; set; }
+
+        public IDictionary<string, decimal> CurrencyRates { get; set; }
 
         public ProductFilter()
         {
@@ -58,6 +61,8 @@ namespace BorderSource.ProductAssociation
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             return false;
                         }
+                        decimal rate = CurrencyRates.ContainsKey(p.Currency.ToUpper()) ? CurrencyRates[p.Currency.ToUpper()] : 1;
+                        prop.SetValue(p, (parsedPrice * rate).ToString());
                         break;
 
                     case "DeliveryCost":

@@ -30,6 +30,7 @@ namespace BorderSource.Affiliate.Reader
             using (XmlReader _reader = XmlReader.Create(file, new XmlReaderSettings { CloseInput = true }))
             {
                 List<Product> products = new List<Product>();
+
                 Product p = null;
                 bool isDone = false;
                 bool nextLoop = false;
@@ -80,7 +81,7 @@ namespace BorderSource.Affiliate.Reader
 
                                         p.Url = _reader.Value;
 
-                                        //Read again twice to avoid double produits because some genius made the xml fichier have two Product elements...
+                                        //Read again twice to avoid double produits because some genius made the xml file have two Product elements...
                                         _reader.Read();
                                         _reader.Read();
                                         break;
