@@ -29,8 +29,7 @@ namespace BobAndFriends.Crapper
                 CleanupOldProducts(time);
                 CleanupEmtpyTitles();
                 CleanupEanDupes();
-                //
-                CleanupWebshopDupes();
+                //CleanupWebshopDupes();
                 CleanupUrlDupes();                                            
                 CleanupTitleDupes();
                 CleanupUniqueIdDupes();
@@ -49,7 +48,7 @@ namespace BobAndFriends.Crapper
             using (var db = new BetsyModel(ConnectionString))
             {
                 List<product> productsToBeRemoved = new List<product>();
-                var duplicateWebshops = db.article.Where(a => a.product.GroupBy(p => p.webshop_url).Any(x => x.Count() > 1));
+                var duplicateWebshops = db.article.Where(a => a.product.Count != a.product.GroupBy(p => p.webshop_url).Count());
                 Console.WriteLine("Removing product dupes...");
                 foreach(article art in duplicateWebshops)
                 {
