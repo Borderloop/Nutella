@@ -31,6 +31,7 @@ namespace BorderSource.Common
         public void CreateReader(string file, XmlReaderSettings settings)
         {
             _reader = XmlReader.Create(file, settings);
+            this.file = file;
         }
         public void AddKeys(string key1, XmlNodeType key2)
         {

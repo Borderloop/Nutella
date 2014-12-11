@@ -53,7 +53,7 @@ namespace BorderSource.Affiliate.Reader
                             Webshop = fileUrl
                         };
 
-                        p.Price.Trim(p.Currency.ToCharArray());
+                        p.Price = p.Price.Trim(p.Currency.ToCharArray());
                         products.Add(p);
                         if (products.Count >= PackageSize)
                         {
