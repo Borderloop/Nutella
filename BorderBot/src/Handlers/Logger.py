@@ -7,7 +7,7 @@ import os
 # Check if the directory for the current day already exists. If not, create it.
 def checkDir():
     newHandler = False
-    curDate = strftime("%d-%m-%Y")
+    curDate = strftime("%Y-%m-%d")
     logDir = parseConfigFile()
 
     if not os.path.exists(logDir + curDate):
