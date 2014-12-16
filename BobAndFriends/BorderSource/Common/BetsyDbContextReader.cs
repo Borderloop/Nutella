@@ -67,11 +67,11 @@ namespace BorderSource.Common
             Dictionary<Product, int> dic = new Dictionary<Product, int>();
             long temp;
             List<long> eans = products.Where(p => long.TryParse(p.EAN, out temp)).Select(p => long.Parse(p.EAN)).ToList();
-            var query = db.ean.Where(e => eans.Contains(e.ean1));
+            var query = db.ean.Where(e => eans.Contains(e.ean1)).ToList();
             foreach (var prod in query)
             {
                 Product key = products.Where(p => long.TryParse(p.EAN, out temp)).Where(p => long.Parse(p.EAN) == prod.ean1).FirstOrDefault();
-                int value = prod.article_id;
+                int value = prod.article_id;               
                 if (key == null || value == 0) continue;
                 if (!dic.ContainsKey(key)) dic.Add(key, value);
             }
@@ -82,12 +82,13 @@ namespace BorderSource.Common
         {
             Dictionary<Product, int> dic = new Dictionary<Product, int>();
             List<string> skus = products.Select(p => p.SKU).ToList();
-            var query = db.sku.Where(s => skus.Contains(s.sku1));
+            var query = db.sku.Where(s => skus.Contains(s.sku1)).ToList();
             foreach (var prod in query)
             {
                 Product key = products.Where(p => p.SKU.ToUpper() == prod.sku1.ToUpper()).FirstOrDefault();
                 int value = prod.article_id;
                 if (key == null || value == 0) continue;
+                if (db.article.Where(a => a.id == value).First().product.Where(p => p.webshop_url == key.Webshop).FirstOrDefault() != null) continue;
                 if (!dic.ContainsKey(key)) dic.Add(key, value);
             }
             return dic;

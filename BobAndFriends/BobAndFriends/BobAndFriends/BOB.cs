@@ -80,6 +80,18 @@ namespace BobAndFriends.BobAndFriends
                 foreach (KeyValuePair<Product, int> pair in db.GetEanMatches(p.products.Where(prod => !prod.IsValidated).ToList()))
                 {
                     if (pair.Key == null) continue;
+
+                    if (GlobalVariables.AddedProducts.ContainsKey(pair.Value))
+                        GlobalVariables.AddedProducts[pair.Value].Add(pair.Key.Webshop);
+                    else
+                    {
+                        GlobalVariables.AddedProducts.AddOrUpdate(pair.Value, new List<string>(), (key, oldValue) =>
+                            {
+                                return oldValue;
+                            });
+                        GlobalVariables.AddedProducts[pair.Value].Add(pair.Key.Webshop);
+                    }
+
                     ProductValidation validation = new ProductValidation();
                     validation.Product = pair.Key;
                     validation.CountryId = countryID;
@@ -116,24 +128,25 @@ namespace BobAndFriends.BobAndFriends
                 foreach (Product Record in p.products.Where(prod => !prod.IsValidated).ToList())
                 {
                     bool ProductIsValid = Record.EAN.Length > 0 && Record.Title.Length > 0 && Record.Brand.Length > 0 && Record.Category.Length > 0;
-                    bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category.ToLower().Trim()) || Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());
-
-                    int catId = -1;
-                    CategorySynonym catSyn = Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].FirstOrDefault();
-                    if (catSyn == null)
-                    {
-                        Category cat = Lookup.CategoryLookup[Record.Category.ToLower().Trim()].FirstOrDefault();
-                        if (cat == null) continue;
-                        catId = cat.Id;
-                    }
-                    else
-                    {
-                        catId = catSyn.CategoryId;
-                    }
+                    bool CategoryExists = Lookup.CategoryLookup.Contains(Record.Category.ToLower().Trim()) || Lookup.CategorySynonymLookup.Contains(Record.Category.ToLower().Trim());                    
 
                     if (ProductIsValid && CategoryExists)
                     {
                         ProductValidation validation = new ProductValidation();
+
+                        int catId = -1;
+                        CategorySynonym catSyn = Lookup.CategorySynonymLookup[Record.Category.ToLower().Trim()].FirstOrDefault();
+                        if (catSyn == null)
+                        {
+                            Category cat = Lookup.CategoryLookup[Record.Category.ToLower().Trim()].FirstOrDefault();
+                            if (cat == null) continue;
+                            catId = cat.Id;
+                        }
+                        else
+                        {
+                            catId = catSyn.CategoryId;
+                        }
+
                         validation.Product = Record;
                         validation.CountryId = countryID;
                         validation.IsValidAsNewArticle = ProductIsValid && CategoryExists;

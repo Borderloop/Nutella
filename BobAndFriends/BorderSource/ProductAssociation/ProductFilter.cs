@@ -61,7 +61,7 @@ namespace BorderSource.ProductAssociation
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             return false;
                         }
-                        decimal rate = CurrencyRates.ContainsKey(p.Currency.ToUpper()) ? CurrencyRates[p.Currency.ToUpper()] : 1;
+                        decimal rate = CurrencyRates == null ? 1 : CurrencyRates.ContainsKey(p.Currency.ToUpper()) ? CurrencyRates[p.Currency.ToUpper()] : 1;
                         prop.SetValue(p, (parsedPrice * rate).ToString().Replace(',', '.'));
                         break;
 

@@ -21,13 +21,12 @@ namespace BorderMaster
         /// </summary>
         /// <param name="section">The name of the section</param>
         /// <returns>A dictionary containing propertynames and values.</returns>
-        public Dictionary<int, string> GetAllValuesFromSection(string section)
+        public ILookup<int, string> GetAllValuesFromSection(string section)
         {
             string str;
             int name;
             string val;
-
-            Dictionary<int, string> map = new Dictionary<int, string>();
+            List<PrioritizedProcess> map = new List<PrioritizedProcess>();
 
             using (StreamReader reader = new StreamReader(_path))
             {
@@ -42,13 +41,13 @@ namespace BorderMaster
 
                             val = str.Split('=')[1];
 
-                            map.Add(name, val);
+                            map.Add(new PrioritizedProcess() { Priority = name, Path = val });
                         }
                     }
                 }
             }
 
-            return map;
+            return map.ToLookup(p => p.Priority, p => p.Path);
         }
     }
 }

@@ -173,12 +173,7 @@ namespace BorderSource.Affiliate.Reader
                     }
                     catch (XmlException xmle)
                     {
-                        Logger.Instance.WriteLine("BAD XML FILE: " + file + " ### ERROR: " + xmle.Message + " ###");
-                        yield break;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.WriteLine("BAD FILE: " + file + " ### ERROR: " + e.Message + " ###");
+                        Logger.Instance.WriteLine("BAD XML FILE: " + file + " ERROR: " + xmle.Message);
                         yield break;
                     }
                     isDone = !nextLoop;

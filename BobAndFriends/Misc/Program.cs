@@ -16,9 +16,20 @@ namespace Misc
     {
 
         static void Main(string[] args)
-        {
+        {          
+            Action action2 = new Action(
+                () =>
+            {
+                
+                int i = 0;
+                Console.WriteLine(i);
+            });
+
+            action2.Invoke();
+            Console.Read();
         }
     }
+
 }
 
 

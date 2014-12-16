@@ -67,10 +67,9 @@ namespace BorderSource.Common
                         }
                     }
                 }
-                catch (Exception e)
+                catch (XmlException xmle)
                 {
-                    Logger.Instance.WriteLine("File " + file + " threw an exception: " + e.Message);
-                    Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);
+                    Logger.Instance.WriteLine("BAD XML FILE: " + file + "ERROR: " + xmle.Message);
                 }
                 isDone = !nextProduct;
                 nextProduct = false;

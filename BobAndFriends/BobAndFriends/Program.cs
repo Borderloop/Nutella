@@ -108,13 +108,11 @@ namespace BobAndFriends
             producer = new Thread(new ThreadStart(FeedReaderController));
             validator = new Thread(new ThreadStart(BobController));
             consumer = new Thread(new ThreadStart(BobBoxManagerController));
-
+            
             //Start threads
             producer.Start();
             validator.Start();
             consumer.Start();
-
-            //Crapper.Crapper.CleanUp(DateTime.Now.AddDays(-3));
         }
 
         static void BobController()
@@ -141,7 +139,7 @@ namespace BobAndFriends
                 for (int i = 0; i < Packages.Count; i++)
                 {
                     int copy = i;
-                    actions.Add(new Action(() => StartAnotherBob(Packages[copy], copy)));
+                    actions.Add(new Action(() => StartAnotherBob(Packages[copy])));
                 }
 
                 Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_BOBS }, actions.ToArray());
@@ -158,49 +156,29 @@ namespace BobAndFriends
             Console.WriteLine("Validation is done.");
         }
 
-        static void StartAnotherBob(Package p, int id)
+        static void StartAnotherBob(Package p)
         {
-            BOB bob = new BOB();
-            try
-            {             
+            using(var bob = new BOB())
+            {
                 bob.Process(p);
-            }
-            catch (OutOfMemoryException oome)
-            {
-                Console.WriteLine("Caught OutOfMemoryException, trying GC.Collect()");
-                Logger.Instance.WriteLine("Caught OutOfMemoryException, StackTrace: " + oome.StackTrace);
-                GC.Collect();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.WriteLine("A Bob threw an error: " + e.Message);
-                Logger.Instance.WriteLine("Continuing with another Bob.");
-            }
-            finally
-            {
-                bob.Dispose();
             }
         }
 
         static void FeedReaderController()
-        {
-            //Create productfeedreader object.
-            ProductFeedReader pfr = new ProductFeedReader();
-
-            TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading");
+        {                       
             try
             {
+                TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading");
+
+                //Create productfeedreader object.
+                ProductFeedReader pfr = new ProductFeedReader();
                 pfr.Start(MAX_READERS);
-            }catch(Exception e)
-            {
-                Logger.Instance.WriteLine("Reader threw an exception: " + e.Message);
-                Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);
             }
             finally
             {
                 PackageQueue.Instance.InputStopped = true;
-            }
-            TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading");
+                TimeStatisticsMapper.Instance.StopTimeMeasure("Time spent reading");
+            }           
         }
 
         static void BobBoxManagerController()
@@ -231,14 +209,7 @@ namespace BobAndFriends
         {
             Console.WriteLine("Started a BobBoxManager.");
             BobboxManager bbm = new BobboxManager();
-            try
-            {
-                bbm.StartValidatingAndSaving(id);
-            }
-            catch (Exception)
-            {
-                bbm.StartValidatingAndSaving(id);
-            }            
+            bbm.StartValidatingAndSaving(id);
         }
 
         static void Initialize()
@@ -246,6 +217,7 @@ namespace BobAndFriends
             //Initialize all the values for the static variables in the Statics class. These
             //variables are used throughout the whole program.
 
+            GlobalVariables.Initialize();
             MAX_BOBS = Properties.PropertyList["max_bob_threads"].GetValue<int>();
             MAX_BOBBOXMANAGERS = Properties.PropertyList["max_bobbox_threads"].GetValue<int>();
             MAX_READERS = Properties.PropertyList["max_reader_threads"].GetValue<int>();
@@ -262,7 +234,6 @@ namespace BobAndFriends
             Lookup.CategoryLookup = reader.GetAllCategories();
 
             Logger.LogPath = Properties.PropertyList["log_path"].GetValue<string>();
-
             TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
         }
     }

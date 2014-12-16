@@ -114,8 +114,10 @@ namespace BobAndFriends.BobAndFriends
             taxExclusiveWebshops.Add("www.hardware.nl");
             taxExclusiveWebshops.Add("www.salland.eu");
             taxExclusiveWebshops.Add("www.maxict.nl");
+            taxExclusiveWebshops.Add("www.prixos.nl");
+            taxExclusiveWebshops.Add("www.yorcom.nl");
             filter.TaxExclusiveWebshops = taxExclusiveWebshops;
-            filter.CurrencyRates = GlobalVariables.CurrencyRates;
+            filter.CurrencyRates = new Dictionary<string, decimal>(GlobalVariables.CurrencyRates);
             List<Product> WrongProducts = new List<Product>();
             AffiliateReaderBase reader = AffiliateReaderFactory.GetAppropriateReader(file);
 
@@ -133,13 +135,14 @@ namespace BobAndFriends.BobAndFriends
                 {
                     foreach (Product p in products)
                     {
+                        AffiliateIdEntry entry = new AffiliateIdEntry { UniqueId = p.AffiliateProdID, Affiliate = p.Affiliate };
                         GeneralStatisticsMapper.Instance.Increment("Products read");
                         if (!filter.CheckProperties(p))
                         {
                             WrongProducts.Add(p);
                             continue;
                         }
-                        if (!GlobalVariables.UniqueIds.Contains(p.AffiliateProdID)) GlobalVariables.UniqueIds.Add(p.AffiliateProdID);
+                        if (!GlobalVariables.UniqueIds.Contains(entry)) GlobalVariables.UniqueIds.Add(entry);
                         else
                         {
                             WrongProducts.Add(p);

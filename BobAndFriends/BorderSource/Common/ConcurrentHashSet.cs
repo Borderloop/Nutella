@@ -17,6 +17,14 @@ namespace BorderSource.Common
             hash = new HashSet<T>();
         }
 
+        public bool Contains(T key, IEqualityComparer<T> comparer)
+        {
+            lock(Lock)
+            {
+                return hash.Contains(key, comparer);
+            }
+        }
+
         public bool Contains(T key)
         {
             lock(Lock)
