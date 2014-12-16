@@ -77,6 +77,7 @@
     <Compile Include="Affiliate\Reader\DaisyconReader.cs" />
     <Compile Include="Affiliate\Reader\EffiliationLecteur.cs" />
     <Compile Include="Affiliate\Reader\LDLCReader.cs" />
+    <Compile Include="Affiliate\Reader\LinkshareReader.cs" />
     <Compile Include="Affiliate\Reader\TradeDoublerReader.cs" />
     <Compile Include="Affiliate\Reader\TradeTrackerReader.cs" />
     <Compile Include="Affiliate\Reader\WebgainsReader.cs" />

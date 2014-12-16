@@ -114,6 +114,7 @@ namespace BobAndFriends
             validator.Start();
             consumer.Start();
 
+            //Crapper.Crapper.CleanUp(DateTime.Now.AddDays(-3));
         }
 
         static void BobController()

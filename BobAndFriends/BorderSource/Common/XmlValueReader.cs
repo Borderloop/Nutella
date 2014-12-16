@@ -13,6 +13,7 @@ namespace BorderSource.Common
     {
         public XmlReader _reader;
         public DualKeyDictionary<string, XmlNodeType, string> dkd;
+        private string file;
 
         public string ProductEnd { get; set; }
 
@@ -24,11 +25,13 @@ namespace BorderSource.Common
         public void CreateReader(string file)
         {
             _reader = XmlReader.Create(file);
+            this.file = file;
         }
 
         public void CreateReader(string file, XmlReaderSettings settings)
         {
             _reader = XmlReader.Create(file, settings);
+            this.file = file;
         }
         public void AddKeys(string key1, XmlNodeType key2)
         {
@@ -66,7 +69,7 @@ namespace BorderSource.Common
                 }
                 catch (Exception e)
                 {
-                    Logger.Instance.WriteLine("Exception caught: " + e.Message);
+                    Logger.Instance.WriteLine("File " + file + " threw an exception: " + e.Message);
                     Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);
                 }
                 isDone = !nextProduct;

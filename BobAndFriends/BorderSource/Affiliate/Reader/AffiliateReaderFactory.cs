@@ -29,6 +29,7 @@ namespace BorderSource.Affiliate.Reader
                 case "AffiliateWindow": reader = new AffiliateWindowReader(); break;
                 case "Effiliation": reader = new EffiliationLecteur(); break;
                 case "LDLC": reader = new LDLCReader(); break;
+                case "Linkshare": reader = new LinkshareReader(); break;
                 default: reader = null; break;
             }
             return reader;

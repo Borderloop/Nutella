@@ -41,7 +41,7 @@ namespace BorderSource.ProductAssociation
                 {
                     case "EAN":
                         prop.SetValue(p, Regex.IsMatch(prop.GetValue(p) as string, @"^[0-9]{10,13}$") ? (prop.GetValue(p) as string).Trim() : "");
-                        if ((prop.GetValue(p) as string).Contains("00000000000"))
+                        if ((prop.GetValue(p) as string).Contains("00000000000") || (prop.GetValue(p) as string).Contains("999999999999"))
                         {
                             if(LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             return false;

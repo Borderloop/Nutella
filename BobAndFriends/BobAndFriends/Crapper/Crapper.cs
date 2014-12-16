@@ -26,9 +26,11 @@ namespace BobAndFriends.Crapper
             Initialize();
             try
             {
-                CleanupOldProducts(time);               
-                CleanupUrlDupes();              
+                CleanupOldProducts(time);
+                CleanupEmtpyTitles();
                 CleanupEanDupes();
+                //CleanupWebshopDupes();
+                CleanupUrlDupes();                                            
                 CleanupTitleDupes();
                 CleanupUniqueIdDupes();
             }
@@ -38,6 +40,38 @@ namespace BobAndFriends.Crapper
                 Logger.Instance.WriteLine("InnerException: " + e.InnerException);
                 Logger.Instance.WriteLine("StackTrace: " + e.StackTrace);               
             }
+        }
+
+        private static void CleanupWebshopDupes()
+        {
+            Console.WriteLine("Started looking product dupes...");
+            using (var db = new BetsyModel(ConnectionString))
+            {
+                List<product> productsToBeRemoved = new List<product>();
+                var duplicateWebshops = db.article.Where(a => a.product.Count != a.product.GroupBy(p => p.webshop_url).Count());
+                Console.WriteLine("Removing product dupes...");
+                foreach(article art in duplicateWebshops)
+                {
+                    var duplicateProducts = art.product.GroupBy(p => p.webshop_url).Where(x => x.Count() > 1).Select(val => val.Key).ToList();
+                    productsToBeRemoved.AddRange(art.product.Where(p => duplicateProducts.Contains(p.webshop_url)));
+                }
+                db.product.RemoveRange(productsToBeRemoved);
+                db.SaveChanges();
+            }
+            Console.WriteLine("Done removing product dupes.");
+        }
+
+        private static void CleanupEmtpyTitles()
+        {
+            Console.WriteLine("Started looking empty titles...");
+            using (var db = new BetsyModel(ConnectionString))
+            {
+                var emptyTitles = db.title.Where(t => t.title1 == "");
+                Console.WriteLine("Removing empty titles...");
+                db.title.RemoveRange(emptyTitles);
+                db.SaveChanges();
+            }
+            Console.WriteLine("Done removing empty titles.");
         }
 
         private static void CleanupEanDupes()
@@ -194,7 +228,7 @@ namespace BobAndFriends.Crapper
                         .Where(a => a.title.Any(t => t.title1 == dupTitle))
                         .ToList();
 
-                    article correctArticle = db.article.Where(a => a.title.Any(t => t.title1.RemoveDiacriticAccents().ToLower().Trim() == dupTitle.RemoveDiacriticAccents().ToLower().Trim())).FirstOrDefault();
+                    article correctArticle = db.article.Where(a => a.title.Any(t => t.title1.ToLower().Trim() == dupTitle.ToLower().Trim())).FirstOrDefault();
                     wrongArticles.Remove(correctArticle);
                     correctTitle = correctArticle.title.First().title1;
 
