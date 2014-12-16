@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from Handlers import Logger
 from Parsers import getgoods
 from Parsers import mondodigitaleshop
-
+from Parsers import hknumeric
 
 class Crawler():
     def __init__(self, website, url, identifiers, javascriptCrawler):

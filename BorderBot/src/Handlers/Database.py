@@ -53,6 +53,11 @@ class Queries():
         vals = [productID, website]
         return self.db.select(com, vals)
 
+    def selectProductByTitle(self, title, website):
+        com = "SELECT product_id FROM product WHERE title = (%s) AND website_url = (%s)"
+        vals = [title, website]
+        return self.db.select(com, vals)
+
     def insertNewArticle(self, website, productID, title, price, deeplink, brand=None, availability=None, category=None, ean=None, sku=None, imageLocation=None):
         com = "INSERT INTO product VALUES ((%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s), (%s))"
         vals = [website, productID, title, brand, category, ean, sku, price, availability, deeplink, imageLocation]
