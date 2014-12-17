@@ -36,8 +36,9 @@ class BorderBot():
             if result is not None:
                 websiteItem = self.addToQueue(result, websiteItem)
 
-            # Crawler is done crawling, add to penalty queue with the time interval from the ini file.
+            # Crawler is done crawling, add to penalty queue with the time interval from the ini file and the base url.
             if websiteItem[1].empty() is True:
+                websiteItem[1].put(websiteItem[0])
                 websiteItem[3] = time.time() + Statics.crawlerTimeInterval
             else:
                 timeResult = self.calculateAvgTime(iterationTime, websiteItem[2])
