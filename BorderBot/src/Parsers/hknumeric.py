@@ -1,5 +1,6 @@
 import re
 from ConfigParser import SafeConfigParser
+import codecs
 
 from Handlers import Database
 
@@ -32,8 +33,9 @@ class Parser():
     # Procedure to parse the config file
     def parseConfigFile(self):
         parser = SafeConfigParser()
-        parser.read('C:/BorderSoftware/BorderBot/settings/borderbottemp2.ini')
-        self.disallowedCategories = parser.get('hknumeric', 'disallowedcategories').split(',')
+        with codecs.open('C:/BorderSoftware/BorderBot/settings/borderbot.ini', 'r', encoding='utf-8') as f:
+            parser.readfp(f)
+        self.disallowedCategories = parser.get('hknumeric', 'disallowedcategories')
 
     # This procedure parses the home page
     def parseHomePage(self):
@@ -45,31 +47,12 @@ class Parser():
     # This procedure parses the products page, the page which enlists multiple products.
     def parseProductsPage(self):
         products = self.soup.find('ul', {'id': 'product_list'}).find_all('li', recursive=False)
-
         for product in products:
-            title = product.find('h5').text
-
-            if product.find('div', {'class', 'reconditionne_ribbon'}) is None:  # Skip refurbished articles.
-                 # We found a new product, get the URL to the product page to add it to the queue.
-                if self.checkIfParsedBefore(title, self.website) == ():
-                    self.urls.append(product.find('a')['href'])
-                else:  # Else the product is already parsed and we only need to get price and availability data.
-                    price = product.find('span', {'class': 'price'}).text
-                    price = self.cleanPrice(price)
-
-                    try:
-                        availability = product.find('span', {'class': 'dispo'}).text.strip()
-                    except AttributeError:
-                        availability = product.find('span', {'class': 'nondispo'}).text.strip()
-
-                    self.db.openConnection()
-                    self.db.updateArticle(title, self.website, price, availability)
-                    self.db.closeConnection()
+            self.urls.append(product.find('a')['href'])
 
         self.checkForNextPage()
 
-    # This procedure parses the product page. If it gets here it means it's a new product,
-    # so it always saves the product which is parsed here to the database.
+    # This procedure parses the product page.
     def parseProductPage(self):
         title = self.soup.find('div', {'id': 'top_titles'}).find('h1').text
         productID = self.soup.find('p', {'id': 'product_reference'}).find('span').text
@@ -85,15 +68,20 @@ class Parser():
         except AttributeError:
             availability = None
 
-        if productID != '':
+        # Product hasn't been parsed before, insert it.
+        if self.checkIfParsedBefore(productID, self.website.replace('/en/', '')) == () and productID != '':
             self.db.openConnection()
-            self.db.insertNewArticle(self.website, productID, title, price, self.url, availability=availability, category=category, ean=ean, imageLocation=imageLocation)
+            self.db.insertNewArticle(self.website.replace('/en/', ''), productID, title, price, self.url, availability=availability, category=category, ean=ean, imageLocation=imageLocation)
+            self.db.closeConnection()
+        else:  # Known product, update only
+            self.db.openConnection()
+            self.db.updateArticle(productID, self.website.replace('/en/', ''), price)
             self.db.closeConnection()
 
     # This procedure checks if a product has been parsed before.
-    def checkIfParsedBefore(self, title, website):
+    def checkIfParsedBefore(self, productID, website):
         self.db.openConnection()
-        result = self.db.selectProductByTitle(title, website)
+        result = self.db.selectProduct(productID, website)
         self.db.closeConnection()
 
         return result
@@ -110,5 +98,5 @@ class Parser():
             nextPage = self.soup.find('li', {'id': 'pagination_next'}).find('a')['href']
             url = self.url[:self.url.find('/en/')] + nextPage
             self.urls.append(url)
-        except TypeError:  # No next page
+        except (TypeError, AttributeError):  # No next page
             pass
