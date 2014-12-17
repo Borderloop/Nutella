@@ -25,30 +25,41 @@ class BorderBot():
             result = Crawler.Crawler(website, url, Statics.identifiers[name], Statics.javascriptCrawler[name]).main()
             iterationTime = time.time() - start_time
 
-            # URLs are returned if the result does not equal None, add them to the queue.
+            websiteItem = self.updateWebsiteItem(result, websiteItem, iterationTime, name)
+
+            Statics.penaltyList.append(websiteItem)
+
+    # Procedure to update the websiteItem, consisting of the URL queue, last
+    # 5 iteration times and time interval.
+    def updateWebsiteItem(self, result, websiteItem, iterationTime, name):
+        # URLs are returned if the result does not equal None, add them to the queue.
             if result is not None:
                 websiteItem = self.addToQueue(result, websiteItem)
 
-            timeResult = self.calculateAvgTime(iterationTime, websiteItem[2])
-            timeInterval = timeResult[0]
-            websiteItem[2] = timeResult[1]
-            print 'Timeinterval: ' + str(timeInterval)
-            crawlDelay = Statics.robots[name].get_crawl_delay(Statics.agentName)
-
-            # Respect the crawl-delay if present
-            if crawlDelay is None:
-                # If this raises an error, the websiteItem doesn't have a time interval yet so add it.
-                try:
-                    websiteItem[3] = time.time() + timeInterval
-                except IndexError:
-                    websiteItem.append(time.time() + timeInterval)
+            # Crawler is done crawling, add to penalty queue with the time interval from the ini file.
+            if websiteItem[1].empty() is True:
+                websiteItem[3] = time.time() + Statics.crawlerTimeInterval
             else:
-                try:
-                    websiteItem[3] = time.time() + crawlDelay
-                except IndexError:
-                    websiteItem.append(time.time() + crawlDelay)
+                timeResult = self.calculateAvgTime(iterationTime, websiteItem[2])
+                timeInterval = timeResult[0]
+                websiteItem[2] = timeResult[1]
+                print 'Timeinterval: ' + str(timeInterval)
+                crawlDelay = Statics.robots[name].get_crawl_delay(Statics.agentName)
 
-            Statics.penaltyList.append(websiteItem)
+                # Respect the crawl-delay if present
+                if crawlDelay is None:
+                    # If this raises an error, the websiteItem doesn't have a time interval yet so add it.
+                    try:
+                        websiteItem[3] = time.time() + timeInterval
+                    except IndexError:
+                        websiteItem.append(time.time() + timeInterval)
+                else:
+                    try:
+                        websiteItem[3] = time.time() + crawlDelay
+                    except IndexError:
+                        websiteItem.append(time.time() + crawlDelay)
+
+            return websiteItem
 
     # This procedure adds URLS returned by a thread to the corresponding queue.
     def addToQueue(self, result, websiteItem):

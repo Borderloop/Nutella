@@ -13,12 +13,13 @@ javascriptCrawler = dict()
 
 # Parse the config file for all websites
 configParser = SafeConfigParser()
-configParser.read('C:/BorderSoftware/BorderBot/settings/borderbottemp2.ini')
+configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
 websites = configParser.get('General', 'websites')
 multiplier = float(configParser.get('General', 'multiplier'))
 agentName = configParser.get('General', 'agentname')
 robotsRefreshRate = int(configParser.get('General', 'robotsrefreshrate'))
 identifiersPath = configParser.get('General', 'identifierspath')
+crawlerTimeInterval = int(configParser.get('General', 'crawlertimeinterval'))
 
 
 # Fill the queues before the start of the program.
@@ -43,6 +44,7 @@ for website in websites:  # We need all homepages in the url queues at the start
     # Get the javascript crawler value. Either True or False
     javascriptCrawler[name] = configParser.get(name, 'javascriptcrawler')
 
+
 def parseMultiplier():
-    configParser.read('C:/BorderSoftware/BorderBot/settings/borderbottemp2.ini')
+    configParser.read('C:/BorderSoftware/BorderBot/settings/borderbot.ini')
     return float(configParser.get('General', 'multiplier'))
