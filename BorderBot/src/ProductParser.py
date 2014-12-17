@@ -19,7 +19,9 @@ class Parser():
         self.getWebsites()
 
         # Save product information for each website
-        for website in self.websites[0]:
+        for website in self.websites:
+            website = website[0]
+
             self.db.openConnection()
             records = self.db.selectProductsForWebsite(website)
             self.db.closeConnection()
@@ -53,3 +55,5 @@ class Parser():
         self.db.openConnection()
         self.websites = self.db.selectWebsites()
         self.db.closeConnection()
+
+Parser().main()
