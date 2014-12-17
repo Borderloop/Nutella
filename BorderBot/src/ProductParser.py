@@ -55,5 +55,3 @@ class Parser():
         self.db.openConnection()
         self.websites = self.db.selectWebsites()
         self.db.closeConnection()
-
-Parser().main()
