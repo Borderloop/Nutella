@@ -30,9 +30,9 @@ namespace BobAndFriends.Crapper
                 CleanupEmtpyTitles();
                 CleanupDuplicateWebshopsPerArticle();
                 CleanupEanDupes();
-                CleanupUrlDupes();                                            
-                CleanupTitleDupes();
-                CleanupUniqueIdDupes();
+                CleanupUrlDupes();
+                CleanupUniqueIdDupes();                          
+                CleanupTitleDupes();               
             }
             catch(Exception e)
             {
@@ -51,34 +51,14 @@ namespace BobAndFriends.Crapper
                     if (pair.Value.GroupBy(p => p).Any(x => x.Count() > 1))
                     {
                         IEnumerable<string> dupes = pair.Value.GroupBy(p => p).Where(x => x.Count() > 1).Select(s => s.Key);
-
+                        foreach(string dupe in dupes)
+                        {
+                            db.product.RemoveRange(db.product.Where(p => p.article_id == pair.Key && p.webshop_url == dupe));
+                        }
                     }
                 }
-            }
-        }
-
-        private static void CleanupWebshopDupes()
-        {
-            Console.WriteLine("Started looking product dupes...");
-            using (var db = new BetsyModel(ConnectionString))
-            {
-                List<product> productsToBeRemoved = new List<product>();
-                var duplicateWebshops = db.product.GroupBy(p => new { p.article_id, p.webshop_url }).Where(x => x.Count() > 1).Select(d => d.Key.article_id).Distinct();
-                Console.WriteLine("Removing product dupes...");
-                foreach(var artId in duplicateWebshops)
-                {
-                    article art = db.article.Where(a => a.id == artId).FirstOrDefault();
-                    if (art == null) continue;
-                    IEnumerable<string> doubleShops = art.product.GroupBy(p => p.webshop_url).Where(x => x.Count() > 1).Select(val => val.Key);
-                    foreach(string dupe in doubleShops)
-                    {
-                       // db.product.Remove(art.product.Where(p => p.webshop_url == dupe).First());
-                    }
-                }
-                db.product.RemoveRange(productsToBeRemoved);
                 db.SaveChanges();
             }
-            Console.WriteLine("Done removing product dupes.");
         }
 
         private static void CleanupEmtpyTitles()

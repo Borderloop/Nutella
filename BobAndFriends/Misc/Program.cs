@@ -15,14 +15,11 @@ namespace Misc
 {
     class Program
     {
-
         static void Main(string[] args)
         {
-            var DateOfBirth2 = DateTime.Parse(string.Format("{0}-{1}-{2}", "1924", "10", "19"));
-            Console.WriteLine(DateOfBirth2);
-            var DateOfBirth = DateTime.Parse(string.Format("{0}-{1}-{2}", "19", "10", "1924"), CultureInfo.InvariantCulture);
-            Console.WriteLine(DateOfBirth);
+            Enumerable.Range(0, 100).ToList().ForEach(i => Console.WriteLine(i % 3 == 0 ? i % 8 == 0 ? "Borderloop" : "Border" : i % 8 == 0 ? "loop" : i.ToString()));
             Console.Read();
+         
         }
     }
 
