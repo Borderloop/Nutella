@@ -7,6 +7,7 @@ using System.Data;
 using System.Threading;
 using BorderSource.ProductAssociation;
 using LumenWorks.Framework.IO.Csv;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 
@@ -16,16 +17,11 @@ namespace Misc
     {
 
         static void Main(string[] args)
-        {          
-            Action action2 = new Action(
-                () =>
-            {
-                
-                int i = 0;
-                Console.WriteLine(i);
-            });
-
-            action2.Invoke();
+        {
+            var DateOfBirth2 = DateTime.Parse(string.Format("{0}-{1}-{2}", "1924", "10", "19"));
+            Console.WriteLine(DateOfBirth2);
+            var DateOfBirth = DateTime.Parse(string.Format("{0}-{1}-{2}", "19", "10", "1924"), CultureInfo.InvariantCulture);
+            Console.WriteLine(DateOfBirth);
             Console.Read();
         }
     }

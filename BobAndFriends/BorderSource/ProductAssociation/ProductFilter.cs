@@ -28,6 +28,7 @@ namespace BorderSource.ProductAssociation
      
         public bool CheckProperties(Product p)
         {
+            if (p == null) return false;
             foreach (var prop in p.GetType().GetProperties())
             {
                 object type = prop.GetValue(p);
@@ -51,7 +52,7 @@ namespace BorderSource.ProductAssociation
                     case "Price":
                         prop.SetValue(p, (prop.GetValue(p) as string).Replace(',', '.'));
                         prop.SetValue(p, Regex.IsMatch(prop.GetValue(p) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(p) : "");
-                        if (prop.GetValue(p) as string == "")
+                        if ((prop.GetValue(p) as string) == "")
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             return false;
