@@ -72,13 +72,13 @@ class Crawler():
 
     # Downloads and saves the xml file under the correct name
     def save(self, websiteURL, feedURL):
-        print 'Saving ' + websiteURL
+        print 'Crwaling ' + websiteURL
 
         #If the save fails, catch the error.
         try:
             csvFeed = urllib.URLopener()
             csvFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
-            print 'Done saving ' + websiteURL
+            print 'Done crawling ' + websiteURL
         except Exception as e:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
 

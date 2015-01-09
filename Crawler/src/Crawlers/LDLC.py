@@ -30,6 +30,7 @@ class Crawler():
             f = open(self.feedPath + file.strip(), 'w')
             ftp.retrbinary('RETR %s' %file.strip(), f.write)
             f.close()
+            print 'Done crawling ' + file.strip()
 
         ftp.quit()
 
@@ -42,4 +43,4 @@ class Crawler():
 
         self.host = parser.get('LDLC', 'host')
         self.user = parser.get('LDLC', 'user')
-        self.password = parser.get('LDLC', 'password').replace('"', '')
+        self.password = parser.get('LDLC', 'password')

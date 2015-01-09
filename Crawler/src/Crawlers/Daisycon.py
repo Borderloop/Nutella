@@ -11,7 +11,7 @@ import re
 from openpyxl import load_workbook
 import time
 import traceback
-from threading import Lock
+from threading import Thread, Lock
 
 
 class Crawler():
@@ -25,6 +25,9 @@ class Crawler():
     phpPath = ''
     feedPath = ''
     nameUrlsPath = ''
+
+    amountOfThreads = ''
+    activeThreads = 0
 
     client = ''
 
@@ -44,7 +47,6 @@ class Crawler():
         imp.filter.add('http://api.daisycon.com/publisher/soap//program/')
         d = ImportDoctor(imp)
         self.client = suds.client.Client(self.wsdlUrl, doctor=d, transport=t)
-
         self.gatherData()
 
     # Procedure to parse the config file
@@ -58,6 +60,7 @@ class Crawler():
         self.phpPath = parser.get('Daisycon', 'phppath')
         self.feedPath = parser.get('Daisycon', 'feedpath')
         self.nameUrlsPath = parser.get('General', 'nameurlspath')
+        self.amountOfThreads = int(parser.get('General', 'amountofthreads'))
 
     # Gets the program id's for approved programs, then calls php script that gets the feed download url.
     def gatherData(self):
@@ -87,7 +90,7 @@ class Crawler():
 
         # Check if it's a valid url by regular expression
         if re.search(self.regex, websiteUrl):
-            self.save(websiteUrl, result['feedUrl'])
+            self.startThread(websiteUrl, result['feedUrl'])
         else:
             save = False
 
@@ -100,7 +103,7 @@ class Crawler():
                     # which is located in the B column for that row.
                     if cell.column == 'A' and result['websiteName'].lower() in cell.value:
                         websiteUrl = ws['B' + str(cell.row)].value
-                        self.save(websiteUrl, result['feedUrl'])
+                        self.startThread(websiteUrl, result['feedUrl'])
                         save = True
 
             if save is False:
@@ -111,22 +114,42 @@ class Crawler():
                     for cell in row:
                         if cell.column == 'A' and result['websiteName'].lower() in cell.value:
                             websiteUrl = websiteUrl + ws['B' + str(cell.row)].value
-                            self.save(websiteUrl, result['feedUrl'])
+                            self.startThread(websiteUrl, result['feedUrl'])
                             save = True
 
             if save is False:
                 self.log.error(str(time.asctime(time.localtime(time.time()))) + ": Not a valid url: " + websiteUrl)
                 return False
 
+    # Starts a thread to save feed.
+    def startThread(self, websiteURL, feedURL):
+        while True:
+            if self.activeThreads < self.amountOfThreads:
+                self.lock.acquire()
+                try:
+                    t = Thread(target=self.save, args=(websiteURL, feedURL))
+                    t.start()
+
+                    self.activeThreads += 1
+                finally:
+                    self.lock.release()
+                break
+
     # Downloads and saves the xml file under the correct name
-    def save(self, websiteUrl, feedLink):
-        print 'saving ' +websiteUrl
-        websiteUrl = websiteUrl.replace('/', '$')
+    def save(self, websiteURL, feedURL):
+        print 'Crawling ' +websiteURL
+        websiteUrl = websiteURL.replace('/', '$')
         # If the save fails, something is wrong with the file or directory name. Catch this error
         try:
             xmlFile = urllib.URLopener()
-            xmlFile.retrieve(feedLink, self.feedPath + websiteUrl + ".xml")
-            print websiteUrl + " Saved."
+            xmlFile.retrieve(feedURL, self.feedPath + websiteUrl + ".xml")
+            print 'Done crawling ' + websiteUrl
         except:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
             self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + websiteUrl)
+
+        self.lock.acquire()
+        try:
+            self.activeThreads -= 1
+        finally:
+            self.lock.release()

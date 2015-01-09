@@ -1,9 +1,13 @@
 import suds
 import urllib
-from CrawlerHelpScripts import logger
 import time
 import traceback
+
 from ConfigParser import SafeConfigParser
+from threading import Thread, Lock
+
+from CrawlerHelpScripts import logger
+
 
 
 class Crawler():
@@ -13,14 +17,19 @@ class Crawler():
     prevUrl = ""  # Used to check if the previous campaign is from the same company.
     x = 2  # Used to name files of companies that use multiple xml files
 
-    log = logger.createLogger("TradeTrackerLogger", "TradeTracker")
-    
+    amountOfThreads = ''
+    activeThreads = 0
+
     # Authentication and feed data
     wsdlurl = ''
     customerId = ''
     key = ''
     aid = ''
     feedPath = ''
+
+    log = logger.createLogger("TradeTrackerLogger", "TradeTracker")
+
+    lock = Lock()
     
     def main(self):
         # Create client and authenticate
@@ -39,6 +48,7 @@ class Crawler():
         self.aid = parser.get('TradeTracker', 'aid')
         self.wsdlurl = parser.get('TradeTracker', 'wsdlurl')
         self.feedPath = parser.get('TradeTracker', 'feedpath')
+        self.amountOfThreads = int(parser.get('General', 'amountofthreads'))
 
     # Gathers the data needed for downloading and correct file name
     def gatherData(self, client):
@@ -80,8 +90,18 @@ class Crawler():
                         self.x += 1
                     else:
                         self.x = 2  # Always reset x if a new company is found
-                        
-                    self.save(campaignUrl, feed.URL)
+
+                    while True:
+                        if self.activeThreads < self.amountOfThreads:
+                            self.lock.acquire()
+                            try:
+                                t = Thread(target=self.save, args=(campaignUrl, feed.URL))
+                                t.start()
+
+                                self.activeThreads += 1
+                            finally:
+                                self.lock.release()
+                            break
                     
     # Downloads and saves the xml file under the correct name
     def save(self, campaignUrl, feedURL):
@@ -90,9 +110,15 @@ class Crawler():
         try:
             xmlFile = urllib.URLopener()
             xmlFile.retrieve(feedURL, self.feedPath + campaignUrl + ".xml")
-            print campaignUrl + " Saved."
+            print 'Done crawling ' + campaignUrl
         except Exception:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
             self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + campaignUrl)
         
         self.prevUrl = campaignUrl
+
+        self.lock.acquire()
+        try:
+            self.activeThreads -= 1
+        finally:
+            self.lock.release()

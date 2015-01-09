@@ -125,17 +125,20 @@ class Crawler():
     def writeXML(self, feedUrl, feedId):
         # Call the php script that takes feedId as an argument and downloads the product data, which
         # is returned in JSON format.
-        result = json.loads(subprocess.check_output(["php", self.phpPath, str(feedId)]).decode('utf-8'))
+        try:
+            result = json.loads(subprocess.check_output(["php", self.phpPath, str(feedId)]).decode('utf-8'))
 
-        root = Element('products')
+            root = Element('products')
 
-        for record in result['Records']:
-            product = SubElement(root, 'product')
-            for key in record:
-                child = SubElement(product, key)
-                child.text = record[key]
+            for record in result['Records']:
+                product = SubElement(root, 'product')
+                for key in record:
+                    child = SubElement(product, key)
+                    child.text = record[key]
 
-        ElementTree(root).write(self.feedPath + feedUrl + '.xml', encoding='UTF-8')
+            ElementTree(root).write(self.feedPath + feedUrl + '.xml', encoding='UTF-8')
+        except Exception as e:
+            print e
 
         self.lock.acquire()
         try:

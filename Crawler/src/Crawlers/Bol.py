@@ -30,6 +30,7 @@ class Crawler():
             f = open(self.feedPath + file.strip(), 'w')
             ftp.retrbinary('RETR %s' %file.strip(), f.write)
             f.close()
+            print 'Done crawling ' + file.strip()
 
         ftp.quit()
 

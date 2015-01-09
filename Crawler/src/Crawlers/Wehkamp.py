@@ -68,12 +68,12 @@ class Crawler():
     #Downloads and saves the xml file under the correct name      
     def save(self):
         print 'Saving Wehkamp'
-        feedURL = "http://api.tradedoubler.com/1.0/productsUnlimited.xml;fid=%s?token=%s" % (self.feedId, self.token)
+        feedURL = "http://api.tradedoubler.com/1.0/productsUnlimited.csv;fid=%s?token=%s" % (self.feedId, self.token)
 
         #If the save fails, something is wrong with the file or directory name. Catch this error
         try:
-            xmlFile = urllib.URLopener()
-            xmlFile.retrieve(feedURL, self.feedPath + self.name + ".xml")
+            csvFile = urllib.URLopener()
+            csvFile.retrieve(feedURL, self.feedPath + self.name + ".csv")
             print 'Done saving wehkamp'
         except Exception as e:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
