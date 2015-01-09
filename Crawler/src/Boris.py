@@ -5,7 +5,6 @@ from threading import Thread
 
 from Crawlers import TradeTracker, Effiliation
 from Crawlers import FeedCrawler
-from Crawlers import TradeDoubler
 from Crawlers import Belboon
 from Crawlers import Daisycon
 from Crawlers import Bol
@@ -37,7 +36,7 @@ def emptyDirectories():
     productFeedPaths = [x[0] for x in os.walk(productFeedsPath)]
 
     for path in productFeedPaths:
-        if path != productFeedPaths[0] and 'BorderBot' not in path:
+        if path != productFeedPaths[0] and 'BorderBot' not in path and "Rene's Toppertjes" not in path:
             files = glob.glob(path + '/*')
             for f in files:
                 os.remove(f)
@@ -61,9 +60,6 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=Wehkamp.Crawler().main)
-    t.start()
-
-    t = Thread(target=TradeDoubler.Crawler().main)
     t.start()
 
     t = Thread(target=Effiliation.Crawler().main)
