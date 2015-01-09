@@ -19,6 +19,9 @@ class Crawler():
     filter = ''
     feedPath = ''
 
+    prevUrl = ""  # Used to check if the previous campaign is from the same company.
+    x = 2  # Used to name files of companies that use multiple xml files
+
     log = logger.createLogger("EffiliationLogger", "Effiliation")
 
     # This procedure controls the main flow of the program.
@@ -56,9 +59,16 @@ class Crawler():
                 if child.tag == 'url_affilieur':  # Website URL
                     websiteURL = child.text.replace('http://', '')
                 if child.tag == 'code':  # Product feed URL
-                    feedURL = child.text
+                    if 'priceminister' not in websiteURL:
+                        feedURL = child.text
 
-                    self.save(websiteURL, feedURL)
+                        # If the previous url equals the current url, this is a nth file of the same company.
+                        # Add a number to the end to make the filename unique and so it doesnt get overwritten.
+                        if self.prevUrl == websiteURL:
+                            websiteURL = websiteURL + " " + str(self.x)
+                            self.x += 1
+
+                        self.save(websiteURL, feedURL)
 
     # Downloads and saves the xml file under the correct name
     def save(self, websiteURL, feedURL):
@@ -71,3 +81,5 @@ class Crawler():
             print 'Done saving ' + websiteURL
         except Exception as e:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
+
+        self.prevUrl = websiteURL
