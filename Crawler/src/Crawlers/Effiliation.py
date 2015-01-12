@@ -8,6 +8,7 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 from ConfigParser import SafeConfigParser
+
 from CrawlerHelpScripts import logger
 
 
@@ -72,12 +73,12 @@ class Crawler():
 
     # Downloads and saves the xml file under the correct name
     def save(self, websiteURL, feedURL):
-        print 'Crwaling ' + websiteURL
+        print 'Crawling ' + websiteURL
 
         #If the save fails, catch the error.
         try:
-            csvFeed = urllib.URLopener()
-            csvFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
+            xmlFeed = urllib.URLopener()
+            xmlFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
             print 'Done crawling ' + websiteURL
         except Exception as e:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
