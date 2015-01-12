@@ -3,12 +3,13 @@ import glob
 from ConfigParser import SafeConfigParser
 from threading import Thread
 
-from Crawlers import TradeTracker, FeedCrawler, Effiliation
+from Crawlers import TradeTracker, FeedCrawler, Effiliation, JacobElektronik
 from Crawlers import Belboon
 from Crawlers import Daisycon
 from Crawlers import Bol
 from Crawlers import LDLC
 from Crawlers import Linkshare
+from Crawlers import PepperjamNetwork
 
 
 global productFeedsPath
@@ -64,6 +65,12 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=Linkshare.Crawler().main)
+    t.start()
+
+    t = Thread(target=JacobElektronik.Crawler().main)
+    t.start()
+
+    t = Thread(target=PepperjamNetwork.Crawler().main)
     t.start()
 
 main()
