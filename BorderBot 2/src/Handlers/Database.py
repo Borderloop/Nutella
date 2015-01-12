@@ -2,17 +2,29 @@ import MySQLdb as mdb
 from time import strftime
 import Logger
 
+from ConfigParser import SafeConfigParser
 
 class Connection:
 
-    host = "localhost"
-    user = "root"
-    password = "border1!LOOP"
-    database = "borderbot"
+    def __init__(self):
+        self.parseConfigFile()
+        self.con = (mdb.connect(self.host, self.user, self.password, self.database, charset='utf8'))
 
-    con = (mdb.connect(host, user, password, database, charset='utf8'))
+    host = ''
+    user = ''
+    password = ''
+    database = ''
 
     cur = ''
+
+    # Procedure to parse the config file
+    def parseConfigFile(self):
+        parser = SafeConfigParser()
+        parser.read('C:/BorderSoftware/Borderbot2/settings/borderbot.ini')
+        self.host = parser.get('Database', 'host')
+        self.user = parser.get('Database', 'user')
+        self.password = parser.get('Database', 'password')
+        self.database = parser.get('Database', 'database')
 
     def select(self, com, vals=None):
         try:
