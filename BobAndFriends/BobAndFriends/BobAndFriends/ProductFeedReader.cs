@@ -45,7 +45,7 @@ namespace BobAndFriends.BobAndFriends
         /// </summary>
         private void Initialize()
         {
-            //Read settings
+            // Read settings
             _productFeedPath = Properties.PropertyList["feed_path"].GetValue<string>();
         }
 
@@ -54,7 +54,7 @@ namespace BobAndFriends.BobAndFriends
         /// </summary>
         public void Start(int max_readers)
         {
-            //Get all the directories in the productfeed folder.
+            // Get all the directories in the productfeed folder.
             string[] dirs = Directory.GetDirectories(_productFeedPath);
 
             Console.WriteLine("Started retrieving files.");
@@ -68,9 +68,9 @@ namespace BobAndFriends.BobAndFriends
                 {
                     string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
                     string currentDir = dir.Split(Path.DirectorySeparatorChar).Last();
-                    if (currentDir != "Bol" && currentDir != "Wehkamp" && currentDir != "LDLC")
+                    if (currentDir != "Bol" && currentDir != "Wehkamp" && currentDir != "LDLC" && currentDir != "Rene\'s Toppertjes")
                     {
-                        if (!Lookup.WebshopLookup.Contains(fileUrl))
+                        if (!Lookup.WebshopLookup.ContainsKey(fileUrl))
                         {
                             Logger.Instance.WriteLine("Could not find webshop " + fileUrl + " from " + dir.Split(Path.DirectorySeparatorChar).Last());
                             continue;
@@ -110,12 +110,13 @@ namespace BobAndFriends.BobAndFriends
             filter.Maximums = maximums;
             _maxQueueSize = Properties.PropertyList["max_packagequeue_size"].GetValue<int>();
 
-            HashSet<string> taxExclusiveWebshops = new HashSet<string>();
-            taxExclusiveWebshops.Add("www.hardware.nl");
-            taxExclusiveWebshops.Add("www.salland.eu");
-            taxExclusiveWebshops.Add("www.maxict.nl");
-            taxExclusiveWebshops.Add("www.prixos.nl");
-            taxExclusiveWebshops.Add("www.yorcom.nl");
+            Dictionary<string, decimal> taxExclusiveWebshops = new Dictionary<string, decimal>();
+            taxExclusiveWebshops.Add("www.hardware.nl", (decimal)1.21);
+            taxExclusiveWebshops.Add("www.salland.eu", (decimal)1.21);
+            taxExclusiveWebshops.Add("www.maxict.nl", (decimal)1.21);
+            taxExclusiveWebshops.Add("www.prixos.nl", (decimal)1.21);
+            taxExclusiveWebshops.Add("www.yorcom.nl", (decimal)1.21);
+            taxExclusiveWebshops.Add("www.jacob-computer.de", (decimal)1.19);
             filter.TaxExclusiveWebshops = taxExclusiveWebshops;
             filter.CurrencyRates = new Dictionary<string, decimal>(GlobalVariables.CurrencyRates);
             List<Product> WrongProducts = new List<Product>();

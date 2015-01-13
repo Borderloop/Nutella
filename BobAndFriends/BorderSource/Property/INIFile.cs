@@ -95,7 +95,7 @@ namespace BorderSource.Property
                 {
                     while ((str = reader.ReadLine() ?? "").Contains("="))
                     {
-                        //Skip comments
+                        // Skip comments
                         if (str.Contains("#")) continue;
                         
                         name = str.Split('=')[0];

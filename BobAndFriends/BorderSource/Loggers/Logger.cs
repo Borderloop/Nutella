@@ -17,17 +17,17 @@ namespace BorderSource.Loggers
 
         public static string LogPath { get; set; }
 
-        private static  Logger _Instance;
+        private static Logger _Instance;
 
         public static Logger Instance
         {
             get
             {
-                if(_Instance == null)
+                if (_Instance == null)
                 {
-                    lock(Lock)
+                    lock (Lock)
                     {
-                        if(_Instance == null)
+                        if (_Instance == null)
                         {
                             LogPath += @"\" + DateTime.Now.Date.ToString("yyyy-MM-dd");
                             if (!Directory.Exists(LogPath))
@@ -45,7 +45,7 @@ namespace BorderSource.Loggers
             lock (Lock)
             {
                 base.Write(value);
-                base.Flush();
+                Flush();
             }
         }
 
@@ -54,7 +54,7 @@ namespace BorderSource.Loggers
             lock (Lock)
             {
                 base.WriteLine(value);
-                base.Flush();
+                Flush();
             }
         }
         
@@ -71,8 +71,8 @@ namespace BorderSource.Loggers
                     RatioStatisticsMapper.Instance.Add("Ratio between read and filtered products", false, GeneralStatisticsMapper.Instance.map["Correct products"], GeneralStatisticsMapper.Instance.map["Wrong products"]);
                     RatioStatisticsMapper.Instance.Add("Ratio between validated and saved products", true, GeneralStatisticsMapper.Instance.map["Total amount of products processed"], GeneralStatisticsMapper.Instance.map["Products saved"]);
                     RatioStatisticsMapper.Instance.Add("Ratio between read and saved products", true, GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["Products saved"]);
-                    //RatioStatisticsMapper.Instance.Add("Ratios between saved products", false, GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
-                    //RatioStatisticsMapper.Instance.Add("Ratios between saved products and total", true, GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
+                    // RatioStatisticsMapper.Instance.Add("Ratios between saved products", false, GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
+                    // RatioStatisticsMapper.Instance.Add("Ratios between saved products and total", true, GeneralStatisticsMapper.Instance.map["Products read"], GeneralStatisticsMapper.Instance.map["EAN matches"], GeneralStatisticsMapper.Instance.map["SKU matches"], GeneralStatisticsMapper.Instance.map["Existing products"]);
                 }
                 catch (KeyNotFoundException knfe)
                 {
@@ -144,7 +144,7 @@ namespace BorderSource.Loggers
                         base.WriteLine();
                     }
                     base.WriteLine("----------------------- END OF STATISTICS -----------------------");
-                    base.Flush();
+                    Flush();
                 }
             }
         }

@@ -30,7 +30,7 @@ namespace BobAndFriends.BobAndFriends
             int maxPoolSize = Properties.PropertyList["db_max_pool_size"].GetValue<int>();
             BobBox = new BobBox(dbName, dbPassword, dbSource, dbUserId, dbPort, maxPoolSize);       
             Count = 0;
-            MaxCountryId = Lookup.WebshopLookup.Max(m => m.Max(n => n.CountryId));
+            MaxCountryId = Lookup.WebshopLookup.Max(m => m.Value.CountryId);
             PackageSize = Properties.PropertyList["validations_per_save"].GetValue<int>();
         }
 
@@ -39,7 +39,7 @@ namespace BobAndFriends.BobAndFriends
             ProductValidation validation = ProductValidationQueue.Instance.Dequeue();
             while (validation != null)
             {
-                if(validation.Product == null)
+                if (validation.Product == null)
                 {
                     Console.WriteLine("Found null product.");
                     goto Next;
@@ -99,7 +99,7 @@ namespace BobAndFriends.BobAndFriends
                     goto Next;
                 }
 
-                if(validation.IsValidAsNewArticle)
+                if (validation.IsValidAsNewArticle)
                 {
                     GeneralStatisticsMapper.Instance.Increment("New products");
                     NewProducts++;

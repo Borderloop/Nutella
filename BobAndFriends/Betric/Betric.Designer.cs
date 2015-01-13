@@ -144,9 +144,9 @@
             this.PriceDifferencePanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // MetricsPage
-            // 
+            //  
+            //  MetricsPage
+            //  
             this.MetricsPage.BackColor = System.Drawing.Color.WhiteSmoke;
             this.MetricsPage.Controls.Add(this.CountryFilterLabel);
             this.MetricsPage.Controls.Add(this.PriceDifferenceFilterLabel);
@@ -222,123 +222,123 @@
             this.MetricsPage.Size = new System.Drawing.Size(1445, 642);
             this.MetricsPage.TabIndex = 1;
             this.MetricsPage.Text = "Metrics";
-            // 
-            // PriceDifferencePercentageLabel
-            // 
+            //  
+            //  PriceDifferencePercentageLabel
+            //  
             this.PriceDifferencePercentageLabel.AutoSize = true;
             this.PriceDifferencePercentageLabel.Location = new System.Drawing.Point(102, 383);
             this.PriceDifferencePercentageLabel.Name = "PriceDifferencePercentageLabel";
             this.PriceDifferencePercentageLabel.Size = new System.Drawing.Size(13, 13);
             this.PriceDifferencePercentageLabel.TabIndex = 56;
             this.PriceDifferencePercentageLabel.Text = "0";
-            // 
-            // PriceDifferenceLabel
-            // 
+            //  
+            //  PriceDifferenceLabel
+            //  
             this.PriceDifferenceLabel.AutoSize = true;
             this.PriceDifferenceLabel.Location = new System.Drawing.Point(102, 370);
             this.PriceDifferenceLabel.Name = "PriceDifferenceLabel";
             this.PriceDifferenceLabel.Size = new System.Drawing.Size(13, 13);
             this.PriceDifferenceLabel.TabIndex = 55;
             this.PriceDifferenceLabel.Text = "0";
-            // 
-            // label9
-            // 
+            //  
+            //  label9
+            //  
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(29, 383);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(65, 13);
             this.label9.TabIndex = 54;
             this.label9.Text = "Percentage:";
-            // 
-            // label8
-            // 
+            //  
+            //  label8
+            //  
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(29, 370);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(29, 13);
             this.label8.TabIndex = 53;
             this.label8.Text = "Prijs:";
-            // 
-            // NumberOneClickAmountTotalLabel
-            // 
+            //  
+            //  NumberOneClickAmountTotalLabel
+            //  
             this.NumberOneClickAmountTotalLabel.AutoSize = true;
             this.NumberOneClickAmountTotalLabel.Location = new System.Drawing.Point(103, 311);
             this.NumberOneClickAmountTotalLabel.Name = "NumberOneClickAmountTotalLabel";
             this.NumberOneClickAmountTotalLabel.Size = new System.Drawing.Size(13, 13);
             this.NumberOneClickAmountTotalLabel.TabIndex = 52;
             this.NumberOneClickAmountTotalLabel.Text = "0";
-            // 
-            // label13
-            // 
+            //  
+            //  label13
+            //  
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(29, 311);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(43, 13);
             this.label13.TabIndex = 51;
             this.label13.Text = "Totaal: ";
-            // 
-            // label14
-            // 
+            //  
+            //  label14
+            //  
             this.label14.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label14.Location = new System.Drawing.Point(32, 309);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(131, 2);
             this.label14.TabIndex = 50;
-            // 
-            // PositionClickAmountTotalLabel
-            // 
+            //  
+            //  PositionClickAmountTotalLabel
+            //  
             this.PositionClickAmountTotalLabel.AutoSize = true;
             this.PositionClickAmountTotalLabel.Location = new System.Drawing.Point(99, 231);
             this.PositionClickAmountTotalLabel.Name = "PositionClickAmountTotalLabel";
             this.PositionClickAmountTotalLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionClickAmountTotalLabel.TabIndex = 49;
             this.PositionClickAmountTotalLabel.Text = "0";
-            // 
-            // label10
-            // 
+            //  
+            //  label10
+            //  
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(25, 231);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(43, 13);
             this.label10.TabIndex = 48;
             this.label10.Text = "Totaal: ";
-            // 
-            // label11
-            // 
+            //  
+            //  label11
+            //  
             this.label11.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label11.Location = new System.Drawing.Point(28, 229);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(131, 2);
             this.label11.TabIndex = 47;
-            // 
-            // TotalClickAmountLabel
-            // 
+            //  
+            //  TotalClickAmountLabel
+            //  
             this.TotalClickAmountLabel.AutoSize = true;
             this.TotalClickAmountLabel.Location = new System.Drawing.Point(103, 85);
             this.TotalClickAmountLabel.Name = "TotalClickAmountLabel";
             this.TotalClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.TotalClickAmountLabel.TabIndex = 46;
             this.TotalClickAmountLabel.Text = "0";
-            // 
-            // label7
-            // 
+            //  
+            //  label7
+            //  
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(29, 85);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(43, 13);
             this.label7.TabIndex = 45;
             this.label7.Text = "Totaal: ";
-            // 
-            // label6
-            // 
+            //  
+            //  label6
+            //  
             this.label6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label6.Location = new System.Drawing.Point(28, 83);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(131, 2);
             this.label6.TabIndex = 44;
-            // 
-            // label5
-            // 
+            //  
+            //  label5
+            //  
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(7, 346);
@@ -346,81 +346,81 @@
             this.label5.Size = new System.Drawing.Size(241, 20);
             this.label5.TabIndex = 43;
             this.label5.Text = "Prijsvoordeel bij kopen in Europa:";
-            // 
-            // DomesticNumberOneClickPercentageAmountLabel
-            // 
+            //  
+            //  DomesticNumberOneClickPercentageAmountLabel
+            //  
             this.DomesticNumberOneClickPercentageAmountLabel.AutoSize = true;
             this.DomesticNumberOneClickPercentageAmountLabel.Location = new System.Drawing.Point(274, 283);
             this.DomesticNumberOneClickPercentageAmountLabel.Name = "DomesticNumberOneClickPercentageAmountLabel";
             this.DomesticNumberOneClickPercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.DomesticNumberOneClickPercentageAmountLabel.TabIndex = 42;
             this.DomesticNumberOneClickPercentageAmountLabel.Text = "0";
-            // 
-            // ForeignNumberOneClickPercentageAmountLabel
-            // 
+            //  
+            //  ForeignNumberOneClickPercentageAmountLabel
+            //  
             this.ForeignNumberOneClickPercentageAmountLabel.AutoSize = true;
             this.ForeignNumberOneClickPercentageAmountLabel.Location = new System.Drawing.Point(274, 296);
             this.ForeignNumberOneClickPercentageAmountLabel.Name = "ForeignNumberOneClickPercentageAmountLabel";
             this.ForeignNumberOneClickPercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.ForeignNumberOneClickPercentageAmountLabel.TabIndex = 41;
             this.ForeignNumberOneClickPercentageAmountLabel.Text = "0";
-            // 
-            // ForeignNumerOneClickPercentageLabel
-            // 
+            //  
+            //  ForeignNumerOneClickPercentageLabel
+            //  
             this.ForeignNumerOneClickPercentageLabel.AutoSize = true;
             this.ForeignNumerOneClickPercentageLabel.Location = new System.Drawing.Point(203, 296);
             this.ForeignNumerOneClickPercentageLabel.Name = "ForeignNumerOneClickPercentageLabel";
             this.ForeignNumerOneClickPercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.ForeignNumerOneClickPercentageLabel.TabIndex = 40;
             this.ForeignNumerOneClickPercentageLabel.Text = "Percentage:";
-            // 
-            // DomesticNumerOneClickPercentageLabel
-            // 
+            //  
+            //  DomesticNumerOneClickPercentageLabel
+            //  
             this.DomesticNumerOneClickPercentageLabel.AutoSize = true;
             this.DomesticNumerOneClickPercentageLabel.Location = new System.Drawing.Point(203, 283);
             this.DomesticNumerOneClickPercentageLabel.Name = "DomesticNumerOneClickPercentageLabel";
             this.DomesticNumerOneClickPercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.DomesticNumerOneClickPercentageLabel.TabIndex = 39;
             this.DomesticNumerOneClickPercentageLabel.Text = "Percentage:";
-            // 
-            // ForeignNumberOneClickAmountLabel
-            // 
+            //  
+            //  ForeignNumberOneClickAmountLabel
+            //  
             this.ForeignNumberOneClickAmountLabel.AutoSize = true;
             this.ForeignNumberOneClickAmountLabel.Location = new System.Drawing.Point(103, 296);
             this.ForeignNumberOneClickAmountLabel.Name = "ForeignNumberOneClickAmountLabel";
             this.ForeignNumberOneClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.ForeignNumberOneClickAmountLabel.TabIndex = 38;
             this.ForeignNumberOneClickAmountLabel.Text = "0";
-            // 
-            // DomesticNumberOneClickAmountLabel
-            // 
+            //  
+            //  DomesticNumberOneClickAmountLabel
+            //  
             this.DomesticNumberOneClickAmountLabel.AutoSize = true;
             this.DomesticNumberOneClickAmountLabel.Location = new System.Drawing.Point(103, 283);
             this.DomesticNumberOneClickAmountLabel.Name = "DomesticNumberOneClickAmountLabel";
             this.DomesticNumberOneClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.DomesticNumberOneClickAmountLabel.TabIndex = 37;
             this.DomesticNumberOneClickAmountLabel.Text = "0";
-            // 
-            // ForeignNumberOneClicksLabel
-            // 
+            //  
+            //  ForeignNumberOneClicksLabel
+            //  
             this.ForeignNumberOneClicksLabel.AutoSize = true;
             this.ForeignNumberOneClicksLabel.Location = new System.Drawing.Point(29, 296);
             this.ForeignNumberOneClicksLabel.Name = "ForeignNumberOneClicksLabel";
             this.ForeignNumberOneClicksLabel.Size = new System.Drawing.Size(65, 13);
             this.ForeignNumberOneClicksLabel.TabIndex = 36;
             this.ForeignNumberOneClicksLabel.Text = "Buitenlands:";
-            // 
-            // DomesticNumberOneClicksLabel
-            // 
+            //  
+            //  DomesticNumberOneClicksLabel
+            //  
             this.DomesticNumberOneClicksLabel.AutoSize = true;
             this.DomesticNumberOneClicksLabel.Location = new System.Drawing.Point(29, 283);
             this.DomesticNumberOneClicksLabel.Name = "DomesticNumberOneClicksLabel";
             this.DomesticNumberOneClicksLabel.Size = new System.Drawing.Size(68, 13);
             this.DomesticNumberOneClicksLabel.TabIndex = 35;
             this.DomesticNumberOneClicksLabel.Text = "Binnenlands:";
-            // 
-            // PositionOneDistributionLabel
-            // 
+            //  
+            //  PositionOneDistributionLabel
+            //  
             this.PositionOneDistributionLabel.AutoSize = true;
             this.PositionOneDistributionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PositionOneDistributionLabel.Location = new System.Drawing.Point(3, 260);
@@ -428,225 +428,225 @@
             this.PositionOneDistributionLabel.Size = new System.Drawing.Size(468, 20);
             this.PositionOneDistributionLabel.TabIndex = 34;
             this.PositionOneDistributionLabel.Text = "Verdeling van hoogste-positie clicks tussen binnen en buitenland:";
-            // 
-            // PositionFivePercentageAmountLabel
-            // 
+            //  
+            //  PositionFivePercentageAmountLabel
+            //  
             this.PositionFivePercentageAmountLabel.AutoSize = true;
             this.PositionFivePercentageAmountLabel.Location = new System.Drawing.Point(270, 203);
             this.PositionFivePercentageAmountLabel.Name = "PositionFivePercentageAmountLabel";
             this.PositionFivePercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionFivePercentageAmountLabel.TabIndex = 33;
             this.PositionFivePercentageAmountLabel.Text = "0";
-            // 
-            // PositionRemainingPercentageAmountLabel
-            // 
+            //  
+            //  PositionRemainingPercentageAmountLabel
+            //  
             this.PositionRemainingPercentageAmountLabel.AutoSize = true;
             this.PositionRemainingPercentageAmountLabel.Location = new System.Drawing.Point(270, 216);
             this.PositionRemainingPercentageAmountLabel.Name = "PositionRemainingPercentageAmountLabel";
             this.PositionRemainingPercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionRemainingPercentageAmountLabel.TabIndex = 32;
             this.PositionRemainingPercentageAmountLabel.Text = "0";
-            // 
-            // PositionRemainingPercentageLabel
-            // 
+            //  
+            //  PositionRemainingPercentageLabel
+            //  
             this.PositionRemainingPercentageLabel.AutoSize = true;
             this.PositionRemainingPercentageLabel.Location = new System.Drawing.Point(199, 216);
             this.PositionRemainingPercentageLabel.Name = "PositionRemainingPercentageLabel";
             this.PositionRemainingPercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.PositionRemainingPercentageLabel.TabIndex = 31;
             this.PositionRemainingPercentageLabel.Text = "Percentage:";
-            // 
-            // PositionFivePercentageLabel
-            // 
+            //  
+            //  PositionFivePercentageLabel
+            //  
             this.PositionFivePercentageLabel.AutoSize = true;
             this.PositionFivePercentageLabel.Location = new System.Drawing.Point(199, 203);
             this.PositionFivePercentageLabel.Name = "PositionFivePercentageLabel";
             this.PositionFivePercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.PositionFivePercentageLabel.TabIndex = 30;
             this.PositionFivePercentageLabel.Text = "Percentage:";
-            // 
-            // PositionThreePercentageAmountLabel
-            // 
+            //  
+            //  PositionThreePercentageAmountLabel
+            //  
             this.PositionThreePercentageAmountLabel.AutoSize = true;
             this.PositionThreePercentageAmountLabel.Location = new System.Drawing.Point(270, 177);
             this.PositionThreePercentageAmountLabel.Name = "PositionThreePercentageAmountLabel";
             this.PositionThreePercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionThreePercentageAmountLabel.TabIndex = 29;
             this.PositionThreePercentageAmountLabel.Text = "0";
-            // 
-            // PositionFourPercentageAmountLabel
-            // 
+            //  
+            //  PositionFourPercentageAmountLabel
+            //  
             this.PositionFourPercentageAmountLabel.AutoSize = true;
             this.PositionFourPercentageAmountLabel.Location = new System.Drawing.Point(270, 190);
             this.PositionFourPercentageAmountLabel.Name = "PositionFourPercentageAmountLabel";
             this.PositionFourPercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionFourPercentageAmountLabel.TabIndex = 28;
             this.PositionFourPercentageAmountLabel.Text = "0";
-            // 
-            // PositionFourPercentageLabel
-            // 
+            //  
+            //  PositionFourPercentageLabel
+            //  
             this.PositionFourPercentageLabel.AutoSize = true;
             this.PositionFourPercentageLabel.Location = new System.Drawing.Point(199, 190);
             this.PositionFourPercentageLabel.Name = "PositionFourPercentageLabel";
             this.PositionFourPercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.PositionFourPercentageLabel.TabIndex = 27;
             this.PositionFourPercentageLabel.Text = "Percentage:";
-            // 
-            // PositionThreePercentageLabel
-            // 
+            //  
+            //  PositionThreePercentageLabel
+            //  
             this.PositionThreePercentageLabel.AutoSize = true;
             this.PositionThreePercentageLabel.Location = new System.Drawing.Point(199, 177);
             this.PositionThreePercentageLabel.Name = "PositionThreePercentageLabel";
             this.PositionThreePercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.PositionThreePercentageLabel.TabIndex = 26;
             this.PositionThreePercentageLabel.Text = "Percentage:";
-            // 
-            // PositionOnePercentageAmountLabel
-            // 
+            //  
+            //  PositionOnePercentageAmountLabel
+            //  
             this.PositionOnePercentageAmountLabel.AutoSize = true;
             this.PositionOnePercentageAmountLabel.Location = new System.Drawing.Point(270, 151);
             this.PositionOnePercentageAmountLabel.Name = "PositionOnePercentageAmountLabel";
             this.PositionOnePercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionOnePercentageAmountLabel.TabIndex = 25;
             this.PositionOnePercentageAmountLabel.Text = "0";
-            // 
-            // PositionTwoPercentageAmountLabel
-            // 
+            //  
+            //  PositionTwoPercentageAmountLabel
+            //  
             this.PositionTwoPercentageAmountLabel.AutoSize = true;
             this.PositionTwoPercentageAmountLabel.Location = new System.Drawing.Point(270, 164);
             this.PositionTwoPercentageAmountLabel.Name = "PositionTwoPercentageAmountLabel";
             this.PositionTwoPercentageAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionTwoPercentageAmountLabel.TabIndex = 24;
             this.PositionTwoPercentageAmountLabel.Text = "0";
-            // 
-            // PositionTwoPercentageLabel
-            // 
+            //  
+            //  PositionTwoPercentageLabel
+            //  
             this.PositionTwoPercentageLabel.AutoSize = true;
             this.PositionTwoPercentageLabel.Location = new System.Drawing.Point(199, 164);
             this.PositionTwoPercentageLabel.Name = "PositionTwoPercentageLabel";
             this.PositionTwoPercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.PositionTwoPercentageLabel.TabIndex = 23;
             this.PositionTwoPercentageLabel.Text = "Percentage:";
-            // 
-            // PositionOnePercentageLabel
-            // 
+            //  
+            //  PositionOnePercentageLabel
+            //  
             this.PositionOnePercentageLabel.AutoSize = true;
             this.PositionOnePercentageLabel.Location = new System.Drawing.Point(199, 151);
             this.PositionOnePercentageLabel.Name = "PositionOnePercentageLabel";
             this.PositionOnePercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.PositionOnePercentageLabel.TabIndex = 22;
             this.PositionOnePercentageLabel.Text = "Percentage:";
-            // 
-            // PositionOneClickAmountLabel
-            // 
+            //  
+            //  PositionOneClickAmountLabel
+            //  
             this.PositionOneClickAmountLabel.AutoSize = true;
             this.PositionOneClickAmountLabel.Location = new System.Drawing.Point(99, 151);
             this.PositionOneClickAmountLabel.Name = "PositionOneClickAmountLabel";
             this.PositionOneClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionOneClickAmountLabel.TabIndex = 21;
             this.PositionOneClickAmountLabel.Text = "0";
-            // 
-            // PositionTwoClickAmountLabel
-            // 
+            //  
+            //  PositionTwoClickAmountLabel
+            //  
             this.PositionTwoClickAmountLabel.AutoSize = true;
             this.PositionTwoClickAmountLabel.Location = new System.Drawing.Point(99, 164);
             this.PositionTwoClickAmountLabel.Name = "PositionTwoClickAmountLabel";
             this.PositionTwoClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionTwoClickAmountLabel.TabIndex = 20;
             this.PositionTwoClickAmountLabel.Text = "0";
-            // 
-            // PositionRemainingClickAmountLabel
-            // 
+            //  
+            //  PositionRemainingClickAmountLabel
+            //  
             this.PositionRemainingClickAmountLabel.AutoSize = true;
             this.PositionRemainingClickAmountLabel.Location = new System.Drawing.Point(99, 216);
             this.PositionRemainingClickAmountLabel.Name = "PositionRemainingClickAmountLabel";
             this.PositionRemainingClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionRemainingClickAmountLabel.TabIndex = 19;
             this.PositionRemainingClickAmountLabel.Text = "0";
-            // 
-            // PositionThreeClickAmountLabel
-            // 
+            //  
+            //  PositionThreeClickAmountLabel
+            //  
             this.PositionThreeClickAmountLabel.AutoSize = true;
             this.PositionThreeClickAmountLabel.Location = new System.Drawing.Point(99, 177);
             this.PositionThreeClickAmountLabel.Name = "PositionThreeClickAmountLabel";
             this.PositionThreeClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionThreeClickAmountLabel.TabIndex = 18;
             this.PositionThreeClickAmountLabel.Text = "0";
-            // 
-            // PositionFiveClickAmountLabel
-            // 
+            //  
+            //  PositionFiveClickAmountLabel
+            //  
             this.PositionFiveClickAmountLabel.AutoSize = true;
             this.PositionFiveClickAmountLabel.Location = new System.Drawing.Point(99, 203);
             this.PositionFiveClickAmountLabel.Name = "PositionFiveClickAmountLabel";
             this.PositionFiveClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionFiveClickAmountLabel.TabIndex = 17;
             this.PositionFiveClickAmountLabel.Text = "0";
-            // 
-            // PositionFourClickAmountLabel
-            // 
+            //  
+            //  PositionFourClickAmountLabel
+            //  
             this.PositionFourClickAmountLabel.AutoSize = true;
             this.PositionFourClickAmountLabel.Location = new System.Drawing.Point(99, 190);
             this.PositionFourClickAmountLabel.Name = "PositionFourClickAmountLabel";
             this.PositionFourClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.PositionFourClickAmountLabel.TabIndex = 16;
             this.PositionFourClickAmountLabel.Text = "0";
-            // 
-            // PositionTwoLabel
-            // 
+            //  
+            //  PositionTwoLabel
+            //  
             this.PositionTwoLabel.AutoSize = true;
             this.PositionTwoLabel.Location = new System.Drawing.Point(25, 164);
             this.PositionTwoLabel.Name = "PositionTwoLabel";
             this.PositionTwoLabel.Size = new System.Drawing.Size(50, 13);
             this.PositionTwoLabel.TabIndex = 15;
             this.PositionTwoLabel.Text = "Positie 2:";
-            // 
-            // PositionThreeLabel
-            // 
+            //  
+            //  PositionThreeLabel
+            //  
             this.PositionThreeLabel.AutoSize = true;
             this.PositionThreeLabel.Location = new System.Drawing.Point(25, 177);
             this.PositionThreeLabel.Name = "PositionThreeLabel";
             this.PositionThreeLabel.Size = new System.Drawing.Size(50, 13);
             this.PositionThreeLabel.TabIndex = 14;
             this.PositionThreeLabel.Text = "Positie 3:";
-            // 
-            // PositionFourLabel
-            // 
+            //  
+            //  PositionFourLabel
+            //  
             this.PositionFourLabel.AutoSize = true;
             this.PositionFourLabel.Location = new System.Drawing.Point(25, 190);
             this.PositionFourLabel.Name = "PositionFourLabel";
             this.PositionFourLabel.Size = new System.Drawing.Size(50, 13);
             this.PositionFourLabel.TabIndex = 13;
             this.PositionFourLabel.Text = "Positie 4:";
-            // 
-            // PositionFiveLabel
-            // 
+            //  
+            //  PositionFiveLabel
+            //  
             this.PositionFiveLabel.AutoSize = true;
             this.PositionFiveLabel.Location = new System.Drawing.Point(25, 203);
             this.PositionFiveLabel.Name = "PositionFiveLabel";
             this.PositionFiveLabel.Size = new System.Drawing.Size(50, 13);
             this.PositionFiveLabel.TabIndex = 12;
             this.PositionFiveLabel.Text = "Positie 5:";
-            // 
-            // PositionRemainingLabel
-            // 
+            //  
+            //  PositionRemainingLabel
+            //  
             this.PositionRemainingLabel.AutoSize = true;
             this.PositionRemainingLabel.Location = new System.Drawing.Point(25, 216);
             this.PositionRemainingLabel.Name = "PositionRemainingLabel";
             this.PositionRemainingLabel.Size = new System.Drawing.Size(41, 13);
             this.PositionRemainingLabel.TabIndex = 11;
             this.PositionRemainingLabel.Text = "Overig:";
-            // 
-            // PositionOneLabel
-            // 
+            //  
+            //  PositionOneLabel
+            //  
             this.PositionOneLabel.AutoSize = true;
             this.PositionOneLabel.Location = new System.Drawing.Point(25, 151);
             this.PositionOneLabel.Name = "PositionOneLabel";
             this.PositionOneLabel.Size = new System.Drawing.Size(50, 13);
             this.PositionOneLabel.TabIndex = 10;
             this.PositionOneLabel.Text = "Positie 1:";
-            // 
-            // ClickDistributionLabel
-            // 
+            //  
+            //  ClickDistributionLabel
+            //  
             this.ClickDistributionLabel.AutoSize = true;
             this.ClickDistributionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ClickDistributionLabel.Location = new System.Drawing.Point(3, 126);
@@ -654,54 +654,54 @@
             this.ClickDistributionLabel.Size = new System.Drawing.Size(261, 20);
             this.ClickDistributionLabel.TabIndex = 9;
             this.ClickDistributionLabel.Text = "Verdeling van clicks tussen posities:";
-            // 
-            // DomesticClickAmountPercentageLabel
-            // 
+            //  
+            //  DomesticClickAmountPercentageLabel
+            //  
             this.DomesticClickAmountPercentageLabel.AutoSize = true;
             this.DomesticClickAmountPercentageLabel.Location = new System.Drawing.Point(273, 57);
             this.DomesticClickAmountPercentageLabel.Name = "DomesticClickAmountPercentageLabel";
             this.DomesticClickAmountPercentageLabel.Size = new System.Drawing.Size(13, 13);
             this.DomesticClickAmountPercentageLabel.TabIndex = 8;
             this.DomesticClickAmountPercentageLabel.Text = "0";
-            // 
-            // ForeignClickAmountPercenageLabel
-            // 
+            //  
+            //  ForeignClickAmountPercenageLabel
+            //  
             this.ForeignClickAmountPercenageLabel.AutoSize = true;
             this.ForeignClickAmountPercenageLabel.Location = new System.Drawing.Point(273, 70);
             this.ForeignClickAmountPercenageLabel.Name = "ForeignClickAmountPercenageLabel";
             this.ForeignClickAmountPercenageLabel.Size = new System.Drawing.Size(13, 13);
             this.ForeignClickAmountPercenageLabel.TabIndex = 7;
             this.ForeignClickAmountPercenageLabel.Text = "0";
-            // 
-            // ForeignClicksPercentageLabel
-            // 
+            //  
+            //  ForeignClicksPercentageLabel
+            //  
             this.ForeignClicksPercentageLabel.AutoSize = true;
             this.ForeignClicksPercentageLabel.Location = new System.Drawing.Point(202, 70);
             this.ForeignClicksPercentageLabel.Name = "ForeignClicksPercentageLabel";
             this.ForeignClicksPercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.ForeignClicksPercentageLabel.TabIndex = 6;
             this.ForeignClicksPercentageLabel.Text = "Percentage:";
-            // 
-            // DomesticCountryPercentageLabel
-            // 
+            //  
+            //  DomesticCountryPercentageLabel
+            //  
             this.DomesticCountryPercentageLabel.AutoSize = true;
             this.DomesticCountryPercentageLabel.Location = new System.Drawing.Point(202, 57);
             this.DomesticCountryPercentageLabel.Name = "DomesticCountryPercentageLabel";
             this.DomesticCountryPercentageLabel.Size = new System.Drawing.Size(65, 13);
             this.DomesticCountryPercentageLabel.TabIndex = 5;
             this.DomesticCountryPercentageLabel.Text = "Percentage:";
-            // 
-            // ForeignClickAmountLabel
-            // 
+            //  
+            //  ForeignClickAmountLabel
+            //  
             this.ForeignClickAmountLabel.AutoSize = true;
             this.ForeignClickAmountLabel.Location = new System.Drawing.Point(103, 70);
             this.ForeignClickAmountLabel.Name = "ForeignClickAmountLabel";
             this.ForeignClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.ForeignClickAmountLabel.TabIndex = 4;
             this.ForeignClickAmountLabel.Text = "0";
-            // 
-            // DomesticClickAmountLabel
-            // 
+            //  
+            //  DomesticClickAmountLabel
+            //  
             this.DomesticClickAmountLabel.AutoSize = true;
             this.DomesticClickAmountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DomesticClickAmountLabel.Location = new System.Drawing.Point(103, 57);
@@ -709,27 +709,27 @@
             this.DomesticClickAmountLabel.Size = new System.Drawing.Size(13, 13);
             this.DomesticClickAmountLabel.TabIndex = 3;
             this.DomesticClickAmountLabel.Text = "0";
-            // 
-            // ForeignClicksLabel
-            // 
+            //  
+            //  ForeignClicksLabel
+            //  
             this.ForeignClicksLabel.AutoSize = true;
             this.ForeignClicksLabel.Location = new System.Drawing.Point(29, 70);
             this.ForeignClicksLabel.Name = "ForeignClicksLabel";
             this.ForeignClicksLabel.Size = new System.Drawing.Size(65, 13);
             this.ForeignClicksLabel.TabIndex = 2;
             this.ForeignClicksLabel.Text = "Buitenlands:";
-            // 
-            // DomesticClicksLabel
-            // 
+            //  
+            //  DomesticClicksLabel
+            //  
             this.DomesticClicksLabel.AutoSize = true;
             this.DomesticClicksLabel.Location = new System.Drawing.Point(29, 57);
             this.DomesticClicksLabel.Name = "DomesticClicksLabel";
             this.DomesticClicksLabel.Size = new System.Drawing.Size(68, 13);
             this.DomesticClicksLabel.TabIndex = 1;
             this.DomesticClicksLabel.Text = "Binnenlands:";
-            // 
-            // OutboundClicksLabel
-            // 
+            //  
+            //  OutboundClicksLabel
+            //  
             this.OutboundClicksLabel.AutoSize = true;
             this.OutboundClicksLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.OutboundClicksLabel.Location = new System.Drawing.Point(7, 34);
@@ -737,9 +737,9 @@
             this.OutboundClicksLabel.Size = new System.Drawing.Size(126, 20);
             this.OutboundClicksLabel.TabIndex = 0;
             this.OutboundClicksLabel.Text = "Outbound clicks:";
-            // 
-            // FilterTab
-            // 
+            //  
+            //  FilterTab
+            //  
             this.FilterTab.BackColor = System.Drawing.Color.WhiteSmoke;
             this.FilterTab.Controls.Add(this.UntilTime);
             this.FilterTab.Controls.Add(this.FromTime);
@@ -780,25 +780,25 @@
             this.FilterTab.Size = new System.Drawing.Size(1445, 642);
             this.FilterTab.TabIndex = 0;
             this.FilterTab.Text = "Filters";
-            // 
-            // UntilTime
-            // 
+            //  
+            //  UntilTime
+            //  
             this.UntilTime.Location = new System.Drawing.Point(300, 52);
             this.UntilTime.Name = "UntilTime";
             this.UntilTime.Size = new System.Drawing.Size(200, 20);
             this.UntilTime.TabIndex = 40;
             this.UntilTime.ValueChanged += new System.EventHandler(this.UntilTime_ValueChanged);
-            // 
-            // FromTime
-            // 
+            //  
+            //  FromTime
+            //  
             this.FromTime.Location = new System.Drawing.Point(69, 52);
             this.FromTime.Name = "FromTime";
             this.FromTime.Size = new System.Drawing.Size(200, 20);
             this.FromTime.TabIndex = 39;
             this.FromTime.ValueChanged += new System.EventHandler(this.FromTime_ValueChanged);
-            // 
-            // DeliveryCostsPanel
-            // 
+            //  
+            //  DeliveryCostsPanel
+            //  
             this.DeliveryCostsPanel.Controls.Add(this.ForeignDeliveryCostsOnly);
             this.DeliveryCostsPanel.Controls.Add(this.DomesticDeliveryCostsOnly);
             this.DeliveryCostsPanel.Location = new System.Drawing.Point(48, 452);
@@ -806,9 +806,9 @@
             this.DeliveryCostsPanel.Size = new System.Drawing.Size(200, 50);
             this.DeliveryCostsPanel.TabIndex = 38;
             this.DeliveryCostsPanel.Visible = false;
-            // 
-            // ForeignDeliveryCostsOnly
-            // 
+            //  
+            //  ForeignDeliveryCostsOnly
+            //  
             this.ForeignDeliveryCostsOnly.AutoSize = true;
             this.ForeignDeliveryCostsOnly.Location = new System.Drawing.Point(0, 0);
             this.ForeignDeliveryCostsOnly.Name = "ForeignDeliveryCostsOnly";
@@ -817,9 +817,9 @@
             this.ForeignDeliveryCostsOnly.TabStop = true;
             this.ForeignDeliveryCostsOnly.Text = "Alleen buitenland";
             this.ForeignDeliveryCostsOnly.UseVisualStyleBackColor = true;
-            // 
-            // DomesticDeliveryCostsOnly
-            // 
+            //  
+            //  DomesticDeliveryCostsOnly
+            //  
             this.DomesticDeliveryCostsOnly.AccessibleName = "";
             this.DomesticDeliveryCostsOnly.AutoSize = true;
             this.DomesticDeliveryCostsOnly.Location = new System.Drawing.Point(0, 23);
@@ -829,18 +829,18 @@
             this.DomesticDeliveryCostsOnly.TabStop = true;
             this.DomesticDeliveryCostsOnly.Text = "Alleen binnenland";
             this.DomesticDeliveryCostsOnly.UseVisualStyleBackColor = true;
-            // 
-            // CountryPanel
-            // 
+            //  
+            //  CountryPanel
+            //  
             this.CountryPanel.Controls.Add(this.ForeignCountryOnly);
             this.CountryPanel.Controls.Add(this.DomesticCountryOnly);
             this.CountryPanel.Location = new System.Drawing.Point(7, 366);
             this.CountryPanel.Name = "CountryPanel";
             this.CountryPanel.Size = new System.Drawing.Size(200, 39);
             this.CountryPanel.TabIndex = 37;
-            // 
-            // ForeignCountryOnly
-            // 
+            //  
+            //  ForeignCountryOnly
+            //  
             this.ForeignCountryOnly.AutoSize = true;
             this.ForeignCountryOnly.Location = new System.Drawing.Point(41, 0);
             this.ForeignCountryOnly.Name = "ForeignCountryOnly";
@@ -849,9 +849,9 @@
             this.ForeignCountryOnly.TabStop = true;
             this.ForeignCountryOnly.Text = "Alleen buitenland";
             this.ForeignCountryOnly.UseVisualStyleBackColor = true;
-            // 
-            // DomesticCountryOnly
-            // 
+            //  
+            //  DomesticCountryOnly
+            //  
             this.DomesticCountryOnly.AccessibleName = "";
             this.DomesticCountryOnly.AutoSize = true;
             this.DomesticCountryOnly.Location = new System.Drawing.Point(41, 23);
@@ -861,18 +861,18 @@
             this.DomesticCountryOnly.TabStop = true;
             this.DomesticCountryOnly.Text = "Alleen binnenland";
             this.DomesticCountryOnly.UseVisualStyleBackColor = true;
-            // 
-            // PriceDifferencePanel
-            // 
+            //  
+            //  PriceDifferencePanel
+            //  
             this.PriceDifferencePanel.Controls.Add(this.RelativePriceDifference);
             this.PriceDifferencePanel.Controls.Add(this.AbsolutePriceDifference);
             this.PriceDifferencePanel.Location = new System.Drawing.Point(36, 259);
             this.PriceDifferencePanel.Name = "PriceDifferencePanel";
             this.PriceDifferencePanel.Size = new System.Drawing.Size(200, 17);
             this.PriceDifferencePanel.TabIndex = 36;
-            // 
-            // RelativePriceDifference
-            // 
+            //  
+            //  RelativePriceDifference
+            //  
             this.RelativePriceDifference.AutoSize = true;
             this.RelativePriceDifference.Location = new System.Drawing.Point(90, 0);
             this.RelativePriceDifference.Name = "RelativePriceDifference";
@@ -882,9 +882,9 @@
             this.RelativePriceDifference.Text = "Relatief";
             this.RelativePriceDifference.UseVisualStyleBackColor = true;
             this.RelativePriceDifference.CheckedChanged += new System.EventHandler(this.RelativePriceDifference_CheckedChanged);
-            // 
-            // AbsolutePriceDifference
-            // 
+            //  
+            //  AbsolutePriceDifference
+            //  
             this.AbsolutePriceDifference.AutoSize = true;
             this.AbsolutePriceDifference.Location = new System.Drawing.Point(8, 0);
             this.AbsolutePriceDifference.Name = "AbsolutePriceDifference";
@@ -894,9 +894,9 @@
             this.AbsolutePriceDifference.Text = "Absoluut";
             this.AbsolutePriceDifference.UseVisualStyleBackColor = true;
             this.AbsolutePriceDifference.CheckedChanged += new System.EventHandler(this.AbsolutePriceDifference_CheckedChanged);
-            // 
-            // CategoryLevel5
-            // 
+            //  
+            //  CategoryLevel5
+            //  
             this.CategoryLevel5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CategoryLevel5.FormattingEnabled = true;
             this.CategoryLevel5.Location = new System.Drawing.Point(577, 115);
@@ -905,9 +905,9 @@
             this.CategoryLevel5.TabIndex = 35;
             this.CategoryLevel5.Visible = false;
             this.CategoryLevel5.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel5_SelectedIndexChanged);
-            // 
-            // CategoryLevel4
-            // 
+            //  
+            //  CategoryLevel4
+            //  
             this.CategoryLevel4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CategoryLevel4.FormattingEnabled = true;
             this.CategoryLevel4.Location = new System.Drawing.Point(450, 115);
@@ -916,9 +916,9 @@
             this.CategoryLevel4.TabIndex = 34;
             this.CategoryLevel4.Visible = false;
             this.CategoryLevel4.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel4_SelectedIndexChanged);
-            // 
-            // CategoryLevel3
-            // 
+            //  
+            //  CategoryLevel3
+            //  
             this.CategoryLevel3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CategoryLevel3.FormattingEnabled = true;
             this.CategoryLevel3.Location = new System.Drawing.Point(323, 115);
@@ -927,9 +927,9 @@
             this.CategoryLevel3.TabIndex = 33;
             this.CategoryLevel3.Visible = false;
             this.CategoryLevel3.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel3_SelectedIndexChanged);
-            // 
-            // CategoryLevel2
-            // 
+            //  
+            //  CategoryLevel2
+            //  
             this.CategoryLevel2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CategoryLevel2.FormattingEnabled = true;
             this.CategoryLevel2.Location = new System.Drawing.Point(196, 115);
@@ -938,9 +938,9 @@
             this.CategoryLevel2.TabIndex = 32;
             this.CategoryLevel2.Visible = false;
             this.CategoryLevel2.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel2_SelectedIndexChanged);
-            // 
-            // ExecuteButton
-            // 
+            //  
+            //  ExecuteButton
+            //  
             this.ExecuteButton.Location = new System.Drawing.Point(306, 452);
             this.ExecuteButton.Name = "ExecuteButton";
             this.ExecuteButton.Size = new System.Drawing.Size(103, 46);
@@ -948,9 +948,9 @@
             this.ExecuteButton.Text = "Get stats";
             this.ExecuteButton.UseVisualStyleBackColor = true;
             this.ExecuteButton.Click += new System.EventHandler(this.ExecuteButton_Click);
-            // 
-            // MaximumPercentageSignLabel
-            // 
+            //  
+            //  MaximumPercentageSignLabel
+            //  
             this.MaximumPercentageSignLabel.AutoSize = true;
             this.MaximumPercentageSignLabel.Location = new System.Drawing.Point(242, 308);
             this.MaximumPercentageSignLabel.Name = "MaximumPercentageSignLabel";
@@ -958,9 +958,9 @@
             this.MaximumPercentageSignLabel.TabIndex = 30;
             this.MaximumPercentageSignLabel.Text = "%";
             this.MaximumPercentageSignLabel.Visible = false;
-            // 
-            // MinimumPercentageSignLabel
-            // 
+            //  
+            //  MinimumPercentageSignLabel
+            //  
             this.MinimumPercentageSignLabel.AutoSize = true;
             this.MinimumPercentageSignLabel.Location = new System.Drawing.Point(242, 285);
             this.MinimumPercentageSignLabel.Name = "MinimumPercentageSignLabel";
@@ -968,9 +968,9 @@
             this.MinimumPercentageSignLabel.TabIndex = 29;
             this.MinimumPercentageSignLabel.Text = "%";
             this.MinimumPercentageSignLabel.Visible = false;
-            // 
-            // CountryFilter
-            // 
+            //  
+            //  CountryFilter
+            //  
             this.CountryFilter.AutoSize = true;
             this.CountryFilter.Location = new System.Drawing.Point(21, 343);
             this.CountryFilter.Name = "CountryFilter";
@@ -978,9 +978,9 @@
             this.CountryFilter.TabIndex = 26;
             this.CountryFilter.Text = "Landfilter";
             this.CountryFilter.UseVisualStyleBackColor = true;
-            // 
-            // MaximumDifferenceEuroSign
-            // 
+            //  
+            //  MaximumDifferenceEuroSign
+            //  
             this.MaximumDifferenceEuroSign.AutoSize = true;
             this.MaximumDifferenceEuroSign.Location = new System.Drawing.Point(123, 309);
             this.MaximumDifferenceEuroSign.Name = "MaximumDifferenceEuroSign";
@@ -988,9 +988,9 @@
             this.MaximumDifferenceEuroSign.TabIndex = 23;
             this.MaximumDifferenceEuroSign.Text = "€";
             this.MaximumDifferenceEuroSign.Visible = false;
-            // 
-            // MinimumDifferenceEuroSign
-            // 
+            //  
+            //  MinimumDifferenceEuroSign
+            //  
             this.MinimumDifferenceEuroSign.AutoSize = true;
             this.MinimumDifferenceEuroSign.Location = new System.Drawing.Point(123, 285);
             this.MinimumDifferenceEuroSign.Name = "MinimumDifferenceEuroSign";
@@ -998,23 +998,23 @@
             this.MinimumDifferenceEuroSign.TabIndex = 22;
             this.MinimumDifferenceEuroSign.Text = "€";
             this.MinimumDifferenceEuroSign.Visible = false;
-            // 
-            // MaximumPriceDifferenceText
-            // 
+            //  
+            //  MaximumPriceDifferenceText
+            //  
             this.MaximumPriceDifferenceText.Location = new System.Drawing.Point(136, 308);
             this.MaximumPriceDifferenceText.Name = "MaximumPriceDifferenceText";
             this.MaximumPriceDifferenceText.Size = new System.Drawing.Size(100, 20);
             this.MaximumPriceDifferenceText.TabIndex = 21;
-            // 
-            // MinimumPriceDifferenceText
-            // 
+            //  
+            //  MinimumPriceDifferenceText
+            //  
             this.MinimumPriceDifferenceText.Location = new System.Drawing.Point(136, 282);
             this.MinimumPriceDifferenceText.Name = "MinimumPriceDifferenceText";
             this.MinimumPriceDifferenceText.Size = new System.Drawing.Size(100, 20);
             this.MinimumPriceDifferenceText.TabIndex = 20;
-            // 
-            // MaximumPriceDifference
-            // 
+            //  
+            //  MaximumPriceDifference
+            //  
             this.MaximumPriceDifference.AutoSize = true;
             this.MaximumPriceDifference.Location = new System.Drawing.Point(47, 308);
             this.MaximumPriceDifference.Name = "MaximumPriceDifference";
@@ -1022,9 +1022,9 @@
             this.MaximumPriceDifference.TabIndex = 19;
             this.MaximumPriceDifference.Text = "Maximum";
             this.MaximumPriceDifference.UseVisualStyleBackColor = true;
-            // 
-            // MinimumPriceDifference
-            // 
+            //  
+            //  MinimumPriceDifference
+            //  
             this.MinimumPriceDifference.AutoSize = true;
             this.MinimumPriceDifference.Location = new System.Drawing.Point(47, 284);
             this.MinimumPriceDifference.Name = "MinimumPriceDifference";
@@ -1032,9 +1032,9 @@
             this.MinimumPriceDifference.TabIndex = 18;
             this.MinimumPriceDifference.Text = "Minimum";
             this.MinimumPriceDifference.UseVisualStyleBackColor = true;
-            // 
-            // PriceDifferenceFilter
-            // 
+            //  
+            //  PriceDifferenceFilter
+            //  
             this.PriceDifferenceFilter.AutoSize = true;
             this.PriceDifferenceFilter.Location = new System.Drawing.Point(21, 240);
             this.PriceDifferenceFilter.Name = "PriceDifferenceFilter";
@@ -1042,9 +1042,9 @@
             this.PriceDifferenceFilter.TabIndex = 17;
             this.PriceDifferenceFilter.Text = "Prijsverschilfilter";
             this.PriceDifferenceFilter.UseVisualStyleBackColor = true;
-            // 
-            // CategoryLevel1
-            // 
+            //  
+            //  CategoryLevel1
+            //  
             this.CategoryLevel1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CategoryLevel1.FormattingEnabled = true;
             this.CategoryLevel1.Location = new System.Drawing.Point(69, 115);
@@ -1052,41 +1052,41 @@
             this.CategoryLevel1.Size = new System.Drawing.Size(121, 21);
             this.CategoryLevel1.TabIndex = 16;
             this.CategoryLevel1.SelectedIndexChanged += new System.EventHandler(this.CategoryLevel1_SelectedIndexChanged);
-            // 
-            // MaxEuroSign
-            // 
+            //  
+            //  MaxEuroSign
+            //  
             this.MaxEuroSign.AutoSize = true;
             this.MaxEuroSign.Location = new System.Drawing.Point(123, 200);
             this.MaxEuroSign.Name = "MaxEuroSign";
             this.MaxEuroSign.Size = new System.Drawing.Size(13, 13);
             this.MaxEuroSign.TabIndex = 15;
             this.MaxEuroSign.Text = "€";
-            // 
-            // MinEuroSign
-            // 
+            //  
+            //  MinEuroSign
+            //  
             this.MinEuroSign.AutoSize = true;
             this.MinEuroSign.Location = new System.Drawing.Point(123, 176);
             this.MinEuroSign.Name = "MinEuroSign";
             this.MinEuroSign.Size = new System.Drawing.Size(13, 13);
             this.MinEuroSign.TabIndex = 14;
             this.MinEuroSign.Text = "€";
-            // 
-            // MaximumPriceText
-            // 
+            //  
+            //  MaximumPriceText
+            //  
             this.MaximumPriceText.Location = new System.Drawing.Point(136, 199);
             this.MaximumPriceText.Name = "MaximumPriceText";
             this.MaximumPriceText.Size = new System.Drawing.Size(100, 20);
             this.MaximumPriceText.TabIndex = 13;
-            // 
-            // MinimumPriceText
-            // 
+            //  
+            //  MinimumPriceText
+            //  
             this.MinimumPriceText.Location = new System.Drawing.Point(136, 173);
             this.MinimumPriceText.Name = "MinimumPriceText";
             this.MinimumPriceText.Size = new System.Drawing.Size(100, 20);
             this.MinimumPriceText.TabIndex = 12;
-            // 
-            // MaximumPrice
-            // 
+            //  
+            //  MaximumPrice
+            //  
             this.MaximumPrice.AutoSize = true;
             this.MaximumPrice.Location = new System.Drawing.Point(47, 199);
             this.MaximumPrice.Name = "MaximumPrice";
@@ -1094,9 +1094,9 @@
             this.MaximumPrice.TabIndex = 11;
             this.MaximumPrice.Text = "Maximum";
             this.MaximumPrice.UseVisualStyleBackColor = true;
-            // 
-            // MinimumPrice
-            // 
+            //  
+            //  MinimumPrice
+            //  
             this.MinimumPrice.AutoSize = true;
             this.MinimumPrice.Location = new System.Drawing.Point(47, 175);
             this.MinimumPrice.Name = "MinimumPrice";
@@ -1104,9 +1104,9 @@
             this.MinimumPrice.TabIndex = 10;
             this.MinimumPrice.Text = "Minimum";
             this.MinimumPrice.UseVisualStyleBackColor = true;
-            // 
-            // DeliveryCostsFilter
-            // 
+            //  
+            //  DeliveryCostsFilter
+            //  
             this.DeliveryCostsFilter.AutoSize = true;
             this.DeliveryCostsFilter.Location = new System.Drawing.Point(21, 435);
             this.DeliveryCostsFilter.Name = "DeliveryCostsFilter";
@@ -1115,9 +1115,9 @@
             this.DeliveryCostsFilter.Text = "Verzendkostenfilter";
             this.DeliveryCostsFilter.UseVisualStyleBackColor = true;
             this.DeliveryCostsFilter.Visible = false;
-            // 
-            // PriceFilter
-            // 
+            //  
+            //  PriceFilter
+            //  
             this.PriceFilter.AutoSize = true;
             this.PriceFilter.Location = new System.Drawing.Point(16, 151);
             this.PriceFilter.Name = "PriceFilter";
@@ -1125,9 +1125,9 @@
             this.PriceFilter.TabIndex = 5;
             this.PriceFilter.Text = "Prijsfilter";
             this.PriceFilter.UseVisualStyleBackColor = true;
-            // 
-            // CategoryFilter
-            // 
+            //  
+            //  CategoryFilter
+            //  
             this.CategoryFilter.AutoSize = true;
             this.CategoryFilter.Location = new System.Drawing.Point(16, 92);
             this.CategoryFilter.Name = "CategoryFilter";
@@ -1135,18 +1135,18 @@
             this.CategoryFilter.TabIndex = 4;
             this.CategoryFilter.Text = "Categoriefilter";
             this.CategoryFilter.UseVisualStyleBackColor = true;
-            // 
-            // To
-            // 
+            //  
+            //  To
+            //  
             this.To.AutoSize = true;
             this.To.Location = new System.Drawing.Point(275, 52);
             this.To.Name = "To";
             this.To.Size = new System.Drawing.Size(19, 13);
             this.To.TabIndex = 3;
             this.To.Text = "tot";
-            // 
-            // TimeFilter
-            // 
+            //  
+            //  TimeFilter
+            //  
             this.TimeFilter.AutoSize = true;
             this.TimeFilter.Location = new System.Drawing.Point(21, 29);
             this.TimeFilter.Name = "TimeFilter";
@@ -1154,9 +1154,9 @@
             this.TimeFilter.TabIndex = 0;
             this.TimeFilter.Text = "Tijdfilter";
             this.TimeFilter.UseVisualStyleBackColor = true;
-            // 
-            // tabControl1
-            // 
+            //  
+            //  tabControl1
+            //  
             this.tabControl1.Controls.Add(this.FilterTab);
             this.tabControl1.Controls.Add(this.MetricsPage);
             this.tabControl1.Location = new System.Drawing.Point(1, 2);
@@ -1165,9 +1165,9 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1453, 668);
             this.tabControl1.TabIndex = 0;
-            // 
-            // label1
-            // 
+            //  
+            //  label1
+            //  
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(761, 34);
@@ -1175,99 +1175,99 @@
             this.label1.Size = new System.Drawing.Size(56, 20);
             this.label1.TabIndex = 57;
             this.label1.Text = "Filters:";
-            // 
-            // label2
-            // 
+            //  
+            //  label2
+            //  
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(765, 56);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 13);
             this.label2.TabIndex = 58;
             this.label2.Text = "Datum:";
-            // 
-            // DateFilterLabel
-            // 
+            //  
+            //  DateFilterLabel
+            //  
             this.DateFilterLabel.AutoSize = true;
             this.DateFilterLabel.Location = new System.Drawing.Point(834, 56);
             this.DateFilterLabel.Name = "DateFilterLabel";
             this.DateFilterLabel.Size = new System.Drawing.Size(133, 13);
             this.DateFilterLabel.TabIndex = 59;
             this.DateFilterLabel.Text = "00-00-0000 tot 00-00-0000";
-            // 
-            // label4
-            // 
+            //  
+            //  label4
+            //  
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(765, 83);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(52, 13);
             this.label4.TabIndex = 62;
             this.label4.Text = "Categorie";
-            // 
-            // CategoryFilterLabel
-            // 
+            //  
+            //  CategoryFilterLabel
+            //  
             this.CategoryFilterLabel.AutoSize = true;
             this.CategoryFilterLabel.Location = new System.Drawing.Point(834, 83);
             this.CategoryFilterLabel.Name = "CategoryFilterLabel";
             this.CategoryFilterLabel.Size = new System.Drawing.Size(73, 13);
             this.CategoryFilterLabel.TabIndex = 63;
             this.CategoryFilterLabel.Text = "C1 > C2  > C3";
-            // 
-            // label3
-            // 
+            //  
+            //  label3
+            //  
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(765, 111);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(29, 13);
             this.label3.TabIndex = 64;
             this.label3.Text = "Prijs:";
-            // 
-            // PriceFilterLabel
-            // 
+            //  
+            //  PriceFilterLabel
+            //  
             this.PriceFilterLabel.AutoSize = true;
             this.PriceFilterLabel.Location = new System.Drawing.Point(834, 113);
             this.PriceFilterLabel.Name = "PriceFilterLabel";
             this.PriceFilterLabel.Size = new System.Drawing.Size(85, 13);
             this.PriceFilterLabel.TabIndex = 65;
             this.PriceFilterLabel.Text = "10.00 tot 100.00";
-            // 
-            // label15
-            // 
+            //  
+            //  label15
+            //  
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(765, 142);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(65, 13);
             this.label15.TabIndex = 66;
             this.label15.Text = "Prijsverschil:";
-            // 
-            // label16
-            // 
+            //  
+            //  label16
+            //  
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(765, 177);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(34, 13);
             this.label16.TabIndex = 67;
             this.label16.Text = "Land:";
-            // 
-            // PriceDifferenceFilterLabel
-            // 
+            //  
+            //  PriceDifferenceFilterLabel
+            //  
             this.PriceDifferenceFilterLabel.AutoSize = true;
             this.PriceDifferenceFilterLabel.Location = new System.Drawing.Point(834, 142);
             this.PriceDifferenceFilterLabel.Name = "PriceDifferenceFilterLabel";
             this.PriceDifferenceFilterLabel.Size = new System.Drawing.Size(59, 13);
             this.PriceDifferenceFilterLabel.TabIndex = 68;
             this.PriceDifferenceFilterLabel.Text = "3% tot 10%";
-            // 
-            // CountryFilterLabel
-            // 
+            //  
+            //  CountryFilterLabel
+            //  
             this.CountryFilterLabel.AutoSize = true;
             this.CountryFilterLabel.Location = new System.Drawing.Point(834, 177);
             this.CountryFilterLabel.Name = "CountryFilterLabel";
             this.CountryFilterLabel.Size = new System.Drawing.Size(88, 13);
             this.CountryFilterLabel.TabIndex = 69;
             this.CountryFilterLabel.Text = "Alleen buitenland";
-            // 
-            // Betric
-            // 
+            //  
+            //  Betric
+            //  
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1105, 574);

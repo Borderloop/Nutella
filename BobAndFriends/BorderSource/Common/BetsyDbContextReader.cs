@@ -52,12 +52,12 @@ namespace BorderSource.Common
             Dictionary<Product, int> dic = new Dictionary<Product, int>();
             List<string> ids = products.Select(p => p.AffiliateProdID).ToList();
             var query = db.product.Where(p => p.webshop_url == webshop && ids.Contains(p.affiliate_unique_id));
-            foreach(var prod in query)
+            foreach (var prod in query)
             {
                 Product key = products.Where(p => p.AffiliateProdID == prod.affiliate_unique_id).FirstOrDefault();
                 int value = prod.article_id;
-                if(key == null || value == 0) continue;
-                if(!dic.ContainsKey(key)) dic.Add(key, value);
+                if (key == null || value == 0) continue;
+                if (!dic.ContainsKey(key)) dic.Add(key, value);
             }
             return dic;
         }
@@ -135,7 +135,7 @@ namespace BorderSource.Common
         public bool GetRelevantMatches(Product Record, int lastInserted)
         {
 
-            //Get the most relevant matches for the given product and return their article id'str.
+            // Get the most relevant matches for the given product and return their article id'str.
             string query = "SELECT * FROM article " +
                            "INNER JOIN title ON title.article_id = article.id " +
                            "WHERE title.id IN (SELECT title_id FROM title_synonym as ts " +
@@ -150,13 +150,13 @@ namespace BorderSource.Common
 
             bool match;
 
-            //Invoke method to save suggested matches to database if matches are found
+            // Invoke method to save suggested matches to database if matches are found
             if (articleIds.Count() > 0)
             {
-                //InsertInVBobSuggested(lastInserted, articleIds);
+                // InsertInVBobSuggested(lastInserted, articleIds);
                 match = true;
             }
-            else // Else, no matches are found. Save this record to the database.
+            else //  Else, no matches are found. Save this record to the database.
             {
                 match = false;
             }
@@ -232,7 +232,7 @@ namespace BorderSource.Common
 
         }
 
-        public ILookup<string, Webshop> GetAllWebshops()
+        public Dictionary<string, Webshop> GetAllWebshops()
         {
             using (var db = new BetsyModel(ConnectionString))
             {
@@ -241,7 +241,7 @@ namespace BorderSource.Common
                 db.Database.Connection.Close();
                 db.Database.Connection.Dispose();
                 db.Dispose();
-                return names.ToLookup(w => w.Url);
+                return names.ToDictionary(w => w.Url.Trim(), w => w);
             }
         }
 
@@ -279,9 +279,9 @@ namespace BorderSource.Common
 
         public virtual void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
-                if(db != null)
+                if (db != null)
                 {
                     db.Dispose();
                     db = null;

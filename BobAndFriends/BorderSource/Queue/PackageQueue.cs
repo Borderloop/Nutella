@@ -94,7 +94,7 @@ namespace BorderSource.Queue
                     {
                         return null;
                     }
-                    //Console.WriteLine("PackageQueue starved.");
+                    // Console.WriteLine("PackageQueue starved.");
                     Monitor.Wait(QueueLock, 3000);
                 }
                 return Queue.Dequeue();
@@ -106,7 +106,7 @@ namespace BorderSource.Queue
             List<Package> list = new List<Package>();
             lock(QueueLock)
             {
-                while(Queue.Count == 0)
+                while (Queue.Count == 0)
                 {
                     if (InputStopped)
                     {
@@ -114,7 +114,7 @@ namespace BorderSource.Queue
                     }
                     Monitor.Wait(QueueLock, 3000);
                 }
-                while(list.Count < amount && Queue.Count > 0)
+                while (list.Count < amount && Queue.Count > 0)
                 {
                     list.Add(Queue.Dequeue());
                 }               

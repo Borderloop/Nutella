@@ -12,7 +12,7 @@ namespace Misc
         {
             get
             {
-                if(!ContainsKey(key1))                   
+                if (!ContainsKey(key1))                   
                     throw new ArgumentException("Dictionary does not contain key " + key1.ToString());
                 if (!this[key1].ContainsKey(key2))
                     throw new ArgumentException("Dictionary does not contain key " + key2.ToString());
@@ -20,7 +20,7 @@ namespace Misc
             }
             set
             {
-                if(!ContainsKey(key1))
+                if (!ContainsKey(key1))
                     this[key1] = new Dictionary<K2, T>();
                this[key1][key2] = value;
             }
@@ -28,7 +28,7 @@ namespace Misc
 
         public void Add(K1 key1, K2 key2, T value)
         {
-            if(!ContainsKey(key1))
+            if (!ContainsKey(key1))
                 this[key1] = new Dictionary<K2, T>();
             this[key1][key2] = value;
         }
@@ -40,9 +40,9 @@ namespace Misc
 
         public void ClearValues()
         {
-            foreach(K1 key1 in this.Keys.ToList())
+            foreach (K1 key1 in this.Keys.ToList())
             {
-                foreach(K2 key2 in this[key1].Keys.ToList())
+                foreach (K2 key2 in this[key1].Keys.ToList())
                 {                    
                     this[key1][key2] = default(T);
                 }

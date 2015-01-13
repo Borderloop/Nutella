@@ -16,17 +16,17 @@ namespace BorderSource.Web.CurrencyConverter
             string url = String.Format("https://www.google.com/finance/converter?a={2}&from={0}&to={1}", from, to, amount);
             WebClient client = new WebClient();
             string rates = client.DownloadString(url);
-            CurrencyRate rate = new JavaScriptSerializer().Deserialize<CurrencyRate>(rates); //needs refactoring
+            CurrencyRate rate = new JavaScriptSerializer().Deserialize<CurrencyRate>(rates); // needs refactoring
             return amount * (decimal)rate.Rate;
         }
 
         public static Dictionary<string, decimal> GetCurrencyRatesToEUR()
         {
             Dictionary<string, decimal> dic = new Dictionary<string, decimal>();
-            using(XmlReader reader = XmlReader.Create(@"http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"))
+            using (XmlReader reader = XmlReader.Create(@"http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"))
             {
                 reader.ReadToFollowing("Cube");
-                while(reader.Read())
+                while (reader.Read())
                 {
                     if (reader.NodeType != XmlNodeType.Element) continue;
                     if (reader.GetAttribute("currency") != null)

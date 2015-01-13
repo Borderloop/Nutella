@@ -19,7 +19,7 @@ namespace BorderSource.ProductAssociation
         public bool CategorySynonymExists = false;
         public bool IsValidAsNewArticle = false;
 
-        public  bool EanMatched
+        public bool EanMatched
         {
             get
             {

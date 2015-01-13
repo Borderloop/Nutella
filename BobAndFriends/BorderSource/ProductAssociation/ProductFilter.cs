@@ -17,7 +17,7 @@ namespace BorderSource.ProductAssociation
         public bool LogProperties { get; set; }
         public Dictionary<string, int> Maximums { get; set; }
 
-        public HashSet<string> TaxExclusiveWebshops { get; set; }
+        public IDictionary<string, decimal> TaxExclusiveWebshops { get; set; }
 
         public IDictionary<string, decimal> CurrencyRates { get; set; }
 
@@ -34,7 +34,7 @@ namespace BorderSource.ProductAssociation
                 object type = prop.GetValue(p);
                 decimal parsedPrice;
                 if (!(type is string) && type != null) continue;
-                //Make sure the fields are DEFINITELY not null
+                // Make sure the fields are DEFINITELY not null
                 if (prop.GetValue(p) == null)
                     prop.SetValue(p, "");
 
@@ -44,7 +44,7 @@ namespace BorderSource.ProductAssociation
                         prop.SetValue(p, Regex.IsMatch(prop.GetValue(p) as string, @"^[0-9]{10,13}$") ? (prop.GetValue(p) as string).Trim() : "");
                         if ((prop.GetValue(p) as string).Contains("00000000000") || (prop.GetValue(p) as string).Contains("999999999999"))
                         {
-                            if(LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
+                            if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             return false;
                         }
                         break;
@@ -63,7 +63,7 @@ namespace BorderSource.ProductAssociation
                             return false;
                         }
                         decimal rate = CurrencyRates == null ? 1 : CurrencyRates.ContainsKey(p.Currency.ToUpper()) ? CurrencyRates[p.Currency.ToUpper()] : 1;
-                        prop.SetValue(p, (parsedPrice * rate).ToString().Replace(',', '.'));
+                        prop.SetValue(p, (parsedPrice / rate).ToString().Replace(',', '.'));
                         break;
 
                     case "DeliveryCost":
@@ -208,9 +208,9 @@ namespace BorderSource.ProductAssociation
                 }
             }
 
-            if (TaxExclusiveWebshops.Contains(p.Webshop))
+            if (TaxExclusiveWebshops.ContainsKey(p.Webshop))
             {
-                decimal TaxInclusivePrice = Math.Round(decimal.Parse(p.Price, NumberStyles.Any, CultureInfo.InvariantCulture) * (decimal)1.21, 2);
+                decimal TaxInclusivePrice = Math.Round(decimal.Parse(p.Price, NumberStyles.Any, CultureInfo.InvariantCulture) * TaxExclusiveWebshops[p.Webshop], 2);
                 p.Price = TaxInclusivePrice.ToString().Replace(',','.');
             }
 

@@ -25,11 +25,11 @@ namespace CategoryMatcher
         {
             InitializeComponent();
 
-            //this.TopMost = true;
-            //this.FormBorderStyle = FormBorderStyle.None;
-            //this.WindowState = FormWindowState.Maximized;
+            // this.TopMost = true;
+            // this.FormBorderStyle = FormBorderStyle.None;
+            // this.WindowState = FormWindowState.Maximized;
 
-            // Data From Table Category
+            //  Data From Table Category
             selectedCategory = Database.Instance.Read("SELECT * FROM category");
             selCatBind = new BindingSource();
             selCatBind.DataSource = selectedCategory;
@@ -38,8 +38,8 @@ namespace CategoryMatcher
 
             categoryGridView.AutoGenerateColumns = true;
 
-            //  Date From Residue 
-            //inkomendDescription = Database.Instance.Read("SELECT title,category,ean,sku,web_url FROM residue WHERE category NOT IN(SELECT description FROM category_synonym WHERE description NOT IN (SELECT description FROM category))");
+            //   Date From Residue 
+            // inkomendDescription = Database.Instance.Read("SELECT title,category,ean,sku,web_url FROM residue WHERE category NOT IN(SELECT description FROM category_synonym WHERE description NOT IN (SELECT description FROM category))");
             inkomendDescription = Database.Instance.Read("SELECT title,category,ean,sku,web_url FROM residue WHERE category NOT IN(SELECT description FROM category_synonym) AND category NOT IN (SELECT description FROM category)");
             inkDesBind = new BindingSource();
             inkDesBind.DataSource = inkomendDescription;
@@ -48,7 +48,7 @@ namespace CategoryMatcher
 
             inkomendGridView.AutoGenerateColumns = true;
 
-            // Products that fall under Category
+            //  Products that fall under Category
             DataTable matchProduct = Database.Instance.Read("SELECT * FROM residue LIMIT 10");
             matProduct = new BindingSource();
             matProduct.DataSource = matchProduct;
@@ -134,7 +134,7 @@ namespace CategoryMatcher
         /// <param name="e"></param>
         private void RefreshDataGridInkomend_Click(object sender, EventArgs e)
         {
-            //inkomendDescription = Database.Instance.Read("SELECT title,category,ean,sku,web_url FROM residue WHERE category NOT IN(SELECT description FROM category_synonym WHERE description NOT IN (SELECT description FROM category))");
+            // inkomendDescription = Database.Instance.Read("SELECT title,category,ean,sku,web_url FROM residue WHERE category NOT IN(SELECT description FROM category_synonym WHERE description NOT IN (SELECT description FROM category))");
             inkomendDescription = Database.Instance.Read("SELECT title,category,ean,sku,web_url FROM residue WHERE category NOT IN(SELECT description FROM category_synonym) AND category NOT IN (SELECT description FROM category)");
             inkDesBind = new BindingSource();
             inkDesBind.DataSource = inkomendDescription;

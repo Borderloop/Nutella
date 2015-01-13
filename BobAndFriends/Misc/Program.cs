@@ -17,9 +17,22 @@ namespace Misc
     {
         static void Main(string[] args)
         {
-            Enumerable.Range(0, 100).ToList().ForEach(i => Console.WriteLine(i % 3 == 0 ? i % 8 == 0 ? "Borderloop" : "Border" : i % 8 == 0 ? "loop" : i.ToString()));
+            int i = 0;
+            while(i < 10)
+            {
+                try
+                {
+                    i++;
+                    if (i == 3) throw new InvalidOperationException();
+                    Console.WriteLine(i);
+                }
+                catch (InvalidOperationException inv)
+                {
+                    Console.WriteLine("Exception thrown");
+                }
+            }
+            //Enumerable.Range(0, 100).ToList().ForEach(i => Console.WriteLine(i % 3 == 0 ? i % 8 == 0 ? "Borderloop" : "Border" : i % 8 == 0 ? "loop" : i.ToString()));
             Console.Read();
-         
         }
     }
 

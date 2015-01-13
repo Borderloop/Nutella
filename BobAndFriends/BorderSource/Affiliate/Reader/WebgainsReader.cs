@@ -26,7 +26,7 @@ namespace BorderSource.Affiliate.Reader
         {
             
 
-            //Initialize XmlValueReader and its keys
+            // Initialize XmlValueReader and its keys
             using (XmlValueReader xvr = new XmlValueReader())
             {
                 List<Product> products = new List<Product>();
@@ -53,7 +53,7 @@ namespace BorderSource.Affiliate.Reader
                 xvr.CreateReader(file, new XmlReaderSettings { CloseInput = true });
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    //Fill the product with fields
+                    // Fill the product with fields
                     p.EAN = dkd["european_article_number"][XmlNodeType.Element];
                     p.Title = dkd["product_name"][XmlNodeType.Element];
                     p.Brand = dkd["brand"][XmlNodeType.Element];
@@ -96,7 +96,7 @@ namespace BorderSource.Affiliate.Reader
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
-            //Initialize XmlValueReader and its keys
+            // Initialize XmlValueReader and its keys
             XmlValueReader xvr = new XmlValueReader();
             xvr.ProductEnd = "product";
             xvr.AddKeys("european_article_number", XmlNodeType.Element);
@@ -121,19 +121,10 @@ namespace BorderSource.Affiliate.Reader
             {
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
-                // If the webshop is not found in the webshop list no further processing needed.
-                if (!Lookup.WebshopLookup.Contains(fileUrl))
-                {
-                    /*using (Logger logger = new Logger(Statics.LoggerPath, true))
-                    {
-                        logger.WriteLine("Webshop not found in database: " + fichierUrl + " from " + Name);
-                    }*/
-                    continue;
-                }
                 xvr.CreateReader(file);
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    //Fill the product with fields
+                    // Fill the product with fields
                     p.EAN = dkd["european_article_number"][XmlNodeType.Element];
                     p.Title = dkd["product_name"][XmlNodeType.Element];
                     p.Brand = dkd["brand"][XmlNodeType.Element];

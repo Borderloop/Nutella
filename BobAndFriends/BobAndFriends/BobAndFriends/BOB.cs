@@ -13,6 +13,7 @@ using BorderSource.Common;
 using BorderSource.Queue;
 using BorderSource.ProductAssociation;
 using BobAndFriends.Global;
+using System.Collections.Concurrent;
 
 namespace BobAndFriends.BobAndFriends
 {
@@ -41,16 +42,16 @@ namespace BobAndFriends.BobAndFriends
         public void Process(Package p)
         {
             while (_maxValidationQueueSize == 0 ? false : ProductValidationQueue.Instance.Queue.Count > _maxValidationQueueSize) Thread.Sleep(1000);
-            Webshop ws = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()].FirstOrDefault();
+            Webshop ws = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()];
             if (ws.Equals(null)) return;
             int countryID = ws.CountryId;
 
             Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(p.Webshop.ToLower().Trim());
 
-            //Cleanup titles
-            foreach(Product Record in p.products)
+            // Cleanup titles
+            foreach (Product Record in p.products)
             {
-                if (Record.Brand != "" && Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase))
+                if (Record.Brand != "" && Record.Brand != null && Record.Title.Contains(Record.Brand, StringComparison.OrdinalIgnoreCase))
                 {
                     string[] s = Record.Title.Split(new string[] { Record.Brand }, StringSplitOptions.RemoveEmptyEntries);
                     Record.Title = String.Concat(s).Trim();
@@ -59,7 +60,7 @@ namespace BobAndFriends.BobAndFriends
 
             if (Properties.PropertyList["update_enabled"].GetValue<bool>())
             {
-                //Filter existing produits
+                // Filter existing produits
                 foreach (KeyValuePair<Product, int> pair in db.GetExistingProductIds(p.products, p.Webshop))
                 {
                     if (pair.Key == null) continue;
@@ -82,13 +83,13 @@ namespace BobAndFriends.BobAndFriends
                     if (pair.Key == null) continue;
 
                     if (GlobalVariables.AddedProducts.ContainsKey(pair.Value))
+                    {
                         GlobalVariables.AddedProducts[pair.Value].Add(pair.Key.Webshop);
+                        continue;
+                    }
                     else
                     {
-                        GlobalVariables.AddedProducts.AddOrUpdate(pair.Value, new List<string>(), (key, oldValue) =>
-                            {
-                                return oldValue;
-                            });
+                        GlobalVariables.AddedProducts.TryAdd(pair.Value, new ConcurrentBag<string>());
                         GlobalVariables.AddedProducts[pair.Value].Add(pair.Key.Webshop);
                     }
 
@@ -167,9 +168,9 @@ namespace BobAndFriends.BobAndFriends
 
         public virtual void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
-                if(db != null)
+                if (db != null)
                 {
                     db.Dispose();
                     db = null;

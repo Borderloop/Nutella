@@ -14,6 +14,7 @@ using System.Data.Entity.Infrastructure;
 using MySql.Data.MySqlClient;
 using BorderSource.Loggers;
 using BobAndFriends.Global;
+using System.Collections.Concurrent;
 
 
 namespace BobAndFriends.Crapper
@@ -34,7 +35,7 @@ namespace BobAndFriends.Crapper
                 CleanupUniqueIdDupes();                          
                 CleanupTitleDupes();               
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.Instance.WriteLine("Crapper threw an exception: " + e.Message);
                 Logger.Instance.WriteLine("InnerException: " + e.InnerException);
@@ -44,14 +45,15 @@ namespace BobAndFriends.Crapper
 
         private static void CleanupDuplicateWebshopsPerArticle()
         {
+            Console.WriteLine("Cleaning up duplicate webshops per article...");
             using (var db = new BetsyModel(ConnectionString))
             {
-                foreach (KeyValuePair<int, List<string>> pair in GlobalVariables.AddedProducts)
+                foreach (KeyValuePair<int, ConcurrentBag<string>> pair in GlobalVariables.AddedProducts)
                 {
                     if (pair.Value.GroupBy(p => p).Any(x => x.Count() > 1))
                     {
                         IEnumerable<string> dupes = pair.Value.GroupBy(p => p).Where(x => x.Count() > 1).Select(s => s.Key);
-                        foreach(string dupe in dupes)
+                        foreach (string dupe in dupes)
                         {
                             db.product.RemoveRange(db.product.Where(p => p.article_id == pair.Key && p.webshop_url == dupe));
                         }
@@ -59,6 +61,7 @@ namespace BobAndFriends.Crapper
                 }
                 db.SaveChanges();
             }
+            Console.WriteLine("Done cleaning up duplicate webshops per article.");
         }
 
         private static void CleanupEmtpyTitles()
@@ -100,23 +103,23 @@ namespace BobAndFriends.Crapper
                         title wrongTitleEntity = wrongArticle.title.FirstOrDefault();
                         if (!(wrongTitleEntity == null)) wrongTitle = wrongTitleEntity.title1;
 
-                        //Set product article id to correctArticle.id
+                        // Set product article id to correctArticle.id
                         List<product> productList = new List<product>();
                         wrongArticle.product.ToList().ForEach(p => productList.Add(p));
 
-                        //Set sku to correct article id
+                        // Set sku to correct article id
                         List<sku> skuList = new List<sku>();
                         wrongArticle.sku.Where(s => !correctArticle.sku.Any(k => k.sku1.ToLower().Trim() == s.sku1.ToLower().Trim())).ToList().ForEach(s => skuList.Add(s));
 
-                        //set ean to correct article id
+                        // set ean to correct article id
                         List<ean> eanList = new List<ean>();
                         wrongArticle.ean.Where(e => !correctArticle.ean.Any(a => a.ean1 == e.ean1)).ToList().ForEach(e => eanList.Add(e));
 
                         List<title> titleList = new List<title>();
                         wrongArticle.title.Where(t => !correctArticle.title.Any(tt => tt.title_synonym.Any(ts => ts.title.ToLower().Trim() == t.title1.ToLower().Trim()))).ToList().ForEach(t => titleList.Add(t));
 
-                        //Add titles of wrongArticle to synonyms of correctArticle.
-                        //If correctArticle already has a title with the same country id, add it to the synonyms.
+                        // Add titles of wrongArticle to synonyms of correctArticle.
+                        // If correctArticle already has a title with the same country id, add it to the synonyms.
                         foreach (title title in titleList)
                         {
                             if (correctArticle.title.Any(t => t.country_id == title.country_id))
@@ -164,8 +167,8 @@ namespace BobAndFriends.Crapper
                         foreach (ean wrongEan in wrongArticle.ean.ToList()) db.ean.Remove(wrongEan);
                         foreach (sku wrongSku in wrongArticle.sku.ToList()) db.sku.Remove(wrongSku);
                         foreach (product wrongProduct in wrongArticle.product.ToList()) db.product.Remove(wrongProduct);
-                        //db.biggest_price_differences.RemoveRange(wrongArticle.biggest_price_differences);
-                        //db.country_price_differences.RemoveRange(wrongArticle.country_price_differences);
+                        // db.biggest_price_differences.RemoveRange(wrongArticle.biggest_price_differences);
+                        // db.country_price_differences.RemoveRange(wrongArticle.country_price_differences);
 
                         List<title_synonym> syns = new List<title_synonym>();
                         wrongArticle.title.ToList().ForEach(t => t.title_synonym.ToList().ForEach(ts => syns.Add(ts)));
@@ -173,7 +176,7 @@ namespace BobAndFriends.Crapper
                         foreach (title_synonym wTs in syns) db.title_synonym.Remove(wTs);
                         foreach (title wTitle in wrongArticle.title.ToList()) db.title.Remove(wTitle);
 
-                        //db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested)
+                        // db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested)
 
                         db.article.Remove(wrongArticle);
 
@@ -241,23 +244,23 @@ namespace BobAndFriends.Crapper
                         Console.WriteLine("Busy with: " + dupTitle);    
                         wrongTitle = wrongArticle.title.First().title1;
 
-                        //Set product article id to correctArticle.id
+                        // Set product article id to correctArticle.id
                         List<product> productList = new List<product>();
                         wrongArticle.product.ToList().ForEach(p => productList.Add(p));
 
-                        //Set sku to correct article id
+                        // Set sku to correct article id
                         List<sku> skuList = new List<sku>();
                         wrongArticle.sku.Where(s => !correctArticle.sku.Any(k => k.sku1.ToLower().Trim() == s.sku1.ToLower().Trim())).ToList().ForEach(s => skuList.Add(s));
 
-                        //set ean to correct article id
+                        // set ean to correct article id
                         List<ean> eanList = new List<ean>();
                         wrongArticle.ean.Where(e => !correctArticle.ean.Any(a => a.ean1 == e.ean1)).ToList().ForEach(e => eanList.Add(e));
 
                         List<title> titleList = new List<title>();
                         wrongArticle.title.Where(t => !correctArticle.title.Any(tt => tt.title_synonym.Any(ts => ts.title.ToLower().Trim() == t.title1.ToLower().Trim()))).ToList().ForEach(t => titleList.Add(t));
 
-                        //Add titles of wrongArticle to synonyms of correctArticle.
-                        //If correctArticle already has a title with the same country id, add it to the synonyms.
+                        // Add titles of wrongArticle to synonyms of correctArticle.
+                        // If correctArticle already has a title with the same country id, add it to the synonyms.
                         foreach (title title in titleList)
                         {
                             if (correctArticle.title.Any(t => t.country_id == title.country_id))
@@ -286,7 +289,7 @@ namespace BobAndFriends.Crapper
                                 if (correctArticle.title.Any(t => t.title_synonym.Any(ts => ts.title.RemoveDiacriticAccents().ToLower().Trim() == syn.title.RemoveDiacriticAccents().ToLower().Trim())))
                                 {
                                     List<title> titles = correctArticle.title.ToList();
-                                    foreach(title t in titles)
+                                    foreach (title t in titles)
                                     {
                                         title_synonym syn2 = t.title_synonym.Where(ts => ts.title.RemoveDiacriticAccents().ToLower().Trim() == syn.title.RemoveDiacriticAccents().ToLower().Trim()).FirstOrDefault();                                      
                                         if (syn2 == default(title_synonym)) continue;
@@ -304,8 +307,8 @@ namespace BobAndFriends.Crapper
                         foreach (ean wrongEan in wrongArticle.ean.ToList()) db.ean.Remove(wrongEan);
                         foreach (sku wrongSku in wrongArticle.sku.ToList()) db.sku.Remove(wrongSku);
                         foreach (product wrongProduct in wrongArticle.product.ToList()) db.product.Remove(wrongProduct);
-                        //db.biggest_price_differences.RemoveRange(wrongArticle.biggest_price_differences);
-                        //db.country_price_differences.RemoveRange(wrongArticle.country_price_differences);
+                        // db.biggest_price_differences.RemoveRange(wrongArticle.biggest_price_differences);
+                        // db.country_price_differences.RemoveRange(wrongArticle.country_price_differences);
 
                         List<title_synonym> syns = new List<title_synonym>();
                         wrongArticle.title.ToList().ForEach(t => t.title_synonym.ToList().ForEach(ts => syns.Add(ts)));
@@ -313,7 +316,7 @@ namespace BobAndFriends.Crapper
                         foreach (title_synonym wTs in syns) db.title_synonym.Remove(wTs);
                         foreach (title wTitle in wrongArticle.title.ToList()) db.title.Remove(wTitle);
 
-                        //db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested)
+                        // db.vbob_suggested.RemoveRange(wrongArticle.vbob_suggested)
 
                         db.article.Remove(wrongArticle);
 
@@ -353,7 +356,7 @@ namespace BobAndFriends.Crapper
         private static void CleanupOldProducts(DateTime time)
         {
             Console.WriteLine("Started with removing old products.");
-            using(var db = new BetsyModel(ConnectionString))
+            using (var db = new BetsyModel(ConnectionString))
             {
                 var oldProducts = db.product.Where(p => p.last_modified < time);
                 Console.WriteLine("Removing all old products, this may take a while...");
@@ -366,13 +369,13 @@ namespace BobAndFriends.Crapper
         private static void CleanupUniqueIdDupes()
         {
             Console.WriteLine("Started with removing duplicate unique ids.");
-            using(var db = new BetsyModel(ConnectionString))
+            using (var db = new BetsyModel(ConnectionString))
             {
-                var duplicateUniqueIds = db.product.GroupBy(p => new { uid = p.affiliate_unique_id, aff = p.affiliate_name }).Where(x => x.Count() > 1).Select(val => val.Key);
-                Console.WriteLine("Removing unique Id's now, this can take a while...");
-                foreach(var dupe in duplicateUniqueIds)
+                var duplicateUniqueIds = db.product.GroupBy(p => new AffiliateIdentifier{ Id = p.affiliate_unique_id, Name = p.affiliate_name }).Where(x => x.Count() > 1).Select(val => val.Key).AsEnumerable();
+                Console.WriteLine("Removing duplicate unique Id's now, this can take a while...");
+                foreach (var dupe in duplicateUniqueIds)
                 {
-                    var products = db.product.Where(p => p.affiliate_unique_id == dupe.uid && p.affiliate_name == dupe.aff).ToList();
+                    var products = db.product.Where(p => p.affiliate_unique_id == dupe.Id && p.affiliate_name == dupe.Name).ToList();
                     if (products != null) db.product.RemoveRange(products.Skip(1));
                 }
                 db.SaveChanges();
@@ -427,5 +430,11 @@ namespace BobAndFriends.Crapper
             ConnectionString = entityConnStrBuilder.ConnectionString;
             #endregion ConnectionString
         }
+    }
+
+    public class AffiliateIdentifier
+    {
+        public string Id;
+        public string Name;
     }
 }
