@@ -81,7 +81,7 @@ namespace BorderSource.Affiliate.Reader
 
                                         p.Url = _reader.Value;
 
-                                        //Read again twice to avoid double produits because some genius made the xml file have two Product elements...
+                                        // Read again twice to avoid double produits because some genius made the xml file have two Product elements...
                                         _reader.Read();
                                         _reader.Read();
                                         break;
@@ -204,16 +204,6 @@ namespace BorderSource.Affiliate.Reader
             {
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
-                // If the webshop is not found in the webshop list no further processing needed.
-                if (!Lookup.WebshopLookup.Contains(fileUrl))
-                {
-                    /*using (Logger logger = new Logger(Statics.LoggerPath, true))
-                    {
-                        logger.WriteLine("Webshop not found in database: " + fichierUrl + " from " + Name) ;
-                    }*/
-                    continue;
-                }
-
 
                 XmlReader _reader = XmlReader.Create(file);
                 Product p = null;
@@ -228,6 +218,7 @@ namespace BorderSource.Affiliate.Reader
                     {
                         if (_reader.IsStartElement())
                         {
+                            if (_reader.IsEmptyElement) continue;
                             switch (_reader.Name)
                             {
                                 case "EAN":
@@ -266,7 +257,7 @@ namespace BorderSource.Affiliate.Reader
 
                                     p.Url = _reader.Value;
 
-                                    //Read again twice to avoid double produits because some genius made the xml fichier have two Product elements...
+                                    // Read again twice to avoid double produits because some genius made the xml fichier have two Product elements...
                                     _reader.Read();
                                     _reader.Read();
                                     break;
@@ -310,7 +301,7 @@ namespace BorderSource.Affiliate.Reader
                                             p.Stock = _reader["Text"];
                                             break;
                                         }
-                                        if(_reader.HasAttributes && _reader["Title"].Equals("ÇATEGORY"))
+                                        if (_reader.HasAttributes && _reader["Title"].Equals("ÇATEGORY"))
                                         {
                                             _reader.Read();
                                             p.Category = _reader["Text"];

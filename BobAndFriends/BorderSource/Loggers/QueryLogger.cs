@@ -23,24 +23,24 @@ namespace BorderSource.Loggers
         public override void Write(string value)
         {
             if (value.Contains("Started transaction") || value.Contains("Committed transaction") || value.Contains("Disposed transaction")) return;
-            //Open connection - open _buffer
+            // Open connection - open _buffer
             if (value.Contains("Opened connection"))
             {
                 selectQuery = false;
                 return;
             }           
 
-            //Get parameter values and replace them in the bufferstring.
-            if(value.Contains("--"))
+            // Get parameter values and replace them in the bufferstring.
+            if (value.Contains("--"))
             {        
-                //In comments now. Params are given with an "@".
+                // In comments now. Params are given with an "@".
                 if (!value.Contains("@")) return;
-                //Definitely a param now
+                // Definitely a param now
                 string param = value.Substring(2).Split(':')[0].Trim();
                 string val = value.SplitFirstOnly(':')[1].Split('(')[0].Trim();
                 if (_params.Keys.Contains(param))
                 {
-                    //Clearly we already have this param, meaning we have multiple updates in one transaction
+                    // Clearly we already have this param, meaning we have multiple updates in one transaction
                     foreach (KeyValuePair<string, string> pair in _params)
                     {
                         _buffer.Replace(pair.Key, pair.Value);
@@ -55,11 +55,11 @@ namespace BorderSource.Loggers
    
             }
 
-            //Close connection - end of query
+            // Close connection - end of query
             if (value.Contains("Closed"))
             {
                 if (selectQuery) return;
-                foreach(KeyValuePair<string, string> pair in _params)
+                foreach (KeyValuePair<string, string> pair in _params)
                 {
                     _buffer.Replace(pair.Key, pair.Value);
                 }
@@ -69,7 +69,7 @@ namespace BorderSource.Loggers
                 return;
             }
 
-            //Only procede if it is not a select query
+            // Only procede if it is not a select query
             if (value.Contains("SELECT")) selectQuery = true;
             else _buffer.Append(value + "; ");
         }

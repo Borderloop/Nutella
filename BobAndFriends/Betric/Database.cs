@@ -41,7 +41,7 @@ namespace Betric
             {
                 if (_instance == null)
                 {
-                    //Create a new instance if it is not already done
+                    // Create a new instance if it is not already done
                     _instance = new Database();
                 }
                 return _instance;
@@ -59,10 +59,10 @@ namespace Betric
         /// <param name="conStr">The connection string</param>
         public void Connect(string conStr)
         {
-            //Make the connection
+            // Make the connection
             _conn = new MySqlConnection(conStr);
 
-            //Open the connection
+            // Open the connection
             _conn.Open();
         }
 
@@ -75,9 +75,9 @@ namespace Betric
         /// <param name="pw">The password</param>
         public void Connect(string ip, string db, string uid, string pw)
         {
-            //Make the connection
+            // Make the connection
             _conn = new MySqlConnection(@"Data Source=" + ip + ";Port=3307;Database=" + db + ";Uid=" + uid + ";Pwd=" + pw + ";Allow User Variables=True");
-            //Open the connection
+            // Open the connection
             _conn.Open();
         }
 
@@ -90,22 +90,22 @@ namespace Betric
         {
             DataTable _resultTable = new DataTable();
 
-            //Only procede if there is a connection. Return null otherwise.
+            // Only procede if there is a connection. Return null otherwise.
             if (_conn == null)
             {
                 return null;
             }
 
-            //Create the command with the gien query
+            // Create the command with the gien query
             _cmd = new MySqlCommand(query, _conn);
 
-            //We need MySqlDataAdapter to store all rows in the datatable
+            // We need MySqlDataAdapter to store all rows in the datatable
             using (MySqlDataAdapter adapter = new MySqlDataAdapter(_cmd))
             {
                 adapter.Fill(_resultTable);
             }
 
-            //Return the result.
+            // Return the result.
             return _resultTable;
         }
 
@@ -114,7 +114,7 @@ namespace Betric
             if (query == "") return null;
             DataTable _resultTable = new DataTable();
 
-            //Only procede if there is a connection. Return null otherwise.
+            // Only procede if there is a connection. Return null otherwise.
             if (_conn == null)
             {
                 return null;
@@ -127,13 +127,13 @@ namespace Betric
                 _cmd.Parameters.AddWithValue(param.Name, param.Value);
             }  
 
-            //We need MySqlDataAdapter to store all rows in the datatable
+            // We need MySqlDataAdapter to store all rows in the datatable
             using (MySqlDataAdapter adapter = new MySqlDataAdapter(_cmd))
             {
                 adapter.Fill(_resultTable);
             }
 
-            //Return the result.
+            // Return the result.
             return _resultTable;
         }
 
@@ -147,7 +147,7 @@ namespace Betric
         {
             _cmd = new MySqlCommand(query, _conn);
 
-            foreach(var param in parameters)
+            foreach (var param in parameters)
             {
                 _cmd.Parameters.AddWithValue(param.Name, param.Value);
             }           

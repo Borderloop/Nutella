@@ -16,7 +16,7 @@ namespace Bumper
             INIFile ini = new INIFile(@"C:\BorderSoftware\BobAndFriends\settings\baf.ini");
             Dictionary<string, string> properties = ini.GetAllValues();
 
-            string cmd = String.Format("-h{0} -u{1} -p{2} --result-file={3} --port={4} {5}", properties["db_source"], properties["db_userid"], properties["db_password"], properties["dump_path"] + "fullDump_" + DateTime.Now.ToString("ddMMyyyy") + ".sql",properties["db_port"], properties["db_name"]);
+            string cmd = String.Format("-h{0} -u{1} -p{2} --result-file={3} --port={4} {5}", properties["db_source"], properties["db_userid"], properties["db_password"], properties["dump_path"] + "fullDump_" + DateTime.Now.ToString("ddMMyyyy") + ".sql", properties["db_port"], properties["db_name"]);
 
             ProcessStartInfo info = new ProcessStartInfo(properties["mysqldumpexe_path"], cmd);
             info.CreateNoWindow = true;

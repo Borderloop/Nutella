@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BorderSource.ProductAssociation;
 using System.IO;
 using LumenWorks.Framework.IO.Csv;
+using BorderSource.Loggers;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -33,29 +34,40 @@ namespace BorderSource.Affiliate.Reader
                 sr.ReadLine();
                 using (CsvReader reader = new CsvReader(sr, false, '|'))
                 {
+                    reader.MissingFieldAction = MissingFieldAction.ParseError;
+                    reader.DefaultParseErrorAction = ParseErrorAction.RaiseEvent;
+                    reader.ParseError += ParseError;
+                    reader.SkipEmptyLines = true;
                     List<Product> products = new List<Product>();
                     while (reader.ReadNextRecord())
                     {
-                        Product p = new Product()
+                        try
                         {
-                            Affiliate = "LDLC",
-                            AffiliateProdID = reader[0],
-                            Brand = reader[1],
-                            Category = reader[3],
-                            Currency = "EUR",
-                            DeliveryCost = reader[11],
-                            EAN = reader[5],
-                            FileName = file,
-                            Image_Loc = reader[13],
-                            Price = reader[8],
-                            Stock = reader[14],
-                            Title = reader[7],
-                            Url = reader[12],
-                            Webshop = "www.ldlc.com"
-                        };
+                            Product p = new Product()
+                            {
+                                Affiliate = "LDLC",
+                                AffiliateProdID = reader[0],
+                                Brand = reader[1],
+                                Category = reader[3],
+                                Currency = "EUR",
+                                DeliveryCost = reader[11],
+                                EAN = reader[5],
+                                FileName = file,
+                                Image_Loc = reader[13],
+                                Price = reader[8],
+                                Stock = reader[14],
+                                Title = reader[7],
+                                Url = reader[12],
+                                Webshop = "www.ldlc.com"
+                            };
 
-                        p.Url.Replace("[identifiant-Affilie]", LDLCID);
-                        products.Add(p);
+                            p.Url = p.Url.Replace("[identifiant-Affilie]", LDLCID);
+                            products.Add(p);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Instance.WriteLine("BAD CSV FILE: www.ldlc.com ERROR: " + e.Message);
+                        }
                         if (products.Count >= PackageSize)
                         {
                             yield return products;
@@ -67,6 +79,27 @@ namespace BorderSource.Affiliate.Reader
                 }
             }
             yield break;
-        }  
+        }
+
+        private void ParseError(object sender, ParseErrorEventArgs e)
+        {
+            // if the error is that a field is missing, then skip to next line
+            if (e.Error is MissingFieldCsvException)
+            {
+                Logger.Instance.WriteLine("LDLC: MISSING FIELD ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else if (e.Error is MalformedCsvException)
+            {
+                Logger.Instance.WriteLine("LDLC: MALFORMED CSV ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else
+            {
+                Logger.Instance.WriteLine("LDLC: PARSE ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+        }
     }
+
 }

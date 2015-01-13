@@ -29,7 +29,7 @@ namespace BorderSource.Affiliate.Reader
             {
                 List<Product> products = new List<Product>();
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-                Product p = null;
+                Product p = new Product();
                 string lastUpdated = null;
                 string currency = null;
                 bool isDone = false;
@@ -42,6 +42,7 @@ namespace BorderSource.Affiliate.Reader
                         {
                             if (_reader.IsStartElement())
                             {
+                                if (_reader.IsEmptyElement) continue;
                                 switch (_reader.Name)
                                 {
                                     case "streamCurrency":
@@ -56,6 +57,90 @@ namespace BorderSource.Affiliate.Reader
 
                                     case "record":
                                         p = new Product();
+                                        break;
+
+                                    case "product":
+                                        p = new Product();
+                                        break;
+
+                                    case "url":
+                                        _reader.Read();
+                                        p.Url = _reader.Value;
+                                        break;
+
+                                    case "deepLink":
+                                        _reader.Read();
+                                        p.Url = _reader.Value;
+                                        break;
+
+                                    case "title":
+                                        _reader.Read();
+                                        p.Title = _reader.Value;
+                                        break;
+
+                                    case "name":
+                                        _reader.Read();
+                                        p.Title = _reader.Value;
+                                        break;
+
+                                    case "ean":
+                                        _reader.Read();
+                                        p.EAN = _reader.Value;
+                                        break;
+
+                                    case "price":
+                                        _reader.Read();
+                                        p.Price = _reader.Value;
+                                        break;
+
+                                    case "image":
+                                        _reader.Read();
+                                        p.Image_Loc = _reader.Value;
+                                        break;
+
+                                    case "largeImage":
+                                        _reader.Read();
+                                        p.Image_Loc = _reader.Value;
+                                        break;
+
+                                    case "category":
+                                        _reader.Read();
+                                        p.Category = _reader.Value;
+                                        break;
+
+                                    case "description":
+                                        _reader.Read();
+                                        p.Description = _reader.Value;
+                                        break;
+
+                                    case "price_shipping":
+                                        _reader.Read();
+                                        p.DeliveryCost = _reader.Value;
+                                        break;
+
+                                    case "shippingHandlingCost":
+                                        _reader.Read();
+                                        p.DeliveryCost = _reader.Value;
+                                        break;
+
+                                    case "stock":
+                                        _reader.Read();
+                                        p.Stock = _reader.Value;
+                                        break;
+
+                                    case "timetoship":
+                                        _reader.Read();
+                                        p.DeliveryTime = _reader.Value;
+                                        break;
+
+                                    case "deliveryTime":
+                                        _reader.Read();
+                                        p.DeliveryTime = _reader.Value;
+                                        break;
+
+                                    case "manufacturer":
+                                        _reader.Read();
+                                        p.Brand = _reader.Value;
                                         break;
 
                                     case "column":
@@ -112,19 +197,16 @@ namespace BorderSource.Affiliate.Reader
                                                 p.DeliveryTime = _reader.Value;
                                                 break;
 
-                                            case "zupid":
-                                                _reader.Read();
-                                                p.AffiliateProdID = _reader.Value;
-                                                break;
                                         }
                                         _reader.MoveToElement();
                                         break;
                                 }
                             }
 
-                            if (_reader.Name.Equals("record") && _reader.NodeType == XmlNodeType.EndElement)
+                            if ((_reader.Name.Equals("record") || _reader.Name.Equals("product")) && _reader.NodeType == XmlNodeType.EndElement)
                             {
                                 p.Currency = currency;
+                                p.AffiliateProdID = p.Url.ToSHA256();
                                 p.LastModified = lastUpdated;
                                 p.Affiliate = "Zanox";
                                 p.FileName = file;
@@ -171,16 +253,6 @@ namespace BorderSource.Affiliate.Reader
             foreach (string file in filePaths)
             {
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-
-                // If the webshop is not found in the webshop list no further processing needed.
-                if (!Lookup.WebshopLookup.Contains(fileUrl))
-                {
-                    /*using (Logger logger = new Logger(Statics.LoggerPath, true))
-                    {
-                        logger.WriteLine("Webshop not found in database: " + fichierUrl + " from " + Name);
-                    }*/
-                    continue;
-                }
 
                 XmlReader _reader = XmlReader.Create(file);
                 Product p = null;

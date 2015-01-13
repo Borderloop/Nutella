@@ -7,14 +7,14 @@
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="BobAndFriends.exe.manifest" size="7199">
+    <dependentAssembly dependencyType="install" codebase="BobAndFriends.exe.manifest" size="9594">
       <assemblyIdentity name="BobAndFriends.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>u/9qCXi73NDtErsk8TKEIjhC7/gtpdRv65oDfEu/6Qs=</dsig:DigestValue>
+        <dsig:DigestValue>SCd90S6jhoj7O5Hvv89OoD04SrvRD2QdFs6bjwfvu9Y=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

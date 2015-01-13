@@ -43,30 +43,35 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Build.Utilities.v3.5" version="3.5.0.0" publicKeyToken="B03F5F7F11D50A3A" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
       <assemblyIdentity name="MySql.Data" version="6.9.5.0" publicKeyToken="C5687FC88969C44D" language="neutral" processorArchitecture="msil" />
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="51712">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="51200">
       <assemblyIdentity name="BobAndFriends" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>/PMgCFNt5RFEdjW0ZHFNLoaYBP23SgTwqS5R7/xpsoU=</dsig:DigestValue>
+        <dsig:DigestValue>j9K8DwEFTEkIQkY4UL2j2hW1haDY4k/2g623IKobgdE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="281600">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="296448">
       <assemblyIdentity name="BorderSource" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>USmg1UdKVC3vv212emDO9EG2PQuIV0APXrIJZSKCrZo=</dsig:DigestValue>
+        <dsig:DigestValue>Wc2ohEMJfALR8r7VnvYDDXZX5+CocS/Brs1uDZV+nDw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -107,6 +112,18 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="nl\Microsoft.Build.Utilities.v3.5.resources.dll" size="11264">
+      <assemblyIdentity name="Microsoft.Build.Utilities.v3.5.resources" version="3.5.0.0" publicKeyToken="B03F5F7F11D50A3A" language="nl" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>BF7/t19YNfXq2mkFuSyZd/KnRL5DaTL22ifQAkFgu+8=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MySql.Data.Entity.EF6.dll" size="369152">
       <assemblyIdentity name="MySql.Data.Entity.EF6" version="6.9.5.0" publicKeyToken="C5687FC88969C44D" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -118,13 +135,37 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="BobAndFriends.exe.config" size="1576">
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="StyleCop.dll" size="503808">
+      <assemblyIdentity name="StyleCop" version="4.7.1000.0" publicKeyToken="F904653C63BC2738" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>zWcieQjuDg80Fmn5o3P7718volsFMlGKJGW0I6q1msM=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="StyleCop.CSharp.dll" size="233472">
+      <assemblyIdentity name="StyleCop.CSharp" version="4.7.1000.0" publicKeyToken="F904653C63BC2738" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>d6OcJctRTrZKBtU6rc7+A58MxOdqu0sYDqS/NzHc1bc=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="BobAndFriends.exe.config" size="1577">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>r7snz8opQIIUGYpuX1W1EmVg+moKvDmgd4lDMI3M3U8=</dsig:DigestValue>
+      <dsig:DigestValue>JBVM07oOwUPcEyM/Pkw8BeAdL2RyA3H16yze9t7600k=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

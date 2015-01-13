@@ -43,9 +43,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.selectedProductDataGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.vBOBLogo)).BeginInit();
             this.SuspendLayout();
-            // 
-            // suggestedProductsDataGrid
-            // 
+            //  
+            //  suggestedProductsDataGrid
+            //  
             this.suggestedProductsDataGrid.AllowUserToAddRows = false;
             this.suggestedProductsDataGrid.AllowUserToDeleteRows = false;
             this.suggestedProductsDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -53,9 +53,9 @@
             this.suggestedProductsDataGrid.Name = "suggestedProductsDataGrid";
             this.suggestedProductsDataGrid.Size = new System.Drawing.Size(645, 234);
             this.suggestedProductsDataGrid.TabIndex = 0;
-            // 
-            // selectedProductDataGrid
-            // 
+            //  
+            //  selectedProductDataGrid
+            //  
             this.selectedProductDataGrid.AllowUserToAddRows = false;
             this.selectedProductDataGrid.AllowUserToDeleteRows = false;
             this.selectedProductDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -72,9 +72,9 @@
             this.selectedProductDataGrid.Name = "selectedProductDataGrid";
             this.selectedProductDataGrid.Size = new System.Drawing.Size(545, 75);
             this.selectedProductDataGrid.TabIndex = 1;
-            // 
-            // matchButton
-            // 
+            //  
+            //  matchButton
+            //  
             this.matchButton.Location = new System.Drawing.Point(74, 311);
             this.matchButton.Name = "matchButton";
             this.matchButton.Size = new System.Drawing.Size(190, 51);
@@ -82,9 +82,9 @@
             this.matchButton.Text = "Match with selected record";
             this.matchButton.UseVisualStyleBackColor = true;
             this.matchButton.Click += new System.EventHandler(this.matchButton_Click);
-            // 
-            // createButton
-            // 
+            //  
+            //  createButton
+            //  
             this.createButton.Location = new System.Drawing.Point(683, 311);
             this.createButton.Name = "createButton";
             this.createButton.Size = new System.Drawing.Size(190, 51);
@@ -92,9 +92,9 @@
             this.createButton.Text = "Create new product";
             this.createButton.UseVisualStyleBackColor = true;
             this.createButton.Click += new System.EventHandler(this.createButton_Click);
-            // 
-            // residuButton
-            // 
+            //  
+            //  residuButton
+            //  
             this.residuButton.Location = new System.Drawing.Point(971, 311);
             this.residuButton.Name = "residuButton";
             this.residuButton.Size = new System.Drawing.Size(198, 51);
@@ -102,27 +102,27 @@
             this.residuButton.Text = "Send to residu";
             this.residuButton.UseVisualStyleBackColor = true;
             this.residuButton.Click += new System.EventHandler(this.residuButton_Click);
-            // 
-            // selectedProductLabel
-            // 
+            //  
+            //  selectedProductLabel
+            //  
             this.selectedProductLabel.AutoSize = true;
             this.selectedProductLabel.Location = new System.Drawing.Point(12, 39);
             this.selectedProductLabel.Name = "selectedProductLabel";
             this.selectedProductLabel.Size = new System.Drawing.Size(91, 13);
             this.selectedProductLabel.TabIndex = 5;
             this.selectedProductLabel.Text = "Selected product:";
-            // 
-            // suggestedProductsLabel
-            // 
+            //  
+            //  suggestedProductsLabel
+            //  
             this.suggestedProductsLabel.AutoSize = true;
             this.suggestedProductsLabel.Location = new System.Drawing.Point(563, 36);
             this.suggestedProductsLabel.Name = "suggestedProductsLabel";
             this.suggestedProductsLabel.Size = new System.Drawing.Size(109, 13);
             this.suggestedProductsLabel.TabIndex = 6;
             this.suggestedProductsLabel.Text = "Suggested Products: ";
-            // 
-            // vBOBLogo
-            // 
+            //  
+            //  vBOBLogo
+            //  
             this.vBOBLogo.Image = global::VisualBob.Properties.Resources.vBOBLogoNew;
             this.vBOBLogo.InitialImage = ((System.Drawing.Image)(resources.GetObject("vBOBLogo.InitialImage")));
             this.vBOBLogo.Location = new System.Drawing.Point(971, 2);
@@ -131,9 +131,9 @@
             this.vBOBLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.vBOBLogo.TabIndex = 7;
             this.vBOBLogo.TabStop = false;
-            // 
-            // rerunButton
-            // 
+            //  
+            //  rerunButton
+            //  
             this.rerunButton.Location = new System.Drawing.Point(381, 311);
             this.rerunButton.Name = "rerunButton";
             this.rerunButton.Size = new System.Drawing.Size(190, 51);
@@ -141,9 +141,9 @@
             this.rerunButton.Text = "Rerun this record";
             this.rerunButton.UseVisualStyleBackColor = true;
             this.rerunButton.Click += new System.EventHandler(this.rerunButton_Click);
-            // 
-            // VisualBob
-            // 
+            //  
+            //  VisualBob
+            //  
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1217, 393);

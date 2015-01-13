@@ -79,7 +79,7 @@ namespace BobAndFriends
 
             Console.WriteLine("Shutting down.");
 
-            //shutdown right away so there are no lingering threads
+            // shutdown right away so there are no lingering threads
             Environment.Exit(-1);
 
             return true;
@@ -101,15 +101,15 @@ namespace BobAndFriends
 
             Console.SetWindowPosition(0, 0);
 
-            //Initialize
+            // Initialize
             Initialize();
 
-            //Create threads
+            // Create threads
             producer = new Thread(new ThreadStart(FeedReaderController));
             validator = new Thread(new ThreadStart(BobController));
             consumer = new Thread(new ThreadStart(BobBoxManagerController));
             
-            //Start threads
+            // Start threads
             producer.Start();
             validator.Start();
             consumer.Start();
@@ -127,7 +127,7 @@ namespace BobAndFriends
             TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent validating");
             while (true)
             {
-                //Break if no packages are found
+                // Break if no packages are found
                 if ((Packages = PackageQueue.Instance.DequeuePackageByAmount(Properties.PropertyList["packages_per_validation"].GetValue<int>())) == null) break;
 
                 count++;
@@ -145,6 +145,7 @@ namespace BobAndFriends
                 Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = MAX_BOBS }, actions.ToArray());
 
                 GeneralStatisticsMapper.Instance.Increment("Total amount of products processed", totalAmount);
+                GeneralStatisticsMapper.Instance.Increment("Total amount of packages");
 
                 Console.WriteLine("Time spent reading packages from group " + count + ": " + (DateTime.Now - StartRunning));
                 Packages.Clear();
@@ -158,7 +159,7 @@ namespace BobAndFriends
 
         static void StartAnotherBob(Package p)
         {
-            using(var bob = new BOB())
+            using (var bob = new BOB())
             {
                 bob.Process(p);
             }
@@ -170,7 +171,7 @@ namespace BobAndFriends
             {
                 TimeStatisticsMapper.Instance.StartTimeMeasure("Time spent reading");
 
-                //Create productfeedreader object.
+                // Create productfeedreader object.
                 ProductFeedReader pfr = new ProductFeedReader();
                 pfr.Start(MAX_READERS);
             }
@@ -184,7 +185,7 @@ namespace BobAndFriends
         static void BobBoxManagerController()
         {
             List<Action> managers = new List<Action>();
-            for(int i = 0; i < MAX_BOBBOXMANAGERS; i++)
+            for (int i = 0; i < MAX_BOBBOXMANAGERS; i++)
             {
                 int copy = i;
                 managers.Add(new Action(() => StartBobBoxManager(copy)));
@@ -214,8 +215,8 @@ namespace BobAndFriends
 
         static void Initialize()
         {
-            //Initialize all the values for the static variables in the Statics class. These
-            //variables are used throughout the whole program.
+            // Initialize all the values for the static variables in the Statics class. These
+            // variables are used throughout the whole program.
 
             GlobalVariables.Initialize();
             MAX_BOBS = Properties.PropertyList["max_bob_threads"].GetValue<int>();
@@ -232,6 +233,7 @@ namespace BobAndFriends
             BetsyDbContextReader reader =  new BetsyDbContextReader(dbName, dbPassword, dbSource, dbUserId, dbPort, maxPoolSize);
             Lookup.WebshopLookup = reader.GetAllWebshops();
             Lookup.CategoryLookup = reader.GetAllCategories();
+            reader.Dispose();
 
             Logger.LogPath = Properties.PropertyList["log_path"].GetValue<string>();
             TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");

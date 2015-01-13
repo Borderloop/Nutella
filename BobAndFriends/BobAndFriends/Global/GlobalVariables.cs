@@ -13,13 +13,13 @@ namespace BobAndFriends.Global
         public static ConcurrentHashSet<AffiliateIdEntry> UniqueIds { get; set; }
         public static ConcurrentHashSet<string> AddedCategorySynonyms { get; set; }
         public static ConcurrentDictionary<string, decimal> CurrencyRates { get; set; }
-        public static ConcurrentDictionary<int, List<string>> AddedProducts {get; set;}
+        public static ConcurrentDictionary<int, ConcurrentBag<string>> AddedProducts {get; set;}
         public static void Initialize()
         {
             UniqueIds = new ConcurrentHashSet<AffiliateIdEntry>();
             AddedCategorySynonyms = new ConcurrentHashSet<string>();
             CurrencyRates = new ConcurrentDictionary<string, decimal>(BorderSource.Web.CurrencyConverter.LiveCurrencyConverter.GetCurrencyRatesToEUR());
-            AddedProducts = new ConcurrentDictionary<int, List<string>>();
+            AddedProducts = new ConcurrentDictionary<int, ConcurrentBag<string>>();
         }
     }
 
@@ -38,7 +38,7 @@ namespace BobAndFriends.Global
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return Affiliate.GetHashCode() ^ UniqueId.GetHashCode();
         }
     }
 }

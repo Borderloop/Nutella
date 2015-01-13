@@ -24,7 +24,7 @@ namespace BorderSource.Affiliate.Reader
 
         public override IEnumerable<List<Product>> ReadFromFile(string file)
         {         
-            //Initialize XmlValueReader and its keys
+            //  Initialize XmlValueReader and its keys
             using (XmlValueReader xvr = new XmlValueReader())
             {
                 List<Product> products = new List<Product>();
@@ -50,7 +50,7 @@ namespace BorderSource.Affiliate.Reader
                 xvr.CreateReader(file, new XmlReaderSettings { CloseInput = true });
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    //Fill the product with fields
+                    //  Fill the product with fields
                     p.EAN = dkd["ean"][XmlNodeType.Element];
                     p.SKU = dkd["sku"][XmlNodeType.Element];
                     p.Title = dkd["name"][XmlNodeType.Element];
@@ -95,7 +95,7 @@ namespace BorderSource.Affiliate.Reader
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
-            //Initialize XmlValueReader and its keys
+            // Initialize XmlValueReader and its keys
             XmlValueReader xvr = new XmlValueReader();
             xvr.ProductEnd = "product";
             xvr.AddKeys("ean", XmlNodeType.Element);
@@ -122,7 +122,7 @@ namespace BorderSource.Affiliate.Reader
                 xvr.CreateReader(file);
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
-                    //Fill the product with fields
+                    // Fill the product with fields
                     p.EAN = dkd["ean"][XmlNodeType.Element];
                     p.SKU = dkd["sku"][XmlNodeType.Element];
                     p.Title = dkd["name"][XmlNodeType.Element];

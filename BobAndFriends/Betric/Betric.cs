@@ -33,7 +33,7 @@ namespace Betric
             Database.Instance.Connect("127.0.0.1", db, "root", pw);
             Categories = new List<Category>();
             DataTable CategoryTable = Database.Instance.Read("Select * from category");
-            foreach(DataRow dr in CategoryTable.Rows)
+            foreach (DataRow dr in CategoryTable.Rows)
             {
                 Categories.Add(new Category { Name = (string)dr["description"], Id = (int)dr["id"], CalledBy = (int)dr["called_by"] });
             }
@@ -52,7 +52,7 @@ namespace Betric
             if (!initialized) return;
             List<string> queries = new List<string>();
             List<IParam> parameters = new List<IParam>();
-            if(TimeFilter.Checked)
+            if (TimeFilter.Checked)
             {
                 DateTime fromTime = FromTime.Value;
                 DateTime untilTime = UntilTime.Value;
@@ -63,13 +63,13 @@ namespace Betric
             } else {
                 DateFilterLabel.Text = "Geen";
             }
-            if(CategoryFilter.Checked)
+            if (CategoryFilter.Checked)
             {
                 int catId = GetHighestCategoryId();
                 List<int> catIds = GetUnderlyingIds(catId);
                 string query = "SELECT article_id FROM cat_article WHERE category_id IN (";
                 bool first = true;
-                foreach(int id in catIds.Distinct())
+                foreach (int id in catIds.Distinct())
                 {
                     if (first)
                     {
@@ -94,12 +94,12 @@ namespace Betric
             } else {
                  CategoryFilterLabel.Text = "Geen";
             }
-            if(PriceFilter.Checked)
+            if (PriceFilter.Checked)
             {
                 decimal parsed;
                 decimal minPrice = MinimumPrice.Checked ? decimal.TryParse(MinimumPriceText.Text.Replace('.', ','), out parsed) ? parsed : decimal.MinValue : decimal.MinValue;
                 decimal maxPrice = MaximumPrice.Checked ? decimal.TryParse(MaximumPriceText.Text.Replace('.', ','), out parsed) ? parsed : decimal.MaxValue : decimal.MaxValue;
-                if(minPrice > maxPrice)
+                if (minPrice > maxPrice)
                 {
                     decimal temp = minPrice;
                     minPrice = maxPrice;
@@ -115,14 +115,14 @@ namespace Betric
                 string priceFilterText = "";
                 if (minPrice == decimal.MinValue) priceFilterText = "Tot €" + maxPrice;
                 if (maxPrice == decimal.MaxValue) priceFilterText = "Vanaf €" + minPrice;
-                if(minPrice == decimal.MinValue && maxPrice == decimal.MaxValue) priceFilterText = "Geen";
+                if (minPrice == decimal.MinValue && maxPrice == decimal.MaxValue) priceFilterText = "Geen";
                 PriceFilterLabel.Text = priceFilterText == "" ? "€" + minPrice + " tot €" + maxPrice : priceFilterText;
             } else {
                 PriceFilterLabel.Text = "Geen";
             }
-            if(PriceDifferenceFilter.Checked)
+            if (PriceDifferenceFilter.Checked)
             {
-                if(AbsolutePriceDifference.Checked)
+                if (AbsolutePriceDifference.Checked)
                 {
                     decimal parsed;
                     decimal minPriceDif = MinimumPriceDifference.Checked ? decimal.TryParse(MinimumPriceDifferenceText.Text.Replace('.', ','), out parsed) ? parsed : decimal.MinValue : decimal.MinValue;
@@ -146,7 +146,7 @@ namespace Betric
                     if (minPriceDif == decimal.MinValue && maxPriceDif == decimal.MaxValue) priceDifFilterText = "Geen";
                     PriceDifferenceFilterLabel.Text = priceDifFilterText == "" ? "€" + minPriceDif + " tot €" + maxPriceDif : priceDifFilterText;
                 } 
-                else if(RelativePriceDifference.Checked)
+                else if (RelativePriceDifference.Checked)
                 {
                     decimal parsed;
                     decimal minPriceDif = MinimumPriceDifference.Checked ? decimal.TryParse(MinimumPriceDifferenceText.Text.Replace('.', ','), out parsed) ? parsed : decimal.MinValue : decimal.MinValue;
@@ -173,7 +173,7 @@ namespace Betric
             } else {
                 PriceDifferenceFilterLabel.Text = "Geen";
             }
-            if(CountryFilter.Checked)
+            if (CountryFilter.Checked)
             {
                 string sign = "";
                 if (DomesticCountryOnly.Checked) sign = "=";
@@ -201,7 +201,7 @@ namespace Betric
             
             StringBuilder productQueryBuilder = new StringBuilder();
             bool firstQuery = true;
-            foreach(string query in queries)
+            foreach (string query in queries)
             {
                 if (firstQuery)
                 {
@@ -347,7 +347,7 @@ namespace Betric
         private int GetHighestCategoryId()
         {
             int result = 0;
-            if(CategoryLevel1.Visible && CategoryLevel1.SelectedIndex != -1)
+            if (CategoryLevel1.Visible && CategoryLevel1.SelectedIndex != -1)
             {
                 result = ((Category)CategoryLevel1.SelectedItem).Id;
             }
@@ -390,7 +390,7 @@ namespace Betric
 
         private void FromTime_ValueChanged(object sender, EventArgs e)
         {
-            if(FromTime.Value > UntilTime.Value)
+            if (FromTime.Value > UntilTime.Value)
             {
                 UntilTime.Value = FromTime.Value;
                 Refresh();
@@ -418,8 +418,8 @@ namespace Betric
             ForeignClickAmountLabel.Text = ForeignClickAmount.ToString();
             TotalClickAmountLabel.Text = TotalClickAmount.ToString();
 
-            DomesticClickAmountPercentageLabel.Text = Math.Round((((double)DomesticClickAmount / (double)TotalClickAmount) * (double)100),2).ToString() + "%";
-            ForeignClickAmountPercenageLabel.Text = Math.Round((((double)ForeignClickAmount / (double)TotalClickAmount) * (double)100),2).ToString() + "%";
+            DomesticClickAmountPercentageLabel.Text = Math.Round((((double)DomesticClickAmount / (double)TotalClickAmount) * (double)100), 2).ToString() + "%";
+            ForeignClickAmountPercenageLabel.Text = Math.Round((((double)ForeignClickAmount / (double)TotalClickAmount) * (double)100), 2).ToString() + "%";
             
             int PositionOneClickAmount = 0;
             int PositionTwoClickAmount = 0;
@@ -430,7 +430,7 @@ namespace Betric
 
             foreach (DataRow row in rowCollection) 
             {
-                switch((short)row["position"])
+                switch ((short)row["position"])
                 {
                     case 1: PositionOneClickAmount += (int)row["clicks"]; break;
                     case 2: PositionTwoClickAmount += (int)row["clicks"]; break;
@@ -452,17 +452,17 @@ namespace Betric
             PositionRemainingClickAmountLabel.Text = RemainingClickAmount.ToString();
             PositionClickAmountTotalLabel.Text = TotalPositionClickAmount.ToString();
 
-            PositionOnePercentageAmountLabel.Text = Math.Round((((double)PositionOneClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
-            PositionTwoPercentageAmountLabel.Text = Math.Round((((double)PositionTwoClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
-            PositionThreePercentageAmountLabel.Text = Math.Round((((double)PositionThreeClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
-            PositionFourPercentageAmountLabel.Text = Math.Round((((double)PositionFourClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
-            PositionFivePercentageAmountLabel.Text = Math.Round((((double)PositionFiveClickAmount / (double)TotalPositionClickAmount) * (double)100),2).ToString() + "%";
+            PositionOnePercentageAmountLabel.Text = Math.Round((((double)PositionOneClickAmount / (double)TotalPositionClickAmount) * (double)100), 2).ToString() + "%";
+            PositionTwoPercentageAmountLabel.Text = Math.Round((((double)PositionTwoClickAmount / (double)TotalPositionClickAmount) * (double)100), 2).ToString() + "%";
+            PositionThreePercentageAmountLabel.Text = Math.Round((((double)PositionThreeClickAmount / (double)TotalPositionClickAmount) * (double)100), 2).ToString() + "%";
+            PositionFourPercentageAmountLabel.Text = Math.Round((((double)PositionFourClickAmount / (double)TotalPositionClickAmount) * (double)100), 2).ToString() + "%";
+            PositionFivePercentageAmountLabel.Text = Math.Round((((double)PositionFiveClickAmount / (double)TotalPositionClickAmount) * (double)100), 2).ToString() + "%";
             PositionRemainingPercentageAmountLabel.Text = Math.Round((((double)RemainingClickAmount / (double)TotalPositionClickAmount) * (double)100), 2).ToString() + "%";
 
             int DomesticNumberOneClickAmount = 0;
-            foreach(DataRow row in rowCollection.Where(d => (short)d["position"] == 1 && (short)d["country_id"] == 1)) DomesticNumberOneClickAmount += (int)row["clicks"];
+            foreach (DataRow row in rowCollection.Where(d => (short)d["position"] == 1 && (short)d["country_id"] == 1)) DomesticNumberOneClickAmount += (int)row["clicks"];
             int ForeignNumberOneClickAmount = 0;
-            foreach(DataRow row in rowCollection.Where(d => (short)d["position"] == 1 && (short)d["country_id"] != 1)) ForeignNumberOneClickAmount += (int)row["clicks"];
+            foreach (DataRow row in rowCollection.Where(d => (short)d["position"] == 1 && (short)d["country_id"] != 1)) ForeignNumberOneClickAmount += (int)row["clicks"];
             int TotalNumberOneClickAmount = DomesticNumberOneClickAmount + ForeignNumberOneClickAmount;
 
             DomesticNumberOneClickAmountLabel.Text = DomesticNumberOneClickAmount.ToString();
@@ -476,7 +476,7 @@ namespace Betric
             decimal AveragePriceDifference = 0;
             decimal AveragePriceDifferencePercentage = 0;
             int count = 0;
-            foreach(DataRow dr in rowCollection)
+            foreach (DataRow dr in rowCollection)
             {
                 count++;
                 AveragePriceDifference = (AveragePriceDifference * (count - 1)) / count + ((decimal)dr["difference"]) / count;

@@ -56,14 +56,14 @@ namespace BetsyTest
 
         public void SaveMatch(Product Record, int matchedArticleID, int countryID)
         {
-            //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
+            // First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
             article articleTable = _context.article.Where(a => a.id == matchedArticleID).Include(a => a.ean)
                 .Include(a => a.sku)
                 .Include(t => t.title.Select(ts => ts.title_synonym))
                 .FirstOrDefault();
 
 
-            //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
+            // Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
             if (!(articleTable.ean.Any(e => e.ean1 == Record.EAN)) && Record.EAN != "") _context.ean.Add(new ean { ean1 = Record.EAN, article_id = matchedArticleID });
             if (!(articleTable.sku.Any(s => s.sku1 == Record.SKU)) && Record.SKU != "") _context.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
@@ -77,18 +77,18 @@ namespace BetsyTest
             }
             else
             {
-                //If any title synonym matches the title, up the occurences.
+                // If any title synonym matches the title, up the occurences.
                 if (articleTable.title.Any(t => t.title_synonym.Any(ts => ts.title.ToLower().Trim() == Record.Title.ToLower().Trim())))
                 {
                     title_synonym ts = _context.title_synonym.Where(innerTs => innerTs.title.ToLower().Trim() == Record.Title.ToLower().Trim()).FirstOrDefault();
                     ts.occurrences++;
-                    //_context.Entry(ts).State = EntityState.Modified;
+                    // _context.Entry(ts).State = EntityState.Modified;
                     if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
                     {
                         UpdateTitle(title.id, ts.title);
                     }
                 }
-                //else, add the title to the synonyms.
+                // else, add the title to the synonyms.
                 else
                 {
                     title_synonym ts = new title_synonym { occurrences = 1, title = Record.Title, title_id = title.id };
@@ -113,7 +113,7 @@ namespace BetsyTest
         {
             var newTitle = _context.title.Where(t => t.id == titleId).FirstOrDefault();
             newTitle.title1 = title;
-            //_context.Entry(newTitle).State = EntityState.Modified;
+            // _context.Entry(newTitle).State = EntityState.Modified;
             _context.SaveChanges();
         }
 
@@ -174,7 +174,7 @@ namespace BetsyTest
                 image_loc = Record.Image_Loc
 
             };
-            //Do not modify this as this is neccessary to get the last id.
+            // Do not modify this as this is neccessary to get the last id.
             _context.article.Add(art);
 
             ean ean = new ean
@@ -279,7 +279,7 @@ namespace BetsyTest
         public bool GetRelevantMatches(Product Record, int lastInserted)
         {
 
-            //Get the most relevant matches for the given product and return their article id'str.
+            // Get the most relevant matches for the given product and return their article id'str.
             string query = "SELECT * FROM article " +
                            "INNER JOIN title ON title.article_id = article.id " +
                            "WHERE title.id IN (SELECT title_id FROM title_synonym as ts " +
@@ -294,13 +294,13 @@ namespace BetsyTest
 
             bool match;
 
-            //Invoke method to save suggested matches to database if matches are found
+            // Invoke method to save suggested matches to database if matches are found
             if (articleIds.Count() > 0)
             {
                 InsertInVBobSuggested(lastInserted, articleIds);
                 match = true;
             }
-            else // Else, no matches are found. Save this record to the database.
+            else //  Else, no matches are found. Save this record to the database.
             {
                 match = false;
             }

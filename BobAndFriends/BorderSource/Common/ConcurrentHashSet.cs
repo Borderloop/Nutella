@@ -19,7 +19,7 @@ namespace BorderSource.Common
 
         public bool Contains(T key, IEqualityComparer<T> comparer)
         {
-            lock(Lock)
+            lock (Lock)
             {
                 return hash.Contains(key, comparer);
             }
@@ -27,7 +27,7 @@ namespace BorderSource.Common
 
         public bool Contains(T key)
         {
-            lock(Lock)
+            lock (Lock)
             {
                 return hash.Contains(key);
             }
@@ -35,7 +35,7 @@ namespace BorderSource.Common
 
         public void Add(T t)
         {
-            lock(Lock)
+            lock (Lock)
             {
                 hash.Add(t);
             }
@@ -43,7 +43,7 @@ namespace BorderSource.Common
 
         public void Remove(T t)
         {
-            lock(Lock)
+            lock (Lock)
             {
                 hash.Remove(t);
             }

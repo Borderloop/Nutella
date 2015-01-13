@@ -19,7 +19,7 @@ namespace BorderSource.Affiliate.Reader
 
         public override IEnumerable<List<Product>> ReadFromFile(string fichier)
         {
-            //Initialiser le XmlValueReader et votrekeys clés
+            // Initialiser le XmlValueReader et votrekeys clés
             using (XmlValueReader valeurLecteur = new XmlValueReader())
             {
                 List<Product> produits = new List<Product>();
@@ -62,7 +62,7 @@ namespace BorderSource.Affiliate.Reader
                     produit.FileName = fichier;
                     produit.Webshop = fichierUrl;
                     
-                    //Performer le SHA256 encryption parce que le Effliation ne donner pas une unique id
+                    //  Performer le SHA256 encryption parce que le Effliation ne donner pas une unique id
                     produit.AffiliateProdID = (produit.Title + produit.Webshop).ToSHA256();
 
                     produits.Add(produit);

@@ -21,7 +21,7 @@ namespace BorderSource.Affiliate.Reader
         public override IEnumerable<List<Product>> ReadFromFile(string file)
         {            
 
-            //Initialize XmlValueReader and its keys
+            // Initialize XmlValueReader and its keys
             using (XmlValueReader xvr = new XmlValueReader())
             {
                 List<Product> products = new List<Product>();
@@ -63,7 +63,7 @@ namespace BorderSource.Affiliate.Reader
                     p.FileName = file;
                     p.Webshop = fileUrl;
 
-                    //Hash the title and the webshop into a unique ID, because CommissionJunctionReader didn't provide any
+                    // Hash the title and the webshop into a unique ID, because CommissionJunctionReader didn't provide any
                     p.AffiliateProdID = (p.Title + p.Webshop).ToSHA256();
 
                     products.Add(p);
@@ -94,7 +94,7 @@ namespace BorderSource.Affiliate.Reader
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
-            //Initialize XmlValueReader and its keys
+            // Initialize XmlValueReader and its keys
             XmlValueReader xvr = new XmlValueReader();
             xvr.ProductEnd = "product";
             xvr.AddKeys("sku", XmlNodeType.Element);
@@ -116,16 +116,6 @@ namespace BorderSource.Affiliate.Reader
             foreach (string file in filePaths)
             {
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
-
-                // If the webshop is not found in the webshop list no further processing needed.
-                if (!Lookup.WebshopLookup.Contains(fileUrl))
-                {
-                    /*using (Logger logger = new Logger(Statics.LoggerPath, true))
-                    {
-                        logger.WriteLine("Webshop not found in database: " + fichierUrl + " from " + Name);
-                    }*/
-                    continue;
-                }
                 xvr.CreateReader(file, settings);
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in xvr.ReadProducts())
                 {
@@ -144,7 +134,7 @@ namespace BorderSource.Affiliate.Reader
                     p.FileName = file;
                     p.Webshop = fileUrl;
 
-                    //Hash the title and the webshop into a unique ID, because CommissionJunctionReader didn't provide any
+                    // Hash the title and the webshop into a unique ID, because CommissionJunctionReader didn't provide any
                     p.AffiliateProdID = (p.Title + p.Webshop).ToSHA256();
 
                     products.Add(p);

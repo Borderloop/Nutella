@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LumenWorks.Framework.IO.Csv;
 using System.IO;
 using BorderSource.ProductAssociation;
+using BorderSource.Loggers;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -33,6 +34,10 @@ namespace BorderSource.Affiliate.Reader
                 sr.ReadLine();
                 using (CsvReader reader = new CsvReader(sr, false, '|'))
                 {
+                    reader.MissingFieldAction = MissingFieldAction.ParseError;
+                    reader.DefaultParseErrorAction = ParseErrorAction.RaiseEvent;
+                    reader.ParseError += ParseError;
+                    reader.SkipEmptyLines = true;
                     List<Product> products = new List<Product>();
                     switch (Path.GetFileNameWithoutExtension(file).Split('_')[1])
                     {
@@ -40,58 +45,75 @@ namespace BorderSource.Affiliate.Reader
                             yield break;
                             while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[14],
-                                    Brand = reader[8],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[10],
-                                    DeliveryTime = reader[11],
-                                    EAN = reader[13],
-                                    FileName = file,
-                                    Image_Loc = reader[15],
-                                    Price = reader[9],
-                                    Stock = reader[7],
-                                    Title = reader[5],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s="+ SiteId + "&url="+ reader[16] +"&f=TXL&subid="+ SubId + "&name="+ BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[14],
+                                        Brand = reader[8],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[10],
+                                        DeliveryTime = reader[11],
+                                        EAN = reader[13],
+                                        FileName = file,
+                                        Image_Loc = reader[15],
+                                        Price = reader[9],
+                                        Stock = reader[7],
+                                        Title = reader[5],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[16] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
-                                if (products.Count >= PackageSize)
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
                                 {
-                                    yield return products;
-                                    products.Clear();
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
                                 }
                             }
+                            if (products.Count >= PackageSize)
+                            {
+                                yield return products;
+                                products.Clear();
+                            }
+
                             yield return products;
-                            break;                      
+                            break;
                         case "baby":
                             yield break;
                             while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[15],
-                                    Brand = reader[9],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[11],
-                                    DeliveryTime = reader[12],
-                                    EAN = reader[15],
-                                    FileName = file,
-                                    Image_Loc = reader[16],
-                                    Price = reader[10],
-                                    Stock = reader[7],
-                                    Title = reader[5],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[17] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[15],
+                                        Brand = reader[9],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[11],
+                                        DeliveryTime = reader[12],
+                                        EAN = reader[15],
+                                        FileName = file,
+                                        Image_Loc = reader[16],
+                                        Price = reader[10],
+                                        Stock = reader[7],
+                                        Title = reader[5],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[17] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
+                                {
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
+                                }
                                 if (products.Count >= PackageSize)
                                 {
                                     yield return products;
@@ -104,26 +126,34 @@ namespace BorderSource.Affiliate.Reader
                             yield break;
                             while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[15],
-                                    Brand = reader[8],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[11],
-                                    DeliveryTime = reader[12],
-                                    EAN = reader[14],
-                                    FileName = file,
-                                    Image_Loc = reader[16],
-                                    Price = reader[10],
-                                    Stock = reader[14],
-                                    Title = reader[5],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[17] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[15],
+                                        Brand = reader[8],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[11],
+                                        DeliveryTime = reader[12],
+                                        EAN = reader[14],
+                                        FileName = file,
+                                        Image_Loc = reader[16],
+                                        Price = reader[10],
+                                        Stock = reader[14],
+                                        Title = reader[5],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[17] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
+                                {
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
+                                }
                                 if (products.Count >= PackageSize)
                                 {
                                     yield return products;
@@ -137,26 +167,34 @@ namespace BorderSource.Affiliate.Reader
                             yield break;
                             while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[16],
-                                    Brand = reader[9],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[11],
-                                    DeliveryTime = reader[12],
-                                    EAN = reader[15],
-                                    FileName = file,
-                                    Image_Loc = reader[17],
-                                    Price = reader[10],
-                                    Stock = reader[14],
-                                    Title = reader[6],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[18] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[16],
+                                        Brand = reader[9],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[11],
+                                        DeliveryTime = reader[12],
+                                        EAN = reader[15],
+                                        FileName = file,
+                                        Image_Loc = reader[17],
+                                        Price = reader[10],
+                                        Stock = reader[14],
+                                        Title = reader[6],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[18] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
+                                {
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
+                                }
                                 if (products.Count >= PackageSize)
                                 {
                                     yield return products;
@@ -168,32 +206,40 @@ namespace BorderSource.Affiliate.Reader
                         case "wonen":
                         case "vrije-tijd":
                         case "speelgoed":
-                        case "koken-tafelen": 
+                        case "koken-tafelen":
                         case "dier-tuin-klussen":
                         case "mooi-gezond":
                         case "sieraden-horloges-accessoires":
                             while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[16],
-                                    Brand = reader[9],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[11],
-                                    DeliveryTime = reader[12],
-                                    EAN = reader[15],
-                                    FileName = file,
-                                    Image_Loc = reader[17],
-                                    Price = reader[10],
-                                    Stock = reader[7],
-                                    Title = reader[5],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[18] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[16],
+                                        Brand = reader[9],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[11],
+                                        DeliveryTime = reader[12],
+                                        EAN = reader[15],
+                                        FileName = file,
+                                        Image_Loc = reader[17],
+                                        Price = reader[10],
+                                        Stock = reader[7],
+                                        Title = reader[5],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[18] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
+                                {
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
+                                }
                                 if (products.Count >= PackageSize)
                                 {
                                     yield return products;
@@ -203,28 +249,36 @@ namespace BorderSource.Affiliate.Reader
                             yield return products;
                             break;
                         case "mobiele-telefonie":
-                          while (reader.ReadNextRecord())
+                            while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[18],
-                                    Brand = reader[8],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[12],
-                                    DeliveryTime = reader[13],
-                                    EAN = reader[17],
-                                    FileName = file,
-                                    Image_Loc = reader[19],
-                                    Price = reader[11],
-                                    Stock = reader[15],
-                                    Title = reader[5],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[20] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[18],
+                                        Brand = reader[8],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[12],
+                                        DeliveryTime = reader[13],
+                                        EAN = reader[17],
+                                        FileName = file,
+                                        Image_Loc = reader[19],
+                                        Price = reader[11],
+                                        Stock = reader[15],
+                                        Title = reader[5],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[20] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
+                                {
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
+                                }
                                 if (products.Count >= PackageSize)
                                 {
                                     yield return products;
@@ -236,26 +290,34 @@ namespace BorderSource.Affiliate.Reader
                         case "games":
                             while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[16],
-                                    Brand = reader[8],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[10],
-                                    DeliveryTime = reader[11],
-                                    EAN = reader[15],
-                                    FileName = file,
-                                    Image_Loc = reader[17],
-                                    Price = reader[9],
-                                    Stock = reader[13],
-                                    Title = reader[5],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[18] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[16],
+                                        Brand = reader[8],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[10],
+                                        DeliveryTime = reader[11],
+                                        EAN = reader[15],
+                                        FileName = file,
+                                        Image_Loc = reader[17],
+                                        Price = reader[9],
+                                        Stock = reader[13],
+                                        Title = reader[5],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[18] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
+                                {
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
+                                }
                                 if (products.Count >= PackageSize)
                                 {
                                     yield return products;
@@ -268,26 +330,34 @@ namespace BorderSource.Affiliate.Reader
                         case "elektronica":
                             while (reader.ReadNextRecord())
                             {
-                                Product p = new Product()
+                                try
                                 {
-                                    Affiliate = "Bol",
-                                    AffiliateProdID = reader[17],
-                                    Brand = reader[8],
-                                    Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
-                                    Currency = "EUR",
-                                    DeliveryCost = reader[11],
-                                    DeliveryTime = reader[12],
-                                    EAN = reader[16],
-                                    FileName = file,
-                                    Image_Loc = reader[18],
-                                    Price = reader[10],
-                                    Stock = reader[14],
-                                    Title = reader[5],
-                                    Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[19] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
-                                    Webshop = "www.bol.com"
-                                };
+                                    Product p = new Product()
+                                    {
+                                        Affiliate = "Bol",
+                                        AffiliateProdID = reader[17],
+                                        Brand = reader[8],
+                                        Category = reader[1] + " -> " + reader[2] + " -> " + reader[3],
+                                        Currency = "EUR",
+                                        DeliveryCost = reader[11],
+                                        DeliveryTime = reader[12],
+                                        EAN = reader[16],
+                                        FileName = file,
+                                        Image_Loc = reader[18],
+                                        Price = reader[10],
+                                        Stock = reader[14],
+                                        Title = reader[5],
+                                        Url = "http://partnerprogramma.bol.com/click/click?p=1&t=url&s=" + SiteId + "&url=" + reader[19] + "&f=TXL&subid=" + SubId + "&name=" + BolName,
+                                        Webshop = "www.bol.com"
+                                    };
 
-                                products.Add(p);
+                                    products.Add(p);
+                                }
+
+                                catch (Exception e)
+                                {
+                                    Logger.Instance.WriteLine("BAD CSV FILE: www.bol.com ERROR: " + e.Message);
+                                }
                                 if (products.Count >= PackageSize)
                                 {
                                     yield return products;
@@ -295,12 +365,31 @@ namespace BorderSource.Affiliate.Reader
                                 }
                             }
                             yield return products;
-                            break;                      
+                            break;
                         default: break;
                     }
                 }
             }
             yield break;
+        }
+        private void ParseError(object sender, ParseErrorEventArgs e)
+        {
+            // if the error is that a field is missing, then skip to next line
+            if (e.Error is MissingFieldCsvException)
+            {
+                Logger.Instance.WriteLine("Bol: MISSING FIELD ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else if (e.Error is MalformedCsvException)
+            {
+                Logger.Instance.WriteLine("Bol: MALFORMED CSV ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else
+            {
+                Logger.Instance.WriteLine("Bol: PARSE ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
         }
     }
 }

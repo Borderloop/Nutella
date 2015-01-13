@@ -29,7 +29,7 @@ namespace BorderSource.Statistics
                     total = ((GeneralStatistics)Statistics.First()).count;
                 else
                     total = Statistics.Sum(s => (float)((GeneralStatistics)s).count);
-                for(int i = 0; i < Statistics.Count; i++)
+                for (int i = 0; i < Statistics.Count; i++)
                 {
                     resultSet[i] = ((GeneralStatistics)Statistics.ElementAt(i)).count / total;
                 }

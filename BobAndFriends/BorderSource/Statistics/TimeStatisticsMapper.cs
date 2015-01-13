@@ -41,7 +41,7 @@ namespace BorderSource.Statistics
 
         public void StopAll()
         {
-            foreach(string key in map.Keys)
+            foreach (string key in map.Keys)
             {
                 ((TimeStatistics)map[key]).StopStopwatch();
             }

@@ -32,7 +32,7 @@ namespace Baximus
         {
             Initialize();          
             CalculateBiggestDifferences();
-            //CalculateBiggestDifferencesPerCountry();    
+            // CalculateBiggestDifferencesPerCountry();    
             db.Dispose();      
         }
 
@@ -65,7 +65,7 @@ namespace Baximus
             int perc = 10;
             var foreignWebshopQuery = db.webshop.Where(w => w.country_id != 1).Select(w => w.url);
             var domesticWebshopQuery = db.webshop.Where(w => w.country_id == 1).Select(w => w.url);
-            //Calculate biggest price differences
+            // Calculate biggest price differences
             foreach (article article in articleList)
             {
                 count++;
@@ -73,12 +73,12 @@ namespace Baximus
                 bpd.highest_price = Int32.MaxValue;
                 bpd.lowest_price = Int32.MaxValue;
 
-                //We can now safely assume there is at least 1 foreign and 1 dutch product in the article
+                // We can now safely assume there is at least 1 foreign and 1 dutch product in the article
 
-                //Highest price is the lowest dutch price.
+                // Highest price is the lowest dutch price.
                 bpd.highest_price = article.product.Where(p => domesticWebshopQuery.Contains(p.webshop_url)).Min(p => p.price);
 
-                //Get the lowest foreign product as a whole, because we need more data from it.
+                // Get the lowest foreign product as a whole, because we need more data from it.
                 product lowest = article.product.Where(p => foreignWebshopQuery.Contains(p.webshop_url)).OrderByDescending(p => p.price).Reverse().FirstOrDefault();
 
                 bpd.lowest_price = lowest.price;
@@ -92,7 +92,7 @@ namespace Baximus
                 biggest_price_differences entry;
                 if ((entry = db.biggest_price_differences.Where(b => b.article_id == bpd.article_id).FirstOrDefault()) != default(biggest_price_differences))
                 {
-                    //Update entry
+                    // Update entry
                     foreach (PropertyInfo p in bpd.GetType().GetProperties())
                     {
                         if (p.Name == "id") continue;
@@ -109,12 +109,13 @@ namespace Baximus
                 }
                 else
                 {
-                    db.biggest_price_differences.Add(bpd);
-                    if ((int)(((double)count / (double)articleList.Count) * 100) >= perc)
-                    {
-                        Console.Write(perc + "% ");
-                        perc += 10;
-                    }
+                    db.biggest_price_differences.Add(bpd);                   
+                }
+
+                if ((int)(((double)count / (double)articleList.Count) * 100) >= perc)
+                {
+                    Console.Write(perc + "% ");
+                    perc += 10;
                 }
 
                 if (count % 1000 == 0)
@@ -167,7 +168,7 @@ namespace Baximus
 
                     if (db.country_price_differences.Any(c => c.article_id == article.id && c.country_id == country_id))
                     {
-                        //There already exists a record for this country - check if the difference is bigger, if yes then add, else, just continue
+                        // There already exists a record for this country - check if the difference is bigger, if yes then add, else, just continue
                         country_price_differences entry;
                         if ((entry = db.country_price_differences.Where(c => c.article_id == article.id && c.country_id == country_id).FirstOrDefault()).difference >= difference)
                         {
@@ -175,7 +176,7 @@ namespace Baximus
                         }
 
                         entry.difference = difference;
-                        //entry.difference_percentage = percentage;
+                        // entry.difference_percentage = percentage;
                         entry.product_id = product.id;
                         entry.last_updated = System.DateTime.Now;
 
@@ -186,18 +187,17 @@ namespace Baximus
                         cpd.article_id = article.id;
                         cpd.country_id = country_id;
                         cpd.difference = difference;
-                        //cpd.difference_percentage = percentage;
+                        // cpd.difference_percentage = percentage;
                         cpd.product_id = product.id;
                         cpd.last_updated = System.DateTime.Now;
 
                         db.country_price_differences.Add(cpd);
-                        if ((int)(((double)count / (double)articleList.Count) * 100) >= perc)
-                        {
-                            Console.Write(perc + "% ");
-                            perc += 10;
-                        }
                     }
-
+                    if ((int)(((double)count / (double)articleList.Count) * 100) >= perc)
+                    {
+                        Console.Write(perc + "% ");
+                        perc += 10;
+                    }
                     if (count % 1000 == 0)
                         db.SaveChanges();
                 }
@@ -236,7 +236,7 @@ namespace Baximus
             EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
             entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
             entityConnStrBuilder.ProviderConnectionString = providerConnStrBuilder.ToString();
-            entityConnStrBuilder.Metadata = "res://*/BetsyContext.BetsyModel.csdl|res://*/BetsyContext.BetsyModel.ssdl|res://*/BetsyContext.BetsyModel.msl";
+            entityConnStrBuilder.Metadata = "res:// */BetsyContext.BetsyModel.csdl|res:// */BetsyContext.BetsyModel.ssdl|res:// */BetsyContext.BetsyModel.msl";
 
             ConnectionString = entityConnStrBuilder.ConnectionString;
             #endregion ConnectionString

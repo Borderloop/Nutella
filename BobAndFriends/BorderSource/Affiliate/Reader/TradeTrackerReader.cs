@@ -41,6 +41,7 @@ namespace BorderSource.Affiliate.Reader
                         {
                             if (_reader.IsStartElement())
                             {
+                                if (_reader.IsEmptyElement) continue;
                                 switch (_reader.Name)
                                 {
                                     case "product":
@@ -202,15 +203,6 @@ namespace BorderSource.Affiliate.Reader
             {
                 string fileUrl = Path.GetFileNameWithoutExtension(file).Split(null)[0].Replace('$', '/');
 
-                // If the webshop is not found in the webshop list no further processing needed.
-                if (!Lookup.WebshopLookup.Contains(fileUrl))
-                {
-                    /*using (Logger logger = new Logger(Statics.LoggerPath, true))
-                    {
-                        logger.WriteLine("Webshop not found in database: " + fichierUrl + " from " + Name);
-                    }*/
-                    continue;
-                }
 
                 XmlReader _reader = XmlReader.Create(file);
                 Product p = null;
@@ -225,6 +217,7 @@ namespace BorderSource.Affiliate.Reader
                     {
                         if (_reader.IsStartElement())
                         {
+                            if (_reader.IsEmptyElement) continue;
                             switch (_reader.Name)
                             {
                                 case "product":

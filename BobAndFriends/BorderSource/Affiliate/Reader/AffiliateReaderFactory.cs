@@ -13,7 +13,7 @@ namespace BorderSource.Affiliate.Reader
         public static AffiliateReaderBase GetAppropriateReader(AffiliateFile file)
         {
             AffiliateReaderBase reader;
-            switch(file.Name)
+            switch (file.Name)
             {
                 case "Bol": reader = new BolReader(); break;
                 case "Affilinet": reader = new AffilinetReader(); break;
@@ -30,6 +30,9 @@ namespace BorderSource.Affiliate.Reader
                 case "Effiliation": reader = new EffiliationLecteur(); break;
                 case "LDLC": reader = new LDLCReader(); break;
                 case "Linkshare": reader = new LinkshareReader(); break;
+                case "Rene\'s Toppertjes": reader = new RenesToppertjesReader(); break;
+                case "JacobElektronik": reader = new JacobElektronikReader(); break;
+                case "PepperjamNetwork": reader = new PepperjamNetworkReader(); break;
                 default: reader = null; break;
             }
             return reader;

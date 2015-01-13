@@ -42,7 +42,7 @@ namespace VisualBob
         /// </summary>
         private void InitializeProducts()
         {
-            //Database.Instance.Connect("127.0.0.1", "test2", "**", "**");
+            // Database.Instance.Connect("127.0.0.1", "test2", "**", "**");
             selectedProductDataGrid.AutoGenerateColumns = true;
             suggestedProductsDataGrid.AutoGenerateColumns = true;
 
@@ -57,18 +57,18 @@ namespace VisualBob
         /// </summary>
         private void ShowNext()
         {
-            if(!this.Visible)
+            if (!this.Visible)
             {
                 this.Visible = true;
             }
-            //selectedProduct = Database.Instance.GetNextVBobProduct();
+            // selectedProduct = Database.Instance.GetNextVBobProduct();
             if (selectedProduct.Equals(default(vbobdata)))
             {
                 MessageBox.Show("There are no more products in the database. Closing VisualBob.");
                 Application.Exit();
                 return;
             }
-            //suggestedProducts = Database.Instance.GetSuggestedProducts(selectedProduct.id);
+            // suggestedProducts = Database.Instance.GetSuggestedProducts(selectedProduct.id);
 
             selProdBind.DataSource = selectedProduct;
             selectedProductDataGrid.DataSource = selProdBind;
@@ -90,36 +90,36 @@ namespace VisualBob
 
         private void matchButton_Click(object sender, EventArgs e)
         {
-            if(suggestedProductsDataGrid.SelectedRows.Count == 0)
+            if (suggestedProductsDataGrid.SelectedRows.Count == 0)
             {
                 MessageBox.Show("No rows selected. Select a row to match the product to a suggestion.");
                 return;
             }
             article selected = (article)suggestedProductsDataGrid.SelectedRows[0].DataBoundItem;
-            // TO BE IMPLEMENTED
-            //Database.Instance.SaveMatch(ToProduct(selectedProduct), selected.id, (int)selectedProduct.country_id);
-            //Database.Instance.DeleteFromVbobData(selectedProduct.id);
+            //  TO BE IMPLEMENTED
+            // Database.Instance.SaveMatch(ToProduct(selectedProduct), selected.id, (int)selectedProduct.country_id);
+            // Database.Instance.DeleteFromVbobData(selectedProduct.id);
             ShowNext();
         }
 
         private void rerunButton_Click(object sender, EventArgs e)
         {
-            //Database.Instance.RerunVbobEntry(selectedProduct);
+            // Database.Instance.RerunVbobEntry(selectedProduct);
             ShowNext();
         }
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            //TO BE IMPLEMENTED
-            //Database.Instance.SaveNewArticle(ToProduct(selectedProduct),(int)selectedProduct.country_id);
-            //Database.Instance.DeleteFromVbobData(selectedProduct.id);
+            // TO BE IMPLEMENTED
+            // Database.Instance.SaveNewArticle(ToProduct(selectedProduct),(int)selectedProduct.country_id);
+            // Database.Instance.DeleteFromVbobData(selectedProduct.id);
             ShowNext();
         }
 
         private void residuButton_Click(object sender, EventArgs e)
         {
-            //Database.Instance.SendToResidue(ToProduct(selectedProduct));
-            //Database.Instance.DeleteFromVbobData(selectedProduct.id);
+            // Database.Instance.SendToResidue(ToProduct(selectedProduct));
+            // Database.Instance.DeleteFromVbobData(selectedProduct.id);
             
             ShowNext();
         }
@@ -133,10 +133,10 @@ namespace VisualBob
         /// <returns>A product object with product data</returns>
         private Product ToProduct(vbobdata vbobproduct)
         {
-            //Create a product object
+            // Create a product object
             Product p = new Product();
 
-            //Put data in the Product object
+            // Put data in the Product object
             p.Title = vbobproduct.title; ;
             p.EAN = vbobproduct.ean;
             p.SKU = vbobproduct.sku;
@@ -145,7 +145,7 @@ namespace VisualBob
             p.Description = vbobproduct.description;
             p.Image_Loc = vbobproduct.image_loc;
 
-            //Return the product object.
+            // Return the product object.
             return p;
         }
     }

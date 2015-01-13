@@ -42,25 +42,25 @@
             ((System.ComponentModel.ISupportInitialize)(this.inkomendGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.productCategoryGridView)).BeginInit();
             this.SuspendLayout();
-            // 
-            // categoryGridView
-            // 
+            //  
+            //  categoryGridView
+            //  
             this.categoryGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.categoryGridView.Location = new System.Drawing.Point(12, 327);
             this.categoryGridView.Name = "categoryGridView";
             this.categoryGridView.Size = new System.Drawing.Size(483, 291);
             this.categoryGridView.TabIndex = 0;
-            // 
-            // inkomendGridView
-            // 
+            //  
+            //  inkomendGridView
+            //  
             this.inkomendGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.inkomendGridView.Location = new System.Drawing.Point(527, 326);
             this.inkomendGridView.Name = "inkomendGridView";
             this.inkomendGridView.Size = new System.Drawing.Size(725, 294);
             this.inkomendGridView.TabIndex = 1;
-            // 
-            // match_categorysyn
-            // 
+            //  
+            //  match_categorysyn
+            //  
             this.match_categorysyn.Location = new System.Drawing.Point(527, 626);
             this.match_categorysyn.Name = "match_categorysyn";
             this.match_categorysyn.Size = new System.Drawing.Size(75, 23);
@@ -68,9 +68,9 @@
             this.match_categorysyn.Text = "Match";
             this.match_categorysyn.UseVisualStyleBackColor = true;
             this.match_categorysyn.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // btn_search
-            // 
+            //  
+            //  btn_search
+            //  
             this.btn_search.Location = new System.Drawing.Point(783, 300);
             this.btn_search.Name = "btn_search";
             this.btn_search.Size = new System.Drawing.Size(75, 23);
@@ -78,24 +78,24 @@
             this.btn_search.Text = "Search";
             this.btn_search.UseVisualStyleBackColor = true;
             this.btn_search.Click += new System.EventHandler(this.btn_search_Click);
-            // 
-            // txt_search
-            // 
+            //  
+            //  txt_search
+            //  
             this.txt_search.Location = new System.Drawing.Point(527, 300);
             this.txt_search.Name = "txt_search";
             this.txt_search.Size = new System.Drawing.Size(250, 20);
             this.txt_search.TabIndex = 5;
-            // 
-            // productCategoryGridView
-            // 
+            //  
+            //  productCategoryGridView
+            //  
             this.productCategoryGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.productCategoryGridView.Location = new System.Drawing.Point(12, 12);
             this.productCategoryGridView.Name = "productCategoryGridView";
             this.productCategoryGridView.Size = new System.Drawing.Size(1216, 282);
             this.productCategoryGridView.TabIndex = 7;
-            // 
-            // linkedProduct
-            // 
+            //  
+            //  linkedProduct
+            //  
             this.linkedProduct.Location = new System.Drawing.Point(945, 300);
             this.linkedProduct.Name = "linkedProduct";
             this.linkedProduct.Size = new System.Drawing.Size(132, 23);
@@ -103,9 +103,9 @@
             this.linkedProduct.Text = "Linked Product";
             this.linkedProduct.UseVisualStyleBackColor = true;
             this.linkedProduct.Click += new System.EventHandler(this.linkedProduct_Click);
-            // 
-            // RefreshDataGridInkomend
-            // 
+            //  
+            //  RefreshDataGridInkomend
+            //  
             this.RefreshDataGridInkomend.Location = new System.Drawing.Point(864, 300);
             this.RefreshDataGridInkomend.Name = "RefreshDataGridInkomend";
             this.RefreshDataGridInkomend.Size = new System.Drawing.Size(75, 23);
@@ -113,9 +113,9 @@
             this.RefreshDataGridInkomend.Text = "Refresh";
             this.RefreshDataGridInkomend.UseVisualStyleBackColor = true;
             this.RefreshDataGridInkomend.Click += new System.EventHandler(this.RefreshDataGridInkomend_Click);
-            // 
-            // label1
-            // 
+            //  
+            //  label1
+            //  
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(9, 300);
@@ -123,9 +123,9 @@
             this.label1.Size = new System.Drawing.Size(227, 25);
             this.label1.TabIndex = 10;
             this.label1.Text = "Borderloop Categories";
-            // 
-            // CategoryMatcherForm
-            // 
+            //  
+            //  CategoryMatcherForm
+            //  
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1223, 651);

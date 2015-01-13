@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BorderSource.ProductAssociation;
 using System.IO;
 using LumenWorks.Framework.IO.Csv;
+using BorderSource.Loggers;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -31,28 +32,39 @@ namespace BorderSource.Affiliate.Reader
                 sr.ReadLine();
                 using (CsvReader reader = new CsvReader(sr, false, '|'))
                 {
+                    reader.MissingFieldAction = MissingFieldAction.ParseError;
+                    reader.DefaultParseErrorAction = ParseErrorAction.RaiseEvent;
+                    reader.ParseError += ParseError;
+                    reader.SkipEmptyLines = true;
                     List<Product> products = new List<Product>();
                     while (reader.ReadNextRecord())
                     {
                         if (reader[0] == "TLR" || reader[0] == "HDR") continue;
-                        Product p = new Product()
+                        try
                         {
-                            Affiliate = "Linkshare",
-                            AffiliateProdID = reader[0],
-                            Brand = reader[16],
-                            Category = reader[3],
-                            Currency = reader[25],
-                            DeliveryCost = reader[17],
-                            EAN = reader[23], 
-                            FileName = file,
-                            Image_Loc = reader[6],
-                            Price = reader[13],
-                            Stock = reader[22],
-                            Title = reader[1],
-                            Url = reader[4],
-                            Webshop = fileUrl
-                        };
-                        products.Add(p);
+                            Product p = new Product()
+                            {
+                                Affiliate = "Linkshare",
+                                AffiliateProdID = reader[0],
+                                Brand = reader[16],
+                                Category = reader[3],
+                                Currency = reader[25],
+                                DeliveryCost = reader[17],
+                                EAN = reader[23],
+                                FileName = file,
+                                Image_Loc = reader[6],
+                                Price = reader[13],
+                                Stock = reader[22],
+                                Title = reader[1],
+                                Url = reader[5],
+                                Webshop = fileUrl
+                            };
+                            products.Add(p);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Instance.WriteLine("BAD CSV FILE: " + fileUrl + " ERROR " + e.Message);
+                        }
                         if (products.Count >= PackageSize)
                         {
                             yield return products;
@@ -65,5 +77,26 @@ namespace BorderSource.Affiliate.Reader
             }
             yield break;
         }
+
+        private void ParseError(object sender, ParseErrorEventArgs e)
+        {
+            // if the error is that a field is missing, then skip to next line
+            if (e.Error is MissingFieldCsvException)
+            {
+                Logger.Instance.WriteLine("Linkshare: MISSING FIELD ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else if (e.Error is MalformedCsvException)
+            {
+                Logger.Instance.WriteLine("Linkshare: MALFORMED CSV ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else
+            {
+                Logger.Instance.WriteLine("Linkshare: PARSE ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+        }
+
     }
 }

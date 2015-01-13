@@ -24,7 +24,7 @@ namespace BorderSource.Affiliate.Reader
 
         public override IEnumerable<List<Product>> ReadFromFile(string file)
         {         
-            //Initialize XmlValueReader and its keys
+            // Initialize XmlValueReader and its keys
             using (XmlValueReader xvr = new XmlValueReader())
             {
                 List<Product> products = new List<Product>();
@@ -94,7 +94,7 @@ namespace BorderSource.Affiliate.Reader
             List<Product> products = new List<Product>();
             string[] filePaths = Util.ConcatArrays(Directory.GetFiles(dir, "*.xml"), Directory.GetFiles(dir, "*.csv"));
 
-            //Initialize XmlValueReader and its keys
+            // Initialize XmlValueReader and its keys
             XmlValueReader xvr = new XmlValueReader();
             xvr.ProductEnd = "item";
             xvr.AddKeys("ean_code", XmlNodeType.Element);

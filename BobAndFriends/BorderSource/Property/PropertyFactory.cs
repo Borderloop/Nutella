@@ -53,8 +53,8 @@ namespace BorderSource.Property
             propList.Add(new Property<bool>() { DefaultValue = true, PropertyName = "update_enabled" });
             #endregion
 
-            //Map to the dictionary based on their name
-            foreach(IProperty prop in propList)
+            // Map to the dictionary based on their name
+            foreach (IProperty prop in propList)
             {
                 dic.Add(prop.PropertyName, prop);
             }
@@ -67,7 +67,7 @@ namespace BorderSource.Property
             Dictionary<string, IProperty> dic = CreateDefaults();
             INIFile ini = new INIFile(path);
             Dictionary<string, string> values = ini.GetAllValues();
-            foreach(KeyValuePair<string, string> pair in values)
+            foreach (KeyValuePair<string, string> pair in values)
             {
                 if (dic.ContainsKey(pair.Key))
                 {

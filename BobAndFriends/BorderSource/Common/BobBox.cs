@@ -56,17 +56,17 @@ namespace BorderSource.Common
             context = new BetsyModel(ConnectionString);
             context.Configuration.LazyLoadingEnabled = true;
             context.Configuration.AutoDetectChangesEnabled = false;
-            //context.Configuration.ValidateOnSaveEnabled = false;
+            // context.Configuration.ValidateOnSaveEnabled = false;
         }
 
         public void SaveMatch(Product Record, int matchedArticleID, int countryID)
         {
-            //First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
+            // First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
             article articleTable = context.article.Where(a => a.id == matchedArticleID).FirstOrDefault();
 
             context.article.Attach(articleTable);
             var articleEntry = context.Entry(articleTable);
-            
+
             if (articleTable.brand == "" || articleTable.brand == null)
             {
                 articleTable.brand = Record.Brand;
@@ -84,11 +84,11 @@ namespace BorderSource.Common
             }
             long ean;
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
-            //Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
+            // Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
             if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean, article_id = matchedArticleID });
-            //if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToUpper().Trim() == Record.SKU.ToUpper().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
+            // if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToUpper().Trim() == Record.SKU.ToUpper().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
-            
+
             title title = articleTable.title.Where(t => t.article_id == matchedArticleID && t.country_id == countryID).FirstOrDefault();
 
             if (title == default(title))
@@ -108,7 +108,7 @@ namespace BorderSource.Common
                         break;
                     }
                 }
-                //If any title synonym matches the title, up the occurences.
+                // If any title synonym matches the title, up the occurences.
                 if (match != null)
                 {
                     match.occurrences++;
@@ -120,13 +120,12 @@ namespace BorderSource.Common
                     var titleEntry = context.Entry(title);
                     titleEntry.Property(t => t.title1).IsModified = true;
                 }*/
-                //else, add the title to the synonyms.
+                // else, add the title to the synonyms.
                 else
                 {
-                    //title.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
+                    // title.title_synonym.Add(new title_synonym { occurrences = 1, title = Record.Title.Trim() });
                 }
             }
-            
 
             decimal castedShipCost;
             decimal castedPrice;
@@ -145,7 +144,6 @@ namespace BorderSource.Common
                 affiliate_unique_id = Record.AffiliateProdID,
                 last_modified = System.DateTime.Now
             };
-
             articleTable.product.Add(newProduct);
         }
 
@@ -190,7 +188,7 @@ namespace BorderSource.Common
                 image_loc = Record.Image_Loc,
             };
             art.category.Add(cat);
-            //Do not modify this as this is neccessary to get the last id.
+            // Do not modify this as this is neccessary to get the last id.
             
 
             long eanVal;
@@ -424,12 +422,10 @@ namespace BorderSource.Common
             }
             catch (Exception e)
             {
-                if (e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
+                if (e.InnerException != null && e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
                 else
                 {
                     Console.WriteLine("Lost 500 products due to an error; " + e.Message);
-                    Console.WriteLine("Inner: " + e.InnerException.Message);
-                    Console.WriteLine("InnerInner: " + e.InnerException.InnerException.Message);
                     GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
             }
@@ -471,7 +467,7 @@ namespace BorderSource.Common
                 {
                     objContext.Refresh(RefreshMode.ClientWins, ex.Entries.Select(e => e.Entity));
                 }
-                catch(InvalidOperationException ioe)
+                catch (InvalidOperationException ioe)
                 {
                     Console.WriteLine("Refresh didn't work, lost 500 products. Error: " + ioe.Message);
                     Console.WriteLine("Moving on.");
@@ -479,12 +475,10 @@ namespace BorderSource.Common
             }
             catch (Exception e)
             {
-                if (e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
+                if (e.InnerException != null && e.InnerException.Message.Contains("Duplicate")) Console.WriteLine("Threw duplicate exception.");
                 else
                 {
                     Console.WriteLine("Lost 500 products due to an error; " + e.Message);
-                    Console.WriteLine("Inner: " + e.InnerException.Message);
-                    Console.WriteLine("InnerInner: " + e.InnerException.InnerException.Message);
                     GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
             }

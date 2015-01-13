@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BorderSource.ProductAssociation;
 using System.IO;
 using LumenWorks.Framework.IO.Csv;
+using BorderSource.Loggers;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -31,30 +32,40 @@ namespace BorderSource.Affiliate.Reader
                 sr.ReadLine();
                 using (CsvReader reader = new CsvReader(sr, false, '|'))
                 {
+                    reader.MissingFieldAction = MissingFieldAction.ParseError;
+                    reader.DefaultParseErrorAction = ParseErrorAction.RaiseEvent;
+                    reader.ParseError += ParseError;
+                    reader.SkipEmptyLines = true;
                     List<Product> products = new List<Product>();
                     while (reader.ReadNextRecord())
                     {
-
-                        Product p = new Product()
+                        try
                         {
-                            Affiliate = "AffiliateWindow",
-                            AffiliateProdID = reader[0],
-                            Brand = reader[15],
-                            Category = reader[2],
-                            Currency = reader[12],
-                            DeliveryCost = reader[11],
-                            EAN = reader[20],
-                            FileName = file,
-                            Image_Loc = reader[4],
-                            Price = reader[13],
-                            Stock = reader[19],
-                            Title = reader[7],
-                            Url = reader[3],
-                            Webshop = fileUrl
-                        };
-
-                        p.Price = p.Price.Trim(p.Currency.ToCharArray());
-                        products.Add(p);
+                            Product p = new Product()
+                            {
+                                Affiliate = "AffiliateWindow",
+                                AffiliateProdID = reader[0],
+                                Brand = reader[15],
+                                Category = reader[2],
+                                Currency = reader[12],
+                                DeliveryCost = reader[11],
+                                EAN = reader[20],
+                                FileName = file,
+                                Image_Loc = reader[4],
+                                Price = reader[13],
+                                Stock = reader[19],
+                                Title = reader[7],
+                                Url = reader[3],
+                                Webshop = fileUrl
+                            };
+                            p.Price = p.Price.Trim(p.Currency.ToCharArray());
+                            products.Add(p);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Instance.WriteLine("BAD CSV FILE: " + fileUrl + " ERROR: " + e.Message);
+                        }
+                        
                         if (products.Count >= PackageSize)
                         {
                             yield return products;
@@ -66,6 +77,25 @@ namespace BorderSource.Affiliate.Reader
                 }                            
             }
             yield break;
+        }
+        private void ParseError(object sender, ParseErrorEventArgs e)
+        {
+            // if the error is that a field is missing, then skip to next line
+            if (e.Error is MissingFieldCsvException)
+            {
+                Logger.Instance.WriteLine("AffiliateWindow: MISSING FIELD ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else if (e.Error is MalformedCsvException)
+            {
+                Logger.Instance.WriteLine("AffiliateWindow: MALFORMED CSV ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
+            else
+            {
+                Logger.Instance.WriteLine("AffiliateWindow: PARSE ERROR OCCURRED");
+                e.Action = ParseErrorAction.AdvanceToNextLine;
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace BorderSource.ProductAssociation
     public class Product : IEquatable<Product>
     {
         
-        //All the data will be read as a String. Therefore, we store them in String objects.
+        // All the data will be read as a String. Therefore, we store them in String objects.
         private string _Title = "";
         public string Title { get { return _Title; } set { _Title = value; } }
 
@@ -29,11 +29,11 @@ namespace BorderSource.ProductAssociation
         private string _Category = "";
         public string Category { get { return _Category; } set { _Category = value; } }
 
-        private string _Price = "";
-        public string Price { get { return _Price; } set { _Price = value; } }
-
         private string _Currency = "";
         public string Currency { get { return _Currency; } set { _Currency = value; } }
+
+        private string _Price = "";
+        public string Price { get { return _Price; } set { _Price = value; } }
 
         private string _DeliveryCost = "";
         public string DeliveryCost { get { return _DeliveryCost; } set { _DeliveryCost = value; } }
@@ -59,7 +59,7 @@ namespace BorderSource.ProductAssociation
         private string _SKU = "";
         public string SKU { get { return _SKU; } set { _SKU = value; } }
 
-        //These properties do not need private values since they are always set.
+        // These properties do not need private values since they are always set.
         public string Affiliate { get; set; }
         public string AffiliateProdID { get; set; }
         public string FileName { get; set; }

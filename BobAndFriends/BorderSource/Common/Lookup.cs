@@ -8,7 +8,7 @@ namespace BorderSource.Common
 {
     public class Lookup
     {
-        public static ILookup<string, Webshop> WebshopLookup;
+        public static IDictionary<string, Webshop> WebshopLookup;
         public static ILookup<string, Category> CategoryLookup;
         public static ILookup<string, CategorySynonym> CategorySynonymLookup;
     }

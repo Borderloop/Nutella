@@ -25,20 +25,20 @@ namespace BorderSource.Common
         /// <returns>A concatination of both arrays.</returns>
         public static string[] ConcatArrays(string[] x, string[] y)
         {
-            //Throw exceptions if one of the arguments is null.
+            // Throw exceptions if one of the arguments is null.
             if (x == null) throw new ArgumentNullException("First argument is null.");
             if (y == null) throw new ArgumentNullException("Second argument is null.");
 
-            //Save the length of x
+            // Save the length of x
             int oldLen = x.Length;
 
-            //Resize x to be big enough to store all the values of y
+            // Resize x to be big enough to store all the values of y
             Array.Resize<string>(ref x, x.Length + y.Length);
 
-            //Copy all elements of y into x
+            // Copy all elements of y into x
             Array.Copy(y, 0, x, oldLen, y.Length);
 
-            //Return x
+            // Return x
             return x;
         }
 
@@ -62,11 +62,11 @@ namespace BorderSource.Common
                     case '\t': literal.Append(@"\t"); break;
                     case '\v': literal.Append(@"\v"); break;
                     default:
-                        // ASCII printable character
+                        //  ASCII printable character
                         if (c >= 0x20 && c <= 0x7e)
                         {
                             literal.Append(c);
-                            // As UTF16 escaped character
+                            //  As UTF16 escaped character
                         }
                         else
                         {
@@ -84,7 +84,7 @@ namespace BorderSource.Common
         {
             StringBuilder sb = new StringBuilder();
             string[] parts = str.Split(new char[] {'\n', '\t', '\r', '\f', '\v', '\\' });
-            foreach(string s in parts)
+            foreach (string s in parts)
                 sb.Append(s);
             return sb.ToString();
         }
@@ -92,7 +92,7 @@ namespace BorderSource.Common
         public static string EscapeChars(this string input)
         {
             char[] chars = { '.', '/', '\\', '>', '<', ':', '*', '?', '\"', '|' };
-            foreach(char c in chars) input.Replace(c, ' ');
+            foreach (char c in chars) input.Replace(c, ' ');
             return input;
         }
 
@@ -101,11 +101,11 @@ namespace BorderSource.Common
         public static string ToSHA256(this string str)
         {
             StringBuilder sb = new StringBuilder();
-            using(SHA256 hash = SHA256Managed.Create())
+            using (SHA256 hash = SHA256Managed.Create())
             {
                 Encoding enc = Encoding.UTF8;
                 Byte[] result = hash.ComputeHash(enc.GetBytes(str));
-                foreach(Byte b in result)
+                foreach (Byte b in result)
                 {
                     sb.Append(b.ToString("x2"));
                 }
@@ -120,23 +120,23 @@ namespace BorderSource.Common
 
         public static DataTable ToDataTable<T>(this IEnumerable<T> items)
         {
-            // Create the result table, and gather all properties of a T        
+            //  Create the result table, and gather all properties of a T        
             DataTable table = new DataTable(typeof(T).Name);
             PropertyInfo[] props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            // Add the properties as columns to the datatable
+            //  Add the properties as columns to the datatable
             foreach (var prop in props)
             {
                 Type propType = prop.PropertyType;
 
-                // Is it a nullable type? Get the underlying type 
+                //  Is it a nullable type? Get the underlying type 
                 if (propType.IsGenericType && propType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
                     propType = new NullableConverter(propType).UnderlyingType;
 
                 table.Columns.Add(prop.Name, propType);
             }
 
-            // Add the property values per T as rows to the datatable
+            //  Add the property values per T as rows to the datatable
             foreach (var item in items)
             {
                 var values = new object[props.Length];
@@ -180,9 +180,9 @@ namespace BorderSource.Common
         {
             StringBuilder sb = new StringBuilder();
             bool first = true;
-            foreach(string s in str)
+            foreach (string s in str)
             {
-                if(first)
+                if (first)
                 {
                     first = false;
                     continue;
@@ -207,7 +207,7 @@ namespace BorderSource.Common
         public static int GetCumulativeValuesFromRange(this int[] array, int start, int end)
         {
             int sum = 0;
-            for(int i = start; i <= end; i++)
+            for (int i = start; i <= end; i++)
             {
                 sum += array[i];
             }
@@ -229,7 +229,7 @@ namespace BorderSource.Common
         public static string Swap(this string input, char firstChar, char secondChar)
         {
             StringBuilder builder = new StringBuilder();
-            foreach(char c in input)
+            foreach (char c in input)
             {
                 if (c == firstChar) builder.Append(secondChar);
                 else if (c == secondChar) builder.Append(firstChar);
