@@ -103,10 +103,10 @@ namespace BorderSource.Affiliate.Reader
 
         private string GetDeliveryCostForMass(float mass)
         {
-            if (mass < 6) return "9.99";
-            else if (mass < 12) return "20.99";
-            else if (mass < 20) return "24.99";
-            else if (mass < 30) return "32.99";
+            if (mass <= 6) return "9.99";
+            else if (mass <= 12) return "20.99";
+            else if (mass <= 20) return "24.99";
+            else if (mass <= 30) return "32.99";
             else return "";
         }
     }
