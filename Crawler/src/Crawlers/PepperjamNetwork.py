@@ -92,6 +92,3 @@ class Crawler():
             self.activeThreads -= 1
         finally:
             self.lock.release()
-
-
-Crawler().main()
