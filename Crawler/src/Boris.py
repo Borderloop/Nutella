@@ -10,6 +10,7 @@ from Crawlers import Bol
 from Crawlers import LDLC
 from Crawlers import Linkshare
 from Crawlers import PepperjamNetwork
+from Crawlers import Amazon
 
 
 global productFeedsPath
@@ -19,7 +20,6 @@ def main():
     parseConfigFile()
     emptyDirectories()
     startCrawlers()
-
 
 # Procedure to parse the config file
 def parseConfigFile():
@@ -37,8 +37,16 @@ def emptyDirectories():
     for path in productFeedPaths:
         if path != productFeedPaths[0] and 'BorderBot' not in path and "Rene's Toppertjes" not in path:
             files = glob.glob(path + '/*')
-            for f in files:
-                os.remove(f)
+
+            while True:
+                try:
+                    for f in files:
+                        os.remove(f)
+                    break
+                except WindowsError as e:
+                    print e
+                    raw_input("The above product feed is opened by a program, possibly Sublime. "
+                              "Close the feed and press any key to continue")
 
 
 # This procedure starts all crawlers.
@@ -71,6 +79,9 @@ def startCrawlers():
     t.start()
 
     t = Thread(target=PepperjamNetwork.Crawler().main)
+    t.start()
+
+    t = Thread(target=Amazon.Crawler().main)
     t.start()
 
 main()
