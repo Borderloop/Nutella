@@ -3,8 +3,10 @@ import glob
 from ConfigParser import SafeConfigParser
 from threading import Thread
 
-from Crawlers import TradeTracker, FeedCrawler, Effiliation, JacobElektronik
+from Crawlers import FeedCrawler, Effiliation, JacobElektronik
 from Crawlers import Belboon
+
+
 from Crawlers import Daisycon
 from Crawlers import Bol
 from Crawlers import LDLC
@@ -51,8 +53,8 @@ def emptyDirectories():
 
 # This procedure starts all crawlers.
 def startCrawlers():
-    t = Thread(target=TradeTracker.Crawler().main)
-    t.start()
+    #t = Thread(target=TradeTracker.Crawler().main)
+    #t.start()
 
     t = Thread(target=FeedCrawler.Crawler().main)
     t.start()
