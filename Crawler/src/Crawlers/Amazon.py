@@ -43,6 +43,8 @@ class Crawler():
                 # Add the product data to a list so we can convert the list to xml once all products are parsed.
                 productDataList.append(productData)
 
+                time.sleep(1)
+
             self.writeXML(productDataList, locale)
 
 

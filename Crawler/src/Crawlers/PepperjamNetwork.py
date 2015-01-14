@@ -79,13 +79,24 @@ class Crawler():
         feedURL = "http://api.pepperjamnetwork.com/20120402/publisher/creative/product?apiKey=%s&format=csv&programIds=%s" % (self.key, advertiserID)
 
         # If the save fails, something is wrong with the file or directory name. Catch this error
-        try:
-            csvFile = urllib.URLopener()
-            csvFile.retrieve(feedURL, self.feedPath + websiteURL + ".csv")
-            print 'Done crawling ' + websiteURL
-        except:
-            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
-            self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + websiteURL)
+        tries = 0
+        while True:
+            try:
+                csvFile = urllib.URLopener()
+                csvFile.retrieve(feedURL, self.feedPath + websiteURL + ".csv")
+                print 'Done crawling ' + websiteURL
+
+                break
+            except IOError:
+                tries += 1
+                time.sleep(1)
+                if tries == 5:
+                    break
+            except:
+                self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
+                self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + websiteURL)
+
+                break
 
         self.lock.acquire()
         try:

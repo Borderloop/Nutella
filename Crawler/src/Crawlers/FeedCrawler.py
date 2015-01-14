@@ -101,20 +101,29 @@ class Crawler():
         website = website.replace('/', '$')
         # Download xml file and write it to a file
         # If the save fails, something is wrong with the file or directory name. Catch this error
-        try:
-            xmlFile = urllib.URLopener()
-            xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + '.' + fileType)
+        tries = 0
+        while True:
+            try:
+                xmlFile = urllib.URLopener()
+                xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + '.' + fileType)
 
-            if fileType == 'zip':
-                self.readZipFile(website, affiliate)
+                if fileType == 'zip':
+                    self.readZipFile(website, affiliate)
 
-            print 'Done crawling ' + website
+                print 'Done crawling ' + website
 
-        except:
-            self.log.error(str(time.asctime(time.localtime(time.time()))) +
-                           ": " + traceback.format_exc())
-            self.log.info(str(time.asctime(time.localtime(time.time())))+": Failed saving file for: " + affiliate +
-                          " - " + website + ". See error log for more details")
+                break
+            except IOError:
+                tries += 1
+                time.sleep(1)
+                if tries == 5:
+                    break
+            except:
+                self.log.error(str(time.asctime(time.localtime(time.time()))) +
+                               ": " + traceback.format_exc())
+                self.log.info(str(time.asctime(time.localtime(time.time())))+": Failed saving file for: " + affiliate +
+                              " - " + website + ". See error log for more details")
+                break
 
         self.lock.acquire()
         try:

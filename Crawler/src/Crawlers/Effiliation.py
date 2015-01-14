@@ -29,7 +29,8 @@ class Crawler():
     def main(self):
         root = self.getXMLFeed()
 
-        self.gatherData(root)
+        if root != None:
+            self.gatherData(root)
 
     # Procedure to parse the config file
     def parseConfigFile(self):
@@ -43,7 +44,15 @@ class Crawler():
     def getXMLFeed(self):
         xmlFeedUrl = 'http://apiv2.effiliation.com/apiv2/productfeeds.xml?key=' + self.key + '&filter=mines&fields=' + self.filter
 
-        xmlfile = urllib2.urlopen(xmlFeedUrl)
+        tries = 0
+        while True:
+            try:
+                xmlfile = urllib2.urlopen(xmlFeedUrl)
+            except IOError:
+                tries += 1
+                time.sleep(1)
+                if tries == 5:
+                    return None
 
         #Create a string from the data
         data = xmlfile.read()
@@ -75,12 +84,23 @@ class Crawler():
     def save(self, websiteURL, feedURL):
         print 'Crawling ' + websiteURL
 
-        #If the save fails, catch the error.
-        try:
-            xmlFeed = urllib.URLopener()
-            xmlFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
-            print 'Done crawling ' + websiteURL
-        except Exception as e:
-            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
+        tries = 0
+        while True:
+            #If the save fails, catch the error.
+            try:
+                xmlFeed = urllib.URLopener()
+                xmlFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
+                print 'Done crawling ' + websiteURL
+
+                break
+            except IOError:
+                tries += 1
+                time.sleep(1)
+                if tries == 5:
+                    break
+            except Exception as e:
+                self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
+
+                break
 
         self.prevUrl = websiteURL
