@@ -5,10 +5,11 @@ import traceback
 
 from ConfigParser import SafeConfigParser
 from threading import Thread, Lock
+from urllib2 import URLError
 
 from CrawlerHelpScripts import logger
 
-
+import ssl
 
 class Crawler():
     def __init__(self):
@@ -34,7 +35,20 @@ class Crawler():
     def main(self):
         # Create client and authenticate
         client = suds.client.Client(self.wsdlurl)
-        client.service.authenticate(self.customerId, self.key)
+
+        tries = 0
+        while True:
+            try:
+                if hasattr(ssl, '_create_unverified_context'):
+                    ssl._create_default_https_context = ssl._create_unverified_context
+                client.service.authenticate(self.customerId, self.key)
+                break
+            except URLError:
+                print traceback.format_exc()
+                tries += 1
+                time.sleep(5)
+                if tries == 5:
+                    return
 
         self.gatherData(client)
 
@@ -107,13 +121,25 @@ class Crawler():
     def save(self, campaignUrl, feedURL):
 
         # If the save fails, something is wrong with the file or directory name. Catch this error
-        try:
-            xmlFile = urllib.URLopener()
-            xmlFile.retrieve(feedURL, self.feedPath + campaignUrl + ".xml")
-            print 'Done crawling ' + campaignUrl
-        except Exception:
-            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
-            self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + campaignUrl)
+        tries = 0
+        while True:
+            try:
+                xmlFile = urllib.URLopener()
+                xmlFile.retrieve(feedURL, self.feedPath + campaignUrl + ".xml")
+                print 'Done crawling ' + campaignUrl
+
+                break
+            except IOError as e:
+                print e
+                tries += 1
+                time.sleep(1)
+                if tries == 5:
+                    break
+            except Exception:
+                self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
+                self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + campaignUrl)
+
+                break
         
         self.prevUrl = campaignUrl
 
