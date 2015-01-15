@@ -1,11 +1,15 @@
 from amazonproduct import API
 from amazonproduct.errors import InvalidParameterValue
+from amazonproduct.errors import AWSError
 from xml.etree.ElementTree import ElementTree, Element, SubElement
 
 from ConfigParser import SafeConfigParser
 
+from CrawlerHelpScripts import logger
+
 import traceback
 import time
+
 
 class Crawler():
     def __init__(self):
@@ -16,6 +20,8 @@ class Crawler():
     feedPath = ''
 
     api = ''
+
+    log = logger.createLogger("AmazonLogger", "Amazon")
 
     def parseConfigFile(self):
         parser = SafeConfigParser()
@@ -33,16 +39,18 @@ class Crawler():
             products = self.loadProducts(locale)
 
             for product in products:
-                if product != '' and product[0] != '#':  # Comment or blank line.
+                if product != '' and product is not None and product[0] != '#':  # Comment or blank line.
                     # Product contains two elements: The ASIN and the shipping cost, divided by `:`.
                     product = product.split(':')
                     ASIN = product[0]
 
-                    productData = self.gatherData(ASIN)
-                    productData["shipping_cost"] = product[1]
+                    productData = self.gatherData(ASIN, locale)
 
-                    # Add the product data to a list so we can convert the list to xml once all products are parsed.
-                    productDataList.append(productData)
+                    if productData is not None:  # Something went wrong retrieving data.
+                        productData["shipping_cost"] = product[1]
+
+                        # Add the product data to a list so we can convert the list to xml once all products are parsed.
+                        productDataList.append(productData)
 
                     time.sleep(1)
 
@@ -57,12 +65,15 @@ class Crawler():
         return products
 
     # This procedure makes the API call and retrieves all necessary data from the response
-    def gatherData(self, ASIN):
+    def gatherData(self, ASIN, locale):
         productData = dict()
 
         try:
             result = self.api.item_lookup(ASIN, ResponseGroup='Large')
         except InvalidParameterValue:  # ID doesn't exist for this locale
+            return
+        except AWSError:  # Product not accessible through API
+            self.log.info('Not accessible through API: ' + ASIN + ' - Locale: ' + locale)
             return
 
         for item in result.Items.Item:
@@ -74,7 +85,11 @@ class Crawler():
             productData["ean"] = item.ItemAttributes.EAN.text
             productData["category"] = item.ItemAttributes.Binding.text
             productData["title"] = item.ItemAttributes.Title.text
-            productData["currency"] = item.Offers.Offer.OfferListing.Price.CurrencyCode.text
+            try:
+                productData["currency"] = item.Offers.Offer.OfferListing.Price.CurrencyCode.text
+            except AttributeError:
+                self.log.info("No offer data available for: " + ASIN + ' - Locale: ' + locale)
+                break
             productData["price"] = item.Offers.Offer.OfferListing.Price.FormattedPrice.text
 
             try:
@@ -104,3 +119,5 @@ class Crawler():
             locale = 'co.uk'
 
         ElementTree(root).write(self.feedPath + 'www.amazon.' + locale + '.xml', encoding='UTF-8')
+
+        print 'Wrote XML for www.amazon.' + locale
