@@ -33,20 +33,20 @@ class Crawler():
             products = self.loadProducts(locale)
 
             for product in products:
-                # Product contains two elements: The ASIN and the shipping cost
-                product = product.split(':')
-                ASIN = product[0]
+                if product != '' and product[0] != '#':  # Comment or blank line.
+                    # Product contains two elements: The ASIN and the shipping cost, divided by `:`.
+                    product = product.split(':')
+                    ASIN = product[0]
 
-                productData = self.gatherData(ASIN)
-                productData["shipping_cost"] = product[1]
+                    productData = self.gatherData(ASIN)
+                    productData["shipping_cost"] = product[1]
 
-                # Add the product data to a list so we can convert the list to xml once all products are parsed.
-                productDataList.append(productData)
+                    # Add the product data to a list so we can convert the list to xml once all products are parsed.
+                    productDataList.append(productData)
 
-                time.sleep(1)
+                    time.sleep(1)
 
             self.writeXML(productDataList, locale)
-
 
     # This procedure loads products from the .txt file corresponding with the locale.
     def loadProducts(self, locale):
@@ -104,5 +104,3 @@ class Crawler():
             locale = 'co.uk'
 
         ElementTree(root).write(self.feedPath + 'www.amazon.' + locale + '.xml', encoding='UTF-8')
-
-Crawler().main()
