@@ -301,7 +301,7 @@ namespace BorderSource.Affiliate.Reader
                                             p.Stock = _reader["Text"];
                                             break;
                                         }
-                                        if (_reader.HasAttributes && _reader["Title"].Equals("ÇATEGORY"))
+                                        if (_reader.HasAttributes && _reader["Title"].Equals("CATEGORY"))
                                         {
                                             _reader.Read();
                                             p.Category = _reader["Text"];

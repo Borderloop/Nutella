@@ -7,6 +7,7 @@ using BorderSource.ProductAssociation;
 using System.IO;
 using LumenWorks.Framework.IO.Csv;
 using BorderSource.Loggers;
+using BorderSource.Statistics;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -83,17 +84,17 @@ namespace BorderSource.Affiliate.Reader
             // if the error is that a field is missing, then skip to next line
             if (e.Error is MissingFieldCsvException)
             {
-                Logger.Instance.WriteLine("Linkshare: MISSING FIELD ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("Linkshare: MISSING FIELD ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else if (e.Error is MalformedCsvException)
             {
-                Logger.Instance.WriteLine("Linkshare: MALFORMED CSV ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("Linkshare: MALFORMED CSV ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else
             {
-                Logger.Instance.WriteLine("Linkshare: PARSE ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("Linkshare: PARSE ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
         }

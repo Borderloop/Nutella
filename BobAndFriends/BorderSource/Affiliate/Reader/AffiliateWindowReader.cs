@@ -7,6 +7,7 @@ using BorderSource.ProductAssociation;
 using System.IO;
 using LumenWorks.Framework.IO.Csv;
 using BorderSource.Loggers;
+using BorderSource.Statistics;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -39,6 +40,7 @@ namespace BorderSource.Affiliate.Reader
                     List<Product> products = new List<Product>();
                     while (reader.ReadNextRecord())
                     {
+                        if (reader.FieldCount < 20) continue;
                         try
                         {
                             Product p = new Product()
@@ -83,17 +85,17 @@ namespace BorderSource.Affiliate.Reader
             // if the error is that a field is missing, then skip to next line
             if (e.Error is MissingFieldCsvException)
             {
-                Logger.Instance.WriteLine("AffiliateWindow: MISSING FIELD ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("AffiliateWindow: MISSING FIELD ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else if (e.Error is MalformedCsvException)
             {
-                Logger.Instance.WriteLine("AffiliateWindow: MALFORMED CSV ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("AffiliateWindow: MALFORMED CSV ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else
             {
-                Logger.Instance.WriteLine("AffiliateWindow: PARSE ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("AffiliateWindow: PARSE ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
         }

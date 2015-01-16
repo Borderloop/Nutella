@@ -73,10 +73,10 @@ namespace Betric
         /// <param name="db">The name of the database</param>
         /// <param name="uid">The user ID</param>
         /// <param name="pw">The password</param>
-        public void Connect(string ip, string db, string uid, string pw)
+        public void Connect(string ip, string db, string uid, string pw, string port)
         {
             // Make the connection
-            _conn = new MySqlConnection(@"Data Source=" + ip + ";Port=3307;Database=" + db + ";Uid=" + uid + ";Pwd=" + pw + ";Allow User Variables=True");
+            _conn = new MySqlConnection(@"Data Source=" + ip + ";Port=3307;Database=" + db + ";Uid=" + uid + ";Pwd=" + pw + ";Port=" + port + ";Allow User Variables=True");
             // Open the connection
             _conn.Open();
         }

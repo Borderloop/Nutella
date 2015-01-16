@@ -21,7 +21,7 @@ namespace BorderSource.Affiliate.Reader
                 case "CommissionJunction": reader = new CommissionJunctionReader(); break;
                 case "Daisycon": reader = new DaisyconReader(); break;
                 case "TradeDoubler": reader = new TradeDoublerReader(); break;
-                case "Tradetracker": reader = new TradeTrackerReader(); break;
+                case "TradeTracker": reader = new TradeTrackerReader(); break;
                 case "Webgains": reader = new WebgainsReader(); break;
                 case "Zanox": reader = new ZanoxReader(); break;
                 case "BorderBot": reader = new BorderBotReader(); break;
@@ -33,6 +33,7 @@ namespace BorderSource.Affiliate.Reader
                 case "Rene\'s Toppertjes": reader = new RenesToppertjesReader(); break;
                 case "JacobElektronik": reader = new JacobElektronikReader(); break;
                 case "PepperjamNetwork": reader = new PepperjamNetworkReader(); break;
+                case "Amazon": reader = new AmazonReader(); break;
                 default: reader = null; break;
             }
             return reader;

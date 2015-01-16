@@ -8,6 +8,7 @@ using LumenWorks.Framework.IO.Csv;
 using System.IO;
 using BorderSource.Loggers;
 using System.Globalization;
+using BorderSource.Statistics;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -86,17 +87,17 @@ namespace BorderSource.Affiliate.Reader
             // if the error is that a field is missing, then skip to next line
             if (e.Error is MissingFieldCsvException)
             {
-                Logger.Instance.WriteLine("JacobElektronik: MISSING FIELD ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("JacobElektronik: MISSING FIELD ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else if (e.Error is MalformedCsvException)
             {
-                Logger.Instance.WriteLine("JacobElektronik: MALFORMED CSV ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("JacobElektronik: MALFORMED CSV ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else
             {
-                Logger.Instance.WriteLine("JacobElektronik: PARSE ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("JacobElektronik: PARSE ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
         }
@@ -106,8 +107,7 @@ namespace BorderSource.Affiliate.Reader
             if (mass <= 6) return "9.99";
             else if (mass <= 12) return "20.99";
             else if (mass <= 20) return "24.99";
-            else if (mass <= 30) return "32.99";
-            else return "";
+            else return "32.99";
         }
     }
 }

@@ -67,6 +67,11 @@ namespace BorderSource.ProductAssociation
 
         public bool IsValidated { get; set; }
 
+        private List<string> _AdditionalEANs = new List<string>();
+        public List<string> AdditionalEANs { get { return _AdditionalEANs; } set { _AdditionalEANs = value; } }
+
+        public bool HasMultipleEANs { get { return _AdditionalEANs.Count > 0; } }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -93,7 +98,7 @@ namespace BorderSource.ProductAssociation
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return EAN.GetHashCode() ^ Title.GetHashCode();
         }
     }
 }

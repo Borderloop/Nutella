@@ -204,6 +204,17 @@ namespace BorderSource.Common
             return new string[] {splitted[0], sb.ToString()};
         }
 
+        public static string[] SplitAllButFirst(this string str, char c)
+        {
+            string[] splitted = str.Split(c);
+            string[] allButFirst = new string[splitted.Count() - 1];
+            for(int i = 1; i < allButFirst.Count(); i++)
+            {
+                allButFirst[i] = splitted[i].Trim();
+            }
+            return allButFirst;
+        }
+
         public static int GetCumulativeValuesFromRange(this int[] array, int start, int end)
         {
             int sum = 0;

@@ -85,7 +85,7 @@ namespace BobAndFriends.BobAndFriends
                     if (GlobalVariables.AddedProducts.ContainsKey(pair.Value))
                     {
                         GlobalVariables.AddedProducts[pair.Value].Add(pair.Key.Webshop);
-                        continue;
+                        //continue;
                     }
                     else
                     {

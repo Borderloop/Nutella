@@ -77,7 +77,7 @@ namespace BorderSource.Common
                 articleTable.description = Record.Description;
                 articleEntry.Property(a => a.description).IsModified = true;
             }
-            if (articleTable.image_loc == null || articleTable.image_loc == "")
+            if (articleTable.image_loc == null || articleTable.image_loc== "" || articleTable.image_loc == "-")
             {
                 articleTable.image_loc = Record.Image_Loc;
                 articleEntry.Property(a => a.image_loc).IsModified = true;
@@ -85,7 +85,24 @@ namespace BorderSource.Common
             long ean;
             bool eanIsParsable = long.TryParse(Record.EAN, out ean);
             // Loop through ean and sku collections to check if the ean or sku already exists. If not, add it
-            if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean))) articleTable.ean.Add(new ean { ean1 = ean, article_id = matchedArticleID });
+            if (eanIsParsable && !(articleTable.ean.Any(e => e.ean1 == ean)))
+            {
+                ean newEan = new ean { ean1 = ean, article_id = matchedArticleID };
+                articleTable.ean.Add(newEan);
+                context.Entry(newEan).State = EntityState.Added;
+            }
+            if (Record.HasMultipleEANs)
+            {
+                foreach(string eanString in Record.AdditionalEANs)
+                {
+                    if(eanString != null && !articleTable.ean.Any(e => e.ean1 == long.Parse(eanString)))
+                    {
+                        ean newEan = new ean { ean1 = long.Parse(eanString), article_id = matchedArticleID };
+                        articleTable.ean.Add(newEan);
+                        context.Entry(newEan).State = EntityState.Added;
+                    }
+                }
+            }
             // if (Record.SKU != "" && !(articleTable.sku.Any(s => s.sku1.ToUpper().Trim() == Record.SKU.ToUpper().Trim()))) articleTable.sku.Add(new sku { sku1 = Record.SKU, article_id = matchedArticleID });
 
 
@@ -145,6 +162,7 @@ namespace BorderSource.Common
                 last_modified = System.DateTime.Now
             };
             articleTable.product.Add(newProduct);
+            context.Entry(newProduct).State = EntityState.Added;
         }
 
         /// This method will send a product to the residu.
@@ -245,6 +263,7 @@ namespace BorderSource.Common
             art.product.Add(product);
 
             context.article.Add(art);
+            context.Entry(art).State = EntityState.Added;
         }
 
         public void DeleteFromVbobData(int id)
@@ -311,11 +330,19 @@ namespace BorderSource.Common
                 original.affiliate_name = UpdatedProduct.affiliate_name;
                 original.affiliate_unique_id = UpdatedProduct.affiliate_unique_id;
                 original.last_modified = UpdatedProduct.last_modified;
+                context.Entry(original).Property(o => o.ship_cost).IsModified = true;
+                context.Entry(original).Property(o => o.ship_time).IsModified = true;
+                context.Entry(original).Property(o => o.price).IsModified = true;
+                context.Entry(original).Property(o => o.direct_link).IsModified = true;
+                context.Entry(original).Property(o => o.affiliate_name).IsModified = true;
+                context.Entry(original).Property(o => o.affiliate_unique_id).IsModified = true;
+                context.Entry(original).Property(o => o.last_modified).IsModified = true;
             }
             else
             {
                 Console.WriteLine("Trying to save product where it should've been updated!");
                 context.product.Add(UpdatedProduct);
+                context.Entry(UpdatedProduct).State = EntityState.Added;
             }
         }
 

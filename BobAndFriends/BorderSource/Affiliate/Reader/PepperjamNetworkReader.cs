@@ -8,6 +8,7 @@ using LumenWorks.Framework.IO.Csv;
 using System.IO;
 using BorderSource.Loggers;
 using BorderSource.Common;
+using BorderSource.Statistics;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -46,17 +47,17 @@ namespace BorderSource.Affiliate.Reader
                             Product p = new Product()
                             {
                                 Affiliate = "PepperjamNetwork",
-                                Brand = reader[32],
-                                Category = reader[73],
+                                Brand = reader[33],
+                                Category = reader[74],
                                 Currency = reader[2],
-                                EAN = reader[66],
+                                EAN = reader[67],
                                 FileName = file,
-                                Price = reader[79],
+                                Price = reader[80],
                                 Stock = reader[76],
-                                Title = reader[40],
-                                SKU = reader[62],
+                                Title = reader[41],
+                                SKU = reader[63],
                                 Image_Loc = reader[25],
-                                Description = reader[12],
+                                Description = reader[13],
                                 Url = reader[9],
                                 Webshop = fileUrl
                             };
@@ -86,17 +87,17 @@ namespace BorderSource.Affiliate.Reader
             // if the error is that a field is missing, then skip to next line
             if (e.Error is MissingFieldCsvException)
             {
-                Logger.Instance.WriteLine("Pepperjam: MISSING FIELD ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("Pepperjam: MISSING FIELD ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else if (e.Error is MalformedCsvException)
             {
-                Logger.Instance.WriteLine("Pepperjam: MALFORMED CSV ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("Pepperjam: MALFORMED CSV ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else
             {
-                Logger.Instance.WriteLine("Pepperjam: PARSE ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("Pepperjam: PARSE ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
         }

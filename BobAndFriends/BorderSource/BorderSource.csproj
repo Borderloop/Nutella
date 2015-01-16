@@ -70,6 +70,7 @@
     <Compile Include="Affiliate\Reader\AffiliateReaderBase.cs" />
     <Compile Include="Affiliate\Reader\AffiliateWindowReader.cs" />
     <Compile Include="Affiliate\Reader\AffilinetReader.cs" />
+    <Compile Include="Affiliate\Reader\AmazonReader.cs" />
     <Compile Include="Affiliate\Reader\BelboonReader.cs" />
     <Compile Include="Affiliate\Reader\BolReader.cs" />
     <Compile Include="Affiliate\Reader\BorderBotReader.cs" />

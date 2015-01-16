@@ -50,7 +50,14 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Price":
-                        prop.SetValue(p, (prop.GetValue(p) as string).Replace(',', '.'));
+                        if (p.Webshop.Contains("amazon"))
+                        {
+                            string[] parts;
+                            if (p.Webshop.Contains("co.uk")) parts = (prop.GetValue(p) as string).Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                            else parts = (prop.GetValue(p) as string).Swap(',', '.').Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                            prop.SetValue(p, String.Join("", parts));
+                        }
+                        else prop.SetValue(p, (prop.GetValue(p) as string).Replace(',', '.'));
                         prop.SetValue(p, Regex.IsMatch(prop.GetValue(p) as string, @"^\d+(.\d{1,2})?$") ? prop.GetValue(p) : "");
                         if ((prop.GetValue(p) as string) == "")
                         {
@@ -167,7 +174,7 @@ namespace BorderSource.ProductAssociation
                         break;
 
                     case "Url":
-                        if ((prop.GetValue(p) as string).Length >= Maximums["max_directlink_size"] - 10)
+                        if ((prop.GetValue(p) as string).Length >= Maximums["max_directlink_size"])
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);
                             return false;
@@ -203,6 +210,13 @@ namespace BorderSource.ProductAssociation
                         break;
                     case "Description":
                         prop.SetValue(p, "");
+                        break;
+
+                    case "AdditionalEANs":
+                        List<string> EANs = prop.GetValue(p) as List<string>;
+                        if (EANs == null || EANs.Count == 0) break;
+                        List<string> CorrectEANs = EANs.Where(e => Regex.IsMatch(e, @"^[0-9]{10,13}$")).ToList();
+                        prop.SetValue(p, CorrectEANs);
                         break;
                     default: break;
                 }

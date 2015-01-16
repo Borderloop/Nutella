@@ -7,6 +7,7 @@ using BorderSource.ProductAssociation;
 using System.IO;
 using LumenWorks.Framework.IO.Csv;
 using BorderSource.Loggers;
+using BorderSource.Statistics;
 
 namespace BorderSource.Affiliate.Reader
 {
@@ -86,17 +87,17 @@ namespace BorderSource.Affiliate.Reader
             // if the error is that a field is missing, then skip to next line
             if (e.Error is MissingFieldCsvException)
             {
-                Logger.Instance.WriteLine("LDLC: MISSING FIELD ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("LDLC: MISSING FIELD ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else if (e.Error is MalformedCsvException)
             {
-                Logger.Instance.WriteLine("LDLC: MALFORMED CSV ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("LDLC: MALFORMED CSV ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
             else
             {
-                Logger.Instance.WriteLine("LDLC: PARSE ERROR OCCURRED");
+                GeneralStatisticsMapper.Instance.Increment("LDLC: PARSE ERROR OCCURRED");
                 e.Action = ParseErrorAction.AdvanceToNextLine;
             }
         }

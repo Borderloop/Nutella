@@ -143,6 +143,11 @@ namespace BorderSource.Affiliate.Reader
                                         p.Brand = _reader.Value;
                                         break;
 
+                                    case "currencyCode":
+                                        _reader.Read();
+                                        p.Currency = _reader.Value;
+                                        break;
+
                                     case "column":
                                         if (_reader.HasAttributes) { _reader.MoveToNextAttribute(); }
                                         switch (_reader.Value)

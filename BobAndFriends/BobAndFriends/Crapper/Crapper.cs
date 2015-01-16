@@ -29,11 +29,11 @@ namespace BobAndFriends.Crapper
             {
                 CleanupOldProducts(time);
                 CleanupEmtpyTitles();
-                CleanupDuplicateWebshopsPerArticle();
+                //CleanupDuplicateWebshopsPerArticle();
                 CleanupEanDupes();
                 CleanupUrlDupes();
-                CleanupUniqueIdDupes();                          
-                CleanupTitleDupes();               
+                //CleanupUniqueIdDupes();                          
+                //CleanupTitleDupes();               
             }
             catch (Exception e)
             {

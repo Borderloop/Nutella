@@ -83,7 +83,7 @@ namespace BobAndFriends.BobAndFriends
                 }
             }
 
-            var sortedBySize = (from file in files orderby new FileInfo(file.FileLocation).Length descending select file).ToArray<AffiliateFile>();
+            var sortedBySize = (from file in files orderby new FileInfo(file.FileLocation).Length ascending select file).ToArray<AffiliateFile>();
 
             Console.WriteLine("Creating readers for " + files.Count + " webshops.");
             List<Action> actions = new List<Action>();
@@ -101,7 +101,7 @@ namespace BobAndFriends.BobAndFriends
         public void ReadFile(AffiliateFile file)
         {
             ProductFilter filter = new ProductFilter();
-            filter.LogProperties = false;
+            filter.LogProperties = true;
             Dictionary<string, int> maximums = new Dictionary<string, int>();
             foreach (var pair in Properties.PropertyList.Where(p => p.Value is Property<int>))
             {
@@ -140,6 +140,7 @@ namespace BobAndFriends.BobAndFriends
                         GeneralStatisticsMapper.Instance.Increment("Products read");
                         if (!filter.CheckProperties(p))
                         {
+                            GeneralStatisticsMapper.Instance.Increment("Wrong products for " + p.Webshop);
                             WrongProducts.Add(p);
                             continue;
                         }

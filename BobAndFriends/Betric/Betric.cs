@@ -30,7 +30,7 @@ namespace Betric
         {
             string db = Microsoft.VisualBasic.Interaction.InputBox("Enter database name", "", "borderloop");
             string pw = Microsoft.VisualBasic.Interaction.InputBox("Enter database password", "", "");
-            Database.Instance.Connect("127.0.0.1", db, "root", pw);
+            Database.Instance.Connect("127.0.0.1", db, "root", pw, "3306");
             Categories = new List<Category>();
             DataTable CategoryTable = Database.Instance.Read("Select * from category");
             foreach (DataRow dr in CategoryTable.Rows)
@@ -56,7 +56,7 @@ namespace Betric
             {
                 DateTime fromTime = FromTime.Value;
                 DateTime untilTime = UntilTime.Value;
-                queries.Add("SELECT product_id AS id FROM product_clicks AS timefilter WHERE datetime >= @FROMTIME AND datetime <= @UNTILTIME");
+                queries.Add("SELECT article_id, id FROM article_history AS timefilter WHERE datetime >= @FROMTIME AND datetime <= @UNTILTIME");
                 parameters.Add(new Param<DateTime> { Name = "@FROMTIME", Value = fromTime });
                 parameters.Add(new Param<DateTime> { Name = "@UNTILTIME", Value = untilTime });
                 DateFilterLabel.Text = fromTime.ToShortDateString() + " tot " + untilTime.ToShortDateString();
@@ -82,7 +82,7 @@ namespace Betric
                     }
                 }
                 query += ")";
-                queries.Add("SELECT product_id AS id FROM product_clicks AS categoryfilter WHERE product_id IN (SELECT id FROM product WHERE article_id IN (" + query + "))");
+                queries.Add("SELECT article_id, id FROM article_history AS categoryfilter WHERE article_id IN (" + query + ")");
 
                 string categoryPath = cat1Text;
                 if (cat2Text != "") categoryPath += " > " + cat2Text;
@@ -109,7 +109,7 @@ namespace Betric
                     MaximumPriceText.Text = maxPrice.ToString();
                     Refresh();
                 }
-                queries.Add("SELECT product_id AS id FROM product_clicks AS pricefilter WHERE price >= @MINPRICE AND price <= @MAXPRICE");
+                queries.Add("SELECT article_id, id FROM article_history AS pricefilter WHERE price >= @MINPRICE AND price <= @MAXPRICE");
                 parameters.Add(new Param<decimal> { Name = "@MINPRICE", Value = minPrice });
                 parameters.Add(new Param<decimal> { Name = "@MAXPRICE", Value = maxPrice });
                 string priceFilterText = "";
@@ -137,7 +137,7 @@ namespace Betric
                         MaximumPriceDifferenceText.Text = maxPriceDif.ToString();
                         Refresh();
                     }
-                    queries.Add("SELECT product_id AS id FROM product_clicks AS pricedifferencefilter WHERE difference >= @MINDIFFERENCE AND difference <= @MAXDIFFERENCE");
+                    queries.Add("SELECT article_id, id FROM article_history AS pricedifferencefilter WHERE difference >= @MINDIFFERENCE AND difference <= @MAXDIFFERENCE");
                     parameters.Add(new Param<decimal> { Name = "@MINDIFFERENCE", Value = minPriceDif });
                     parameters.Add(new Param<decimal> { Name = "@MAXDIFFERENCE", Value = maxPriceDif });
                     string priceDifFilterText = "";
@@ -161,7 +161,7 @@ namespace Betric
                         MaximumPriceDifferenceText.Text = maxPriceDif.ToString();
                         Refresh();
                     }
-                    queries.Add("SELECT product_id AS id FROM product_clicks AS pricedifferencefilter WHERE difference_percentage >= @MINDIFFERENCEPERC AND difference <= @MAXDIFFERENCEPERC");
+                    queries.Add("SELECT article_id, id FROM article_history AS pricedifferencefilter WHERE difference_percentage >= @MINDIFFERENCEPERC AND difference <= @MAXDIFFERENCEPERC");
                     parameters.Add(new Param<decimal> { Name = "@MINDIFFERENCEPERC", Value = minPriceDif });
                     parameters.Add(new Param<decimal> { Name = "@MAXDIFFERENCEPERC", Value = maxPriceDif });
                     string priceDifFilterText = "";
@@ -183,9 +183,9 @@ namespace Betric
                     MessageBox.Show("Kies binnenland of buitenland of zet landenfilter uit.");
                     return;
                 }
-                queries.Add("SELECT product_id AS id FROM product_clicks AS countryfilter " 
-                            + "WHERE position = 1 AND product_id IN " 
-                                + "(SELECT product.id FROM product " 
+                queries.Add("SELECT article_id, id FROM article_history AS countryfilter " 
+                            + "WHERE position = 1 AND article_id IN " 
+                                + "(SELECT product.article_id FROM product " 
                                 + "INNER JOIN webshop ON webshop.url = product.webshop_url " 
                                 + "INNER JOIN country ON country.id = webshop.country_id WHERE country.id " + sign + " 1)"
                         );
@@ -198,7 +198,11 @@ namespace Betric
 
             Refresh();
 
-            
+            if (queries.Count == 0)
+            {
+                MessageBox.Show("No filters selected");
+                return;
+            }
             StringBuilder productQueryBuilder = new StringBuilder();
             bool firstQuery = true;
             foreach (string query in queries)
@@ -212,11 +216,10 @@ namespace Betric
                     productQueryBuilder.Append(" UNION ALL (" + query + ")");    
             }
 
-            string finalQuery = "SELECT product_clicks.clicks, product_clicks.position, webshop.country_id, product_clicks.difference, product_clicks.difference_percentage "
-                                + "FROM product "
-                                + "INNER JOIN product_clicks ON product_clicks.product_id = product.id "
-                                + "INNER JOIN webshop ON webshop.url = product.webshop_url "
-                                + "WHERE product_clicks.product_id IN (SELECT id FROM (" + productQueryBuilder.ToString() + ") AS filtered "
+            string finalQuery = "SELECT article_history.clicks, article_history.position, webshop.country_id, article_history.difference, article_history.difference_percentage "
+                                + "FROM article_history "
+                                + "INNER JOIN webshop ON webshop.url = article_history.webshop_url "
+                                + "WHERE article_history.id IN (SELECT id FROM (" + productQueryBuilder.ToString() + ") AS filtered "
                                 + "GROUP BY id HAVING COUNT(*) >= " + queries.Count + ")";
             DataTable data = Database.Instance.Read(finalQuery, parameters);
             if (data == null || data.Rows.Count == 0)

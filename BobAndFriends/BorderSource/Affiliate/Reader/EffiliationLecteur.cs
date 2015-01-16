@@ -45,7 +45,7 @@ namespace BorderSource.Affiliate.Reader
                 valeurLecteur.CreateReader(fichier, new XmlReaderSettings { CloseInput = true });
                 foreach (DualKeyDictionary<string, XmlNodeType, string> dkd in valeurLecteur.ReadProducts())
                 {
-                    produit.EAN = dkd["ean"][XmlNodeType.Element];
+                    produit.EAN = dkd["ean"][XmlNodeType.Element] ?? "";
                     produit.SKU = dkd["sku"][XmlNodeType.Element];
                     produit.Title = dkd["name"][XmlNodeType.Element];
                     produit.Brand = dkd["brand"][XmlNodeType.Element];
@@ -64,6 +64,8 @@ namespace BorderSource.Affiliate.Reader
                     
                     //  Performer le SHA256 encryption parce que le Effliation ne donner pas une unique id
                     produit.AffiliateProdID = (produit.Title + produit.Webshop).ToSHA256();
+
+                    if (produit.EAN.Contains('-')) produit.AdditionalEANs.AddRange(produit.EAN.SplitAllButFirst('-'));
 
                     produits.Add(produit);
                     produit = new Product();

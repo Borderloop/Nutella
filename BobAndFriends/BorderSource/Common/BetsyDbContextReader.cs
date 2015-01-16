@@ -67,10 +67,14 @@ namespace BorderSource.Common
             Dictionary<Product, int> dic = new Dictionary<Product, int>();
             long temp;
             List<long> eans = products.Where(p => long.TryParse(p.EAN, out temp)).Select(p => long.Parse(p.EAN)).ToList();
+            foreach (Product p in products) 
+                if (p.HasMultipleEANs) 
+                    eans.AddRange(p.AdditionalEANs.Select(ae => ae == null ? -1 : long.Parse(ae)));
             var query = db.ean.Where(e => eans.Contains(e.ean1)).ToList();
             foreach (var prod in query)
             {
                 Product key = products.Where(p => long.TryParse(p.EAN, out temp)).Where(p => long.Parse(p.EAN) == prod.ean1).FirstOrDefault();
+                if (key == null) key = products.Where(p => p.HasMultipleEANs).Where(p => p.AdditionalEANs.Any(s => s == null ? false : long.Parse(s) == prod.ean1)).FirstOrDefault();
                 int value = prod.article_id;               
                 if (key == null || value == 0) continue;
                 if (!dic.ContainsKey(key)) dic.Add(key, value);
