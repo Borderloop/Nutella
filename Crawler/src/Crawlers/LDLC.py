@@ -37,10 +37,11 @@ class Crawler():
                     ftp.retrbinary('RETR %s' %file.strip(), f.write)
                     break
                 except:
+                    print 'LDLC timed out on ' + file.strip()
                     tries += 1
-                    time.sleep(1)
+                    time.sleep(7)
 
-                    if tries == 10:
+                    if tries == 20:
                         continue
             f.close()
             print 'Done crawling ' + file.strip()

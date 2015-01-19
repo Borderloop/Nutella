@@ -113,13 +113,15 @@ class Crawler():
             try:
                 xmlFeed = urllib.URLopener()
                 xmlFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
+                xmlFeed.close()
                 print 'Done crawling ' + websiteURL
 
                 break
             except IOError:
+                print 'Effiliation timed out'
                 tries += 1
-                time.sleep(1)
-                if tries == 5:
+                time.sleep(7)
+                if tries == 20:
                     break
             except Exception as e:
                 self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))

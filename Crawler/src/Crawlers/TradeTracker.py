@@ -11,6 +11,7 @@ from CrawlerHelpScripts import logger
 
 import ssl
 
+
 class Crawler():
     def __init__(self):
         self.parseConfigFile()
@@ -126,14 +127,17 @@ class Crawler():
             try:
                 xmlFile = urllib.URLopener()
                 xmlFile.retrieve(feedURL, self.feedPath + campaignUrl + ".xml")
+                xmlFile.close()
                 print 'Done crawling ' + campaignUrl
 
                 break
-            except IOError as e:
-                print e
+            except IOError:
+                print 'TradeTracker timed out'
+                traceback.format_exc()
+
                 tries += 1
-                time.sleep(1)
-                if tries == 5:
+                time.sleep(7)
+                if tries == 20:
                     break
             except Exception:
                 self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())

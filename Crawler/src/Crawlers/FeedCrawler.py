@@ -57,7 +57,7 @@ class Crawler():
     #Gathers the data needed for downloading and correct file name    
     def gatherData(self):
         #Iterate trough all rows
-        for row in self.ws.iter_rows(row_offset=1):
+        for row in self.ws.iter_rows():
             for cell in row:
                 if cell.column == 'A':  # Column A contains the affiliate name.
                     affiliate = cell.value
@@ -101,29 +101,21 @@ class Crawler():
         website = website.replace('/', '$')
         # Download xml file and write it to a file
         # If the save fails, something is wrong with the file or directory name. Catch this error
-        tries = 0
-        while True:
-            try:
-                xmlFile = urllib.URLopener()
-                xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + '.' + fileType)
+        try:
+            xmlFile = urllib.URLopener()
+            xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + '.' + fileType)
+            xmlFile.close()
 
-                if fileType == 'zip':
-                    self.readZipFile(website, affiliate)
+            if fileType == 'zip':
+                self.readZipFile(website, affiliate)
 
-                print 'Done crawling ' + website
+            print 'Done crawling ' + website
 
-                break
-            except IOError:
-                tries += 1
-                time.sleep(1)
-                if tries == 5:
-                    break
-            except:
-                self.log.error(str(time.asctime(time.localtime(time.time()))) +
-                               ": " + traceback.format_exc())
-                self.log.info(str(time.asctime(time.localtime(time.time())))+": Failed saving file for: " + affiliate +
-                              " - " + website + ". See error log for more details")
-                break
+        except:
+            self.log.error(str(time.asctime(time.localtime(time.time()))) +
+                           ": " + traceback.format_exc())
+            self.log.info(str(time.asctime(time.localtime(time.time())))+": Failed saving file for: " + affiliate +
+                          " - " + website + ". See error log for more details")
 
         self.lock.acquire()
         try:

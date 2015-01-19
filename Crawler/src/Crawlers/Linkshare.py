@@ -62,7 +62,7 @@ class Crawler():
                     except TypeError:
                         break
 
-                    if 'rakuten' not in websiteURL:
+                    if 'rakuten' not in websiteURL and 'play.com' not in websiteURL:
                         while True:
                             if self.activeThreads < self.amountOfThreads:
                                 self.lock.acquire()
@@ -88,14 +88,17 @@ class Crawler():
                 zipFile.retrieve('ftp://' + self.user + ':' + self.password + '@aftp.linksynergy.com/' + affiliateID + '_' +
                                  self.sid + '_mp.txt.gz', self.feedPath + websiteURL + ".txt.gz")
 
+                zipFile.close()
+
                 self.readZipFile(websiteURL)
                 print 'Done crawling ' + websiteURL
 
                 break
             except IOError:
+                print 'Linkshare timed out'
                 tries += 1
-                time.sleep(1)
-                if tries == 5:
+                time.sleep(7)
+                if tries == 20:
                     break
             except Exception as e:
                 self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))

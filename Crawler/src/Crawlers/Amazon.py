@@ -52,7 +52,7 @@ class Crawler():
                         # Add the product data to a list so we can convert the list to xml once all products are parsed.
                         productDataList.append(productData)
 
-                    time.sleep(1)
+                    time.sleep(2)
 
             self.writeXML(productDataList, locale)
 
@@ -68,13 +68,24 @@ class Crawler():
     def gatherData(self, ASIN, locale):
         productData = dict()
 
-        try:
-            result = self.api.item_lookup(ASIN, ResponseGroup='Large')
-        except InvalidParameterValue:  # ID doesn't exist for this locale
-            return
-        except AWSError:  # Product not accessible through API
-            self.log.info('Not accessible through API: ' + ASIN + ' - Locale: ' + locale)
-            return
+        tries = 0
+        while True:
+            try:
+                result = self.api.item_lookup(ASIN, ResponseGroup='Large')
+                break
+            except InvalidParameterValue:  # ID doesn't exist for this locale
+                return
+            except AWSError:  # Product not accessible through API
+                self.log.info('Not accessible through API: ' + ASIN + ' - Locale: ' + locale)
+                return
+            except Exception as e:
+                print 'Amazon timed out'
+                print e
+                tries += 1
+                time.sleep(7)
+
+                if tries == 20:
+                    return
 
         for item in result.Items.Item:
             productData["asin"] = item.ASIN.text

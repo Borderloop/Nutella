@@ -32,6 +32,7 @@ class Crawler():
         try:
             csvFeed = urllib.URLopener()
             csvFeed.retrieve(self.csvURL, self.feedPath + 'www.jacob-computer.de' + ".txt")
+            csvFeed.close()
             print 'Done crawling Jacob Elektronik'
         except Exception as e:
             self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
