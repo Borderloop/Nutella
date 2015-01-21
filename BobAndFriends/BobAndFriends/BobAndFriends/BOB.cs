@@ -42,6 +42,11 @@ namespace BobAndFriends.BobAndFriends
         public void Process(Package p)
         {
             while (_maxValidationQueueSize == 0 ? false : ProductValidationQueue.Instance.Queue.Count > _maxValidationQueueSize) Thread.Sleep(1000);
+            if(p.products.Any(pr => pr.IsManuallyAdded))
+            {
+                ProcessManuallyAddedProducts(p);
+                return;
+            }
             Webshop ws = Lookup.WebshopLookup[p.Webshop.ToLower().Trim()];
             if (ws.Equals(null)) return;
             int countryID = ws.CountryId;
@@ -159,6 +164,60 @@ namespace BobAndFriends.BobAndFriends
                 }
             }                          
         }       
+
+        public void ProcessManuallyAddedProducts(Package p)
+        {
+            foreach (Product Record in p.products)
+            {
+                Webshop ws = Lookup.WebshopLookup[Record.Webshop.ToLower().Trim()];
+                if (ws.Equals(null)) return;
+                int countryID = ws.CountryId;
+                int aId = -1;
+
+                Lookup.CategorySynonymLookup = db.GetCategorySynonymsForWebshop(Record.Webshop.ToLower().Trim());
+                if (Properties.PropertyList["update_enabled"].GetValue<bool>())
+                {
+                    // Filter existing produits
+                    if ((aId = db.CheckIfProductExists(Record)) != -1)
+                    {
+                        ProductValidation validation = new ProductValidation();
+                        validation.Product = Record;
+                        validation.CountryId = countryID;
+                        validation.ArticleNumberOfExistingProduct = aId;
+                        validation.CategoryId = db.GetCategoryNumber(aId);
+                        ProductValidationQueue.Instance.Enqueue(validation);
+                        Record.IsValidated = true;
+                        continue;
+                    }
+                }
+
+                if (Properties.PropertyList["insert_match_enabled"].GetValue<bool>())
+                {
+                    if ((aId = db.CheckIfEanMatches(Record)) != -1)
+                    {
+                        if (GlobalVariables.AddedProducts.ContainsKey(aId))
+                        {
+                            GlobalVariables.AddedProducts[aId].Add(Record.Webshop);
+                            //continue;
+                        }
+                        else
+                        {
+                            GlobalVariables.AddedProducts.TryAdd(aId, new ConcurrentBag<string>());
+                            GlobalVariables.AddedProducts[aId].Add(Record.Webshop);
+                        }
+
+                        ProductValidation validation = new ProductValidation();
+                        validation.Product = Record;
+                        validation.CountryId = countryID;
+                        validation.ArticleNumberOfEanMatch = aId;
+                        validation.CategoryId = db.GetCategoryNumber(aId);
+                        ProductValidationQueue.Instance.Enqueue(validation);
+                        Record.IsValidated = true;
+                        continue;
+                    }
+                }
+            }
+        }
 
         public void Dispose()
         {

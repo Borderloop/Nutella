@@ -52,26 +52,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="51200">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BobAndFriends.exe" size="52736">
       <assemblyIdentity name="BobAndFriends" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>MkcIARrZVr98ERYwz0uZzlOu849ffNNLpUtj80MTFPk=</dsig:DigestValue>
+        <dsig:DigestValue>M3T02BKoer9Lq4hCDoyOe/I7zkIhenexhBS9Hwad5wQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="304640">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="305664">
       <assemblyIdentity name="BorderSource" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>HC6/eWw8FapVQ9Sq+pBmtZ6caWmLqtw8Ys5U+4+y5nE=</dsig:DigestValue>
+        <dsig:DigestValue>5Kgw49s8BDDNEbRuH3RtS7Ax8zjtE6hmwXFyxKUzD2Y=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

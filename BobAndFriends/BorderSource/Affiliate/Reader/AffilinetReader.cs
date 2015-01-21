@@ -105,7 +105,7 @@ namespace BorderSource.Affiliate.Reader
 
                                     case "LastUpdate":
                                         _reader.Read();
-                                        p.LastModified = _reader.Value;
+                                        //p.LastModified = _reader.Value;
                                         break;
 
                                     case "Shipping":
@@ -125,7 +125,7 @@ namespace BorderSource.Affiliate.Reader
                                                 p.Stock = _reader["Text"];
                                                 break;
                                             }
-                                            if (_reader.HasAttributes && _reader["Title"].Equals("ÇATEGORY"))
+                                            if (_reader.HasAttributes && _reader["Title"].Equals("CATEGORY"))
                                             {
                                                 _reader.Read();
                                                 p.Category = _reader["Text"];
@@ -142,11 +142,6 @@ namespace BorderSource.Affiliate.Reader
 
                                         break;
 
-                                    case "ProductID":
-                                        _reader.Read();
-                                        p.AffiliateProdID = _reader.Value;
-                                        break;
-
                                     case "Product":
                                         p = new Product();
                                         break;
@@ -158,6 +153,7 @@ namespace BorderSource.Affiliate.Reader
                                 p.Affiliate = "Affilinet";
                                 p.FileName = file;
                                 p.Webshop = fileUrl;
+                                p.AffiliateProdID = p.Url.ToSHA256();
                                 products.Add(p);
                             }
 

@@ -13,6 +13,7 @@ using System.Data.Entity.Core.EntityClient;
 using MySql.Data.MySqlClient;
 using BorderSource.Loggers;
 using BorderSource.Property;
+using System.Data.Entity.Infrastructure;
 
 namespace Baximus
 {
@@ -109,7 +110,8 @@ namespace Baximus
                 }
                 else
                 {
-                    db.biggest_price_differences.Add(bpd);                   
+                    db.biggest_price_differences.Add(bpd);
+                    db.Entry(bpd).State = EntityState.Added;
                 }
 
                 if ((int)(((double)count / (double)articleList.Count) * 100) >= perc)
@@ -119,8 +121,24 @@ namespace Baximus
                 }
 
                 if (count % 1000 == 0)
-                    db.SaveChanges();
-
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        Console.WriteLine("Caught DbUpdateConcurrenryException, trying refresh.");
+                        var objContext = ((IObjectContextAdapter)db).ObjectContext;
+                        try
+                        {
+                            objContext.Refresh(RefreshMode.StoreWins, ex.Entries.Select(e => e.Entity));
+                        }
+                        catch (InvalidOperationException ioe)
+                        {
+                            Console.WriteLine("Refresh didn't work, lost 500 products. Error: " + ioe.Message);
+                            Console.WriteLine("Moving on.");
+                        }
+                    }
             }
             Console.Write("Saving changes to database...");
             db.SaveChanges();

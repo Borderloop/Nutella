@@ -50,7 +50,7 @@ namespace BorderSource.Common
         public Dictionary<Product, int> GetExistingProductIds(ICollection<Product> products, string webshop)
         {
             Dictionary<Product, int> dic = new Dictionary<Product, int>();
-            List<string> ids = products.Select(p => p.AffiliateProdID).ToList();
+            List<string> ids = products.Select(p => p.AffiliateProdID.ToLower().Trim()).ToList();
             var query = db.product.Where(p => p.webshop_url == webshop && ids.Contains(p.affiliate_unique_id));
             foreach (var prod in query)
             {
@@ -96,6 +96,20 @@ namespace BorderSource.Common
                 if (!dic.ContainsKey(key)) dic.Add(key, value);
             }
             return dic;
+        }
+
+        public int CheckIfProductExists(Product p)
+        {
+            product result = db.product.Where(pr => pr.webshop_url == p.Webshop && pr.affiliate_unique_id == p.AffiliateProdID).FirstOrDefault();
+            return result == null ? -1 : result.article_id;
+        }
+
+        public int CheckIfEanMatches(Product p)
+        {
+            long temp;
+            if (!long.TryParse(p.EAN, out temp)) return -1;
+            ean result = db.ean.Where(e => e.ean1 == temp).FirstOrDefault();
+            return result == null ? -1 : result.article_id;
         }
 
         /// <summary>

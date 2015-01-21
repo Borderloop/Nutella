@@ -86,6 +86,8 @@ namespace BobAndFriends.BobAndFriends
             var sortedBySize = (from file in files orderby new FileInfo(file.FileLocation).Length ascending select file).ToArray<AffiliateFile>();
 
             Console.WriteLine("Creating readers for " + files.Count + " webshops.");
+            //Failsafe
+            if (files.Count < 200) Environment.Exit(1);
             List<Action> actions = new List<Action>();
 
             for (int i = 0; i < files.Count; i++)

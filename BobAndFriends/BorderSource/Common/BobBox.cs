@@ -59,6 +59,36 @@ namespace BorderSource.Common
             // context.Configuration.ValidateOnSaveEnabled = false;
         }
 
+        public void method()
+        {
+            using(BetsyModel context = new BetsyModel(ConnectionString))
+            {
+                //BetsyModel is the DbContext
+                article newArticle = new article();
+                newArticle.brand = "Brand";
+                newArticle.description = "Some description";
+                newArticle.image_loc = "The location of the image";
+
+                product newProduct = new product();
+                newProduct.affiliate_name = "Some affiliate name";
+                newProduct.price = 29.00M; //Should be a decimal
+                //etc.
+
+                //Add the product to the article
+                newArticle.product.Add(newProduct); 
+
+                //Add the article to the database
+                context.article.Add(newArticle); 
+
+                //Set their state to added, else it will not be persisted to the database
+                context.Entry(newArticle).State = EntityState.Added;
+                context.Entry(newProduct).State = EntityState.Added;
+
+                //Save the changes. All changes will be uploaded to the database
+                context.SaveChanges();
+            }
+        }
+
         public void SaveMatch(Product Record, int matchedArticleID, int countryID)
         {
             // First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.
@@ -161,8 +191,11 @@ namespace BorderSource.Common
                 affiliate_unique_id = Record.AffiliateProdID,
                 last_modified = System.DateTime.Now
             };
-            articleTable.product.Add(newProduct);
-            context.Entry(newProduct).State = EntityState.Added;
+            if (!(newProduct.direct_link == ""))
+            {
+                articleTable.product.Add(newProduct);
+                context.Entry(newProduct).State = EntityState.Added;
+            }
         }
 
         /// This method will send a product to the residu.
@@ -453,6 +486,12 @@ namespace BorderSource.Common
                 else
                 {
                     Console.WriteLine("Lost 500 products due to an error; " + e.Message);
+                    Exception inner = e.InnerException;
+                    while (inner != null)
+                    {
+                        Console.WriteLine("Inner: " + e.InnerException.Message);
+                        inner = e.InnerException.InnerException;
+                    }
                     GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
             }
@@ -506,6 +545,12 @@ namespace BorderSource.Common
                 else
                 {
                     Console.WriteLine("Lost 500 products due to an error; " + e.Message);
+                    Exception inner = e.InnerException;
+                    while(inner != null)
+                    {
+                        Console.WriteLine("Inner: " + e.InnerException.Message);
+                        inner = e.InnerException.InnerException;
+                    }
                     GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
             }

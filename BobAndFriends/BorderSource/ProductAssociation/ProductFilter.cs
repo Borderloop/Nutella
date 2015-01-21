@@ -41,7 +41,10 @@ namespace BorderSource.ProductAssociation
                 switch (prop.Name)
                 {
                     case "EAN":
-                        prop.SetValue(p, Regex.IsMatch(prop.GetValue(p) as string, @"^[0-9]{10,13}$") ? (prop.GetValue(p) as string).Trim() : "");
+                        string rawEan = prop.GetValue(p) as string;
+                        long tempEan;
+                        if (!long.TryParse(rawEan, out tempEan)) return false;
+                        prop.SetValue(p, Regex.IsMatch(tempEan.ToString(), @"^[0-9]{10,13}$") ? tempEan.ToString() : "");
                         if ((prop.GetValue(p) as string).Contains("00000000000") || (prop.GetValue(p) as string).Contains("999999999999"))
                         {
                             if (LogProperties) PropertyStatisticsMapper.Instance.Add(prop.Name, prop.GetValue(p) as string);

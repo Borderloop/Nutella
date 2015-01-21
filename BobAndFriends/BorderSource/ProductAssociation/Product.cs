@@ -59,6 +59,9 @@ namespace BorderSource.ProductAssociation
         private string _SKU = "";
         public string SKU { get { return _SKU; } set { _SKU = value; } }
 
+        private bool _IsManuallyAdded = false;
+        public bool IsManuallyAdded { get { return _IsManuallyAdded; } set { _IsManuallyAdded = value; } }
+
         // These properties do not need private values since they are always set.
         public string Affiliate { get; set; }
         public string AffiliateProdID { get; set; }

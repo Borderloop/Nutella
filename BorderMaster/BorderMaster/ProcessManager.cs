@@ -53,6 +53,24 @@ namespace BorderMaster
                 Console.WriteLine("Started running at " + StartTime);
                 Console.WriteLine(busyWith);
                 Console.WriteLine(nextUp);
+                string asyncsRunning = "Async programmes running: ";
+                bool first = true;
+                foreach(List<string> list in AsyncProcessPool.Select(v => v.ToList()))
+                {
+                    foreach(string s in list)
+                    {
+                        if (first)
+                        {
+                            asyncsRunning += Path.GetFileNameWithoutExtension(s);
+                            first = false;
+                        }
+                        else
+                        {
+                            asyncsRunning += ", " + Path.GetFileNameWithoutExtension(s);
+                        }
+                    }
+                }
+                if(!first) Console.WriteLine(asyncsRunning);
                 Action[] actions = new Action[currentProcessInfo.Count];
                 for (int i = 0; i < currentProcessInfo.Count; i++)
                 {
@@ -70,13 +88,13 @@ namespace BorderMaster
         }
 
         public void RunAsyncProcessPool()
-        {
-            /*
+        {           
             Action[] actionList = new Action[AsyncProcessPool.Count];
             for(int i = 0; i < AsyncProcessPool.Count; i++)
             {
-                if (!AsyncProcessPool.ContainsKey(i)) continue;
-                string processPath = AsyncProcessPool[i];
+                if (!AsyncProcessPool.Contains(i)) continue;
+                string processPath = AsyncProcessPool[i].FirstOrDefault();
+                if (processPath == null) continue;
                 Action action = new Action(() =>
                 {
                     ProcessStartInfo info = new ProcessStartInfo(processPath);
@@ -87,7 +105,7 @@ namespace BorderMaster
                 actionList[i] = action;
             }
             Parallel.Invoke(actionList);
-             */
+             
         }
     }
 }

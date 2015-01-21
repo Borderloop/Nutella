@@ -59,6 +59,7 @@ namespace BorderSource.Affiliate.Reader
                     p.Affiliate = "None";
                     p.FileName = file;
                     p.Webshop = dkd["Webshop"][XmlNodeType.Element];
+                    p.IsManuallyAdded = true;
                     products.Add(p);
                     p = new Product();
 

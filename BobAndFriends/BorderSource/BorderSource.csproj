@@ -201,7 +201,6 @@
     <Compile Include="Statistics\PropertyStatistics.cs" />
     <Compile Include="Statistics\PropertyStatisticsMapper.cs" />
     <Compile Include="Loggers\QueryLogger.cs" />
-    <Compile Include="Common\Statics.cs" />
     <Compile Include="Statistics\RatioStatistics.cs" />
     <Compile Include="Statistics\RatioStatisticsMapper.cs" />
     <Compile Include="Statistics\TimeStatisticsMapper.cs" />
