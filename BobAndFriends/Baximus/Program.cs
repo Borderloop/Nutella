@@ -105,6 +105,7 @@ namespace Baximus
                         if (!entryValue.Equals(bpdValue))
                         {
                             entry.GetType().GetProperty(p.Name).SetValue(entry, bpdValue);
+                            db.Entry(entry).Property(p.Name).IsModified = true;
                         }
                     }
                 }
@@ -259,6 +260,7 @@ namespace Baximus
             ConnectionString = entityConnStrBuilder.ConnectionString;
             #endregion ConnectionString
             db = new BetsyModel(ConnectionString);
+            db.Configuration.AutoDetectChangesEnabled = false;
             #region articleList
             articleList = new List<article>();
             FillArticleList();
