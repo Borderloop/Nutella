@@ -8,6 +8,7 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 from ConfigParser import SafeConfigParser
+from threading import Thread, Lock
 
 from CrawlerHelpScripts import logger
 
@@ -23,13 +24,19 @@ class Crawler():
     prevUrl = ""  # Used to check if the previous campaign is from the same company.
     x = 2  # Used to name files of companies that use multiple xml files
 
+    amountOfThreads = ''
+    activeThreads = 0
+
     log = logger.createLogger("EffiliationLogger", "Effiliation")
+
+    lock = Lock()
 
     # This procedure controls the main flow of the program.
     def main(self):
         root = self.getXMLFeed()
 
-        self.gatherData(root)
+        if root != None:
+            self.gatherData(root)
 
     # Procedure to parse the config file
     def parseConfigFile(self):
@@ -38,12 +45,23 @@ class Crawler():
         self.key = parser.get('Effiliation', 'key')
         self.filter = parser.get('Effiliation', 'filter')
         self.feedPath = parser.get('Effiliation', 'feedPath')
+        self.amountOfThreads = int(parser.get('General', 'amountofthreads'))
 
     # This procedure gets the xml feed, which contains all programs and links to product feeds.
     def getXMLFeed(self):
         xmlFeedUrl = 'http://apiv2.effiliation.com/apiv2/productfeeds.xml?key=' + self.key + '&filter=mines&fields=' + self.filter
 
-        xmlfile = urllib2.urlopen(xmlFeedUrl)
+        tries = 0
+        while True:
+            try:
+                xmlfile = urllib2.urlopen(xmlFeedUrl)
+                break
+            except IOError as e:
+                print e
+                tries += 1
+                time.sleep(1)
+                if tries == 5:
+                    return None
 
         #Create a string from the data
         data = xmlfile.read()
@@ -69,18 +87,51 @@ class Crawler():
                             websiteURL = websiteURL + " " + str(self.x)
                             self.x += 1
 
-                        self.save(websiteURL, feedURL)
+                        self.startThread(websiteURL, feedURL)
+
+     # Starts a thread to save feed.
+    def startThread(self, websiteURL, feedURL):
+        while True:
+            if self.activeThreads < self.amountOfThreads:
+                self.lock.acquire()
+                try:
+                    t = Thread(target=self.save, args=(websiteURL, feedURL))
+                    t.start()
+
+                    self.activeThreads += 1
+                finally:
+                    self.lock.release()
+                break
 
     # Downloads and saves the xml file under the correct name
     def save(self, websiteURL, feedURL):
         print 'Crawling ' + websiteURL
 
-        #If the save fails, catch the error.
-        try:
-            xmlFeed = urllib.URLopener()
-            xmlFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
-            print 'Done crawling ' + websiteURL
-        except Exception as e:
-            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
+        tries = 0
+        while True:
+            #If the save fails, catch the error.
+            try:
+                xmlFeed = urllib.URLopener()
+                xmlFeed.retrieve(feedURL, self.feedPath + websiteURL + ".xml")
+                xmlFeed.close()
+                print 'Done crawling ' + websiteURL
+
+                break
+            except IOError:
+                print 'Effiliation timed out'
+                tries += 1
+                time.sleep(7)
+                if tries == 20:
+                    break
+            except Exception as e:
+                self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
+
+                break
 
         self.prevUrl = websiteURL
+
+        self.lock.acquire()
+        try:
+            self.activeThreads -= 1
+        finally:
+            self.lock.release()

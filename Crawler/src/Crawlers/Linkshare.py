@@ -62,16 +62,17 @@ class Crawler():
                     except TypeError:
                         break
 
-                    while True:
-                        if self.activeThreads < self.amountOfThreads:
-                            self.lock.acquire()
-                            try:
-                                t = Thread(target=self.save, args=(affiliateID, websiteURL))
-                                t.start()
+                    if 'rakuten' not in websiteURL and 'play.com' not in websiteURL:
+                        while True:
+                            if self.activeThreads < self.amountOfThreads:
+                                self.lock.acquire()
+                                try:
+                                    t = Thread(target=self.save, args=(affiliateID, websiteURL))
+                                    t.start()
 
-                                self.activeThreads += 1
-                            finally:
-                                self.lock.release()
+                                    self.activeThreads += 1
+                                finally:
+                                    self.lock.release()
                             break
 
     # Downloads and saves the files under the correct name
@@ -79,17 +80,31 @@ class Crawler():
         print 'Crawling ' + websiteURL
 
         # If the save fails, something is wrong with the file or directory name. Catch this error
-        try:
-            zipFile = urllib.URLopener()
+        tries = 0
+        while True:
+            try:
+                zipFile = urllib.URLopener()
 
-            zipFile.retrieve('ftp://' + self.user + ':' + self.password + '@aftp.linksynergy.com/' + affiliateID + '_' +
-                             self.sid + '_mp.txt.gz', self.feedPath + websiteURL + ".txt.gz")
+                zipFile.retrieve('ftp://' + self.user + ':' + self.password + '@aftp.linksynergy.com/' + affiliateID + '_' +
+                                 self.sid + '_mp.txt.gz', self.feedPath + websiteURL + ".txt.gz")
 
-            self.readZipFile(websiteURL)
-            print 'Done crawling ' + websiteURL
-        except Exception as e:
-            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
-            self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + websiteURL)
+                zipFile.close()
+
+                self.readZipFile(websiteURL)
+                print 'Done crawling ' + websiteURL
+
+                break
+            except IOError:
+                print 'Linkshare timed out'
+                tries += 1
+                time.sleep(7)
+                if tries == 20:
+                    break
+            except Exception as e:
+                self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + str(e))
+                self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + websiteURL)
+
+                break
 
         self.lock.acquire()
         try:
@@ -99,8 +114,6 @@ class Crawler():
 
     # This procedure is used to read zip files and extract their contents and afterwards delete the zip file.
     def readZipFile(self, website):
-        data = ''
-
         zipFile = gzip.open(self.feedPath + website + '.txt.gz')
         csvFile = open(self.feedPath + website + '.csv', 'a')
 

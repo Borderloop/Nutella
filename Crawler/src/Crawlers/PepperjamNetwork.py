@@ -42,7 +42,20 @@ class Crawler():
     # This procedure gets id's and website urls from all joined advertiser programs.
     def getAdvertisers(self):
         url = "http://api.pepperjamnetwork.com/20120402/publisher/advertiser?apiKey=%s&format=xml&status=joined" % self.key
-        advertiserXML = urllib2.urlopen(url)
+
+        tries = 0
+        while True:
+            try:
+                advertiserXML = urllib2.urlopen(url)
+                break
+            except Exception:
+                print 'Pepperjam timed out'
+                tries += 1
+                time.sleep(7)
+
+                if tries == 3:
+                    return
+
 
         data = advertiserXML.read()
         advertiserXML.close()
@@ -79,19 +92,29 @@ class Crawler():
         feedURL = "http://api.pepperjamnetwork.com/20120402/publisher/creative/product?apiKey=%s&format=csv&programIds=%s" % (self.key, advertiserID)
 
         # If the save fails, something is wrong with the file or directory name. Catch this error
-        try:
-            csvFile = urllib.URLopener()
-            csvFile.retrieve(feedURL, self.feedPath + websiteURL + ".csv")
-            print 'Done crawling ' + websiteURL
-        except:
-            self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
-            self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + websiteURL)
+        tries = 0
+        while True:
+            try:
+                csvFile = urllib.URLopener()
+                csvFile.retrieve(feedURL, self.feedPath + websiteURL + ".csv")
+                csvFile.close()
+                print 'Done crawling ' + websiteURL
+
+                break
+            except IOError:
+                'PepperjamNetwork timed out'
+                tries += 1
+                time.sleep(7)
+                if tries == 20:
+                    break
+            except:
+                self.log.error(str(time.asctime(time.localtime(time.time()))) + ": " + traceback.format_exc())
+                self.log.info(str(time.asctime(time.localtime(time.time()))) + ": Failed:" + websiteURL)
+
+                break
 
         self.lock.acquire()
         try:
             self.activeThreads -= 1
         finally:
             self.lock.release()
-
-
-Crawler().main()

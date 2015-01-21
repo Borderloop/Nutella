@@ -1,6 +1,8 @@
 from ftplib import FTP
 from ConfigParser import SafeConfigParser
 
+import time
+
 
 class Crawler():
     def __init__(self):
@@ -28,7 +30,19 @@ class Crawler():
         for file in fileNames:
             print 'Crawling ' + file.strip()
             f = open(self.feedPath + file.strip(), 'w')
-            ftp.retrbinary('RETR %s' %file.strip(), f.write)
+
+            tries = 0
+            while True:
+                try:
+                    ftp.retrbinary('RETR %s' %file.strip(), f.write)
+                except:
+                    print 'Bol timed out'
+                    tries += 1
+                    time.sleep(7)
+
+                    if tries == 20:
+                        break
+
             f.close()
             print 'Done crawling ' + file.strip()
 

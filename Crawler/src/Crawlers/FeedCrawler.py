@@ -57,7 +57,7 @@ class Crawler():
     #Gathers the data needed for downloading and correct file name    
     def gatherData(self):
         #Iterate trough all rows
-        for row in self.ws.iter_rows(row_offset=1):
+        for row in self.ws.iter_rows():
             for cell in row:
                 if cell.column == 'A':  # Column A contains the affiliate name.
                     affiliate = cell.value
@@ -104,6 +104,7 @@ class Crawler():
         try:
             xmlFile = urllib.URLopener()
             xmlFile.retrieve(url, self.feedPath + affiliate + "/" + website + '.' + fileType)
+            xmlFile.close()
 
             if fileType == 'zip':
                 self.readZipFile(website, affiliate)
