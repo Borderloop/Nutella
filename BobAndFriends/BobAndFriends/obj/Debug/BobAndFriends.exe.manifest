@@ -59,19 +59,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>l8SZ2J0rWcXeXE4nvQbsKEZhKe96Rt5qIwUIDxQyi9c=</dsig:DigestValue>
+        <dsig:DigestValue>wp+zp4Bc4nEF8ZixeFlHkr3DQASKagb2O2ltDEa/ShQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="306176">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BorderSource.dll" size="305664">
       <assemblyIdentity name="BorderSource" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>ixe/mq8ypquGNLyHKHW71JwbuK/YeiF2fHyYSbwNmhs=</dsig:DigestValue>
+        <dsig:DigestValue>xj3Qe75OKHwZfCesoZA9xDx39HWX7eTB6hnuQWPWIN8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

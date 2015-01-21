@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A412C7E8-D55D-4388-97E4-267F97714EAB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MasterGUI</RootNamespace>
+    <AssemblyName>MasterGUI</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.2-beta2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.2-beta2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.5\Assemblies\v4.5\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.9.5\Assemblies\v4.5\MySql.Data.Entity.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddNewEanPopUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddNewEanPopUp.Designer.cs">
+      <DependentUpon>AddNewEanPopUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BorderContextWrapper.cs" />
+    <Compile Include="ConnectionPopUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConnectionPopUp.Designer.cs">
+      <DependentUpon>ConnectionPopUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateNewArticlePopUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateNewArticlePopUp.Designer.cs">
+      <DependentUpon>CreateNewArticlePopUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateNewCategoryPopUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateNewCategoryPopUp.Designer.cs">
+      <DependentUpon>CreateNewCategoryPopUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateNewProductPopUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateNewProductPopUp.Designer.cs">
+      <DependentUpon>CreateNewProductPopUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DbContext\affiliate.cs" />
+    <Compile Include="DbContext\article.cs" />
+    <Compile Include="DbContext\articletemp.cs" />
+    <Compile Include="DbContext\BetsyModel.Context.cs" />
+    <Compile Include="DbContext\BetsyModel.cs" />
+    <Compile Include="DbContext\BetsyModel.Designer.cs" />
+    <Compile Include="DbContext\biggest_price_differences.cs" />
+    <Compile Include="DbContext\category.cs" />
+    <Compile Include="DbContext\categorytemp.cs" />
+    <Compile Include="DbContext\category_synonym.cs" />
+    <Compile Include="DbContext\country.cs" />
+    <Compile Include="DbContext\country_price_differences.cs" />
+    <Compile Include="DbContext\ean.cs" />
+    <Compile Include="DbContext\eantemp.cs" />
+    <Compile Include="DbContext\language.cs" />
+    <Compile Include="DbContext\mark.cs" />
+    <Compile Include="DbContext\payment_method.cs" />
+    <Compile Include="DbContext\product.cs" />
+    <Compile Include="DbContext\residue.cs" />
+    <Compile Include="DbContext\sender.cs" />
+    <Compile Include="DbContext\sku.cs" />
+    <Compile Include="DbContext\skutemp.cs" />
+    <Compile Include="DbContext\title.cs" />
+    <Compile Include="DbContext\titletemp.cs" />
+    <Compile Include="DbContext\title_synonym.cs" />
+    <Compile Include="DbContext\vbobdata.cs" />
+    <Compile Include="DbContext\vbob_suggested.cs" />
+    <Compile Include="DbContext\webshop.cs" />
+    <Compile Include="NewMasterGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewMasterGUI.Designer.cs">
+      <DependentUpon>NewMasterGUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="SelfAddedProductsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelfAddedProductsForm.Designer.cs">
+      <DependentUpon>SelfAddedProductsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AddNewEanPopUp.resx">
+      <DependentUpon>AddNewEanPopUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConnectionPopUp.resx">
+      <DependentUpon>ConnectionPopUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateNewArticlePopUp.resx">
+      <DependentUpon>CreateNewArticlePopUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateNewCategoryPopUp.resx">
+      <DependentUpon>CreateNewCategoryPopUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateNewProductPopUp.resx">
+      <DependentUpon>CreateNewProductPopUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewMasterGUI.resx">
+      <DependentUpon>NewMasterGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="SelfAddedProductsForm.resx">
+      <DependentUpon>SelfAddedProductsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BorderSource\BorderSource.csproj">
+      <Project>{915d82b0-59bd-441f-bff4-5d5898b6391d}</Project>
+      <Name>BorderSource</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\..\..\GitHub\Nutella\BobAndFriends\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\..\..\..\GitHub\Nutella\BobAndFriends\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

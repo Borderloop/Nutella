@@ -59,36 +59,6 @@ namespace BorderSource.Common
             // context.Configuration.ValidateOnSaveEnabled = false;
         }
 
-        public void method()
-        {
-            using(BetsyModel context = new BetsyModel(ConnectionString))
-            {
-                //BetsyModel is the DbContext
-                article newArticle = new article();
-                newArticle.brand = "Brand";
-                newArticle.description = "Some description";
-                newArticle.image_loc = "The location of the image";
-
-                product newProduct = new product();
-                newProduct.affiliate_name = "Some affiliate name";
-                newProduct.price = 29.00M; //Should be a decimal
-                //etc.
-
-                //Add the product to the article
-                newArticle.product.Add(newProduct); 
-
-                //Add the article to the database
-                context.article.Add(newArticle); 
-
-                //Set their state to added, else it will not be persisted to the database
-                context.Entry(newArticle).State = EntityState.Added;
-                context.Entry(newProduct).State = EntityState.Added;
-
-                //Save the changes. All changes will be uploaded to the database
-                context.SaveChanges();
-            }
-        }
-
         public void SaveMatch(Product Record, int matchedArticleID, int countryID)
         {
             // First get all data needed for matching. Ean, sku and title_synonym are seperate because they can store multiple values.

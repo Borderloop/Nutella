@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Betric", "Betric\Betric.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bumper", "Bumper\Bumper.csproj", "{74D14B80-48EA-4FFF-8FDA-322B7D7AE6B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterGUI", "..\..\..\Visual Studio 2013\Projects\MasterGUI\MasterGUI\MasterGUI.csproj", "{A412C7E8-D55D-4388-97E4-267F97714EAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterGUI", "MasterGUI\MasterGUI\MasterGUI.csproj", "{A412C7E8-D55D-4388-97E4-267F97714EAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
