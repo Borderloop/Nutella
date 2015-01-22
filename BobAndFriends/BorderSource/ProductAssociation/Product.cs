@@ -101,7 +101,7 @@ namespace BorderSource.ProductAssociation
 
         public override int GetHashCode()
         {
-            return EAN.GetHashCode() ^ Title.GetHashCode();
+            return Url.GetHashCode() ^ EAN.GetHashCode();
         }
     }
 }

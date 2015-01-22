@@ -103,7 +103,7 @@ namespace BobAndFriends.BobAndFriends
         public void ReadFile(AffiliateFile file)
         {
             ProductFilter filter = new ProductFilter();
-            filter.LogProperties = true;
+            filter.LogProperties = false;
             Dictionary<string, int> maximums = new Dictionary<string, int>();
             foreach (var pair in Properties.PropertyList.Where(p => p.Value is Property<int>))
             {
