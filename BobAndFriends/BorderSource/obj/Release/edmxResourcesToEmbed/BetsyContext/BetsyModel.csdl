@@ -197,7 +197,7 @@
       <PropertyRef Name="web_url" />
     </Key>
     <Property Name="category_id" Type="Int32" Nullable="false" />
-    <Property Name="description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="description" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
     <Property Name="web_url" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
     <NavigationProperty Name="category" Relationship="BetsyModel.Model.fk_category_synonyms_category" FromRole="category_synonym" ToRole="category" />
   </EntityType>
@@ -275,7 +275,7 @@
     <Property Name="ship_cost" Type="Decimal" />
     <Property Name="price" Type="Decimal" Nullable="false" />
     <Property Name="webshop_url" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-    <Property Name="direct_link" Type="String" Nullable="false" MaxLength="350" FixedLength="false" Unicode="false" />
+    <Property Name="direct_link" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
     <Property Name="last_modified" Type="DateTime" Nullable="false" />
     <Property Name="valid_until" Type="DateTime" Nullable="false" />
     <Property Name="affiliate_name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -312,7 +312,7 @@
       <PropertyRef Name="sku1" />
       <PropertyRef Name="article_id" />
     </Key>
-    <Property Name="sku1" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="sku1" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
     <Property Name="article_id" Type="Int32" Nullable="false" />
     <NavigationProperty Name="article" Relationship="BetsyModel.Model.fk_sku_article" FromRole="sku" ToRole="article" />
   </EntityType>

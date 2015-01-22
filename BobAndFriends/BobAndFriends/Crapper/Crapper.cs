@@ -22,6 +22,159 @@ namespace BobAndFriends.Crapper
     class Crapper
     {
         private static string ConnectionString;
+
+        public static void Parse()
+        {
+            HashSet<long> addedEans = new HashSet<long>();
+            HashSet<string> newCategories = new HashSet<string>();
+            Initialize();
+            using (var db = new BetsyModel(ConnectionString))
+            {
+                var eans = db.Database.SqlQuery<long>("SELECT ean FROM (SELECT ean FROM eantemp AS temp UNION ALL SELECT ean FROM ean AS current) AS together GROUP BY ean HAVING count(ean) = 1").ToList();
+                Console.WriteLine("Parsing {0} eans...", eans.Count);
+                int i = 0;
+                foreach (long ean in eans)
+                {
+                    var aId = db.Database.SqlQuery<long>("SELECT article_id FROM eantemp WHERE ean = @EAN", new MySqlParameter("@EAN", ean)).ToList();
+                    var otherEans = db.Database.SqlQuery<long>("SELECT ean FROM eantemp WHERE article_id = @AID", new MySqlParameter("@AID", aId)).ToList();
+                    if (otherEans.Count > 1)
+                    {
+                        var existingEans = db.ean.Where(e => otherEans.Contains(e.ean1)).ToList();
+                        if (existingEans.Count == 0)
+                        {
+                            foreach (long otherEan in otherEans)
+                            {
+                                if (addedEans.Contains(otherEan)) continue;
+                                article newArticle = new article();
+
+                                int categoryId = db.Database.SqlQuery<int>("SELECT category_id FROM cat_articletemp WHERE article_id = @AID", new MySqlParameter("@AID", aId.FirstOrDefault())).FirstOrDefault();
+                                string categoryName = db.Database.SqlQuery<string>("SELECT description FROM categorytemp WHERE id = @CATID", new MySqlParameter("@CATID", categoryId)).FirstOrDefault() ?? "";
+                                string initialcategoryName = new string(categoryName.ToCharArray());
+                                string trimmedCategoryName = categoryName.Trim();
+                                category_synonym catSyn = db.category_synonym.Where(cs => cs.web_url == "www.borderloop.nl" && cs.description == trimmedCategoryName).FirstOrDefault();
+                                if (catSyn == null)
+                                {
+                                    while (categoryId != 0 && catSyn == null)
+                                    {
+                                        categoryId = db.Database.SqlQuery<int?>("SELECT called_by FROM categorytemp WHERE id = @CATID", new MySqlParameter("@CATID", categoryId)).FirstOrDefault() ?? 0;
+                                        categoryName = db.Database.SqlQuery<string>("SELECT description FROM categorytemp WHERE id = @CATID", new MySqlParameter("@CATID", categoryId)).FirstOrDefault() ?? "";
+                                        trimmedCategoryName = categoryName.Trim();
+                                        catSyn = db.category_synonym.Where(cs => cs.web_url == "www.borderloop.nl" && cs.description == trimmedCategoryName).FirstOrDefault();
+                                    }
+                                    if (categoryId == 0 || catSyn == null)
+                                    {
+                                        Console.WriteLine("Could not categorize {0} with EAN {1}.", initialcategoryName, ean);
+                                        if (!newCategories.Contains(initialcategoryName)) newCategories.Add(initialcategoryName);
+                                        i++;
+                                        continue;
+                                    }
+                                }
+                                category cat = db.category.Where(c => c.id == catSyn.category_id).FirstOrDefault();
+                                newArticle.category.Add(cat);
+                                newArticle.ean.Add(new ean { ean1 = otherEan });
+                                newArticle.brand = db.Database.SqlQuery<string>("SELECT brand FROM articletemp WHERE id = @AID", new MySqlParameter("@AID", aId)).FirstOrDefault() ?? "";
+                                newArticle.description = "";
+                                newArticle.image_loc = "";
+
+                                string title = db.Database.SqlQuery<string>("SELECT title FROM titletemp WHERE article_id = @AID", new MySqlParameter("@AID", aId)).FirstOrDefault() ?? "";
+                                newArticle.title.Add(new title { title1 = title, country_id = 1 });
+
+                                string sku = db.Database.SqlQuery<string>("SELECT sku FROM skutemp WHERE article_id = @AID", new MySqlParameter("@AID", aId)).FirstOrDefault() ?? "";
+                                newArticle.sku.Add(new sku { sku1 = sku });
+                                db.article.Add(newArticle);
+                                db.Entry(newArticle).State = EntityState.Added;
+                                addedEans.Add(otherEan);
+                            }
+                        }
+                        else
+                        {
+                            if (existingEans.Count > 1)
+                            {
+                                List<int> aIds = new List<int>();
+                                foreach (long existingEan in existingEans.Select(e => e.ean1))
+                                {
+                                    aId.Add(db.ean.Where(e => e.ean1 == existingEan).FirstOrDefault().article_id);
+                                }
+                                if (aIds.Count != aIds.Distinct().Count())
+                                {
+                                    Console.WriteLine("Multiple EANs pointing to different articles - skipping this one.");
+                                    i++;
+                                    continue;
+                                }
+                            }
+                            article existingArticle = db.article.Where(a => a.id == db.ean.Where(e => e.ean1 == existingEans.First().ean1).FirstOrDefault().article_id).FirstOrDefault();
+                            foreach (long otherEan in otherEans)
+                            {
+                                ean newEan = new ean { ean1 = otherEan, article_id = existingArticle.id };
+                                addedEans.Add(otherEan);
+                                db.ean.Add(newEan);
+                                db.Entry(newEan).State = EntityState.Added;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (addedEans.Contains(ean)) continue;
+                        article newArticle = new article();
+
+                        int categoryId = db.Database.SqlQuery<int>("SELECT category_id FROM cat_articletemp WHERE article_id = @AID", new MySqlParameter("@AID", aId.FirstOrDefault())).FirstOrDefault();
+                        string categoryName = db.Database.SqlQuery<string>("SELECT description FROM categorytemp WHERE id = @CATID", new MySqlParameter("@CATID", categoryId)).FirstOrDefault() ?? "";
+                        string initialcategoryName = new string(categoryName.ToCharArray());
+                        string trimmedCategoryName = categoryName.Trim();
+                        category_synonym catSyn = db.category_synonym.Where(cs => cs.web_url == "www.borderloop.nl" && cs.description == trimmedCategoryName).FirstOrDefault();
+                        if (catSyn == null)
+                        {
+                            while(categoryId != 0 && catSyn == null)
+                            {
+                                categoryId = db.Database.SqlQuery<int?>("SELECT called_by FROM categorytemp WHERE id = @CATID", new MySqlParameter("@CATID", categoryId)).FirstOrDefault() ?? 0;
+                                categoryName = db.Database.SqlQuery<string>("SELECT description FROM categorytemp WHERE id = @CATID", new MySqlParameter("@CATID", categoryId)).FirstOrDefault() ?? "";
+                                trimmedCategoryName = categoryName.Trim();
+                                catSyn = db.category_synonym.Where(cs => cs.web_url == "www.borderloop.nl" && cs.description == trimmedCategoryName).FirstOrDefault();
+                            }
+                            if (categoryId == 0 || catSyn == null)
+                            {
+                                Console.WriteLine("Could not categorize {0} with EAN {1}.", initialcategoryName, ean);
+                                if (!newCategories.Contains(initialcategoryName)) newCategories.Add(initialcategoryName);
+                                i++;
+                                continue;
+                            }
+                        }
+                        category cat = db.category.Where(c => c.id == catSyn.category_id).FirstOrDefault();
+                        newArticle.category.Add(cat);
+                        newArticle.ean.Add(new ean { ean1 = ean });
+                        newArticle.brand = db.Database.SqlQuery<string>("SELECT brand FROM articletemp WHERE id = @AID", new MySqlParameter("@AID", aId)).FirstOrDefault() ?? "";
+                        newArticle.description = "";
+                        newArticle.image_loc = "";
+
+                        string title = db.Database.SqlQuery<string>("SELECT title FROM titletemp WHERE article_id = @AID", new MySqlParameter("@AID", aId)).FirstOrDefault() ?? "";
+                        newArticle.title.Add(new title { title1 = title, country_id = 1 });
+
+                        string sku = db.Database.SqlQuery<string>("SELECT sku FROM skutemp WHERE article_id = @AID", new MySqlParameter("@AID", aId)).FirstOrDefault() ?? "";
+                        newArticle.sku.Add(new sku { sku1 = sku });
+                        db.article.Add(newArticle);
+                        db.Entry(newArticle).State = EntityState.Added;
+                        addedEans.Add(ean);
+                    }
+
+                    i++;
+                    Console.WriteLine("Parsed {0}/{1}", i, eans.Count);
+                    if(i % 1000 == 0)
+                    {
+                        db.SaveChanges();
+                    }
+                }
+                db.SaveChanges();
+                Console.WriteLine("Could not match {0} categories. Writing them to C:/MissingCategories.txt.", newCategories.Count);
+                using(System.IO.StreamWriter writer = new System.IO.StreamWriter("C:/MissingCategories.txt"))
+                {
+                    foreach (string s in newCategories)
+                        writer.WriteLine(s);
+
+                    writer.Flush();
+                }
+            }
+        }        
+
         public static void CleanUp(DateTime time)
         {          
             Initialize();

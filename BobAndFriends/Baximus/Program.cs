@@ -66,6 +66,7 @@ namespace Baximus
             int perc = 10;
             var foreignWebshopQuery = db.webshop.Where(w => w.country_id != 1).Select(w => w.url);
             var domesticWebshopQuery = db.webshop.Where(w => w.country_id == 1).Select(w => w.url);
+            db.Database.ExecuteSqlCommand("TRUNCATE TABLE biggest_price_differences");
             // Calculate biggest price differences
             foreach (article article in articleList)
             {
@@ -255,7 +256,7 @@ namespace Baximus
             EntityConnectionStringBuilder entityConnStrBuilder = new EntityConnectionStringBuilder();
             entityConnStrBuilder.Provider = "MySql.Data.MySqlClient";
             entityConnStrBuilder.ProviderConnectionString = providerConnStrBuilder.ToString();
-            entityConnStrBuilder.Metadata = "res:// */BetsyContext.BetsyModel.csdl|res:// */BetsyContext.BetsyModel.ssdl|res:// */BetsyContext.BetsyModel.msl";
+            entityConnStrBuilder.Metadata = "res://*/BetsyContext.BetsyModel.csdl|res://*/BetsyContext.BetsyModel.ssdl|res://*/BetsyContext.BetsyModel.msl";
 
             ConnectionString = entityConnStrBuilder.ConnectionString;
             #endregion ConnectionString

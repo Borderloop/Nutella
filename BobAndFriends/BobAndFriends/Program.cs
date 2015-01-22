@@ -101,6 +101,10 @@ namespace BobAndFriends
 
             Console.SetWindowPosition(0, 0);
 
+            /*Console.WriteLine("Parsing data...");
+            Crapper.Crapper.Parse();
+            Console.WriteLine("Done parsing data.");*/
+
             // Initialize
             Initialize();
 
@@ -237,22 +241,6 @@ namespace BobAndFriends
 
             Logger.LogPath = Properties.PropertyList["log_path"].GetValue<string>();
             TimeStatisticsMapper.Instance.StartTimeMeasure("Total time");
-        }
-
-
-        static void methd()   
-        {
-            TimeStatisticsMapper.Instance.StartTimeMeasure("Some timing measure");
-            TimeStatisticsMapper.Instance.StopTimeMeasure("Some timing measure");
-            TimeStatisticsMapper.Instance.StopAll(); //Stops all current active Timers
-
-            PropertyStatisticsMapper.Instance.Add("PropertyName", "PropertyValue");
-
-            RatioStatisticsMapper.Instance.Add("Ratio for some general statistics", false /*<-- first is total?*/,
-                                                        GeneralStatisticsMapper.Instance.map["some existing key"],
-                                                        GeneralStatisticsMapper.Instance.map["another eixsting key"]);
-
-    
         }
     }
 }

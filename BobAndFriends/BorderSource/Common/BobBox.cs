@@ -56,7 +56,7 @@ namespace BorderSource.Common
             context = new BetsyModel(ConnectionString);
             context.Configuration.LazyLoadingEnabled = true;
             context.Configuration.AutoDetectChangesEnabled = false;
-            // context.Configuration.ValidateOnSaveEnabled = false;
+            context.Configuration.ValidateOnSaveEnabled = false;
         }
 
         public void SaveMatch(Product Record, int matchedArticleID, int countryID)
@@ -129,6 +129,7 @@ namespace BorderSource.Common
                 if (match != null)
                 {
                     match.occurrences++;
+                    context.Entry(match).Property("occurrences").IsModified = true;
                 }
                 /*if (ts.occurrences > articleTable.title.Max(t => t.title_synonym.Max(ts2 => ts2.occurrences)))
                 {
@@ -459,8 +460,8 @@ namespace BorderSource.Common
                     Exception inner = e.InnerException;
                     while (inner != null)
                     {
-                        Console.WriteLine("Inner: " + e.InnerException.Message);
-                        inner = e.InnerException.InnerException;
+                        Console.WriteLine("Inner: " + inner.Message);
+                        inner = inner.InnerException;
                     }
                     GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
@@ -518,8 +519,8 @@ namespace BorderSource.Common
                     Exception inner = e.InnerException;
                     while(inner != null)
                     {
-                        Console.WriteLine("Inner: " + e.InnerException.Message);
-                        inner = e.InnerException.InnerException;
+                        Console.WriteLine("Inner: " + inner.Message);
+                        inner = inner.InnerException;
                     }
                     GeneralStatisticsMapper.Instance.Increment("Amount of products not updated because of an error (x500)");
                 }
